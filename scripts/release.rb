@@ -8,7 +8,7 @@ def token
   ENV['GITHUB_TOKEN'] or raise "Environment variable #{var} isn't set"
 end
 
-def revision(dir = File.dirname(__FILE__))
+def revision(dir)
   Dir.chdir(dir) do
     `git rev-parse HEAD`.chomp
   end
@@ -26,16 +26,13 @@ def repo
   'cloudfoundry-incubator/diego-windows-msi'
 end
 
-def short_sha
-  revision[0..6]
-end
-
 def create_github_tag
-  puts "Creating release #{release} with sha #{revision}"
+  msi_sha = revision("diego-windows-msi")
+  puts "Creating release #{release} with sha #{msi_sha}"
   github.create_tag repo,
                     release,
                     "Release #{release}",
-                    revision,
+                    msi_sha,
                     "commit",
                     "greenhouse-ci ", # tagger name isn't being used by the api
                     "pivotal-netgarden-eng@pivotal.io", # tagger email isn't being used by the api
