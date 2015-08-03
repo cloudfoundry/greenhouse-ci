@@ -7,7 +7,7 @@ inputs:
   - name: diego-release
   - name: cf-release
 run:
-  path: diego-windows-msi/scripts/release.rb
+  path: greenhouse-ci/scripts/release.rb
 params:
   GITHUB_TOKEN:
   
