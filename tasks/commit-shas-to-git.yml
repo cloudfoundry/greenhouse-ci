@@ -7,6 +7,7 @@ inputs:
   - name: diego-release
   - name: cf-release
   - name: cf-diego-dwm-locker
+  - name: greenhouse-ci
 run:
   path: greenhouse-ci/scripts/commit-shas-to-git.sh
 params:
