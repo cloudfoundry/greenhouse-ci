@@ -1,0 +1,11 @@
+---
+platform: linux
+image: docker:///golang#1.4
+inputs:
+  - name: diego-windows-msi
+  - name: greenhouse-ci
+run:
+  path: greenhouse-ci/scripts/longrunning-test.sh
+params:
+  CF_USERNAME:
+  CF_PASSWORD:
