@@ -22,7 +22,7 @@ pushd ${nora_dir}/assets/nora
   ./make_a_nora $appname
 popd
 
-trap "cf d $appname -f" EXIT
+trap "cf d $appname -f >/dev/null 2>&1" EXIT
 
 cf scale -i 3 $appname
 
@@ -44,3 +44,4 @@ for i in {1..10}; do
 done
 
 cf d $appname -f
+greenhouse-ci/scripts/run-monitor-health.rb

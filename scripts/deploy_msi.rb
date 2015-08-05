@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-require 'net/ssh'
-require 'net/ssh/gateway'
+require_relative './ssh.rb'
 require 'base64'
 
 ADMIN_PASS = ENV['ADMIN_PASS'] or raise "Please set env var ADMIN_PASS"
 JUMP_MACHINE_IP = ENV['JUMP_MACHINE_IP']
+JUMP_MACHINE_SSH_KEY = ENV['JUMP_MACHINE_SSH_KEY']
 MACHINE_IP = ENV['MACHINE_IP'] or raise "Please set env var MACHINE_IP"
 REDUNDANCY_ZONE = ENV['REDUNDANCY_ZONE'] or raise "Please set env var REDUNDANCY_ZONE"
 BOSH_URL = ENV['BOSH_URL'] or raise "Please set env var BOSH_URL"
@@ -23,12 +23,6 @@ GENERATOR_LOCATION = "#{INSTALL_DIR}\\generator.exe"
 SETUP_URL = MSI_URL.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
 SETUP_LOCATION = "#{INSTALL_DIR}\\setup.ps1"
 
-options = {
-  auth_methods: ["publickey"],
-  use_agent: false,
-  key_data: [ENV['JUMP_MACHINE_SSH_KEY']]
-}
-
 def execute_my_scripts_please(ssh)
   current_execution_policy = ssh.exec!("powershell /C Get-ExecutionPolicy").chomp
   ssh.exec!("powershell /C Set-ExecutionPolicy Bypass -Scope CurrentUser")
@@ -38,7 +32,7 @@ end
 
 # Figure out the sha of the msi being installed using the download url.
 
-block = ->(ssh) do
+run_with_ssh jump_machine_ip: JUMP_MACHINE_IP, machine_ip: MACHINE_IP, jump_machine_ssh_key: JUMP_MACHINE_SSH_KEY do |ssh|
   run = ->(cmd) {
     puts "Command: ", cmd.inspect
     response = ssh.exec!(cmd)
@@ -87,9 +81,3 @@ block = ->(ssh) do
   puts "Installation succeeded, #{EXPECTED_SHA} == #{actual_sha}"
 end
 
-if JUMP_MACHINE_IP
-  gateway = Net::SSH::Gateway.new(JUMP_MACHINE_IP, 'ec2-user', options)
-  gateway.ssh(MACHINE_IP, "ci", options, &block)
-else
-  Net::SSH.start(MACHINE_IP, "ci", options, &block)
-end
