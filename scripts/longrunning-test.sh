@@ -34,23 +34,20 @@ popd
 
 trap "post_comment" EXIT
 
-# TODO: uncomment the scaling test, it's kind of flaky at the moment
-# due to issues with diego on dev2
+cf scale -i 3 $appname
 
-# cf scale -i 3 $appname
+for i in {1..300}; do
+    count=`cf app $appname | grep running | wc -l`
+    if [ $count -eq 3 ]; then
+        break;
+    fi
+    sleep 1
+done
 
-# for i in {1..300}; do
-#     count=`cf app $appname | grep running | wc -l`
-#     if [ $count -eq 3 ]; then
-#         break;
-#     fi
-#     sleep 1
-# done
-
-# if [ $count -ne 3 ]; then
-#     echo "scaling failed"
-#     exit 1
-# fi
+if [ $count -ne 3 ]; then
+    echo "scaling failed"
+    exit 1
+fi
 
 # TODO: make sure we hit all three instances
 for i in {1..10}; do
