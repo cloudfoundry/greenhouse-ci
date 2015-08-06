@@ -8,22 +8,31 @@ class CellStatus
   end
 
   def user_accounts
-    ssh.exec!("powershell /C Get-WmiObject -Class Win32_UserAccount -Filter 'name LIKE ''c_%''' | ForEach {$_.Name}").split("\r\n")
+    # see https://msdn.microsoft.com/en-us/library/aa392263.aspx for more info about the LIKE operator
+    @accounts ||= run "powershell /C Get-WmiObject -Class Win32_UserAccount -Filter 'name LIKE ''c[_]%''' | ForEach {$_.Name}"
   end
 
   def directories
-    ssh.exec!("powershell /C ls C:\\Containerizer | ForEach {$_.Name}").split("\r\n")
+    @directories ||= run "powershell /C ls C:\\Containerizer | ForEach {$_.Name}"
   end
 
   def containerizer_disk_usage
-    ssh.exec!("powershell /C Get-ChildItem C:\\Containerizer -recurse | Measure-Object -property length -sum")
+    run "powershell /C Get-ChildItem C:\\Containerizer -recurse | Measure-Object -property length -sum"
   end
 
   def memory_usage
-    ssh.exec!("powershell /C powershell /C Get-WmiObject win32_OperatingSystem | ForEach {$_.totalvisiblememorysize,$_.freephysicalmemory,$_.totalvirtualmemorysize,$_.freevirtualmemory}")
+    keys = ["totalvisiblememorysize", "freephysicalmemory", "totalvirtualmemorysize", "freevirtualmemory"]
+    foreach_keys = keys.map { |k| "$_.#{k}" }.join(",")
+    values = run "powershell /C powershell /C Get-WmiObject win32_OperatingSystem | ForEach {#{foreach_keys}}"
+    Hash[keys.zip(values)]
   end
 
   private
+
+  def run cmd
+    resp = ssh.exec!(cmd) || ""
+    resp.split("\r\n")
+  end
 
   attr_reader :ssh
 end
@@ -32,8 +41,8 @@ run_with_ssh machine_ip: ENV["MACHINE_IP"], jump_machine_ip: ENV["JUMP_MACHINE_I
   cell_status = CellStatus.new(ssh: ssh)
 
   if cell_status.user_accounts.any? || cell_status.directories.any? then
-    puts "Found #{cell_status.user_accounts.size} accounts"
-    puts "Found #{cell_status.directories.size} directories"
+    puts "Found #{cell_status.user_accounts.size} accounts: #{cell_status.user_accounts}"
+    puts "Found #{cell_status.directories.size} directories: #{cell_status.directories}"
     exit 1
   end
 

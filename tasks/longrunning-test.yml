@@ -7,6 +7,9 @@ inputs:
 run:
   path: greenhouse-ci/scripts/longrunning-test.sh
 params:
+  TRACKER_TOKEN:
+  TRACKER_PROJECT_ID:
+  TRACKER_STORY_ID:
   CF_USERNAME:
   CF_PASSWORD:
   MACHINE_IP:
