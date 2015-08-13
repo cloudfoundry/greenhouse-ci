@@ -1,83 +1,99 @@
 #!/usr/bin/env ruby
 
-require_relative './ssh.rb'
-require 'base64'
+### NEW ###
+# destroy old cloudformation stack
+# substitute generator & msi URLs in cloudformation.json
+# run cloudformation template on aws
+# wait for it to finish / succeed? -- boosh
 
-ADMIN_PASS = ENV['ADMIN_PASS'] or raise "Please set env var ADMIN_PASS"
-JUMP_MACHINE_IP = ENV['JUMP_MACHINE_IP']
-JUMP_MACHINE_SSH_KEY = ENV['JUMP_MACHINE_SSH_KEY']
-MACHINE_IP = ENV['MACHINE_IP'] or raise "Please set env var MACHINE_IP"
-REDUNDANCY_ZONE = ENV['REDUNDANCY_ZONE'] or raise "Please set env var REDUNDANCY_ZONE"
-BOSH_URL = ENV['BOSH_URL'] or raise "Please set env var BOSH_URL"
-MSI_FILE_DIR = ARGV[0] or raise "Please run with first arg as directory of MSI File"
+require 'aws/cloud_formation'
 
-MSI_URL = File.read "#{MSI_FILE_DIR}/url"
-EXPECTED_SHA = MSI_URL.match(/DiegoWindowsMSI-(.*)-([0-9a-f]+).msi$/) { |x| x[2] } or raise "Please set a download url (in #{MSI_FILE_DIR}/url)"
-
-INSTALL_DIR = "c:\\diego-install"
-MSI_LOCATION = "#{INSTALL_DIR}\\diego.msi"
-
-GENERATOR_URL = File.read("install-script-generator/url")
-GENERATOR_LOCATION = "#{INSTALL_DIR}\\generator.exe"
-
-SETUP_URL = MSI_URL.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
-SETUP_LOCATION = "#{INSTALL_DIR}\\setup.ps1"
-
-def execute_my_scripts_please(ssh)
-  current_execution_policy = ssh.exec!("powershell /C Get-ExecutionPolicy").chomp
-  ssh.exec!("powershell /C Set-ExecutionPolicy Bypass -Scope CurrentUser")
-  yield
-  ssh.exec!("powershell /C Set-ExecutionPolicy #{current_execution_policy} -Scope CurrentUser")
+def delete_stack(name)
+  puts "deleting stack #{name}"
+  stack = $cfm.stacks[name]
+  stack.delete
+  while stack.exists? do
+    puts "waiting for stack to be destroyed"
+    sleep(0.5)
+  end
 end
 
-# Figure out the sha of the msi being installed using the download url.
-
-run_with_ssh jump_machine_ip: JUMP_MACHINE_IP, machine_ip: MACHINE_IP, jump_machine_ssh_key: JUMP_MACHINE_SSH_KEY do |ssh|
-  run = ->(cmd) {
-    puts "Command: ", cmd.inspect
-    response = ssh.exec!(cmd)
-    puts "Response: ", response
-    response
-  }
-  hostname = ssh.exec!("hostname").chomp
-  puts "Hostname: #{hostname}"
-
-  puts "Uninstall"
-  run["msiexec /norestart /passive /x #{MSI_LOCATION}"]
-  run["cmd /c rd #{INSTALL_DIR} /s /q"]
-  run["cmd /c mkdir #{INSTALL_DIR}"]
-
-  puts "Downloading setup script from #{SETUP_URL}"
-  run["powershell /C wget '#{SETUP_URL}' -OutFile #{SETUP_LOCATION}"]
-
-  puts "Downloading msi from #{MSI_URL}"
-  run["powershell /C wget '#{MSI_URL}' -OutFile #{MSI_LOCATION}"]
-
-  puts "Downloading install script generator from #{GENERATOR_URL}"
-  run["powershell /C wget '#{GENERATOR_URL}' -OutFile #{GENERATOR_LOCATION}"]
-
-  puts "Generating the install script"
-  run["#{GENERATOR_LOCATION} -boshUrl=#{BOSH_URL} -outputDir=#{INSTALL_DIR} -windowsUsername=Administrator -windowsPassword=#{ADMIN_PASS}"]
-
-  puts "Provisioning the machine"
-  execute_my_scripts_please(ssh) do
-    response = run["powershell -Command & $env:windir/sysnative/WindowsPowerShell/v1.0/powershell.exe -Command #{SETUP_LOCATION}"]
-    if response.include?("PSSecurityException")
-      exit(1)
-    end
+def get_in(hash, keys)
+  if keys.any?
+    get_in(hash.fetch(keys.first), keys.drop(1))
+  else
+    hash
   end
-
-  puts "Install"
-  run["#{INSTALL_DIR}\\install_#{REDUNDANCY_ZONE}.bat"]
-
-  output = run["powershell /C type $Env:ProgramW6432/CloudFoundry/DiegoWindows/RELEASE_SHA"]
-  actual_sha = output.chomp.split(/\s+/).last
-  puts actual_sha.inspect
-
-  if actual_sha != EXPECTED_SHA
-    puts "Installation failed: expected #{EXPECTED_SHA}, got #{actual_sha}"
-    exit(1)
-  end
-  puts "Installation succeeded, #{EXPECTED_SHA} == #{actual_sha}"
 end
 
+def assoc_in(hash, keys, value)
+  key = keys.first
+  keys = keys.drop(1)
+  if keys.any?
+    hash[key] = assoc_in(hash[key], keys, value)
+  else
+    hash[key] = value
+  end
+  hash
+end
+
+def swap_urls(template:, generator_url:, msi_url:, setup_url:)
+  path = ["Resources", "GardenWindowsInstance", "Metadata", "AWS::CloudFormation::Init", "config", "files"]
+  files = get_in(template, path)
+  files["C:\\tmp\\generate.exe"]["source"] = generator_url
+  files["C:\\tmp\\diego.msi"]["source"] = msi_url
+  files["C:\\tmp\\setup.ps1"]["source"] = setup_url
+  assoc_in(template, path, files)
+end
+
+def create_stack(name, template, parameters)
+  puts "creating stack #{name}"
+  $cfm.stacks.create(name, template, parameters: parameters)
+end
+
+def wait_for_stack(name)
+  stack = $cfm.stacks[name]
+  status = stack.status
+  while status != "CREATE_COMPLETE"
+    raise "Create failed, #{status}" if status != "CREATE_IN_PROGRESS"
+    puts "waiting for stack to complete"
+    sleep(0.5)
+    status = stack.status
+  end
+end
+
+$cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+                               secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"])
+generator_url = ENV["GENERATOR_URL"] || File.read("install-script-generator/url")
+msi_url = ENV["MSI_URL"] || File.read("msi-file/url")
+setup_url = ENV["SETUP_URL"] || msi_url.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
+
+delete_stack(ENV["STACKNAME"])
+template = swap_urls(template: JSON.parse(File.read("diego-windows-msi/cloudformation.json")),
+                     generator_url: generator_url,
+                     msi_url: msi_url,
+                     setup_url: setup_url)
+# binding.pry
+create_stack(ENV["STACKNAME"], template, {
+  BoshHost: ENV.fetch("BOSH_HOST"),
+  BoshPassword: ENV.fetch("BOSH_PASSWORD"),
+  BoshUserName: ENV.fetch("BOSH_USER"),
+  CellName: ENV["CELL_NAME"],
+  ContainerizerPassword: ENV.fetch("CONTAINERIZER_PASSWORD"),
+  GardenWindowsSubnet: ENV.fetch("SUBNET"),
+  SecurityGroup: ENV.fetch("SECURITY_GROUP")
+})
+wait_for_stack(ENV["STACKNAME"])
+
+
+
+
+######################
+#################
+#
+# fails when run with this script, passes when run through the Cloudformation UI with the same args
+# not sure what is going wrong
+# #########################
+#
+#
+#

@@ -5,13 +5,18 @@ inputs:
   - name: msi-file
   - name: install-script-generator
   - name: greenhouse-ci
+  - name: diego-windows-msi
 run:
   path: greenhouse-ci/scripts/deploy_msi.rb
   args: [msi-file]
 params:
-  ADMIN_PASS:
-  BOSH_URL:
-  JUMP_MACHINE_IP:
-  JUMP_MACHINE_SSH_KEY:
-  MACHINE_IP:
-  REDUNDANCY_ZONE:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  BOSH_PASSWORD:
+  BOSH_USER:
+  CELL_NAME:
+  CONTAINERIZER_PASSWORD:
+  SUBNET:
+  SECURITY_GROUP:
+  STACKNAME:
+  BOSH_HOST:
