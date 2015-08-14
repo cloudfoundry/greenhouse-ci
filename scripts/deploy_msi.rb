@@ -14,7 +14,7 @@ def delete_stack(name)
   stack.delete
   while stack.exists? do
     puts "waiting for stack to be destroyed"
-    sleep(0.5)
+    sleep(10)
   end
 end
 
@@ -57,7 +57,7 @@ def wait_for_stack(name)
   while status != "CREATE_COMPLETE"
     raise "Create failed, #{status}" if status != "CREATE_IN_PROGRESS"
     puts "waiting for stack to complete"
-    sleep(0.5)
+    sleep(10)
     status = stack.status
   end
 end
