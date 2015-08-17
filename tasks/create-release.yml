@@ -2,8 +2,9 @@
 platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
-  - name: diego-windows-msi
   - name: msi-file
+  - name: install-script-generator
+  - name: diego-windows-msi
   - name: diego-release
   - name: cf-release
   - name: greenhouse-ci
@@ -11,4 +12,4 @@ run:
   path: greenhouse-ci/scripts/release.rb
 params:
   GITHUB_TOKEN:
-  
+

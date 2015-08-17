@@ -3,6 +3,7 @@
 require 'octokit'
 require 'time'
 require 'open-uri'
+require 'tempfile'
 
 def token
   ENV['GITHUB_TOKEN'] or raise "Environment variable #{var} isn't set"
@@ -14,8 +15,12 @@ def revision(dir)
   end
 end
 
+def generate_file
+  Dir::glob('./install-script-generator/generate*.exe').first
+end
+
 def msi_file
-  Dir::glob('./msi-file/DiegoWindowsMSI-*-*.msi').first
+  Dir::glob('./msi-file/DiegoWindowsMSI*.msi').first
 end
 
 def github
@@ -78,6 +83,19 @@ def release
   "v#{File.read('./msi-file/version').chomp}"
 end
 
+def create_cloudformation_release
+  template = CloudformationTemplate.new(template_path: 'diego-windows-msi/cloudformation.json')
+  template.base_url = "https://github.com/cloudfoundry-incubator/diego-windows-msi/releases/download/#{release}/"
+  template.generate_file = 'generate.exe'
+  template.msi_file = 'DiegoWindowsMSI.msi'
+  template.setup_file = 'setup.ps1'
+
+  Tempfile.new('cloudformation-release.json').tap do |tempfile|
+    tempfile.write(template.to_json)
+    tempfile.close
+  end
+end
+
 release_resource = get_release_resource(release)
 if release_resource then
   puts "Update Existing Resource"
@@ -88,6 +106,10 @@ else
   puts "Creating github release"
   res = create_github_tag
   puts "Created github release"
+
+  puts "Uploading generate to github release"
+  upload_release_assets generate_file, res, "generate.exe"
+  puts "Uploaded generate to github release"
 
   puts "Uploading msi to github release"
   upload_release_assets msi_file, res, "DiegoWindowsMSI.msi"
@@ -100,4 +122,9 @@ else
   puts "Uploading setup script to github release"
   upload_release_assets "diego-windows-msi/scripts/setup.ps1", res
   puts "Uploaded setup script to github release"
+
+  puts "Uploading cloudformation script to github release"
+  tmp_cloudformation_file = create_cloudformation_release
+  upload_release_assets tmp_cloudformation_file.path, res, "cloudformation.json"
+  puts "Uploaded cloudformation script to github release"
 end
