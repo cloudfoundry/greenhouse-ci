@@ -7,6 +7,13 @@ class CloudformationTemplate
 
   attr_accessor :base_url, :generate_file, :msi_file, :setup_file
 
+  def to_json
+    swap_urls template: @json, generator_url: generator_url, msi_url: msi_url, setup_url: setup_url
+    JSON.pretty_generate @json
+  end
+
+  private
+
   def generator_url
     base_url + "/" + generate_file
   end
@@ -17,11 +24,6 @@ class CloudformationTemplate
 
   def setup_url
     base_url + "/" + setup_file
-  end
-
-  def to_json
-    swap_urls template: @json, generator_url: generator_url, msi_url: msi_url, setup_url: setup_url
-    JSON.pretty_generate @json
   end
 
   def get_in(hash, keys)

@@ -4,6 +4,7 @@ require 'octokit'
 require 'time'
 require 'open-uri'
 require 'tempfile'
+require_relative './cloudformation_template'
 
 def token
   ENV['GITHUB_TOKEN'] or raise "Environment variable #{var} isn't set"
