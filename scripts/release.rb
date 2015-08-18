@@ -16,7 +16,7 @@ def revision(dir)
 end
 
 def generate_file
-  Dir::glob('./install-script-generator/generate*.exe').first
+  Dir::glob('./greenhouse-install-script-generator/generate*.exe').first
 end
 
 def msi_file
