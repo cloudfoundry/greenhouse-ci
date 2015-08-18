@@ -64,7 +64,7 @@ end
 
 $cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
                                secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"])
-generator_url = ENV["GENERATOR_URL"] || File.read("install-script-generator/url")
+generator_url = ENV["GENERATOR_URL"] || File.read("greenhouse-install-script-generator/url")
 msi_url = ENV["MSI_URL"] || File.read("msi-file/url")
 setup_url = ENV["SETUP_URL"] || msi_url.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
 
