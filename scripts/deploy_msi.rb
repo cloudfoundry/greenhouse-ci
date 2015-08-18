@@ -6,7 +6,6 @@
 # run cloudformation template on aws
 # wait for it to finish / succeed? -- boosh
 
-require_relative './cloudformation_template'
 require 'aws/cloud_formation'
 
 def delete_stack(name)
@@ -17,6 +16,34 @@ def delete_stack(name)
     puts "waiting for stack to be destroyed"
     sleep(10)
   end
+end
+
+def get_in(hash, keys)
+  if keys.any?
+    get_in(hash.fetch(keys.first), keys.drop(1))
+  else
+    hash
+  end
+end
+
+def assoc_in(hash, keys, value)
+  key = keys.first
+  keys = keys.drop(1)
+  if keys.any?
+    hash[key] = assoc_in(hash[key], keys, value)
+  else
+    hash[key] = value
+  end
+  hash
+end
+
+def swap_urls(template:, generator_url:, msi_url:, setup_url:)
+  path = ["Resources", "GardenWindowsInstance", "Metadata", "AWS::CloudFormation::Init", "config", "files"]
+  files = get_in(template, path)
+  files["C:\\tmp\\generate.exe"]["source"] = generator_url
+  files["C:\\tmp\\diego.msi"]["source"] = msi_url
+  files["C:\\tmp\\setup.ps1"]["source"] = setup_url
+  assoc_in(template, path, files)
 end
 
 def create_stack(name, template, parameters)
@@ -37,7 +64,7 @@ end
 
 $cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
                                secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"])
-generator_url = ENV["GENERATOR_URL"] || File.read("greenhouse-install-script-generator/url")
+generator_url = ENV["GENERATOR_URL"] || File.read("install-script-generator/url")
 msi_url = ENV["MSI_URL"] || File.read("msi-file/url")
 setup_url = ENV["SETUP_URL"] || msi_url.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
 
