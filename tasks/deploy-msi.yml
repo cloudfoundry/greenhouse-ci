@@ -3,7 +3,7 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: msi-file
-  - name: install-script-generator
+  - name: greenhouse-install-script-generator
   - name: greenhouse-ci
   - name: diego-windows-msi
 run:
