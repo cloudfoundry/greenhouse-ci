@@ -19,11 +19,6 @@ cd ../diego-windows-msi
 git checkout $DWM_SHA
 cd ../
 
-
-if git diff-index HEAD; then
-  git config --global user.name "CI (Automated)"
-  git config --global user.email "greenhouse@pivotal.io"
-  git commit -m "DiegoWindowsMSI Release v$MSI_VERSION" cf-release diego-release diego-windows-msi
-else
-  echo "Already committed!"
-fi
+git config --global user.name "CI (Automated)"
+git config --global user.email "greenhouse@pivotal.io"
+git commit --allow-empty -m "DiegoWindowsMSI Release v$MSI_VERSION" cf-release diego-release diego-windows-msi
