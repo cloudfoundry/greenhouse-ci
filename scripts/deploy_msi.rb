@@ -2,6 +2,7 @@
 
 require_relative './cloudformation_template'
 require 'aws/cloud_formation'
+require 'uri'
 
 def delete_stack(name)
   puts "deleting stack #{name}"
@@ -36,8 +37,8 @@ delete_stack(ENV["STACKNAME"])
 
 template = CloudformationTemplate.new(template_json: File.read("diego-windows-msi/cloudformation.json"))
 template.base_url = 'https://diego-windows-msi.s3.amazonaws.com/output'
-template.generate_file = Dir.glob("greenhouse-install-script-generator/generate-#{File.read("greenhouse-install-script-generator/version")}-*.exe").fetch(0).gsub('greenhouse-install-script-generator/', '')
-template.msi_file = Dir.glob("msi-file/DiegoWindowsMSI-#{File.read("msi-file/version")}-*.msi").fetch(0).gsub('msi-file/', '')
+template.generate_file = File.basename(URI(File.read("greenhouse-install-script-generator/url")).path)
+template.msi_file = File.basename(URI(File.read("msi-file/url")).path)
 template.setup_file = template.msi_file.gsub("DiegoWindowsMSI", "setup").gsub(".msi", ".ps1")
 
 create_stack(ENV["STACKNAME"], template.to_json, {
