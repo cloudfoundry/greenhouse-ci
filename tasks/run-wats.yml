@@ -4,7 +4,7 @@ image: docker:///golang#1.4
 inputs:
   - name: diego-windows-msi
 run:
-  path: diego-windows-msi/src/github.com/pivotal-cf-experimental/nora/scripts/run_wats.sh
+  path: diego-windows-msi/src/github.com/cloudfoundry-incubator/wats/scripts/run_wats.sh
 params:
   ADMIN_PASSWORD:
   ADMIN_USER:
