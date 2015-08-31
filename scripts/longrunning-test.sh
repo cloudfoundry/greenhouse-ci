@@ -18,7 +18,7 @@ function post_comment {
 }
 
 # Assumes diego-windows-msi under ./diego-windows-msi
-export nora_dir=$PWD/diego-windows-msi/src/github.com/pivotal-cf-experimental/nora
+export nora_dir=$PWD/diego-windows-msi/src/github.com/cloudfoundry-incubator/wats
 function cf {
     ${nora_dir}/bin/cf-linux "$@"
 }
