@@ -34,7 +34,7 @@ popd
 
 trap "post_comment" EXIT
 
-cf scale -m 1g -i 3 $appname
+cf scale -f -m 1g -i 3 $appname
 
 for i in {1..300}; do
     count=`cf app $appname | grep running | wc -l`
