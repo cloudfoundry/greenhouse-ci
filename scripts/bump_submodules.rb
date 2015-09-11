@@ -19,7 +19,7 @@ Dir.chdir("diego-windows-msi") do
     if Dir.exists?(dir)
       puts "\t#{sha}"
       Dir.chdir(dir) do
-        `git fetch && git checkout #{sha}`
+        `git checkout #{sha}`
       end
     end
   end
