@@ -35,7 +35,7 @@ $cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
 
 delete_stack(ENV["STACKNAME"])
 
-template = CloudformationTemplate.new(template_json: File.read("diego-windows-msi/cloudformation.json"))
+template = CloudformationTemplate.new(template_json: File.read("diego-windows-msi/cloudformation.json.template"))
 template.base_url = 'https://diego-windows-msi.s3.amazonaws.com/output'
 template.generate_file = File.basename(URI(File.read("greenhouse-install-script-generator/url")).path)
 template.msi_file = File.basename(URI(File.read("msi-file/url")).path)
