@@ -49,9 +49,9 @@ create_stack(ENV["STACKNAME"], template.to_json, {
   ContainerizerPassword: ENV.fetch("CONTAINERIZER_PASSWORD"),
   GardenWindowsSubnet: ENV.fetch("SUBNET"),
   SecurityGroup: ENV.fetch("SECURITY_GROUP"),
-  SubnetCIDR: Env.fetch("SUBNET_CIDR"),
-  NATZ: Env.fetch("NATZ_ID"),
-  VPC_ID: Env.fetch("VPC_ID")
+  SubnetCIDR: ENV.fetch("SUBNET_CIDR"),
+  NATZ: ENV.fetch("NATZ_ID"),
+  VPC_ID: ENV.fetch("VPC_ID")
 })
 
 wait_for_stack(ENV["STACKNAME"])
