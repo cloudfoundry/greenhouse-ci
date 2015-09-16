@@ -51,7 +51,7 @@ create_stack(ENV["STACKNAME"], template.to_json, {
   SecurityGroup: ENV.fetch("SECURITY_GROUP"),
   SubnetCIDR: ENV.fetch("SUBNET_CIDR"),
   NATZ: ENV.fetch("NATZ_ID"),
-  VPC_ID: ENV.fetch("VPC_ID")
+  VPCID: ENV.fetch("VPC_ID")
 })
 
 wait_for_stack(ENV["STACKNAME"])
