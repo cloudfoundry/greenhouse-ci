@@ -47,7 +47,6 @@ create_stack(ENV["STACKNAME"], template.to_json, {
   BoshUserName: ENV.fetch("BOSH_USER"),
   CellName: ENV["CELL_NAME"],
   ContainerizerPassword: ENV.fetch("CONTAINERIZER_PASSWORD"),
-  GardenWindowsSubnet: ENV.fetch("SUBNET"),
   SecurityGroup: ENV.fetch("SECURITY_GROUP"),
   SubnetCIDR: ENV.fetch("SUBNET_CIDR"),
   NATZ: ENV.fetch("NATZ_ID"),
