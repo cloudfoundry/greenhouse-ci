@@ -5,26 +5,21 @@ describe CloudformationTemplate do
     it 'returns the template with the interpolated values' do
       template_json = <<-TEMPLATE_JSON
 {
-  "Resources": {
-    "GardenWindowsInstance": {
-      "Type": "AWS::EC2::Instance",
-      "Metadata": {
-        "AWS::CloudFormation::Init": {
-          "config": {
-            "files": {
-              "C:\\\\tmp\\\\generate.exe": {
-                "source": "https://github.com/cloudfoundry-incubator/diego-windows-msi/releases/download/v0.494/generate.exe"
-              },
-              "C:\\\\tmp\\\\diego.msi": {
-                "source": "https://github.com/cloudfoundry-incubator/diego-windows-msi/releases/download/v0.494/DiegoWindowsMSI.msi"
-              },
-              "C:\\\\tmp\\\\setup.ps1": {
-                "source": "https://github.com/cloudfoundry-incubator/diego-windows-msi/releases/download/v0.494/setup.ps1"
-              }
-            }
-          }
-        }
-      }
+  "Parameters": {
+    "ZZZGenerateUrl": {
+      "Description": "URL of generate.exe",
+      "Type": "String",
+      "Default": ""
+    },
+    "ZZZDiegoMsiUrl": {
+      "Description": "URL of the diego.msi to install",
+      "Type": "String",
+      "Default": ""
+    },
+    "ZZZSetupPs1Url": {
+      "Description": "URL of the setup.ps1 to run",
+      "Type": "String",
+      "Default": ""
     }
   }
 }
@@ -38,26 +33,21 @@ describe CloudformationTemplate do
 
       expect(template.to_json).to eq (<<-EXPECTED_JSON).strip
 {
-  "Resources": {
-    "GardenWindowsInstance": {
-      "Type": "AWS::EC2::Instance",
-      "Metadata": {
-        "AWS::CloudFormation::Init": {
-          "config": {
-            "files": {
-              "C:\\\\tmp\\\\generate.exe": {
-                "source": "http://foo.com/dir/generate.exe"
-              },
-              "C:\\\\tmp\\\\diego.msi": {
-                "source": "http://foo.com/dir/DiegoWindowsMSI.msi"
-              },
-              "C:\\\\tmp\\\\setup.ps1": {
-                "source": "http://foo.com/dir/setup.ps1"
-              }
-            }
-          }
-        }
-      }
+  "Parameters": {
+    "ZZZGenerateUrl": {
+      "Description": "URL of generate.exe",
+      "Type": "String",
+      "Default": "http://foo.com/dir/generate.exe"
+    },
+    "ZZZDiegoMsiUrl": {
+      "Description": "URL of the diego.msi to install",
+      "Type": "String",
+      "Default": "http://foo.com/dir/DiegoWindowsMSI.msi"
+    },
+    "ZZZSetupPs1Url": {
+      "Description": "URL of the setup.ps1 to run",
+      "Type": "String",
+      "Default": "http://foo.com/dir/setup.ps1"
     }
   }
 }

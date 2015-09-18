@@ -26,31 +26,10 @@ class CloudformationTemplate
     base_url + "/" + setup_file
   end
 
-  def get_in(hash, keys)
-    if keys.any?
-      get_in(hash.fetch(keys.first), keys.drop(1))
-    else
-      hash
-    end
-  end
-
-  def assoc_in(hash, keys, value)
-    key = keys.first
-    keys = keys.drop(1)
-    if keys.any?
-      hash[key] = assoc_in(hash[key], keys, value)
-    else
-      hash[key] = value
-    end
-    hash
-  end
-
   def swap_urls(template:, generator_url:, msi_url:, setup_url:)
-    path = ["Resources", "GardenWindowsInstance", "Metadata", "AWS::CloudFormation::Init", "config", "files"]
-    files = get_in(template, path)
-    files["C:\\tmp\\generate.exe"]["source"] = generator_url
-    files["C:\\tmp\\diego.msi"]["source"] = msi_url
-    files["C:\\tmp\\setup.ps1"]["source"] = setup_url
-    assoc_in(template, path, files)
+    files = template.fetch("Parameters")
+    files["ZZZGenerateUrl"]["Default"] = generator_url
+    files["ZZZDiegoMsiUrl"]["Default"] = msi_url
+    files["ZZZSetupPs1Url"]["Default"] = setup_url
   end
 end
