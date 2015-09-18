@@ -20,6 +20,8 @@ Dir.chdir("diego-windows-msi") do
     dir = a[2]
     puts dir
 
+    next if dir =~ /gorilla\/websocket/
+
     if Dir.exists?(dir)
       puts "\t#{sha}"
       Dir.chdir(dir) do
