@@ -7,11 +7,10 @@ domain=greenhouse-development2.cf-app.com
 url=$appname.$domain
 
 function post_comment {
-    exitcode=$?
-    cf d $appname -r -f >/dev/null 2>&1 || echo "could not kill app"
-    if [ $exitcode -eq 0 ]; then
+    if [ $? -eq 0 ]; then
         return
     fi
+    cf d $appname -r -f >/dev/null 2>&1 || echo "could not kill app"
     curl -X POST -H "X-TrackerToken: ${TRACKER_TOKEN}" -H "Content-Type: application/json" \
          -d '{"text":"build failed"}' \
          "https://www.pivotaltracker.com/services/v5/projects/${TRACKER_PROJECT_ID}/stories/${TRACKER_STORY_ID}/comments"
@@ -55,6 +54,6 @@ for i in {1..10}; do
     curl $url
 done
 
-cf d $appname -f
+cf d $appname -r -f
 sleep 3
 greenhouse-ci/scripts/run-monitor-health.rb
