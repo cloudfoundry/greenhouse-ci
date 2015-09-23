@@ -29,7 +29,7 @@ trap "post_comment" EXIT
 
 cf api --skip-ssl-validation api.$domain
 cf login -u $CF_USERNAME -p $CF_PASSWORD -o ORG -s SPACE
-cf delete-orphaned-routes
+cf delete-orphaned-routes -f
 
 pushd ${nora_dir}/assets/nora
   ./make_a_nora $appname
