@@ -8,7 +8,7 @@ url=$appname.$domain
 
 function post_comment {
     exitcode=$?
-    cf d $appname -f >/dev/null 2>&1 || echo "could not kill app"
+    cf d $appname -r -f >/dev/null 2>&1 || echo "could not kill app"
     if [ $exitcode -eq 0 ]; then
         return
     fi
@@ -25,14 +25,15 @@ function cf {
 
 export -f cf
 
+trap "post_comment" EXIT
+
 cf api --skip-ssl-validation api.$domain
 cf login -u $CF_USERNAME -p $CF_PASSWORD -o ORG -s SPACE
+cf delete-orphaned-routes
 
 pushd ${nora_dir}/assets/nora
   ./make_a_nora $appname
 popd
-
-trap "post_comment" EXIT
 
 cf scale -f -m 2g -i 3 $appname
 
