@@ -23,7 +23,7 @@ end
 
 def find_sha
   Dir.chdir("diego-release") do
-    system("git rev-list --max-count=1 HEAD")
+    `git rev-list --max-count=1 HEAD`
   end
 end
 
