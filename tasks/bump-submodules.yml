@@ -3,7 +3,7 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: diego-release
-  - name: diego-windows-msi
+  - name: diego-windows-release
   - name: greenhouse-ci
 run:
   path: greenhouse-ci/scripts/bump_submodules.rb

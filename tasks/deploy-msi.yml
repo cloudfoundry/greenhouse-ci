@@ -2,10 +2,11 @@
 platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
-  - name: msi-file
+  - name: diego-windows-msi-file
+  - name: garden-windows-msi-file
   - name: greenhouse-install-script-generator
   - name: greenhouse-ci
-  - name: diego-windows-msi
+  - name: diego-windows-release # cloudformation template
 run:
   path: greenhouse-ci/scripts/deploy_msi.rb
   args: [msi-file]

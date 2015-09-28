@@ -13,7 +13,7 @@ modules = Dir.chdir("diego-release") do
   `git submodule status --recursive`
 end
 
-Dir.chdir("diego-windows-msi") do
+Dir.chdir("diego-windows-release") do
   modules.split(/\n/).each do |line|
     a = line.split(/\s+/)
     sha = a[1]

@@ -5,31 +5,21 @@ class CloudformationTemplate
     @json = JSON.parse(template_json)
   end
 
-  attr_accessor :base_url, :generate_file, :msi_file, :setup_file
+  attr_accessor :generator_url, :diego_windows_msi_url, :garden_windows_msi_url, :setup_url
 
   def to_json
-    swap_urls template: @json, generator_url: generator_url, msi_url: msi_url, setup_url: setup_url
-    JSON.pretty_generate @json
+    JSON.pretty_generate swap_urls
   end
 
   private
 
-  def generator_url
-    base_url + "/" + generate_file
-  end
-
-  def msi_url
-    base_url + "/" + msi_file
-  end
-
-  def setup_url
-    base_url + "/" + setup_file
-  end
-
-  def swap_urls(template:, generator_url:, msi_url:, setup_url:)
-    files = template.fetch("Parameters")
-    files["ZZZGenerateUrl"]["Default"] = generator_url
-    files["ZZZDiegoMsiUrl"]["Default"] = msi_url
-    files["ZZZSetupPs1Url"]["Default"] = setup_url
+  def swap_urls
+    @json.dup.tap do |json|
+      files = json.fetch("Parameters")
+      files["ZZZGenerateUrl"]["Default"] = generator_url
+      files["ZZZDiegoWindowsMsiUrl"]["Default"] = diego_windows_msi_url
+      files["ZZZGardenWindowsMsiUrl"]["Default"] = garden_windows_msi_url
+      files["ZZZSetupPs1Url"]["Default"] = setup_url
+    end
   end
 end
