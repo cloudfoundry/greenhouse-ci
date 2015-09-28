@@ -10,6 +10,7 @@ def submodules_changed?
 end
 
 def trust_github
+  system("mkdir ~/.ssh")
   system("ssh-keyscan github.com >> ~/.ssh/known_hosts")
 end
 
