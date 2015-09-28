@@ -15,6 +15,7 @@ end
 
 Dir.chdir("diego-windows-release") do
   Dir.chdir("diego-release") do
+    `git remote update`
     `git checkout #{sha.strip}`
   end
 
