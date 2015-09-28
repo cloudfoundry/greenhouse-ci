@@ -9,15 +9,27 @@ def submodules_changed?
   !system("git diff --exit-code")
 end
 
-sha = Dir.chdir("diego-release") do
-  `git rev-list --max-count=1 HEAD`
+def trust_github
+  system("ssh-keyscan github.com >> ~/.ssh/known_hosts")
 end
 
-Dir.chdir("diego-windows-release") do
+def bump_diego_release sha
   Dir.chdir("diego-release") do
-    `git remote update`
-    `git checkout #{sha.strip}`
+    system("git remote update")
+    system("git checkout #{sha.strip}")
   end
+end
+
+def find_sha
+  Dir.chdir("diego-release") do
+    system("git rev-list --max-count=1 HEAD")
+  end
+end
+
+sha = find_sha
+trust_github
+Dir.chdir("diego-windows-release") do
+  bump_diego_release sha
 
   puts "----- Set git identity"
   sh 'git config user.email "cf-netgarden-eng@pivotal.io"'
