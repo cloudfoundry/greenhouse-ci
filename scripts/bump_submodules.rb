@@ -9,25 +9,13 @@ def submodules_changed?
   !system("git diff --exit-code")
 end
 
-modules = Dir.chdir("diego-release") do
-  `git submodule status --recursive`
+sha = Dir.chdir("diego-release") do
+  `git rev-list --max-count=1 HEAD`
 end
 
 Dir.chdir("diego-windows-release") do
-  modules.split(/\n/).each do |line|
-    a = line.split(/\s+/)
-    sha = a[1]
-    dir = a[2]
-    puts dir
-
-    next if dir =~ /gorilla\/websocket/
-
-    if Dir.exists?(dir)
-      puts "\t#{sha}"
-      Dir.chdir(dir) do
-        `git checkout #{sha}`
-      end
-    end
+  Dir.chdir("diego-release") do
+    `git checkout #{sha.strip}`
   end
 
   puts "----- Set git identity"
