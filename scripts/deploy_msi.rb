@@ -36,7 +36,7 @@ $cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
 delete_stack(ENV["STACKNAME"])
 
 template = CloudformationTemplate.new(template_json: File.read("diego-windows-release/cloudformation.json.template"))
-template.generator_url = File.read("greenhouse-install-script-generator/url")
+template.generator_url = File.read("greenhouse-install-script-generator-file/url")
 template.diego_windows_msi_url = File.read("diego-windows-msi-file/url")
 template.garden_windows_msi_url = File.read("garden-windows-msi-file/url")
 setup_url = File.read("garden-windows-msi-file/url").gsub(/DiegoWindowsMsi-(.*).msi/, "setup-\\1.ps1")
