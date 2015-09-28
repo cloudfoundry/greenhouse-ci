@@ -17,7 +17,7 @@ function post_comment {
 }
 
 # Assumes diego-windows-msi under ./diego-windows-msi
-export nora_dir=$PWD/diego-windows-msi/src/github.com/cloudfoundry-incubator/wats
+export nora_dir=$PWD/wats
 function cf {
     ${nora_dir}/bin/cf-linux "$@"
 }
