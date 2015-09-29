@@ -30,7 +30,7 @@ def github
   @github ||= Octokit::Client.new access_token: token
 end
 
-def create_github_tag(repo, sha, version)
+def create_github_tag(repo, sha, version, body)
   puts "Creating release #{version} with sha #{sha}"
   github.create_tag repo,
                     version,
@@ -44,7 +44,7 @@ def create_github_tag(repo, sha, version)
   github.create_release(repo,
                         version,
                         name: version,
-                        body: cf_diego_release_text)
+                        body: body)
 end
 
 def diego_windows_sha
@@ -67,13 +67,6 @@ end
 def msi_sha msi_file
   raise "invalid filename #{msi_file}" unless msi_file =~ /.*-(\d+\.\d+)-(.*)\.msi/
   $2
-end
-
-def cf_diego_release_text
-  release_body = <<-BODY
-cloudfoundry-incubator/diego-release@#{diego_sha}
-BODY
-  release_body
 end
 
 def upload_release_assets(filepath, release, filename=nil)
@@ -131,17 +124,17 @@ def release_diego_windows
   sha = diego_windows_sha
   version = diego_version
   release_resource = get_release_resource repo, version
+  body = <<HERE
+Compatible with garden-windows #{garden_version}
+HERE
 
   if release_resource then
     puts "Update Existing Resource"
-    body = release_resource.body
-    body += "\n\n-------------\n" + <<HERE
-Compatible with garden-windows #{garden_version}
-HERE
+    body = release_resource.body + "\n\n-------------\n" + body
     github.update_release(release_resource.url, { body: body })
   else
     puts "Creating github release"
-    res = create_github_tag repo, sha, version
+    res = create_github_tag repo, sha, version, body
     puts "Created github release"
 
     puts "Uploading msi to github release"
@@ -165,17 +158,17 @@ def release_garden_window
   sha = msi_sha msi_file
   version = garden_version
   release_resource = get_release_resource repo, version
+  body = <<HERE
+Compatible with diego-windows #{diego_version} & diego-release #{diego_release_sha}
+HERE
 
   if release_resource then
     puts "Update Existing Resource"
-    body = release_resource.body
-    body += "\n\n-------------\n" + <<HERE
-Compatible with diego-windows #{diego_version} & diego-release #{diego_release_sha}
-HERE
+    body = release_resource.body + "\n\n-------------\n" + body
     github.update_release(release_resource.url, { body: body })
   else
     puts "Creating github release"
-    res = create_github_tag repo, sha, version
+    res = create_github_tag repo, sha, version, body
     puts "Created github release"
 
     puts "Uploading msi to github release"
