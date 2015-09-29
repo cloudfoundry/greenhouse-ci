@@ -47,7 +47,11 @@ def create_github_tag(repo, sha, version)
                         body: cf_diego_release_text)
 end
 
-def diego_sha diego_windows_sha
+def diego_windows_sha
+  msi_sha diego_windows_msi_file
+end
+
+def diego_release_sha
   Dir.chdir "diego-windows-release" do
     # e.g. output from `git submodule status` on a vanilla clone
     # -755de0e75052301d38a21cf24b486434c9f4d934 diego-release
@@ -124,7 +128,7 @@ end
 def release_diego_windows
   repo = diego_repo
   msi_file = diego_windows_msi_file
-  sha = msi_sha msi_file
+  sha = diego_windows_sha
   version = diego_version
   release_resource = get_release_resource repo, version
 
@@ -141,7 +145,7 @@ HERE
     puts "Created github release"
 
     puts "Uploading msi to github release"
-    upload_release_assets diego_windows_msi_file, res, "DiegoWindowsMSI.msi"
+    upload_release_assets msi_file, res, "DiegoWindowsMSI.msi"
     puts "Uploaded msi to github release"
 
     puts "Uploading generate to github release"
@@ -166,7 +170,7 @@ def release_garden_window
     puts "Update Existing Resource"
     body = release_resource.body
     body += "\n\n-------------\n" + <<HERE
-Compatible with diego-windows #{diego_version} & diego-release #{diego_sha}
+Compatible with diego-windows #{diego_version} & diego-release #{diego_release_sha}
 HERE
     github.update_release(release_resource.url, { body: body })
   else
