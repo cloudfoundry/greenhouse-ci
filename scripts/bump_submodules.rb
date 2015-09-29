@@ -21,16 +21,31 @@ def bump_diego_release sha
   end
 end
 
-def find_sha
+def bump_loggregator sha
+  Dir.chdir("loggregator") do
+    system("git remote update")
+    system("git checkout #{sha.strip}")
+  end
+end
+
+def find_diego_sha
   Dir.chdir("diego-release") do
     `git rev-list --max-count=1 HEAD`
   end
 end
 
-sha = find_sha
+def find_loggregator_sha
+  Dir.chdir("cf-release") do
+     `git rev-parse :src/loggregator`.chomp
+  end
+end
+
+diego_sha = find_diego_sha
+loggregator_sha = find_loggregator_sha
 trust_github
 Dir.chdir("diego-windows-release") do
-  bump_diego_release sha
+  bump_diego_release diego_sha
+  bump_loggregator   loggregator_sha
 
   puts "----- Set git identity"
   sh 'git config user.email "cf-netgarden-eng@pivotal.io"'
@@ -46,3 +61,4 @@ Dir.chdir("diego-windows-release") do
     puts "----- Nothing to commit"
   end
 end
+
