@@ -99,7 +99,7 @@ repos = [
 
 repos.each do |repo|
   version = get_version repo
-  release_resource = get_release_resource version
+  release_resource = get_release_resource repo, version
   if release_resource then
     puts "Update Existing Resource"
     body = release_resource.body
