@@ -54,13 +54,13 @@ def diego_sha diego_windows_sha
     # -e6b27981c2bcdbcb1c9052412078aa472b8181d3 greenhouse-install-script-generator
     # -b4e6600cd2b2f8737b25c36259cc582b74e247f8 loggregator
     submodule_shas = `git checkout #{diego_windows_sha} && git submodule status`
-    diego_sha = submodule_shas.split("\n").grep(/diego-release/).first
-    diego_sha = diego_sha.split.first # -755de0e75052301d38a21cf24b486434c9f4d934
-    diego_sha[1..-1] # 755de0e75052301d38a21cf24b486434c9f4d934
+    sha = submodule_shas.split("\n").grep(/diego-release/).first
+    sha = sha.split.first # -755de0e75052301d38a21cf24b486434c9f4d934
+    sha[1..-1] # 755de0e75052301d38a21cf24b486434c9f4d934
   end
 end
 
-def diego_windows_sha
+def msi_sha msi_file
   raise "invalid filename #{msi_file}" unless msi_file =~ /.*-(\d+\.\d+)-(.*)\.msi/
   $2
 end
@@ -123,6 +123,8 @@ end
 
 def release_diego_windows
   repo = diego_repo
+  msi_file = garden_windows_msi_file
+  sha = msi_sha msi_file
   release_resource = get_release_resource repo, diego_version
 
   if release_resource then
@@ -154,6 +156,8 @@ end
 
 def release_garden_window
   repo = garden_repo
+  msi_file = garden_windows_msi_file
+  sha = msi_sha msi_file
   release_resource = get_release_resource repo, garden_version
 
   if release_resource then
@@ -169,7 +173,7 @@ HERE
     puts "Created github release"
 
     puts "Uploading msi to github release"
-    upload_release_assets garden_windows_msi_file, res, "GardenWindowsMSI.msi"
+    upload_release_assets msi_file, res, "GardenWindowsMSI.msi"
     puts "Uploaded msi to github release"
 
     puts "Uploading setup script to github release"
