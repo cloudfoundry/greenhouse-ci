@@ -2,6 +2,7 @@
 platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
+  - name: diego-windows-release
   - name: diego-windows-msi-file
   - name: garden-windows-msi-file
   - name: diego-windows-cloudformation-template-file
