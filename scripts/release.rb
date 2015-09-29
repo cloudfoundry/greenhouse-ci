@@ -53,7 +53,7 @@ def diego_sha diego_windows_sha
     # -755de0e75052301d38a21cf24b486434c9f4d934 diego-release
     # -e6b27981c2bcdbcb1c9052412078aa472b8181d3 greenhouse-install-script-generator
     # -b4e6600cd2b2f8737b25c36259cc582b74e247f8 loggregator
-    submodule_shas = `git submodule status`
+    submodule_shas = `git checkout #{diego_windows_sha} && git submodule status`
     diego_sha = submodule_shas.split("\n").grep(/diego-release/).first
     diego_sha = diego_sha.split.first # -755de0e75052301d38a21cf24b486434c9f4d934
     diego_sha[1..-1] # 755de0e75052301d38a21cf24b486434c9f4d934
