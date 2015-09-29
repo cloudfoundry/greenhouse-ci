@@ -78,9 +78,9 @@ def get_version repo
   "v#{version}"
 end
 
-def create_cloudformation_release
+def create_cloudformation_release version
   template = CloudformationTemplate.new(template_json: File.read('./diego-windows-release/cloudformation.json.template'))
-  base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{release}"
+  base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{version}"
   template.generator_url = "#{base_url}/generate.exe"
   template.diego_windows_msi_url = "#{base_url}/DiegoWindows.msi"
   template.garden_windows_msi_url = "#{base_url}/GardenWindows.msi"
@@ -127,7 +127,7 @@ repos.each do |repo|
     puts "Uploaded setup script to github release"
 
     puts "Uploading cloudformation script to github release"
-    tmp_cloudformation_file = create_cloudformation_release
+    tmp_cloudformation_file = create_cloudformation_release version
     upload_release_assets tmp_cloudformation_file.path, res, "cloudformation.json"
     puts "Uploaded cloudformation script to github release"
   end
