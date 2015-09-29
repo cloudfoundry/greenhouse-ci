@@ -93,8 +93,8 @@ def create_cloudformation_release
 end
 
 repos = [
-  "github.com/cloudfoundry-incubator/diego-windows-release",
-  "github.com/cloudfoundry-incubator/garden-windows-release"
+  "cloudfoundry-incubator/diego-windows-release",
+  "cloudfoundry-incubator/garden-windows-release"
 ]
 
 repos.each do |repo|
