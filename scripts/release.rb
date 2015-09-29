@@ -52,12 +52,13 @@ def diego_windows_sha
 end
 
 def diego_release_sha
+  dw_sha = diego_windows_sha
   Dir.chdir "diego-windows-release" do
     # e.g. output from `git submodule status` on a vanilla clone
     # -755de0e75052301d38a21cf24b486434c9f4d934 diego-release
     # -e6b27981c2bcdbcb1c9052412078aa472b8181d3 greenhouse-install-script-generator
     # -b4e6600cd2b2f8737b25c36259cc582b74e247f8 loggregator
-    submodule_shas = `git checkout #{diego_windows_sha} && git submodule status`
+    submodule_shas = `git checkout #{dw_sha} && git submodule status`
     sha = submodule_shas.split("\n").grep(/diego-release/).first
     sha = sha.split.first # -755de0e75052301d38a21cf24b486434c9f4d934
     sha[1..-1] # 755de0e75052301d38a21cf24b486434c9f4d934
