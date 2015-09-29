@@ -105,7 +105,7 @@ def diego_repo
 end
 
 def garden_repo
-  "cloudfoundry-incubator/diego-windows-release"
+  "cloudfoundry-incubator/garden-windows-release"
 end
 
 def get_version dir
@@ -123,7 +123,7 @@ end
 
 def release_diego_windows
   repo = diego_repo
-  msi_file = garden_windows_msi_file
+  msi_file = diego_windows_msi_file
   sha = msi_sha msi_file
   version = diego_version
   release_resource = get_release_resource repo, version
