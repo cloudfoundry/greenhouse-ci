@@ -47,7 +47,7 @@ def create_github_tag(repo, version)
   github.create_release(repo,
                         version,
                         name: version,
-                        body: cf_diego_release_text(version))
+                        body: cf_diego_release_text)
 end
 
 def cf_diego_release_text
