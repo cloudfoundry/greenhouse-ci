@@ -28,6 +28,10 @@ def garden_windows_msi_file
   Dir::glob('./garden-windows-msi-file/GardenWindows*.msi').first
 end
 
+def garden_windows_setup_file
+  Dir::glob('./garden-windows-setup-file/*.ps1').first
+end
+
 def github
   @github ||= Octokit::Client.new access_token: token
 end
@@ -50,12 +54,22 @@ def create_github_tag(repo, version)
                         body: cf_diego_release_text)
 end
 
+def diego_sha diego_windows_sha
+  Dir.chdir "diego-windows-release" do
+    # e.g. output from `git submodule status` on a vanilla clone
+    # -755de0e75052301d38a21cf24b486434c9f4d934 diego-release
+    # -e6b27981c2bcdbcb1c9052412078aa472b8181d3 greenhouse-install-script-generator
+    # -b4e6600cd2b2f8737b25c36259cc582b74e247f8 loggregator
+    submodule_shas = `git submodule status`
+    diego_sha = submodule_shas.split("\n").grep(/diego-release/).first
+    diego_sha = diego_sha.split.first # -755de0e75052301d38a21cf24b486434c9f4d934
+    diego_sha[1..-1] # 755de0e75052301d38a21cf24b486434c9f4d934
+  end
+end
+
 def cf_diego_release_text
-  diego_release = revision("diego-release") rescue "UNKNOWN"
-  cf_release = revision("cf-release") rescue "UNKNOWN"
   release_body = <<-BODY
-cloudfoundry-incubator/diego-release@#{diego_release}
-cloudfoundry/cf-release@#{cf_release}
+cloudfoundry-incubator/diego-release@#{diego_sha}
 BODY
   release_body
 end
@@ -80,7 +94,9 @@ def get_version repo
 end
 
 def create_cloudformation_release version
-  template = CloudformationTemplate.new(template_json: File.read('./diego-windows-release/cloudformation.json.template'))
+  template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
+  template_json = File.read(template_json_file)
+  template = CloudformationTemplate.new(template_json: template_json)
   base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{version}"
   template.generator_url = "#{base_url}/generate.exe"
   template.diego_windows_msi_url = "#{base_url}/DiegoWindows.msi"
@@ -124,7 +140,7 @@ repos.each do |repo|
     puts "Uploaded garden windows msi to github release"
 
     puts "Uploading setup script to github release"
-    upload_release_assets "garden-windows-release/scripts/setup.ps1", res
+    upload_release_assets garden_windows_setup_file, res
     puts "Uploaded setup script to github release"
 
     puts "Uploading cloudformation script to github release"

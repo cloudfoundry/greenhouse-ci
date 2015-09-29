@@ -2,6 +2,7 @@
 
 require_relative './cloudformation_template'
 require 'aws/cloud_formation'
+require 'open-uri'
 require 'uri'
 
 def delete_stack(name)
@@ -35,12 +36,13 @@ $cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
 
 delete_stack(ENV["STACKNAME"])
 
-template = CloudformationTemplate.new(template_json: File.read("diego-windows-release/cloudformation.json.template"))
+template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
+template_json = File.read(template_json_file)
+template = CloudformationTemplate.new(template_json: template_json)
 template.generator_url = File.read("greenhouse-install-script-generator-file/url")
 template.diego_windows_msi_url = File.read("diego-windows-msi-file/url")
 template.garden_windows_msi_url = File.read("garden-windows-msi-file/url")
-setup_url = File.read("garden-windows-msi-file/url").gsub(/GardenWindows-(.*)\.msi/, "setup-\\1.ps1")
-template.setup_url = setup_url
+template.setup_url = File.read("garden-windows-setup-file/url")
 
 create_stack(ENV["STACKNAME"], template.to_json, {
   BoshHost: ENV.fetch("BOSH_HOST"),
