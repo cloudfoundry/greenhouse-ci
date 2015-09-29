@@ -3,6 +3,7 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: diego-release
+  - name: cf-release
   - name: diego-windows-release
   - name: greenhouse-ci
 run:
