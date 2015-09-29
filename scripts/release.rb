@@ -160,7 +160,7 @@ def release_garden_window
   version = garden_version
   release_resource = get_release_resource repo, version
   body = <<HERE
-Compatible with diego-windows #{diego_version} & diego-release #{diego_release_sha}
+Compatible with diego-windows #{diego_version} & cloudfoundry-incubator/diego-release@#{diego_release_sha}
 HERE
 
   if release_resource then
