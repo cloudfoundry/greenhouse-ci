@@ -64,6 +64,7 @@ def upload_release_assets(filepath, release, filename=nil)
   filename ||= File.basename filepath
   github.upload_asset release[:url],
                       filepath,
+                      content_type: "application/octet-stream",
                       name: filename
 end
 
