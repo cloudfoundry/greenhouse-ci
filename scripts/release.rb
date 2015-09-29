@@ -146,7 +146,7 @@ def diego_release_resources
   {
     diego_windows_msi_file => "DiegoWindows.msi",
     generate_file => "generate.exe",
-    create_cloudformation_release(diego_version) => "cloudformation.json"
+    create_cloudformation_release(diego_version).path => "cloudformation.json"
   }
 end
 
