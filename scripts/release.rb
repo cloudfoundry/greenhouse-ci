@@ -121,7 +121,7 @@ def garden_version
   get_version "garden-windows-msi-file"
 end
 
-def release_diego_window
+def release_diego_windows
   release_resource = get_release_resource direpo, dieg_version
 
   if release_resource then
@@ -175,3 +175,6 @@ HERE
     puts "Uploaded setup script to github release"
   end
 end
+
+release_garden_window
+release_diego_windows
