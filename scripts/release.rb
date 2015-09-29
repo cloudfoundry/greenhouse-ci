@@ -17,7 +17,7 @@ def revision(dir)
 end
 
 def generate_file
-  Dir::glob('./greenhouse-install-script-generator/generate*.exe').first
+  Dir::glob('./greenhouse-install-script-generator-file/generate*.exe').first
 end
 
 def diego_windows_msi_file
@@ -119,7 +119,7 @@ repos.each do |repo|
     puts "Uploaded diego windows msi to github release"
 
     puts "Uploading garden windows msi to github release"
-    upload_release_assets garden_windows_msi_file, res, "DiegoWindowsMSI.msi"
+    upload_release_assets garden_windows_msi_file, res, "GardenWindowsMSI.msi"
     puts "Uploaded garden windows msi to github release"
 
     puts "Uploading setup script to github release"
