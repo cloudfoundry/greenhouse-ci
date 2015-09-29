@@ -103,7 +103,7 @@ repos.each do |repo|
   if release_resource then
     puts "Update Existing Resource"
     body = release_resource.body
-    body += "\n\n-------------\n" + cf_diego_release_text(release)
+    body += "\n\n-------------\n" + cf_diego_release_text
     github.update_release(release_resource.url, { body: body })
   else
     puts "Creating github release"
