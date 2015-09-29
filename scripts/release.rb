@@ -60,6 +60,11 @@ def diego_sha diego_windows_sha
   end
 end
 
+def diego_windows_sha
+  raise "invalid filename #{msi_file}" unless msi_file =~ /.*-(\d+\.\d+)-(.*)\.msi/
+  $2
+end
+
 def cf_diego_release_text
   release_body = <<-BODY
 cloudfoundry-incubator/diego-release@#{diego_sha}
@@ -79,13 +84,6 @@ def get_release_resource(repo, release)
   github.releases(repo).select { |r| r.tag_name == release}.first
 end
 
-def get_version repo
-  base = File.basename repo
-  dir = base.gsub("release", "msi-file")
-  version = File.read("./#{dir}/version").chomp
-  "v#{version}"
-end
-
 def create_cloudformation_release version
   template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
   template_json = File.read(template_json_file)
@@ -102,42 +100,78 @@ def create_cloudformation_release version
   end
 end
 
-repos = {
-  "cloudfoundry-incubator/diego-windows-release" => diego_windows_msi_file,
-  "cloudfoundry-incubator/garden-windows-release" => garden_windows_msi_file
-}
+def diego_repo
+  "cloudfoundry-incubator/diego-windows-release"
+end
 
-repos.each do |repo, msi_file|
-  version = get_version repo
-  release_resource = get_release_resource repo, version
+def garden_repo
+  "cloudfoundry-incubator/diego-windows-release"
+end
+
+def get_version dir
+  version = File.read("./#{dir}/version").chomp
+  "v#{version}"
+end
+
+def diego_version
+  get_version "diego-windows-msi-file"
+end
+
+def garden_version
+  get_version "garden-windows-msi-file"
+end
+
+def release_diego_window
+  release_resource = get_release_resource direpo, dieg_version
+
   if release_resource then
     puts "Update Existing Resource"
     body = release_resource.body
-    body += "\n\n-------------\n" + cf_diego_release_text
+    body += "\n\n-------------\n" + <<HERE
+Compatible with garden-windows #{garden_version}
+HERE
     github.update_release(release_resource.url, { body: body })
   else
-    raise "invalid filename #{msi_file}" unless msi_file =~ /.*-(\d+\.\d+)-(.*)\.msi/
-    sha = $2
-
     puts "Creating github release"
     res = create_github_tag repo, sha, version
     puts "Created github release"
+
+    puts "Uploading msi to github release"
+    upload_release_assets diego_windows_msi_file, res, "DiegoWindowsMSI.msi"
+    puts "Uploaded msi to github release"
 
     puts "Uploading generate to github release"
     upload_release_assets generate_file, res, "generate.exe"
     puts "Uploaded generate to github release"
 
-    puts "Uploading msi to github release"
-    upload_release_assets msi_file, res, "DiegoWindowsMSI.msi"
-    puts "Uploaded msi to github release"
-
-    puts "Uploading setup script to github release"
-    upload_release_assets garden_windows_setup_file, res
-    puts "Uploaded setup script to github release"
-
     puts "Uploading cloudformation script to github release"
     tmp_cloudformation_file = create_cloudformation_release version
     upload_release_assets tmp_cloudformation_file.path, res, "cloudformation.json"
     puts "Uploaded cloudformation script to github release"
+  end
+end
+
+def release_garden_window
+  release_resource = get_release_resource direpo, dieg_version
+
+  if release_resource then
+    puts "Update Existing Resource"
+    body = release_resource.body
+    body += "\n\n-------------\n" + <<HERE
+Compatible with diego-windows #{diego_version} & diego-release #{diego_sha}
+HERE
+    github.update_release(release_resource.url, { body: body })
+  else
+    puts "Creating github release"
+    res = create_github_tag repo, sha, version
+    puts "Created github release"
+
+    puts "Uploading msi to github release"
+    upload_release_assets garden_windows_msi_file, res, "GardenWindowsMSI.msi"
+    puts "Uploaded msi to github release"
+
+    puts "Uploading setup script to github release"
+    upload_release_assets garden_windows_setup_file, res, "setup.ps1"
+    puts "Uploaded setup script to github release"
   end
 end
