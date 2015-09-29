@@ -34,10 +34,10 @@ end
 
 def create_github_tag(repo, version)
   msi_sha = revision(File.basename repo)
-  puts "Creating release #{release} with sha #{msi_sha}"
+  puts "Creating release #{version} with sha #{msi_sha}"
   github.create_tag repo,
                     version,
-                    "Release #{release}",
+                    "Release #{version}",
                     msi_sha,
                     "commit",
                     "greenhouse-ci ", # tagger name isn't being used by the api
