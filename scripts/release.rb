@@ -160,7 +160,7 @@ def release_garden_window
   msi_file = garden_windows_msi_file
   sha = msi_sha msi_file
   version = garden_version
-  release_resource = get_release_resource repo
+  release_resource = get_release_resource repo, version
 
   if release_resource then
     puts "Update Existing Resource"
