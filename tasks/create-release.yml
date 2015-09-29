@@ -7,10 +7,6 @@ inputs:
   - name: diego-windows-cloudformation-template-file
   - name: garden-windows-setup-file
   - name: greenhouse-install-script-generator-file
-  - name: diego-windows-release
-  - name: garden-windows-release
-  - name: diego-release
-  - name: cf-release
   - name: greenhouse-ci
 run:
   path: greenhouse-ci/scripts/release.rb
