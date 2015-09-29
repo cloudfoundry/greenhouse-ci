@@ -139,7 +139,7 @@ HERE
     puts "Created github release"
 
     puts "Uploading msi to github release"
-    upload_release_assets msi_file, res, "DiegoWindowsMSI.msi"
+    upload_release_assets msi_file, res, "DiegoWindows.msi"
     puts "Uploaded msi to github release"
 
     puts "Uploading generate to github release"
@@ -173,7 +173,7 @@ HERE
     puts "Created github release"
 
     puts "Uploading msi to github release"
-    upload_release_assets msi_file, res, "GardenWindowsMSI.msi"
+    upload_release_assets msi_file, res, "GardenWindows.msi"
     puts "Uploaded msi to github release"
 
     puts "Uploading setup script to github release"
