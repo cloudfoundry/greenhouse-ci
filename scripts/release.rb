@@ -10,12 +10,6 @@ def token
   ENV['GITHUB_TOKEN'] or raise "Environment variable #{var} isn't set"
 end
 
-def revision(dir)
-  Dir.chdir(dir) do
-    `git rev-parse HEAD`.chomp
-  end
-end
-
 def generate_file
   Dir::glob('./greenhouse-install-script-generator-file/generate*.exe').first
 end
@@ -36,13 +30,12 @@ def github
   @github ||= Octokit::Client.new access_token: token
 end
 
-def create_github_tag(repo, version)
-  msi_sha = revision(File.basename repo)
-  puts "Creating release #{version} with sha #{msi_sha}"
+def create_github_tag(repo, sha, version)
+  puts "Creating release #{version} with sha #{sha}"
   github.create_tag repo,
                     version,
                     "Release #{version}",
-                    msi_sha,
+                    sha,
                     "commit",
                     "greenhouse-ci ", # tagger name isn't being used by the api
                     "pivotal-netgarden-eng@pivotal.io", # tagger email isn't being used by the api
@@ -109,12 +102,12 @@ def create_cloudformation_release version
   end
 end
 
-repos = [
-  "cloudfoundry-incubator/diego-windows-release",
-  "cloudfoundry-incubator/garden-windows-release"
-]
+repos = {
+  "cloudfoundry-incubator/diego-windows-release" => diego_windows_msi_file,
+  "cloudfoundry-incubator/garden-windows-release" => garden_windows_msi_file
+}
 
-repos.each do |repo|
+repos.each do |repo, msi_file|
   version = get_version repo
   release_resource = get_release_resource repo, version
   if release_resource then
@@ -123,21 +116,20 @@ repos.each do |repo|
     body += "\n\n-------------\n" + cf_diego_release_text
     github.update_release(release_resource.url, { body: body })
   else
+    raise "invalid filename #{msi_file}" unless msi_file =~ /.*-(\d+\.\d+)-(.*)\.msi/
+    sha = $2
+
     puts "Creating github release"
-    res = create_github_tag repo, version
+    res = create_github_tag repo, sha, version
     puts "Created github release"
 
     puts "Uploading generate to github release"
     upload_release_assets generate_file, res, "generate.exe"
     puts "Uploaded generate to github release"
 
-    puts "Uploading diego windows msi to github release"
-    upload_release_assets diego_windows_msi_file, res, "DiegoWindowsMSI.msi"
-    puts "Uploaded diego windows msi to github release"
-
-    puts "Uploading garden windows msi to github release"
-    upload_release_assets garden_windows_msi_file, res, "GardenWindowsMSI.msi"
-    puts "Uploaded garden windows msi to github release"
+    puts "Uploading msi to github release"
+    upload_release_assets msi_file, res, "DiegoWindowsMSI.msi"
+    puts "Uploaded msi to github release"
 
     puts "Uploading setup script to github release"
     upload_release_assets garden_windows_setup_file, res
