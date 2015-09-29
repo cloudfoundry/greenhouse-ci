@@ -122,7 +122,8 @@ def garden_version
 end
 
 def release_diego_windows
-  release_resource = get_release_resource diego_repo, diego_version
+  repo = diego_repo
+  release_resource = get_release_resource repo, diego_version
 
   if release_resource then
     puts "Update Existing Resource"
@@ -152,7 +153,8 @@ HERE
 end
 
 def release_garden_window
-  release_resource = get_release_resource garden_repo, garden_version
+  repo = garden_repo
+  release_resource = get_release_resource repo, garden_version
 
   if release_resource then
     puts "Update Existing Resource"
