@@ -125,7 +125,8 @@ def release_diego_windows
   repo = diego_repo
   msi_file = garden_windows_msi_file
   sha = msi_sha msi_file
-  release_resource = get_release_resource repo, diego_version
+  version = diego_version
+  release_resource = get_release_resource repo, version
 
   if release_resource then
     puts "Update Existing Resource"
@@ -158,7 +159,8 @@ def release_garden_window
   repo = garden_repo
   msi_file = garden_windows_msi_file
   sha = msi_sha msi_file
-  release_resource = get_release_resource repo, garden_version
+  version = garden_version
+  release_resource = get_release_resource repo
 
   if release_resource then
     puts "Update Existing Resource"
