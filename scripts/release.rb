@@ -79,8 +79,8 @@ def get_version repo
 end
 
 def create_cloudformation_release
-  template = CloudformationTemplate.new(template_json: File.read('./diego-windows-msi/cloudformation.json.template'))
-  base_url = "https://github.com/cloudfoundry-incubator/diego-windows-msi/releases/download/#{release}"
+  template = CloudformationTemplate.new(template_json: File.read('./diego-windows-release/cloudformation.json.template'))
+  base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{release}"
   template.generator_url = "#{base_url}/generate.exe"
   template.diego_windows_msi_url = "#{base_url}/DiegoWindows.msi"
   template.garden_windows_msi_url = "#{base_url}/GardenWindows.msi"
