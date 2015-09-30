@@ -125,7 +125,7 @@ end
 
 def diego_release_body
   <<HERE
-Compatible with garden-windows #{garden_version}
+Built using cloudfoundry-incubator/diego-release@#{diego_release_sha}; Compatible with garden-windows #{garden_version}
 HERE
 end
 
