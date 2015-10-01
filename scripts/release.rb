@@ -90,11 +90,12 @@ def create_cloudformation_release version
   template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
   template_json = File.read(template_json_file)
   template = CloudformationTemplate.new(template_json: template_json)
-  base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{version}"
-  template.generator_url = "#{base_url}/generate.exe"
-  template.diego_windows_msi_url = "#{base_url}/DiegoWindows.msi"
-  template.garden_windows_msi_url = "#{base_url}/GardenWindows.msi"
-  template.setup_url = "#{base_url}/setup.ps1"
+  diego_base_url = "https://github.com/cloudfoundry-incubator/diego-windows-release/releases/download/#{diego_version}"
+  garden_base_url = "https://github.com/cloudfoundry-incubator/garden-windows-release/releases/download/#{garden_version}"
+  template.generator_url = "#{diego_base_url}/generate.exe"
+  template.diego_windows_msi_url = "#{diego_base_url}/DiegoWindows.msi"
+  template.garden_windows_msi_url = "#{garden_base_url}/GardenWindows.msi"
+  template.setup_url = "#{garden_base_url}/setup.ps1"
 
   Tempfile.new('cloudformation-release.json').tap do |tempfile|
     tempfile.write(template.to_json)
@@ -146,7 +147,7 @@ def diego_release_resources
   {
     diego_windows_msi_file => "DiegoWindows.msi",
     generate_file => "generate.exe",
-    create_cloudformation_release(diego_version).path => "cloudformation.json"
+    create_cloudformation_release.path => "cloudformation.json"
   }
 end
 
