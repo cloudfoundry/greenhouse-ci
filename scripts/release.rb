@@ -86,7 +86,7 @@ def get_release_resource(repo, release)
   github.releases(repo).select { |r| r.tag_name == release}.first
 end
 
-def create_cloudformation_release version
+def create_cloudformation_release
   template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
   template_json = File.read(template_json_file)
   template = CloudformationTemplate.new(template_json: template_json)
