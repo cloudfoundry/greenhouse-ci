@@ -1,0 +1,10 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: diego-release
+  - name: diego-windows-release
+  - name: diego-windows-github-release
+  - name: greenhouse-ci
+run:
+  path: true
