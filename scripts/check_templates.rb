@@ -18,7 +18,7 @@ end
 
 def git_log_of_rep_template_for(diego_sha)
   Dir.chdir("diego-release") do
-    system("git log --exit-code c313c3dd87c9073e1412d93a45bd3936cd7b8402.. -- jobs/rep/templates/rep_ctl.erb")
+    system("git log --exit-code #{diego_sha}.. -- jobs/rep/templates/rep_ctl.erb")
   end
 end
 
