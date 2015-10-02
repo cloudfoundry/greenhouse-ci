@@ -7,4 +7,4 @@ inputs:
   - name: diego-windows-github-release
   - name: greenhouse-ci
 run:
-  path: true
+  path: greenhouse-ci/scripts/check_templates.rb
