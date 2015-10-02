@@ -24,4 +24,4 @@ end
 
 checkout_diego_windows_release(diego_windows_release_tag)
 git_log_of_rep_template_for(diego_submodule_sha)
-exit $?
+exit $?.to_i
