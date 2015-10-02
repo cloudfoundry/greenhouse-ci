@@ -1,27 +1,27 @@
 #!/usr/bin/env ruby
 
-# get the things
-# jobs/rep/templates/rep_ctl.erb changed?
-# blow up!
-# profit.
+def latest_diego_windows_release_tag
+  `cat diego-windows-github-release/tag`
+end
 
-def checkout_last_release
+def checkout_diego_windows_release(version)
   Dir.chdir("diego-windows-release") do
-    `git checkout $(cat ../diego-windows-github-release/tag)`
+    `git checkout #{version}`
   end
 end
 
-def diego_windows_release_diego_sha
+def diego_submodule_sha
   Dir.chdir("diego-windows-release") do
     `git rev-parse :diego-release`.chomp
   end
 end
 
-def compare_versions(diego_sha)
+def git_log_of_rep_template_for(diego_sha)
   Dir.chdir("diego-release") do
-    `git log ..#{diego_sha} jobs/rep/templates/rep_ctl.erb`.chomp
+    system("git log --exit-code #{diego_sha}.. -- jobs/rep/templates/rep_ctl.erb")
   end
 end
 
-checkout_last_release
-compare_versions(diego_windows_release_diego_sha)
+checkout_diego_windows_release(diego_windows_release_tag)
+git_log_of_rep_template_for(diego_submodule_sha)
+exit $?
