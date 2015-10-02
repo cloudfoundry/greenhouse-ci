@@ -13,7 +13,7 @@ end
 
 def diego_windows_release_diego_sha
   Dir.chdir("diego-windows-release") do
-    `git rev-parse :src/diego-release`.chomp
+    `git rev-parse :diego-release`.chomp
   end
 end
 
