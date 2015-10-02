@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-def latest_diego_windows_release_tag
+def diego_windows_release_tag
   `cat diego-windows-github-release/tag`
 end
 
