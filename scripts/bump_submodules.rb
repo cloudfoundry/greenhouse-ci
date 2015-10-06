@@ -17,7 +17,7 @@ end
 def bump_diego_release sha
   Dir.chdir("diego-release") do
     system("git remote update")
-    if system("git diff --quiet ..origin/develop")
+    if system("git diff --quiet #{sha.strip}..origin/develop")
       system("git checkout #{sha.strip}")
     end
   end
