@@ -1,0 +1,9 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: diego-windows-artifacts
+  - name: greenhouse-ci
+run:
+  path: unzip
+  args: ['diego-windows-artifacts/*.zip']

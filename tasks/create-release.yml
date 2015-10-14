@@ -3,11 +3,9 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: diego-windows-release
-  - name: diego-windows-msi-file
+  - name: diego-windows-artifacts
   - name: garden-windows-msi-file
-  - name: diego-windows-cloudformation-template-file
   - name: garden-windows-setup-file
-  - name: greenhouse-install-script-generator-file
   - name: greenhouse-ci
 run:
   path: greenhouse-ci/scripts/release.rb
