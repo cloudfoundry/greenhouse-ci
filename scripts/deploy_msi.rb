@@ -16,7 +16,7 @@ def delete_stack(name)
 end
 
 def create_stack(name, template, parameters)
-  puts "creating stack #{name}"
+  puts "creating stack #{name} with parameters #{parameters}"
   $cfm.stacks.create(name, template, disable_rollback: true, parameters: parameters)
 end
 
