@@ -55,7 +55,7 @@ create_stack(ENV["STACKNAME"], template.to_json, {
   NATInstance: ENV.fetch("NAT_INSTANCE_ID"),
   VPCID: ENV.fetch("VPC_ID"),
   DesiredCapacity: ENV.fetch("DESIRED_CAPACITY"),
-  KeyName: ENV.fetch("KEYNAME"),
+  KeyPair: ENV.fetch("KEY_PAIR"),
 })
 
 wait_for_stack(ENV["STACKNAME"])
