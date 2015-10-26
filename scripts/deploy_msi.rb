@@ -52,9 +52,10 @@ create_stack(ENV["STACKNAME"], template.to_json, {
   ContainerizerPassword: ENV.fetch("CONTAINERIZER_PASSWORD"),
   SecurityGroup: ENV.fetch("SECURITY_GROUP"),
   SubnetCIDR: ENV.fetch("SUBNET_CIDR"),
-  NATZ: ENV.fetch("NATZ_ID"),
+  NATInstance: ENV.fetch("NAT_INSTANCE_ID"),
   VPCID: ENV.fetch("VPC_ID"),
-  DesiredCapacity: ENV.fetch("DESIRED_CAPACITY")
+  DesiredCapacity: ENV.fetch("DESIRED_CAPACITY"),
+  KeyName: ENV.fetch("KEYNAME"),
 })
 
 wait_for_stack(ENV["STACKNAME"])
