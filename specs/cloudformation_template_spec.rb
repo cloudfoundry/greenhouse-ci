@@ -6,48 +6,39 @@ describe CloudformationTemplate do
       template_json = <<-TEMPLATE_JSON
 {
   "Parameters": {
-    "ZZZGenerateUrl": {
-      "Description": "URL of generate.exe",
-      "Type": "String",
-      "Default": ""
-    },
-    "ZZZDiegoMsiUrl": {
-      "Description": "URL of the diego.msi to install",
-      "Type": "String",
-      "Default": ""
-    },
-    "ZZZSetupPs1Url": {
-      "Description": "URL of the setup.ps1 to run",
-      "Type": "String",
-      "Default": ""
-    }
+    "ZZZGenerateUrl": {},
+    "ZZZDiegoWindowsMsiUrl": {},
+    "ZZZGardenWindowsMsiUrl": {},
+    "ZZZSetupPs1Url": {},
+    "ZZZHakimUrl": {}
   }
 }
       TEMPLATE_JSON
 
       template = CloudformationTemplate.new(template_json: template_json)
-      template.base_url = 'http://foo.com/dir'
-      template.generate_file = 'generate.exe'
-      template.msi_file = 'DiegoWindowsMSI.msi'
-      template.setup_file = 'setup.ps1'
+      template.generator_url = 'http://foo.com/generate.exe'
+      template.diego_windows_msi_url = 'http://bar.com/dwm.msi'
+      template.garden_windows_msi_url = 'http://baz.com/gwm.msi'
+      template.setup_url = 'setup.ps1'
+      template.hakim_url = 'hakim.exe'
 
       expect(template.to_json).to eq (<<-EXPECTED_JSON).strip
 {
   "Parameters": {
     "ZZZGenerateUrl": {
-      "Description": "URL of generate.exe",
-      "Type": "String",
-      "Default": "http://foo.com/dir/generate.exe"
+      "Default": "http://foo.com/generate.exe"
     },
-    "ZZZDiegoMsiUrl": {
-      "Description": "URL of the diego.msi to install",
-      "Type": "String",
-      "Default": "http://foo.com/dir/DiegoWindowsMSI.msi"
+    "ZZZDiegoWindowsMsiUrl": {
+      "Default": "http://bar.com/dwm.msi"
+    },
+    "ZZZGardenWindowsMsiUrl": {
+      "Default": "http://baz.com/gwm.msi"
     },
     "ZZZSetupPs1Url": {
-      "Description": "URL of the setup.ps1 to run",
-      "Type": "String",
-      "Default": "http://foo.com/dir/setup.ps1"
+      "Default": "setup.ps1"
+    },
+    "ZZZHakimUrl": {
+      "Default": "hakim.exe"
     }
   }
 }

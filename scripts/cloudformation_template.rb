@@ -5,7 +5,12 @@ class CloudformationTemplate
     @json = JSON.parse(template_json)
   end
 
-  attr_accessor :generator_url, :diego_windows_msi_url, :garden_windows_msi_url, :setup_url
+  attr_accessor \
+    :generator_url,
+    :diego_windows_msi_url,
+    :garden_windows_msi_url,
+    :setup_url,
+    :hakim_url
 
   def to_json
     JSON.pretty_generate swap_urls
@@ -20,6 +25,7 @@ class CloudformationTemplate
       files["ZZZDiegoWindowsMsiUrl"]["Default"] = diego_windows_msi_url
       files["ZZZGardenWindowsMsiUrl"]["Default"] = garden_windows_msi_url
       files["ZZZSetupPs1Url"]["Default"] = setup_url
+      files["ZZZHakimUrl"]["Default"] = hakim_url
     end
   end
 end
