@@ -55,5 +55,5 @@ for i in {1..10}; do
 done
 
 cf d $appname -r -f
-sleep 5
+sleep 20
 greenhouse-ci/scripts/run-monitor-health.rb
