@@ -1,0 +1,13 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - cf-release
+  - diego-release
+  - garden-linux-release-tarball
+  - greenhouse-private
+run:
+  path: greenhouse-private/scripts/bosh-setup.sh
+params:
+  PAPERTRAIL_ENDPOINT:
+  AWS_ENVIRONMENT:
