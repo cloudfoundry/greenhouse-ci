@@ -7,7 +7,7 @@ inputs:
   - name: garden-linux-release-tarball
   - name: greenhouse-private
 run:
-  path: greenhouse-private/scripts/bosh-setup.sh
+  path: greenhouse-private/scripts/setup-bosh.sh
 params:
   PAPERTRAIL_ENDPOINT:
   AWS_ENVIRONMENT:
