@@ -2,10 +2,10 @@
 platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
-  - cf-release
-  - diego-release
-  - garden-linux-release-tarball
-  - greenhouse-private
+  - name: cf-release
+  - name: diego-release
+  - name: garden-linux-release-tarball
+  - name: greenhouse-private
 run:
   path: greenhouse-private/scripts/bosh-setup.sh
 params:
