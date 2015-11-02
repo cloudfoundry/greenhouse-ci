@@ -18,6 +18,10 @@ def diego_windows_msi_file
   Dir::glob('./diego-windows-msi-file/DiegoWindows*.msi').first
 end
 
+def hakim_file
+  Dir::glob('./hakim/*.exe').first
+end
+
 def garden_windows_msi_file
   Dir::glob('./garden-windows-msi-file/GardenWindows*.msi').first
 end
@@ -147,7 +151,8 @@ def diego_release_resources
   {
     diego_windows_msi_file => "DiegoWindows.msi",
     generate_file => "generate.exe",
-    create_cloudformation_release.path => "cloudformation.json"
+    create_cloudformation_release.path => "cloudformation.json",
+    hakim_file => "hakim.exe"
   }
 end
 
