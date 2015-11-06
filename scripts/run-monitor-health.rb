@@ -16,14 +16,10 @@ class CellStatus
     @directories ||= run "powershell /C ls C:\\Containerizer | ForEach {$_.Name}"
   end
 
-  def containerizer_disk_usage
-    run "powershell /C Get-ChildItem C:\\Containerizer -recurse | Measure-Object -property length -sum"
-  end
-
   def memory_usage
     keys = ["totalvisiblememorysize", "freephysicalmemory", "totalvirtualmemorysize", "freevirtualmemory"]
     foreach_keys = keys.map { |k| "$_.#{k}" }.join(",")
-    values = run "powershell /C powershell /C Get-WmiObject win32_OperatingSystem | ForEach {#{foreach_keys}}"
+    values = run "powershell /C \"Get-WmiObject win32_OperatingSystem | ForEach {#{foreach_keys}}\""
     Hash[keys.zip(values)]
   end
 
@@ -39,6 +35,8 @@ end
 
 run_with_ssh machine_ip: ENV["MACHINE_IP"], jump_machine_ip: ENV["JUMP_MACHINE_IP"], jump_machine_ssh_key: ENV["JUMP_MACHINE_SSH_KEY"] do |ssh|
   cell_status = CellStatus.new(ssh: ssh)
+
+  puts "MEMORY USAGE:\n #{cell_status.memory_usage}\n"
 
   if cell_status.user_accounts.any? || cell_status.directories.any? then
     puts "Found #{cell_status.user_accounts.size} accounts: #{cell_status.user_accounts}"
