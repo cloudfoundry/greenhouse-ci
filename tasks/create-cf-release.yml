@@ -1,0 +1,8 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: cf-release
+  - name: greenhouse-ci
+run:
+  path: greenhouse-ci/scripts/create-cf-release.sh
