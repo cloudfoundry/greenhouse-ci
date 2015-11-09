@@ -17,7 +17,7 @@ end
 
 def create_stack(name, template, parameters)
   puts "creating stack #{name} with parameters: #{parameters}, template: #{template}"
-  $cfm.stacks.create(name, template, disable_rollback: true, parameters: parameters)
+  $cfm.stacks.create(name, template, disable_rollback: true, parameters: parameters, capabilities: ['CAPABILITY_IAM'])
 end
 
 def wait_for_stack(name)
