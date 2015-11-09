@@ -13,5 +13,7 @@ inputs:
 run:
   path: greenhouse-ci/scripts/release.rb
 params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
   GITHUB_TOKEN:
 

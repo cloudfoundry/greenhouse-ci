@@ -6,6 +6,7 @@ describe CloudformationTemplate do
       template_json = <<-TEMPLATE_JSON
 {
   "Parameters": {
+    "ZZZAMI": {},
     "ZZZGenerateUrl": {},
     "ZZZDiegoWindowsMsiUrl": {},
     "ZZZGardenWindowsMsiUrl": {},
@@ -21,10 +22,14 @@ describe CloudformationTemplate do
       template.garden_windows_msi_url = 'http://baz.com/gwm.msi'
       template.setup_url = 'setup.ps1'
       template.hakim_url = 'hakim.exe'
+      template.ami = 'ami-123'
 
       expect(template.to_json).to eq (<<-EXPECTED_JSON).strip
 {
   "Parameters": {
+    "ZZZAMI": {
+      "Default": "ami-123"
+    },
     "ZZZGenerateUrl": {
       "Default": "http://foo.com/generate.exe"
     },

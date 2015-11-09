@@ -1,9 +1,15 @@
 #!/usr/bin/env ruby
 
 require_relative './cloudformation_template'
+require_relative './ami_query'
 require 'aws/cloud_formation'
 require 'open-uri'
 require 'uri'
+
+def credentials
+  {access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+   secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]}
+end
 
 def delete_stack(name)
   puts "deleting stack #{name}"
@@ -31,14 +37,15 @@ def wait_for_stack(name)
   end
 end
 
-$cfm = AWS::CloudFormation.new(access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-                               secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"])
+$cfm = AWS::CloudFormation.new(credentials)
 
 delete_stack(ENV["STACKNAME"])
 
+ami_query = AMIQuery.new(aws_credentials: credentials)
 template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
 template_json = File.read(template_json_file)
 template = CloudformationTemplate.new(template_json: template_json)
+template.ami = ami_query.latest_ami
 template.generator_url = File.read("greenhouse-install-script-generator-file/url")
 template.diego_windows_msi_url = File.read("diego-windows-msi-file/url")
 template.garden_windows_msi_url = File.read("garden-windows-msi-file/url")

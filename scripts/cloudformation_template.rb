@@ -10,6 +10,7 @@ class CloudformationTemplate
     :diego_windows_msi_url,
     :garden_windows_msi_url,
     :setup_url,
+    :ami,
     :hakim_url
 
   def to_json
@@ -21,6 +22,7 @@ class CloudformationTemplate
   def swap_urls
     @json.dup.tap do |json|
       files = json.fetch("Parameters")
+      files["ZZZAMI"]["Default"] = ami
       files["ZZZGenerateUrl"]["Default"] = generator_url
       files["ZZZDiegoWindowsMsiUrl"]["Default"] = diego_windows_msi_url
       files["ZZZGardenWindowsMsiUrl"]["Default"] = garden_windows_msi_url
