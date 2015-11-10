@@ -23,6 +23,18 @@ class CellStatus
     Hash[keys.zip(values)]
   end
 
+  def containerizer_containers
+    @containerizer_containers ||= ssh.exec! "powershell /C (curl http://localhost:1788/api/containers).Content"
+  end
+
+  def garden_containers
+    @garden_containers ||= ssh.exec! "powershell /C (curl http://localhost:9241/containers).Content"
+  end
+
+  def rep_state
+    @rep_state ||= ssh.exec! "powershell /C (curl http://localhost:1800/state).Content"
+  end
+  
   private
 
   def run cmd
@@ -37,6 +49,9 @@ run_with_ssh machine_ip: ENV["MACHINE_IP"], jump_machine_ip: ENV["JUMP_MACHINE_I
   cell_status = CellStatus.new(ssh: ssh)
 
   puts "MEMORY USAGE:\n #{cell_status.memory_usage}\n"
+  puts "Containerizer containers:\n #{cell_status.containerizer_containers}\n"
+  puts "Garden containers:\n #{cell_status.garden_containers}\n"
+  puts "Rep status:\n #{cell_status.rep_state}\n"
 
   if cell_status.user_accounts.any? || cell_status.directories.any? then
     puts "Found #{cell_status.user_accounts.size} accounts: #{cell_status.user_accounts}"
