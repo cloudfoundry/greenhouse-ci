@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'json'
+require 'timeout'
 require_relative './ssh.rb'
 
 class CellStatus
@@ -23,18 +25,21 @@ class CellStatus
     Hash[keys.zip(values)]
   end
 
-  def containerizer_containers
-    @containerizer_containers ||= ssh.exec! "powershell /C (curl http://localhost:1788/api/containers).Content"
+  def wait_for_deletion
+    puts "waiting for LRPs to be deleted"
+    Timeout.timeout(60) do
+      loop do
+        response = ssh.exec! "powershell /C (curl http://localhost:1800/state).Content"
+        parsed = JSON.parse(response)
+        if parsed["LRPs"].empty?
+          break
+        end
+        sleep(1)
+      end
+    end
+    puts "LRPs have been deleted"
   end
 
-  def garden_containers
-    @garden_containers ||= ssh.exec! "powershell /C (curl http://localhost:9241/containers).Content"
-  end
-
-  def rep_state
-    @rep_state ||= ssh.exec! "powershell /C (curl http://localhost:1800/state).Content"
-  end
-  
   private
 
   def run cmd
@@ -48,10 +53,8 @@ end
 run_with_ssh machine_ip: ENV["MACHINE_IP"], jump_machine_ip: ENV["JUMP_MACHINE_IP"], jump_machine_ssh_key: ENV["JUMP_MACHINE_SSH_KEY"] do |ssh|
   cell_status = CellStatus.new(ssh: ssh)
 
+  cell_status.wait_for_deletion
   puts "MEMORY USAGE:\n #{cell_status.memory_usage}\n"
-  puts "Containerizer containers:\n #{cell_status.containerizer_containers}\n"
-  puts "Garden containers:\n #{cell_status.garden_containers}\n"
-  puts "Rep status:\n #{cell_status.rep_state}\n"
 
   if cell_status.user_accounts.any? || cell_status.directories.any? then
     puts "Found #{cell_status.user_accounts.size} accounts: #{cell_status.user_accounts}"

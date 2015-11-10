@@ -34,7 +34,7 @@ pushd ${nora_dir}/assets/nora
   ./make_a_nora $appname
 popd
 
-cf scale -f -m 2g -i 3 $appname
+cf scale -f -i 3 $appname
 
 for i in {1..300}; do
     count=`cf app $appname | grep running | wc -l`
@@ -55,5 +55,4 @@ for i in {1..10}; do
 done
 
 cf d $appname -r -f
-sleep 20
 greenhouse-ci/scripts/run-monitor-health.rb
