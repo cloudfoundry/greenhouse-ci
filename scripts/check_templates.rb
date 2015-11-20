@@ -18,7 +18,7 @@ end
 
 def git_log_of_rep_template_for(diego_sha)
   Dir.chdir("diego-release") do
-    system("git log --exit-code #{diego_sha}.. -- jobs/rep/templates/rep_ctl.erb")
+    system("git --no-pager log --exit-code #{diego_sha}.. -- jobs/rep/templates/rep_ctl.erb")
   end
 end
 
