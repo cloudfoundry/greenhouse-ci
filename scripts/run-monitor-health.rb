@@ -29,7 +29,7 @@ class CellStatus
     puts "waiting for LRPs to be deleted"
     Timeout.timeout(60) do
       loop do
-        response = ssh.exec! "powershell /C (curl http://localhost:1800/state).Content"
+        response = ssh.exec! %{powershell /C (new-object net.webclient).DownloadString('http://localhost:1800/state')}
         parsed = JSON.parse(response)
         if parsed["LRPs"].empty?
           break
