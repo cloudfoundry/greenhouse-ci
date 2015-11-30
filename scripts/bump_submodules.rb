@@ -17,9 +17,7 @@ end
 def bump_diego_release sha
   Dir.chdir("diego-release") do
     system("git remote update")
-    if system("git branch -r --merged #{sha.strip} | grep origin/develop$")
-      system("git checkout #{sha.strip}")
-    end
+    system("git checkout #{sha.strip}")
   end
 end
 
