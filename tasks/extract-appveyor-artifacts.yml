@@ -2,8 +2,7 @@
 platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
-  - name: diego-windows-artifacts
-  - name: greenhouse-ci
+  - name: artifacts
 run:
   path: bash
-  args: ["-c", "unzip $FILENAME"]
+  args: ["-c", "unzip artifacts/*.zip"]
