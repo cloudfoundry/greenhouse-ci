@@ -6,4 +6,6 @@ inputs:
   - name: greenhouse-ci
 run:
   path: unzip
-  args: ['diego-windows-artifacts/*.zip']
+  args: ['$FILENAME']
+params:
+  FILENAME:
