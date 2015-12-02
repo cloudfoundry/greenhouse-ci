@@ -5,5 +5,5 @@ inputs:
   - name: diego-windows-artifacts
   - name: greenhouse-ci
 run:
-  path: unzip
-  args: "$FILENAME"
+  path: bash
+  args: ["-c", "unzip $FILENAME"]
