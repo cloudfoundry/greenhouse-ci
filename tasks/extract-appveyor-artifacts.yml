@@ -6,4 +6,4 @@ inputs:
   - name: greenhouse-ci
 run:
   path: unzip
-  args: $FILENAME
+  args: "$FILENAME"
