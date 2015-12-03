@@ -1,0 +1,12 @@
+---
+platform: linux
+image: docker:///pivotalcf/releng-ci
+inputs:
+  - name: ert-file
+  - name: opsmgr
+  - name: p-runtime
+  - name: greenhouse-private
+run:
+  path: greenhouse-private/opsmanager/deployment/deploy-opsmanager.sh
+params:
+  ENVIRONMENT_NAME:
