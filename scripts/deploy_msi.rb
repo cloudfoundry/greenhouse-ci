@@ -1,69 +1,36 @@
 #!/usr/bin/env ruby
 
 require_relative './cloudformation_template'
+require_relative './cloudformation_stack'
 require_relative './ami_query'
 require 'aws/cloud_formation'
 require 'open-uri'
 require 'uri'
 
-def credentials
-  {access_key_id: ENV["AWS_ACCESS_KEY_ID"],
-   secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]}
-end
+credentials = {
+  access_key_id:     ENV.fetch('AWS_ACCESS_KEY_ID'),
+  secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY')
+}
 
-def delete_stack(name)
-  puts "deleting stack #{name}"
-  stack = $cfm.stacks[name]
-  stack.delete
-  while stack.exists? do
-    puts "waiting for stack to be destroyed"
-    sleep(10)
-  end
-end
+template_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
+template      = CloudformationTemplate.new(template_json: File.read(template_file))
+stack         = CloudformationStack.new(stack_name: ENV.fetch('STACKNAME'), aws_credentials: credentials)
+ami_query     = AMIQuery.new(aws_credentials: credentials)
+template.ami  = ami_query.latest_ami
 
-def create_stack(name, template, parameters)
-  puts "creating stack #{name} with parameters: #{parameters}, template: #{template}"
-  $cfm.stacks.create(name, template, disable_rollback: true, parameters: parameters, capabilities: ['CAPABILITY_IAM'])
-end
-
-def wait_for_stack(name)
-  stack = $cfm.stacks[name]
-  status = stack.status
-  while status != "CREATE_COMPLETE"
-    raise "Create failed, #{status}" if status != "CREATE_IN_PROGRESS"
-    puts "waiting for stack to complete"
-    sleep(10)
-    status = stack.status
-  end
-end
-
-$cfm = AWS::CloudFormation.new(credentials)
-
-delete_stack(ENV["STACKNAME"])
-
-ami_query = AMIQuery.new(aws_credentials: credentials)
-template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
-template_json = File.read(template_json_file)
-template = CloudformationTemplate.new(template_json: template_json)
-template.ami = ami_query.latest_ami
-template.generator_url = File.read("greenhouse-install-script-generator-file/url")
-template.diego_windows_msi_url = File.read("diego-windows-msi-file/url")
-template.garden_windows_msi_url = File.read("garden-windows-msi-file/url")
-template.setup_url = File.read("garden-windows-setup-file/url")
-template.hakim_url = File.read("hakim/url")
-
-create_stack(ENV["STACKNAME"], template.to_json, {
-  BoshHost: ENV.fetch("BOSH_HOST"),
-  BoshPassword: ENV.fetch("BOSH_PASSWORD"),
-  BoshUserName: ENV.fetch("BOSH_USER"),
-  CellName: ENV["CELL_NAME"],
-  ContainerizerPassword: ENV.fetch("CONTAINERIZER_PASSWORD"),
-  SecurityGroup: ENV.fetch("SECURITY_GROUP"),
-  SubnetCIDR: ENV.fetch("SUBNET_CIDR"),
-  NATInstance: ENV.fetch("NAT_INSTANCE_ID"),
-  VPCID: ENV.fetch("VPC_ID"),
-  DesiredCapacity: ENV.fetch("DESIRED_CAPACITY"),
-  KeyPair: ENV.fetch("KEY_PAIR"),
+stack.delete_stack
+stack.create_stack(template.to_json, {
+  BoshHost:              ENV.fetch('BOSH_HOST'),
+  BoshPassword:          ENV.fetch('BOSH_PASSWORD'),
+  BoshUserName:          ENV.fetch('BOSH_USER'),
+  CellName:              ENV.fetch('CELL_NAME'),
+  ContainerizerPassword: ENV.fetch('CONTAINERIZER_PASSWORD'),
+  SecurityGroup:         ENV.fetch('SECURITY_GROUP'),
+  SubnetCIDR:            ENV.fetch('SUBNET_CIDR'),
+  NATInstance:           ENV.fetch('NAT_INSTANCE_ID'),
+  VPCID:                 ENV.fetch('VPC_ID'),
+  DesiredCapacity:       ENV.fetch('DESIRED_CAPACITY'),
+  KeyPair:               ENV.fetch('KEY_PAIR'),
 })
 
-wait_for_stack(ENV["STACKNAME"])
+stack.wait_for_stack

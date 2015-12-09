@@ -1,33 +1,36 @@
 require 'json'
 
 class CloudformationTemplate
-  def initialize template_json:
+  def initialize(template_json:)
     @json = JSON.parse(template_json)
   end
 
-  attr_accessor \
-    :generator_url,
-    :diego_windows_msi_url,
-    :garden_windows_msi_url,
-    :setup_url,
-    :ami,
-    :hakim_url
+  def ami=(value)
+    @json["Parameters"]["ZZZAMI"]["Default"] = value
+  end
+
+  def generator_url=(value)
+    @json["Parameters"]["ZZZGenerateUrl"]["Default"] = value
+  end
+
+  def diego_windows_msi_url=(value)
+    @json["Parameters"]["ZZZDiegoWindowsMsiUrl"]["Default"] = value
+  end
+
+  def garden_windows_msi_url=(value)
+    @json["Parameters"]["ZZZGardenWindowsMsiUrl"]["Default"] = value
+  end
+
+  def setup_ps1_url=(value)
+    @json["Parameters"]["ZZZSetupPs1Url"]["Default"] = value
+  end
+
+  def hakim_url=(value)
+    @json["Parameters"]["ZZZHakimUrl"]["Default"] = value
+  end
 
   def to_json
-    JSON.pretty_generate swap_urls
+    JSON.pretty_generate(@json)
   end
 
-  private
-
-  def swap_urls
-    @json.dup.tap do |json|
-      files = json.fetch("Parameters")
-      files["ZZZAMI"]["Default"] = ami
-      files["ZZZGenerateUrl"]["Default"] = generator_url
-      files["ZZZDiegoWindowsMsiUrl"]["Default"] = diego_windows_msi_url
-      files["ZZZGardenWindowsMsiUrl"]["Default"] = garden_windows_msi_url
-      files["ZZZSetupPs1Url"]["Default"] = setup_url
-      files["ZZZHakimUrl"]["Default"] = hakim_url
-    end
-  end
 end
