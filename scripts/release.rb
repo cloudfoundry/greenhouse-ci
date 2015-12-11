@@ -106,7 +106,7 @@ def create_cloudformation_release
   template.generator_url = "#{diego_base_url}/generate.exe"
   template.diego_windows_msi_url = "#{diego_base_url}/DiegoWindows.msi"
   template.garden_windows_msi_url = "#{garden_base_url}/GardenWindows.msi"
-  template.setup_url = "#{garden_base_url}/setup.ps1"
+  template.setup_ps1_url = "#{garden_base_url}/setup.ps1"
   template.hakim_url = "#{diego_base_url}/hakim.exe"
 
   Tempfile.new('cloudformation-release.json').tap do |tempfile|
