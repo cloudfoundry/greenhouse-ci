@@ -35,7 +35,7 @@ def github
   @github ||= Octokit::Client.new access_token: token
 end
 
-def create_github_tag(repo, sha, version, body)
+def create_github_release(repo, sha, version, body)
   puts "Creating release #{version} with sha #{sha}"
   github.create_tag repo,
                     version,
@@ -49,7 +49,8 @@ def create_github_tag(repo, sha, version, body)
   github.create_release(repo,
                         version,
                         name: version,
-                        body: body)
+                        body: body,
+                        draft: true)
 end
 
 def diego_windows_sha
@@ -177,7 +178,7 @@ def release name
     github.update_release(release_resource.url, { body: body })
   else
     puts "Creating github release"
-    res = create_github_tag repo, sha, version, body
+    release = create_github_release repo, sha, version, body
     puts "Created github release"
 
     send("#{name}_release_resources").each do |resource, resource_name|
@@ -185,6 +186,8 @@ def release name
     upload_release_assets resource, res, resource_name
     puts "Uploaded #{resource} to github release"
     end
+
+    release.draft = false
   end
 end
 
