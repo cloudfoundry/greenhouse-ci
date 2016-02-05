@@ -183,7 +183,7 @@ def release name
 
     send("#{name}_release_resources").each do |resource, resource_name|
     puts "Uploading #{resource} to github release"
-    upload_release_assets resource, res, resource_name
+    upload_release_assets resource, release, resource_name
     puts "Uploaded #{resource} to github release"
     end
 
