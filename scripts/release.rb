@@ -187,7 +187,7 @@ def release name
     puts "Uploaded #{resource} to github release"
     end
 
-    release.draft = false
+    github.update_release(release_resource.url, { draft: false })
   end
 end
 
