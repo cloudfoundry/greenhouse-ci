@@ -34,7 +34,7 @@ class CellStatus
         if parsed["LRPs"].empty?
           break
         end
-        sleep(1)
+        sleep(5)
       end
     end
     puts "LRPs have been deleted"
