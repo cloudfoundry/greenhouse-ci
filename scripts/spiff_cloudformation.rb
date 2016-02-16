@@ -10,4 +10,4 @@ template.garden_windows_msi_url = File.read("garden-windows-msi-file/url")
 template.setup_ps1_url          = File.read("garden-windows-setup-file/url")
 template.hakim_url              = File.read("hakim/url")
 
-File.write(template_file_path, template.to_json)
+File.write('generated-cloudformation-template-file/cloudformation.json.template', template.to_json)
