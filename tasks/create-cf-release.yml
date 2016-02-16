@@ -7,4 +7,4 @@ inputs:
 run:
   path: greenhouse-ci/scripts/create-cf-release.sh
 outputs:
-- name: cf-release
+- name: created-cf-release

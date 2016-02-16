@@ -9,4 +9,4 @@ inputs:
 run:
   path: greenhouse-ci/scripts/generate-manifest.sh
 outputs:
-- cf.yml
+- generate-manifest
