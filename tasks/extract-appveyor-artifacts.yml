@@ -6,5 +6,3 @@ inputs:
 run:
   path: bash
   args: ["-c", "unzip artifacts/*.zip"]
-outputs:
-  - name: output
