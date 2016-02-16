@@ -9,4 +9,4 @@ inputs:
 run:
   path: greenhouse-ci/scripts/generate-manifest.sh
 outputs:
-- generate-manifest
+- name: generate-manifest
