@@ -62,3 +62,4 @@ Dir.chdir("diego-windows-release") do
   end
 end
 
+sh 'git clone ./diego-windows-release ./bumped-diego-windows-release'
