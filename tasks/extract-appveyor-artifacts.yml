@@ -3,6 +3,8 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: artifacts
+outputs:
+  - name: output
 run:
   path: bash
   args: ["-c", "unzip artifacts/*.zip"]
