@@ -8,3 +8,6 @@ inputs:
   - name: greenhouse-ci
 run:
   path: greenhouse-ci/scripts/bump_submodules.rb
+outputs:
+- name: bumped-diego-windows-release
+  path: diego-windows-release
