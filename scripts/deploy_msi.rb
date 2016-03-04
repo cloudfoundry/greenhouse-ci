@@ -12,11 +12,9 @@ credentials = {
   secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY')
 }
 
-template_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
+template_file = Dir::glob("diego-windows-cloudformation-template-file/*.json").first
 template      = CloudformationTemplate.new(template_json: File.read(template_file))
 stack         = CloudformationStack.new(stack_name: ENV.fetch('STACKNAME'), aws_credentials: credentials)
-ami_query     = AMIQuery.new(aws_credentials: credentials)
-template.ami  = ami_query.latest_ami
 
 stack.delete_stack
 stack.create_stack(template.to_json, {
