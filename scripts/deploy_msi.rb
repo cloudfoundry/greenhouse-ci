@@ -2,7 +2,6 @@
 
 require_relative './cloudformation_template'
 require_relative './cloudformation_stack'
-require_relative './ami_query'
 require 'aws/cloud_formation'
 require 'open-uri'
 require 'uri'

@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require_relative './ami_query'
 require_relative './cloudformation_template'
 
 credentials = {
