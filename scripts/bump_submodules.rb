@@ -45,7 +45,7 @@ loggregator_sha = find_loggregator_sha
 trust_github
 Dir.chdir("diego-windows-release") do
   bump_diego_release diego_sha
-  bump_loggregator   loggregator_sha
+  #bump_loggregator   loggregator_sha
 
   puts "----- Set git identity"
   sh 'git config user.email "cf-netgarden-eng@pivotal.io"'
