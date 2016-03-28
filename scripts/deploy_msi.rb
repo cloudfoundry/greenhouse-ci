@@ -21,7 +21,6 @@ stack.create_stack(template.to_json, {
   BoshPassword:          ENV.fetch('BOSH_PASSWORD'),
   BoshUserName:          ENV.fetch('BOSH_USER'),
   CellName:              ENV.fetch('CELL_NAME'),
-  ContainerizerPassword: ENV.fetch('CONTAINERIZER_PASSWORD'),
   SecurityGroup:         ENV.fetch('SECURITY_GROUP'),
   SubnetCIDR:            ENV.fetch('SUBNET_CIDR'),
   NATInstance:           ENV.fetch('NAT_INSTANCE_ID'),
