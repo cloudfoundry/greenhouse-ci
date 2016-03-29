@@ -3,7 +3,7 @@ platform: linux
 image: docker:///cloudfoundry/diego-pipeline
 inputs:
   - name: cf-release
-  - name: diego-release
+  - name: diego-github-release
   - name: greenhouse-ci
   - name: greenhouse-private
 run:
