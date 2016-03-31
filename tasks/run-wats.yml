@@ -1,6 +1,6 @@
 ---
 platform: linux
-image: docker:///golang#1.4
+image: docker:///golang#1.5
 inputs:
   - name: wats
 run:
