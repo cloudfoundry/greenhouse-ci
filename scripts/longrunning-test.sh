@@ -50,5 +50,13 @@ for i in {1..10}; do
     curl $url
 done
 
+function background_curl() {
+    while [ $? -eq 0 ]; do
+        curl -sf $url
+    done
+}
+
+background_curl &
+
 cf d $appname -r -f
 greenhouse-ci/scripts/run-monitor-health.rb
