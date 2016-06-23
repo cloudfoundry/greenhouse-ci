@@ -1,0 +1,132 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: greenhouse-private
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/greenhouse-private
+    private_key: {{GREENHOUSE_PRIVATE_KEY}}
+- name: diego-release
+  type: git
+  source:
+    branch: rep-windows
+    uri: https://github.com/aminjam/diego-release.git
+- name: consul-release
+  type: git
+  source:
+    branch: windows-support
+    uri: https://github.com/benmoss/consul-release.git
+- name: garden-windows-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/garden-windows-bosh-release.git
+- name: loggregator-release
+  type: git
+  source:
+    branch: metron-windows-job
+    uri: https://github.com/pivotal-cf/loggregator.git
+- name: wats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/wats.git
+
+
+jobs:
+- name: diego
+  plan:
+  - get: ci
+  - get: release
+    resource: diego-release
+    trigger: true
+  - task: create-upload-release
+    privileged: true
+    file: ci/bosh-create-upload-release.yml
+    params:
+      RELEASE_NAME: diego
+      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+- name: consul
+  plan:
+  - get: ci
+  - get: release
+    resource: consul-release
+    trigger: true
+  - task: create-upload-release
+    privileged: true
+    file: ci/bosh-create-upload-release.yml
+    params:
+      RELEASE_NAME: consul
+      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+- name: garden-windows
+  plan:
+  - get: ci
+  - get: release
+    resource: garden-windows-release
+    trigger: true
+  - task: create-upload-release
+    privileged: true
+    file: ci/bosh-create-upload-release.yml
+    params:
+      RELEASE_NAME: garden-windows
+      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+- name: loggregator
+  plan:
+  - get: ci
+  - get: release
+    resource: loggregator-release
+    trigger: true
+  - task: create-upload-release
+    privileged: true
+    file: ci/bosh-create-upload-release.yml
+    params:
+      RELEASE_NAME: loggregator
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+- name: deploy-and-wats
+  plan:
+  - get: diego-release
+    passed: [ diego ]
+    trigger: true
+  - get: consul-release
+    passed: [ consul ]
+    trigger: true
+  - get: garden-windows-release
+    passed: [ garden-windows ]
+    trigger: true
+  - get: loggregator-release
+    passed: [ loggregator ]
+    trigger: true
+  - get: greenhouse-private
+  - get: ci
+  - get: wats
+  - task: deploy
+    privileged: true
+    file: ci/tasks/bosh-windows-deploy.yml
+    params:
+      BOSH_TARGET_NAME: {{WATS_BOSH_TARGET_NAME}}
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+  - task: wats
+    privileged: true
+    file: ci/tasks/run-wats.yml
+    params:
+      ADMIN_PASSWORD: {{WATS_CF_PASSWORD}}
+      ADMIN_USER: {{WATS_CF_USER}}
+      API: {{WATS_CF_API}}
+      APPS_DOMAIN: {{WATS_CF_DOMAIN}}
+      DOPPLER_URL: {{WATS_DOPPLER_URL}}
+      NUM_WIN_CELLS: "2"
+      SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.10.0.6:25555

@@ -1,0 +1,13 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: greenhouse-private
+  - name: ci
+run:
+  path: ci/scripts/bosh-windows-deploy.sh
+params:
+  BOSH_TARGET_NAME:
+  BOSH_TARGET_URL:
+  BOSH_USER:
+  BOSH_PASSWORD:
