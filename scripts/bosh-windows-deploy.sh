@@ -12,7 +12,7 @@ bosh_deploy() {
 }
 
 main() {
-  set +e
+  set -e
   set -o pipefail
 
   bosh_cli

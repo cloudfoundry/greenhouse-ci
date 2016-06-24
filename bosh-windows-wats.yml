@@ -36,7 +36,6 @@ resources:
     branch: master
     uri: https://github.com/cloudfoundry/wats.git
 
-
 jobs:
 - name: diego
   plan:
@@ -46,10 +45,10 @@ jobs:
     trigger: true
   - task: create-upload-release
     privileged: true
-    file: ci/bosh-create-upload-release.yml
+    file: ci/tasks/bosh-create-upload-release.yml
     params:
       RELEASE_NAME: diego
-      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: consul
@@ -60,10 +59,10 @@ jobs:
     trigger: true
   - task: create-upload-release
     privileged: true
-    file: ci/bosh-create-upload-release.yml
+    file: ci/tasks/bosh-create-upload-release.yml
     params:
       RELEASE_NAME: consul
-      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: garden-windows
@@ -74,10 +73,10 @@ jobs:
     trigger: true
   - task: create-upload-release
     privileged: true
-    file: ci/bosh-create-upload-release.yml
+    file: ci/tasks/bosh-create-upload-release.yml
     params:
       RELEASE_NAME: garden-windows
-      BOSH_TARGET: {{WATS_BOSH_TARGET_URL}}
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: loggregator
@@ -88,7 +87,7 @@ jobs:
     trigger: true
   - task: create-upload-release
     privileged: true
-    file: ci/bosh-create-upload-release.yml
+    file: ci/tasks/bosh-create-upload-release.yml
     params:
       RELEASE_NAME: loggregator
       BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
@@ -130,3 +129,11 @@ jobs:
       DOPPLER_URL: {{WATS_DOPPLER_URL}}
       NUM_WIN_CELLS: "2"
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.10.0.6:25555
+  - task: cleanup
+    privileged: true
+    file: ci/tasks/bosh-cleanup.yml
+    params:
+      BOSH_TARGET_NAME: {{WATS_BOSH_TARGET_NAME}}
+      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
+      BOSH_USER: {{WATS_BOSH_USER}}
+      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
