@@ -28,7 +28,7 @@ resources:
 - name: loggregator-release
   type: git
   source:
-    branch: metron-windows-job
+    branch: windows
     uri: https://github.com/pivotal-cf/loggregator.git
 - name: wats
   type: git
