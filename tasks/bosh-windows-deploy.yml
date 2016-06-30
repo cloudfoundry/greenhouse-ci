@@ -7,6 +7,7 @@ inputs:
 run:
   path: ci/scripts/bosh-windows-deploy.sh
 params:
+  BOSH_TARGET_CERT:
   BOSH_TARGET_NAME:
   BOSH_TARGET_URL:
   BOSH_USER:

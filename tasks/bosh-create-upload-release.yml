@@ -8,6 +8,7 @@ run:
   path: ci/scripts/bosh-create-upload-release.sh
 params:
   RELEASE_NAME:
+  BOSH_TARGET_CERT:
   BOSH_TARGET_URL:
   BOSH_USER:
   BOSH_PASSWORD:
