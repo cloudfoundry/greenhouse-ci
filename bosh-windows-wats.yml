@@ -40,15 +40,15 @@ jobs:
 - name: diego
   plan:
   - get: ci
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: release
     resource: diego-release
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - task: create-upload-release
     privileged: true
     file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       RELEASE_NAME: diego
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
@@ -58,15 +58,15 @@ jobs:
 - name: consul
   plan:
   - get: ci
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: release
     resource: consul-release
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - task: create-upload-release
     privileged: true
     file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       RELEASE_NAME: consul
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
@@ -76,15 +76,15 @@ jobs:
 - name: garden-windows
   plan:
   - get: ci
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: release
     resource: garden-windows-release
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - task: create-upload-release
     privileged: true
     file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       RELEASE_NAME: garden-windows
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
@@ -94,15 +94,15 @@ jobs:
 - name: loggregator
   plan:
   - get: ci
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: release
     resource: loggregator-release
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - task: create-upload-release
     privileged: true
     file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       RELEASE_NAME: loggregator
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
@@ -114,29 +114,29 @@ jobs:
   - get: diego-release
     passed: [ diego ]
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: consul-release
     passed: [ consul ]
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: garden-windows-release
     passed: [ garden-windows ]
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: loggregator-release
     passed: [ loggregator ]
     trigger: true
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: greenhouse-private
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: ci
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - get: wats
-    tags: [vsphere-windows]
+    tags: [vsphere]
   - task: deploy
     privileged: true
     file: ci/tasks/bosh-windows-deploy.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
       BOSH_TARGET_NAME: {{WATS_BOSH_TARGET_NAME}}
@@ -146,7 +146,7 @@ jobs:
   - task: wats
     privileged: true
     file: ci/tasks/run-wats.yml
-    tags: [vsphere-windows]
+    tags: [vsphere]
     params:
       ADMIN_PASSWORD: {{WATS_CF_PASSWORD}}
       ADMIN_USER: {{WATS_CF_USER}}

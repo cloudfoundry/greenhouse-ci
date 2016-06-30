@@ -7,7 +7,7 @@ bosh_cli() {
 bosh_cert() {
   CA_CERT=""
   if [[ -n "${BOSH_TARGET_CERT}" ]]; then
-    echo ${BOSH_TARGET_CERT} > /tmp/cert
+    echo -n "${BOSH_TARGET_CERT}" > /tmp/cert
     chmod 600 /tmp/cert
     CA_CERT="--ca-cert /tmp/cert"
   fi
