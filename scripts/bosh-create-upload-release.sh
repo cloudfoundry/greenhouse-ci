@@ -16,8 +16,8 @@ bosh_cert() {
 bosh_release() {
   pushd release
   bosh create release --name ${RELEASE_NAME} --force
-  bosh ${CA_CERT} target ${BOSH_TARGET_URL}
-  bosh login ${BOSH_USER} ${BOSH_PASSWORD}
+  bosh -n ${CA_CERT} target ${BOSH_TARGET_URL}
+  printf "${BOSH_USER}\n${BOSH_PASSWORD}" | bosh login
   bosh -t ${BOSH_TARGET_URL} upload release --rebase
   popd
 }

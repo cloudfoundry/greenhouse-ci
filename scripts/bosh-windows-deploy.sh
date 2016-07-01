@@ -14,8 +14,8 @@ bosh_cert() {
 }
 
 bosh_deploy() {
-  bosh ${CA_CERT} target ${BOSH_TARGET_URL} ${BOSH_TARGET_NAME}
-  bosh login ${BOSH_USER} ${BOSH_PASSWORD}
+  bosh -n ${CA_CERT} target ${BOSH_TARGET_URL} ${BOSH_TARGET_NAME}
+  printf "${BOSH_USER}\n${BOSH_PASSWORD}" | bosh login
   bosh -t ${BOSH_TARGET_NAME} deployment greenhouse-private/bosh-windows-manifests/garden-windows-${BOSH_TARGET_NAME}.yml
   bosh -t ${BOSH_TARGET_NAME} -n deploy
 }
