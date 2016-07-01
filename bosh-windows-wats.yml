@@ -50,7 +50,7 @@ jobs:
     file: ci/tasks/bosh-create-upload-release.yml
     tags: [vsphere]
     params:
-      RELEASE_NAME: diego
+      RELEASE_NAME: diego-windows
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
       BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
@@ -68,7 +68,7 @@ jobs:
     file: ci/tasks/bosh-create-upload-release.yml
     tags: [vsphere]
     params:
-      RELEASE_NAME: consul
+      RELEASE_NAME: consul-windows
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
       BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
@@ -104,7 +104,7 @@ jobs:
     file: ci/tasks/bosh-create-upload-release.yml
     tags: [vsphere]
     params:
-      RELEASE_NAME: loggregator
+      RELEASE_NAME: loggregator-windows
       BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
       BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
