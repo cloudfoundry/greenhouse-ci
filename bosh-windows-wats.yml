@@ -111,28 +111,29 @@ jobs:
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: deploy-and-wats
   plan:
-  - get: diego-release
-    passed: [ diego ]
-    trigger: true
-    tags: [vsphere]
-  - get: consul-release
-    passed: [ consul ]
-    trigger: true
-    tags: [vsphere]
-  - get: garden-windows-release
-    passed: [ garden-windows ]
-    trigger: true
-    tags: [vsphere]
-  - get: loggregator-release
-    passed: [ loggregator ]
-    trigger: true
-    tags: [vsphere]
-  - get: greenhouse-private
-    tags: [vsphere]
-  - get: ci
-    tags: [vsphere]
-  - get: wats
-    tags: [vsphere]
+  - aggregate:
+    - get: diego-release
+      passed: [ diego ]
+      trigger: true
+      tags: [vsphere]
+    - get: consul-release
+      passed: [ consul ]
+      trigger: true
+      tags: [vsphere]
+    - get: garden-windows-release
+      passed: [ garden-windows ]
+      trigger: true
+      tags: [vsphere]
+    - get: loggregator-release
+      passed: [ loggregator ]
+      trigger: true
+      tags: [vsphere]
+    - get: greenhouse-private
+      tags: [vsphere]
+    - get: ci
+      tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
   - task: deploy
     privileged: true
     file: ci/tasks/bosh-windows-deploy.yml
@@ -155,11 +156,3 @@ jobs:
       DOPPLER_URL: {{WATS_DOPPLER_URL}}
       NUM_WIN_CELLS: "2"
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: {{WATS_BOSH_DIRECTOR_IP}}
-  - task: cleanup
-    privileged: true
-    file: ci/tasks/bosh-cleanup.yml
-    params:
-      BOSH_TARGET_NAME: {{WATS_BOSH_TARGET_NAME}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
