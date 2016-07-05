@@ -14,12 +14,12 @@ resources:
   type: git
   source:
     branch: rep-windows
-    uri: https://github.com/aminjam/diego-release.git
+    uri: https://github.com/greenhouse-org/diego-release.git
 - name: consul-release
   type: git
   source:
     branch: windows-support
-    uri: https://github.com/benmoss/consul-release.git
+    uri: https://github.com/greenhouse-org/consul-release.git
 - name: garden-windows-release
   type: git
   source:
