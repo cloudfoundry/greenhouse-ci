@@ -110,6 +110,7 @@ jobs:
       BOSH_USER: {{WATS_BOSH_USER}}
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: deploy-and-wats
+  serial: true
   plan:
   - aggregate:
     - get: diego-release
