@@ -10,26 +10,11 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/greenhouse-private
     private_key: {{GREENHOUSE_PRIVATE_KEY}}
-- name: diego-release
-  type: git
-  source:
-    branch: rep-windows
-    uri: https://github.com/greenhouse-org/diego-release.git
-- name: consul-release
-  type: git
-  source:
-    branch: windows-support
-    uri: https://github.com/greenhouse-org/consul-release.git
 - name: garden-windows-release
   type: git
   source:
     branch: master
     uri: https://github.com/pivotal-cf-experimental/garden-windows-bosh-release.git
-- name: loggregator-release
-  type: git
-  source:
-    branch: windows
-    uri: https://github.com/pivotal-cf/loggregator.git
 - name: wats
   type: git
   source:
@@ -37,42 +22,6 @@ resources:
     uri: https://github.com/cloudfoundry/wats.git
 
 jobs:
-- name: diego
-  plan:
-  - get: ci
-    tags: [vsphere]
-  - get: release
-    resource: diego-release
-    trigger: true
-    tags: [vsphere]
-  - task: create-upload-release
-    privileged: true
-    file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere]
-    params:
-      RELEASE_NAME: diego-windows
-      BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
-- name: consul
-  plan:
-  - get: ci
-    tags: [vsphere]
-  - get: release
-    resource: consul-release
-    trigger: true
-    tags: [vsphere]
-  - task: create-upload-release
-    privileged: true
-    file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere]
-    params:
-      RELEASE_NAME: consul-windows
-      BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: garden-windows
   plan:
   - get: ci
@@ -91,42 +40,12 @@ jobs:
       BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
       BOSH_USER: {{WATS_BOSH_USER}}
       BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
-- name: loggregator
-  plan:
-  - get: ci
-    tags: [vsphere]
-  - get: release
-    resource: loggregator-release
-    trigger: true
-    tags: [vsphere]
-  - task: create-upload-release
-    privileged: true
-    file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere]
-    params:
-      RELEASE_NAME: loggregator-windows
-      BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
 - name: deploy-and-wats
   serial: true
   plan:
   - aggregate:
-    - get: diego-release
-      passed: [ diego ]
-      trigger: true
-      tags: [vsphere]
-    - get: consul-release
-      passed: [ consul ]
-      trigger: true
-      tags: [vsphere]
     - get: garden-windows-release
       passed: [ garden-windows ]
-      trigger: true
-      tags: [vsphere]
-    - get: loggregator-release
-      passed: [ loggregator ]
       trigger: true
       tags: [vsphere]
     - get: greenhouse-private
