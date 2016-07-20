@@ -1,0 +1,13 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: release
+  - name: ci
+  - name: version
+
+outputs:
+ - name: garden-windows-output
+
+run:
+  path: ci/scripts/bosh-create-release.sh
