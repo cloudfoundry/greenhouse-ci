@@ -6,7 +6,7 @@ bosh_cli() {
 
 bosh_release() {
   pushd release
-  readonly v=$(printf version/number)
+  readonly v=$(cat version/number)
   bosh --parallel 4 -n create release --with-tarball --version $v --force
   mv dev_releases/garden-windows/*.tgz ../garden-windows-output/
   popd
