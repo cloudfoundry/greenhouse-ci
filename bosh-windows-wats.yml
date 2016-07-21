@@ -31,8 +31,8 @@ resources:
   type: bosh-deployment
   source:
     target: {{WATS_BOSH_TARGET_URL}}
-    client_id: {{WATS_BOSH_USER}}
-    client_secret: {{WATS_BOSH_PASSWORD}}
+    client_id: {{WATS_BOSH_CLIENT_ID}}
+    client_secret: {{WATS_BOSH_CLIENT_SERCET}}
     ca_cert: {{WATS_BOSH_TARGET_CERT}}
     deployment: garden-windows
     ignore_ssl: true
