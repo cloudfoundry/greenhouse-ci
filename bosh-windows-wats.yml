@@ -15,55 +15,113 @@ resources:
   source:
     branch: master
     uri: https://github.com/pivotal-cf-experimental/garden-windows-bosh-release.git
+
+- name: diego-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/diego-release
+
 - name: wats
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry/wats.git
 
+- name: stonetalon-deploy
+  type: bosh-deployment
+  source:
+    target: {{WATS_BOSH_TARGET_URL}}
+    client_id: {{WATS_BOSH_USER}}
+    client_secret: {{WATS_BOSH_PASSWORD}}
+    ca_cert: {{WATS_BOSH_TARGET_CERT}}
+    deployment: garden-windows
+    ignore_ssl: true
+
+- name: bosh-vsphere-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+
+- name: garden-windows-bosh-release
+  type: s3
+  source:
+    bucket: garden-windows-dev-bosh-release
+    regexp: garden-windows-(.*).tgz
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+
+- name: version
+  type: semver
+  source:
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    bucket: garden-windows-bosh-release-versions
+    initial_version: 0.0.0
+    key: current-version
+    region_name: us-east-1
+
 jobs:
-- name: garden-windows
+- name: patch-bump
+  serial_groups: [version]
   plan:
-  - get: ci
-    tags: [vsphere]
-  - get: release
-    resource: garden-windows-release
+  - get: version
+    params: {bump: patch}
     trigger: true
-    tags: [vsphere]
-  - task: create-upload-release
-    privileged: true
-    file: ci/tasks/bosh-create-upload-release.yml
-    tags: [vsphere]
-    params:
-      RELEASE_NAME: garden-windows
-      BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+  - put: version
+    params: {file: version/number}
+
+- name: minor-bump
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: minor}
+  - put: version
+    params: {file: version/number}
+
+- name: major-bump
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: major}
+  - put: version
+    params: {file: version/number}
+
 - name: deploy-and-wats
   serial: true
   plan:
   - aggregate:
-    - get: garden-windows-release
-      passed: [ garden-windows ]
+    - get: release
+      resource: garden-windows-release
       trigger: true
       tags: [vsphere]
     - get: greenhouse-private
       tags: [vsphere]
+    - get: diego-release
+      version: latest
+      tags: [vsphere]
+      trigger: true
+    - get: bosh-vsphere-stemcell
+      tags: [vsphere]
+      trigger: true
     - get: ci
       tags: [vsphere]
     - get: wats
       tags: [vsphere]
-  - task: deploy
+    - get: version
+      params: {pre: rc}
+  - task: create-release
     privileged: true
-    file: ci/tasks/bosh-windows-deploy.yml
+    file: ci/tasks/bosh-create-release.yml
+    tags: [vsphere]
+  - put: stonetalon-deploy
     tags: [vsphere]
     params:
-      BOSH_TARGET_CERT: {{WATS_BOSH_TARGET_CERT}}
-      BOSH_TARGET_NAME: {{WATS_BOSH_TARGET_NAME}}
-      BOSH_TARGET_URL: {{WATS_BOSH_TARGET_URL}}
-      BOSH_USER: {{WATS_BOSH_USER}}
-      BOSH_PASSWORD: {{WATS_BOSH_PASSWORD}}
+      manifest: greenhouse-private/bosh-windows-manifests/garden-windows-stonetalon.yml
+      releases: [garden-windows-output/*.tgz, diego-release/*.tgz]
+      stemcells: [bosh-vsphere-stemcell/*.tgz]
   - task: wats
     privileged: true
     file: ci/tasks/run-wats.yml
@@ -76,3 +134,6 @@ jobs:
       DOPPLER_URL: {{WATS_DOPPLER_URL}}
       NUM_WIN_CELLS: "2"
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: {{WATS_BOSH_DIRECTOR_IP}}
+  - put: garden-windows-bosh-release
+    params:
+      file: garden-windows-output/garden-windows-*.tgz
