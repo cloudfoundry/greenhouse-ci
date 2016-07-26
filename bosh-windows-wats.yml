@@ -32,7 +32,7 @@ resources:
   source:
     target: {{WATS_BOSH_TARGET_URL}}
     client_id: {{WATS_BOSH_CLIENT_ID}}
-    client_secret: {{WATS_BOSH_CLIENT_SERCET}}
+    client_secret: {{WATS_BOSH_CLIENT_SECRET}}
     ca_cert: {{WATS_BOSH_TARGET_CERT}}
     deployment: garden-windows
     ignore_ssl: true
