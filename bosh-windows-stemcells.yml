@@ -263,8 +263,8 @@ jobs:
   - task: test-stemcell
     file: bosh-windows-acceptance-tests/concourse.yml
     params:
-      BOSH_PASSWORD: {{AWS_BOSH_USER}}
-      BOSH_USER: {{AWS_BOSH_PASSWORD}}
+      BOSH_PASSWORD: {{AWS_BOSH_PASSWORD}}
+      BOSH_USER: {{AWS_BOSH_USER}}
       DIRECTOR_IP: 52.1.65.226:25555
       DIRECTOR_UUID: 6183a67f-947d-409b-930b-e70a06f8a138
       STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
