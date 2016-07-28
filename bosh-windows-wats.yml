@@ -45,10 +45,18 @@ resources:
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 
-- name: garden-windows-bosh-release
+- name: garden-windows-bosh-release-dev
   type: s3
   source:
     bucket: garden-windows-dev-bosh-release
+    regexp: garden-windows-(.*).tgz
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+
+- name: garden-windows-bosh-release-final
+  type: s3
+  source:
+    bucket: garden-windows-bosh-release
     regexp: garden-windows-(.*).tgz
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
@@ -63,13 +71,20 @@ resources:
     key: current-version
     region_name: us-east-1
 
+- name: github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: garden-windows-bosh-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
 jobs:
 - name: patch-bump
   serial_groups: [version]
   plan:
   - get: version
     params: {bump: patch}
-    trigger: true
   - put: version
     params: {file: version/number}
 
@@ -100,7 +115,6 @@ jobs:
     - get: greenhouse-private
       tags: [vsphere]
     - get: diego-release
-      version: latest
       tags: [vsphere]
       trigger: true
     - get: bosh-vsphere-stemcell
@@ -112,6 +126,8 @@ jobs:
       tags: [vsphere]
     - get: version
       params: {pre: rc}
+  - put: version
+    params: {pre: rc}
   - task: create-release
     privileged: true
     file: ci/tasks/bosh-create-release.yml
@@ -134,6 +150,40 @@ jobs:
       DOPPLER_URL: {{WATS_DOPPLER_URL}}
       NUM_WIN_CELLS: "2"
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: {{WATS_BOSH_DIRECTOR_IP}}
-  - put: garden-windows-bosh-release
+  - put: garden-windows-bosh-release-dev
     params:
       file: garden-windows-output/garden-windows-*.tgz
+
+- name: shipit
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: greenhouse-private
+    - get: version
+      params: {bump: final}
+    - get: garden-windows-release
+      passed: [deploy-and-wats]
+    - get: garden-windows-bosh-release-dev
+      passed: [deploy-and-wats]
+  - put: version
+  - task: finalize-release
+    file: ci/tasks/finalize_release.yml
+  - put: garden-windows-bosh-release-final
+    params:
+      file: finalized-release/garden-windows-*.tgz
+  - put: garden-windows-release
+    params:
+      repository: finalized-release/garden-windows-release
+      tag: version/number
+      tag_prefix: v
+      rebase: true
+  - task: generate-release
+    file: ci/tasks/generate_github_release.yml
+  - put: github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/garden-windows-*.tgz

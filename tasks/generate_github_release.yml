@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image: docker:///concourse/git-resource
+
+inputs:
+- name: greenhouse-ci
+- name: garden-windows-release
+- name: garden-windows-bosh-release-final
+
+outputs:
+  - name: generated-release
+
+run:
+  path: greenhouse-ci/scripts/generate_github_release
