@@ -167,6 +167,7 @@ jobs:
     - get: garden-windows-bosh-release-dev
       passed: [deploy-and-wats]
   - put: version
+    params: {file: version/number}
   - task: finalize-release
     file: ci/tasks/finalize_release.yml
   - put: garden-windows-bosh-release-final

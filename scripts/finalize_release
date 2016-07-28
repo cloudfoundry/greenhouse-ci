@@ -4,7 +4,7 @@
 set -e -x -u
 
 # echo "----- Copy private blobstore credentials into garden-windows-release"
-# cp runtime-credentials/diego-ci/private.yml diego-release/config/private.yml
+cp greenhouse-private/garden-windows-bosh-release/private.yml garden-windows-release/config/private.yml
 
 FINAL_RELEASE_VERSION=$(cat version/number)
 DEV_RELEASE_TARBALL=$(ls $PWD/garden-windows-bosh-release-dev/*.tgz)
