@@ -10,6 +10,7 @@ FINAL_RELEASE_VERSION=$(cat version/number)
 DEV_RELEASE_TARBALL=$(ls $PWD/garden-windows-bosh-release-dev/*.tgz)
 
 pushd garden-windows-release
+  git pull -r
   RELEASE_YML=$PWD/releases/garden-windows/garden-windows-${FINAL_RELEASE_VERSION}.yml
   RELEASE_TGZ=$PWD/releases/garden-windows/garden-windows-${FINAL_RELEASE_VERSION}.tgz
 
