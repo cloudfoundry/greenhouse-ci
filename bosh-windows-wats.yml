@@ -75,7 +75,7 @@ resources:
 - name: github-release
   type: github-release
   source:
-    user: cloudfoundry-incubator
+    user: pivotal-cf-experimental
     repository: garden-windows-bosh-release
     drafts: true
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
@@ -164,7 +164,6 @@ jobs:
     - get: version
       params: {bump: final}
     - get: garden-windows-release
-      passed: [deploy-and-wats]
     - get: garden-windows-bosh-release-dev
       passed: [deploy-and-wats]
   - put: version
