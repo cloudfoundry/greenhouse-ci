@@ -13,7 +13,6 @@ outputs:
   - name: generated-manifest
 
 params:
-  DEPLOYMENTS_DIR: ~
   ENVIRONMENT_NAME: ~
   INFRASTRUCTURE: ~
 
