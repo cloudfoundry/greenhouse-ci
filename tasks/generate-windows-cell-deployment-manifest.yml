@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: greenhouse-private
+  - name: diego-release
+  - name: cf-release
+  - name: ci
+
+outputs:
+  - name: generated-manifest
+
+params:
+  DEPLOYMENTS_DIR: ~
+  ENVIRONMENT_NAME: ~
+  INFRASTRUCTURE: ~
+
+run:
+  path: ci/tasks/generate-windows-cell-deployment-manifest
