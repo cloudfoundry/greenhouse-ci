@@ -3,9 +3,9 @@ platform: linux
 image: docker:///pivotalgreenhouse/ruby
 inputs:
   - name: garden-windows-bosh-artifacts
-  - name: garden-windows-bosh-release
-  - name: greenhouse-ci
+  - name: release
+  - name: ci
 outputs:
-  - name: created-garden-windows-bosh-release
+  - name: release-output
 run:
-  path: greenhouse-ci/scripts/update-garden-windows-blobs.sh
+  path: ci/scripts/update-garden-windows-blobs.sh

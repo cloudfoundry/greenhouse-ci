@@ -4,7 +4,7 @@ set -ex
 unzip -d garden-artifacts garden-windows-bosh-artifacts/*.zip
 tar -czf garden-windows.tgz -C garden-artifacts/bosh-executables .
 
-pushd garden-windows-bosh-release
+pushd release
 
 bosh add blob ../garden-windows.tgz garden-windows
 
@@ -26,7 +26,4 @@ fi
 
 popd
 
-if [ -n "$OUTPUT_DIR" ]; then
-  git clone garden-windows-bosh-release "$OUTPUT_DIR"
-fi
-
+git clone release release-output
