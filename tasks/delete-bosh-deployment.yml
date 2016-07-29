@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: ci
+
+params:
+  BOSH_TARGET: ~
+  BOSH_USER: ~
+  BOSH_PASSWORD: ~
+  DEPLOYMENT_NAME: ~
+
+run:
+  path: bosh
+  args:
+  - -t
+  - "${BOSH_TARGET}"
+  - delete
+  - deployment
+  - "${DEPLOYMENT_NAME}"
