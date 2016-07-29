@@ -1,0 +1,11 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: greenhouse-ci
+run:
+  path: greenhouse-ci/scripts/delete-cloudformation-stack.rb
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  STACKNAME:

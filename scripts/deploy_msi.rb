@@ -15,7 +15,6 @@ template_file = Dir::glob("diego-windows-cloudformation-template-file/*.json").f
 template      = CloudformationTemplate.new(template_json: File.read(template_file))
 stack         = CloudformationStack.new(stack_name: ENV.fetch('STACKNAME'), aws_credentials: credentials)
 
-stack.delete_stack
 stack.create_stack(template.to_json, {
   BoshHost:              ENV.fetch('BOSH_HOST'),
   BoshPassword:          ENV.fetch('BOSH_PASSWORD'),
