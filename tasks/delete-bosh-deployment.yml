@@ -3,9 +3,6 @@ platform: linux
 
 image: docker:///cloudfoundry/diego-pipeline
 
-inputs:
-  - name: ci
-
 params:
   BOSH_TARGET: ~
   BOSH_USER: ~
@@ -13,8 +10,10 @@ params:
   DEPLOYMENT_NAME: ~
 
 run:
-  path: bosh
+  path: bash
   args:
+  - -c
+  - "bosh"
   - -t
   - "${BOSH_TARGET}"
   - delete
