@@ -4,8 +4,8 @@ platform: linux
 image: docker:///cloudfoundry/diego-pipeline
 
 inputs:
-  - name: garden-windows-release
-  - name: garden-windows-bosh-release-dev
+  - name: release-develop
+  - name: bucket-develop
   - name: greenhouse-private
   - name: ci
   - name: version
@@ -14,4 +14,4 @@ outputs:
   - name: finalized-release
 
 run:
-  path: ci/scripts/finalize_release
+  path: ci/scripts/finalize-release
