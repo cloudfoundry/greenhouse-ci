@@ -13,9 +13,4 @@ run:
   path: bash
   args:
   - -c
-  - "bosh"
-  - -t
-  - "${BOSH_TARGET}"
-  - delete
-  - deployment
-  - "${DEPLOYMENT_NAME}"
+  - "bosh -n -t ${BOSH_TARGET} delete deployment ${DEPLOYMENT_NAME}"
