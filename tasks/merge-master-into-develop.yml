@@ -1,0 +1,14 @@
+platform: linux
+
+image: docker:///cloudfoundry/diego-pipeline
+
+inputs:
+  - name: release-develop
+  - name: release-master
+  - name: ci
+
+outputs:
+  - name: merged-master
+
+run:
+  path: ci/scripts/merge-master-into-develop

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e -x -u
+
+pushd release-develop
+  echo "----- Set git identity"
+  git config user.email "cf-netgarden-eng@pivotal.io"
+  git config user.name "CI (Automated)"
+
+  echo "----- Adding master cloned release as remote"
+  git remote add local-release-master ../release-master
+  git fetch local-release-master
+  git merge --no-edit local-release-master/master
+popd
+
+cp -a release-develop merged-master/
