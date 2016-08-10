@@ -1,0 +1,14 @@
+---
+platform: windows
+
+inputs:
+- name: ironframe
+- name: ci
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/scripts/ironframe-unit.ps1
