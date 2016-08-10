@@ -1,5 +1,8 @@
 # Install Visual Studio
-ci\scripts\vs-install.ps1
+PowerShell -File 'ci\scripts\vs-install.ps1'
+
+# Install IISWebServer - required for tests
+PowerShell -File 'ci\scripts\install-iiswebserver.ps1'
 
 fsutil quota enforce C:
 net start seclogon
