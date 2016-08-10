@@ -8,7 +8,7 @@ $env:PATH = $env:Path + ";C:\Program Files (x86)\Microsoft Visual Studio 12.0\Co
 # Install Visual Studio if it doesn't exist
 if ((Get-Command "WDExpress.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Visual Studio Express 2013"
-  Invoke-WebRequest "https://download.microsoftcom/download/9/6/4/96442E58-C65C-4122-A956-CCA83EECCD03/wdexpress_full.exe" -OutFile "vs-express-setup.exe"
+  Invoke-WebRequest "https://download.microsoft.com/download/9/6/4/96442E58-C65C-4122-A956-CCA83EECCD03/wdexpress_full.exe" -OutFile "vs-express-setup.exe"
 
   $p = Start-Process -FilePath "vs-express-setup.exe" -ArgumentList "/silent /passive /norestart" -Wait -PassThru
 
