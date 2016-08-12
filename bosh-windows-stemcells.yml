@@ -169,6 +169,7 @@ jobs:
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{BOSH_CA_CERT}}
   - put: bosh-vsphere-stemcell
+    tags: [vsphere]
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
