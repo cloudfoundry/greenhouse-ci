@@ -6,6 +6,11 @@ resource_types:
     tag: latest
 
 resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: bosh-agent
   type: git
   source:
@@ -21,6 +26,27 @@ resources:
   source:
     bucket: windows-bosh-integration
     key: versions/bosh-agent-version
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: windows-updates-list
+  type: s3
+  source:
+    bucket: windows-updates-list
+    regexp: update-list-(.*).txt
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-windows-shipit-version
+  type: semver
+  source:
+    bucket: bosh-windows-client-consumable
+    key: versions/shipit-version
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-windows-client-consumable
+  type: s3
+  source:
+    bucket: bosh-windows-client-consumable
+    regexp: bosh-windows-(.*).json
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-agent-zip
@@ -135,6 +161,17 @@ jobs:
       params:
         bump: patch
     - get: bosh-windows-acceptance-tests
+  - task: agent-sha
+    config:
+      platform: linux
+      image: docker:///concourse/git-resource
+      inputs:
+      - name: bosh-agent
+      outputs:
+      - name: bosh-agent-sha
+      run:
+        path: bash
+        args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
   - task: create-vsphere-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
@@ -172,10 +209,13 @@ jobs:
     tags: [vsphere]
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-
+  - put: windows-updates-list
+    params:
+      file: updates-list/*.txt
 - name: create-aws-stemcell
   plan:
   - aggregate:
+    - get: ci
     - get: windows-ami
     - get: stemcell-builder
     - get: bosh-agent
@@ -189,6 +229,17 @@ jobs:
       trigger: true
     - get: bosh-agent-deps-zip
     - get: bosh-windows-acceptance-tests
+  - task: agent-sha
+    config:
+      platform: linux
+      image: docker:///concourse/git-resource
+      inputs:
+      - name: bosh-agent
+      outputs:
+      - name: bosh-agent-sha
+      run:
+        path: bash
+        args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
   - task: create-stemcell
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
@@ -209,3 +260,24 @@ jobs:
   - put: bosh-aws-stemcell
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+- name: shipit
+  plan:
+  - aggregate:
+    - get: ci
+    - get: bosh-agent
+      passed: [create-vsphere-stemcell]
+    - get: bosh-agent-zip
+      passed: [create-vsphere-stemcell]
+    - get: bosh-agent-deps-zip
+      passed: [create-vsphere-stemcell]
+    - get: windows-updates-list
+      passed: [create-vsphere-stemcell]
+    - get: bosh-windows-shipit-version
+  - put: bosh-windows-shipit-version
+    params:
+      bump: minor
+  - task: create-consumable
+    file: ci/tasks/create-consumable.yml
+  - put: bosh-windows-client-consumable
+    params:
+      file: bosh-windows-client-consumable/bosh-windows-*.json
