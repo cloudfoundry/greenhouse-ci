@@ -1,0 +1,15 @@
+---
+platform: linux
+image: docker:///pivotalgreenhouse/ruby
+inputs:
+  - name: ci
+  - name: bosh-agent
+  - name: bosh-agent-zip
+  - name: bosh-agent-deps-zip
+  - name: windows-updates-list
+  - name: bosh-windows-shipit-version
+outputs:
+  -  name: bosh-windows-client-consumable
+run:
+  path: ci/scripts/create-consumable.rb
+
