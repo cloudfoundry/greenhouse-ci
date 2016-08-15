@@ -1,0 +1,12 @@
+---
+platform: linux
+image_resouce:
+  type: docker-image
+  source: {repository: concourse/git-resource}
+inputs:
+- name: bosh-agent
+outputs:
+- name: bosh-agent-sha
+run:
+  path: bash
+  args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
