@@ -1,0 +1,16 @@
+---
+platform: linux
+image_resouce:
+  type: docker-image
+  source: {repository: ruby}
+inputs:
+  - name: ci
+  - name: bosh-windows
+outputs:
+  - name: bosh-agent-sha
+  - name: bosh-agent-zip
+  - name: bosh-agent-deps-zip
+  - name: windows-updates-list
+run:
+  path: ci/scripts/extract-consumable.rb
+
