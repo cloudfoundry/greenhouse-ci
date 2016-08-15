@@ -1,0 +1,100 @@
+resources:
+########## START CLIENT CONFIGURABLE ##########
+- name: ovftool-linux
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: version
+  type: semver
+  source:
+    bucket: bosh-temp-bucket
+    key: versions/bosh-vsphere-stemcell-version
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-vsphere-stemcell
+  type: s3
+  source:
+    bucket: bosh-temp-bucket
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+########## END CLIENT CONFIGURABLE ##########
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bosh-windows
+  type: s3
+  source:
+    bucket: bosh-windows-client-consumable
+    regexp: bosh-windows-(.*).json
+- name: bosh-windows-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
+- name: stemcell-builder
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+
+jobs:
+- name: create-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: bosh-windows
+      trigger: true
+    - get: ci
+    - get: ovftool-linux
+    - get: stemcell-builder
+    - get: version
+    - get: bosh-windows-acceptance-tests
+  - task: extract-consumable
+    file: ci/tasks/extract-consumable.yml
+    tags: [vsphere]
+  - put: version
+    params:
+      bump: minor
+  - task: create-vsphere-stemcell
+    privileged: true
+    file: stemcell-builder/tasks/create-vsphere-stemcell.yml
+    tags: [vsphere]
+    params:
+      OUTPUT_DIR: bosh-windows-stemcell
+      ISO_URL: "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.16384.WINBLUE_RTM.130821-1623_X64FRE_SERVER_EVAL_EN-US-IRM_SSS_X64FREE_EN-US_DV5.ISO"
+      ISO_CHECKSUM_TYPE: "md5"
+      ISO_CHECKSUM: "458ff91f8abc21b75cb544744bf92e6a"
+      MEMSIZE: "8192"
+      NUMVCPUS: "6"
+      REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
+      REMOTE_PORT: "22"
+      REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+      REMOTE_CACHE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+      REMOTE_CACHE_DIRECTORY: "packer-cache"
+      REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
+      REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
+      ADMINISTRATOR_PASSWORD: {{WINDOWS_PASSWORD}}
+      GUEST_NETWORK_ADDRESS: "10.85.58.10"
+      GUEST_NETWORK_MASK: "255.255.255.0"
+      GUEST_NETWORK_GATEWAY: "10.85.58.1"
+  - task: test-stemcell
+    file: bosh-windows-acceptance-tests/concourse.yml
+    tags: [vsphere]
+    params:
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      BOSH_CLIENT: {{BOSH_CLIENT}}
+      DIRECTOR_UUID: 66bf0aa2-6fa3-4551-aae8-dc83fa81c751
+      DIRECTOR_IP: 10.87.23.91:25555
+      STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
+      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      BOSH_CA_CERT: {{BOSH_CA_CERT}}
+  - put: bosh-vsphere-stemcell
+    tags: [vsphere]
+    params:
+      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
