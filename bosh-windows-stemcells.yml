@@ -32,7 +32,7 @@ resources:
   type: s3
   source:
     bucket: windows-updates-list
-    regexp: update-list-(.*).txt
+    regexp: update-list-(.*).csv
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-windows-shipit-version
@@ -211,7 +211,7 @@ jobs:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: windows-updates-list
     params:
-      file: updates-list/*.txt
+      file: updates-list/*.csv
 - name: create-aws-stemcell
   plan:
   - aggregate:
