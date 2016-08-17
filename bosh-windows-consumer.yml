@@ -30,11 +30,6 @@ resources:
   source:
     bucket: bosh-windows-client-consumable
     regexp: bosh-windows-(.*).json
-- name: bosh-windows-acceptance-tests
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 - name: stemcell-builder
   type: git
   source:
@@ -81,17 +76,6 @@ jobs:
       GUEST_NETWORK_ADDRESS: {{GUEST_NETWORK_ADDRESS}}
       GUEST_NETWORK_MASK: {{GUEST_NETWORK_GATEWAY}}
       GUEST_NETWORK_GATEWAY: {{GUEST_NETWORK_MASK}}
-  - task: test-stemcell
-    file: bosh-windows-acceptance-tests/concourse.yml
-    tags: [vsphere]
-    params:
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      BOSH_CLIENT: {{BOSH_CLIENT}}
-      DIRECTOR_UUID: {{DIRECTOR_UUID}}
-      DIRECTOR_IP: {{DIRECTOR_IP}}
-      STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-      BOSH_CA_CERT: {{BOSH_CA_CERT}}
   - put: bosh-vsphere-stemcell
     tags: [vsphere]
     params:
