@@ -1,27 +1,25 @@
 resources:
-########## START CLIENT CONFIGURABLE ##########
 - name: ovftool-linux
   type: s3
   source:
-    bucket: bosh-windows-stemcells
+    bucket: {{S3_OVFTOOL_BUCKET}}
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: version
   type: semver
   source:
-    bucket: bosh-temp-bucket
+    bucket: {{S3_STEMCELL_VERSION_BUCKET}}
     key: versions/bosh-vsphere-stemcell-version
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-vsphere-stemcell
   type: s3
   source:
-    bucket: bosh-temp-bucket
+    bucket: {{S3_STEMCELL_OUTPUT_BUCKET}}
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-########## END CLIENT CONFIGURABLE ##########
 - name: ci
   type: git
   source:
@@ -70,27 +68,27 @@ jobs:
       ISO_URL: "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.16384.WINBLUE_RTM.130821-1623_X64FRE_SERVER_EVAL_EN-US-IRM_SSS_X64FREE_EN-US_DV5.ISO"
       ISO_CHECKSUM_TYPE: "md5"
       ISO_CHECKSUM: "458ff91f8abc21b75cb544744bf92e6a"
-      MEMSIZE: "8192"
-      NUMVCPUS: "6"
+      MEMSIZE: {{GUEST_MEMSIZE}}
+      NUMVCPUS: {{GUEST_CPUS}}
       REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
       REMOTE_PORT: "22"
-      REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
-      REMOTE_CACHE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+      REMOTE_DATASTORE: {{ESXI_DATASTORE}}
+      REMOTE_CACHE_DATASTORE: {{ESXI_CACHE_DATASTORE}}
       REMOTE_CACHE_DIRECTORY: "packer-cache"
       REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
       REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
       ADMINISTRATOR_PASSWORD: {{WINDOWS_PASSWORD}}
-      GUEST_NETWORK_ADDRESS: "10.85.58.10"
-      GUEST_NETWORK_MASK: "255.255.255.0"
-      GUEST_NETWORK_GATEWAY: "10.85.58.1"
+      GUEST_NETWORK_ADDRESS: {{GUEST_NETWORK_ADDRESS}}
+      GUEST_NETWORK_MASK: {{GUEST_NETWORK_GATEWAY}}
+      GUEST_NETWORK_GATEWAY: {{GUEST_NETWORK_MASK}}
   - task: test-stemcell
     file: bosh-windows-acceptance-tests/concourse.yml
     tags: [vsphere]
     params:
       BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
       BOSH_CLIENT: {{BOSH_CLIENT}}
-      DIRECTOR_UUID: 66bf0aa2-6fa3-4551-aae8-dc83fa81c751
-      DIRECTOR_IP: 10.87.23.91:25555
+      DIRECTOR_UUID: {{DIRECTOR_UUID}}
+      DIRECTOR_IP: {{DIRECTOR_IP}}
       STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{BOSH_CA_CERT}}
