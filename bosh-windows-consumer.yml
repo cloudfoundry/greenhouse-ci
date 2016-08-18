@@ -47,7 +47,6 @@ jobs:
     - get: ovftool-linux
     - get: stemcell-builder
     - get: version
-    - get: bosh-windows-acceptance-tests
   - task: extract-consumable
     file: ci/tasks/extract-consumable.yml
     tags: [vsphere]
