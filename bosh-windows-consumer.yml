@@ -49,14 +49,12 @@ jobs:
     - get: version
   - task: extract-consumable
     file: ci/tasks/extract-consumable.yml
-    tags: [vsphere]
   - put: version
     params:
       bump: minor
   - task: create-vsphere-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
-    tags: [vsphere]
     params:
       OUTPUT_DIR: bosh-windows-stemcell
       ISO_URL: "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.16384.WINBLUE_RTM.130821-1623_X64FRE_SERVER_EVAL_EN-US-IRM_SSS_X64FREE_EN-US_DV5.ISO"
@@ -76,6 +74,5 @@ jobs:
       GUEST_NETWORK_MASK: {{GUEST_NETWORK_GATEWAY}}
       GUEST_NETWORK_GATEWAY: {{GUEST_NETWORK_MASK}}
   - put: bosh-vsphere-stemcell
-    tags: [vsphere]
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
