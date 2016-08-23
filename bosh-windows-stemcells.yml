@@ -164,7 +164,7 @@ jobs:
   - task: agent-sha
     config:
       platform: linux
-      image: docker:///concourse/git-resource
+      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
       inputs:
       - name: bosh-agent
       outputs:
@@ -232,7 +232,7 @@ jobs:
   - task: agent-sha
     config:
       platform: linux
-      image: docker:///concourse/git-resource
+      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
       inputs:
       - name: bosh-agent
       outputs:
