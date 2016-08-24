@@ -84,6 +84,13 @@ resources:
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: ps-windows-update
+  type: s3
+  source:
+    bucket: ps-windows-update-module
+    regexp: PSWindowsUpdate_v(.*).zip
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
 - name: vsphere-deployment
   type: bosh-deployment
   source:
@@ -160,6 +167,7 @@ jobs:
       tags: [vsphere]
       params:
         bump: patch
+    - get: ps-windows-update
     - get: bosh-windows-acceptance-tests
   - task: agent-sha
     config:

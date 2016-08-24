@@ -6,13 +6,6 @@ resources:
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-- name: version
-  type: semver
-  source:
-    bucket: {{S3_STEMCELL_VERSION_BUCKET}}
-    key: versions/bosh-vsphere-stemcell-version
-    access_key_id: {{AWS_ACCESS_KEY}}
-    secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-vsphere-stemcell
   type: s3
   source:
@@ -20,16 +13,29 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-- name: ci
-  type: git
+- name: ps-windows-update
+  type: s3
   source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    bucket: {{S3_WINDOWS_UPDATE_BUCKET}}
+    regexp: PSWindowsUpdate_v(.*).zip
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+
+- name: version
+  type: semver
+  source:
+    bucket: bosh-windows-client-consumable
+    key: versions/consumable-version
 - name: bosh-windows
   type: s3
   source:
     bucket: bosh-windows-client-consumable
     regexp: bosh-windows-(.*).json
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: stemcell-builder
   type: git
   source:
@@ -47,19 +53,18 @@ jobs:
     - get: ovftool-linux
     - get: stemcell-builder
     - get: version
+    - get: ps-windows-update
+
   - task: extract-consumable
     file: ci/tasks/extract-consumable.yml
-  - put: version
-    params:
-      bump: minor
   - task: create-vsphere-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
-      ISO_URL: "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.16384.WINBLUE_RTM.130821-1623_X64FRE_SERVER_EVAL_EN-US-IRM_SSS_X64FREE_EN-US_DV5.ISO"
+      ISO_URL: {{WINDOWS_ISO_URL}}
       ISO_CHECKSUM_TYPE: "md5"
-      ISO_CHECKSUM: "458ff91f8abc21b75cb544744bf92e6a"
+      ISO_CHECKSUM: "5b5e08c490ad16b59b1d9fab0def883a"
       MEMSIZE: {{GUEST_MEMSIZE}}
       NUMVCPUS: {{GUEST_CPUS}}
       REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
@@ -71,8 +76,8 @@ jobs:
       REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
       ADMINISTRATOR_PASSWORD: {{WINDOWS_PASSWORD}}
       GUEST_NETWORK_ADDRESS: {{GUEST_NETWORK_ADDRESS}}
-      GUEST_NETWORK_MASK: {{GUEST_NETWORK_GATEWAY}}
-      GUEST_NETWORK_GATEWAY: {{GUEST_NETWORK_MASK}}
+      GUEST_NETWORK_MASK: {{GUEST_NETWORK_MASK}}
+      GUEST_NETWORK_GATEWAY: {{GUEST_NETWORK_GATEWAY}}
   - put: bosh-vsphere-stemcell
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
