@@ -64,7 +64,7 @@ jobs:
       OUTPUT_DIR: bosh-windows-stemcell
       ISO_URL: {{WINDOWS_ISO_URL}}
       ISO_CHECKSUM_TYPE: "md5"
-      ISO_CHECKSUM: "5b5e08c490ad16b59b1d9fab0def883a"
+      ISO_CHECKSUM: {{WINDOWS_ISO_CHECKSUM}}
       MEMSIZE: {{GUEST_MEMSIZE}}
       NUMVCPUS: {{GUEST_CPUS}}
       REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
