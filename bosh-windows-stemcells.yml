@@ -39,7 +39,7 @@ resources:
   type: semver
   source:
     bucket: bosh-windows-client-consumable
-    key: versions/shipit-version
+    key: versions/consumable-version
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-windows-client-consumable
@@ -275,7 +275,7 @@ jobs:
     - get: bosh-windows-shipit-version
   - put: bosh-windows-shipit-version
     params:
-      bump: minor
+      bump: patch
   - task: create-consumable
     file: ci/tasks/create-consumable.yml
   - put: bosh-windows-client-consumable
