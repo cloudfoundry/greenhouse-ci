@@ -87,7 +87,7 @@ resources:
 - name: ps-windows-update
   type: s3
   source:
-    bucket: ps-windows-update-module
+    bucket: ps-windows-updates-module
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
