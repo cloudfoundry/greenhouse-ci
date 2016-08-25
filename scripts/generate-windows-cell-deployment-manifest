@@ -33,3 +33,8 @@ pushd diego-release
     -v ${stubs_path}/diego-windows/release-versions.yml \
     > ../generated-manifest/diego-windows-deployment.yml
 popd
+
+if [[ $ADD_WINDOWS_TOOLS -eq 1 ]]; then
+  ci/scripts/add_windows_tools.rb generated-manifest/diego-windows-deployment.yml \
+    > generated-manifest/diego-windows-deployment.yml
+fi
