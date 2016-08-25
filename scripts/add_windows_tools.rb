@@ -2,7 +2,7 @@
 
 require 'yaml'
 
-yml = YAML.load(ARGV[0])
+yml = YAML.load_file(ARGV[0])
 
 yml['releases'].push('name' => 'windows-tools-release',
                      'version' => 'latest')
