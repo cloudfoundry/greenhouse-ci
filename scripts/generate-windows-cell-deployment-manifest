@@ -35,6 +35,7 @@ pushd diego-release
 popd
 
 if [[ $ADD_WINDOWS_TOOLS -eq 1 ]]; then
-  ci/scripts/add_windows_tools.rb generated-manifest/diego-windows-deployment.yml \
-    > generated-manifest/diego-windows-deployment.yml
+  ci/scripts/add_windows_tools.rb \
+    generated-manifest/diego-windows-deployment.yml \
+    generated-manifest/diego-windows-deployment.yml
 fi
