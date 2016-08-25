@@ -1,0 +1,59 @@
+---
+# Access and secret key for an AWS account with access to the S3 buckets
+# described below.
+AWS_ACCESS_KEY: REPLACE_ME
+AWS_SECRET_KEY: REPLACE_ME
+
+# S3 bucket containing the VMware ovftool
+# Resource key must match: VMware-ovftool-(.*)-lin.x86_64.bundle
+S3_OVFTOOL_BUCKET: REPLACE_ME
+
+# S3 bucket containing PSWindowsUpdate PowerShell module
+# Resource key must match: PSWindowsUpdate_v(.*).zip
+S3_WINDOWS_UPDATE_BUCKET: REPLACE_ME
+
+# S3 bucket containing the output BOSH-Windows stemcell
+S3_STEMCELL_OUTPUT_BUCKET: REPLACE_ME
+
+# URL or IP address of the target ESXi.
+ESXI_REMOTE_ADDRESS: builder.example.com OR 127.0.0.1
+
+# Username and password of the root user on the target ESXi.
+ESXI_REMOTE_USER: root
+ESXI_REMOTE_PASSWORD: REPLACE_ME
+
+# ESXi datastore UUID where the VM will be stored.
+ESXI_DATASTORE: SOME_UUID
+
+# ESXi datastore UUID where packer will packer will cache file.  This may be
+# the same as ESXI_DATASTORE.
+ESXI_CACHE_DATASTORE: SOME_UUID
+
+# URL or file path of the Windows ISO (may be to an S3 Bucket).
+WINDOWS_ISO_URL: 'http://care.dlservice.microsoft.com/dl/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO'
+
+# MD5 checksum used to verify Windows ISO download.
+WINDOWS_ISO_CHECKSUM: '5b5e08c490ad16b59b1d9fab0def883a'
+
+# If DHCP is not enabled on the network attached to the ESXi the VM's network
+# must be manually configured.  The GUEST_NETWORK_ADDRESS must be addressable
+# by the ESXi and the Concourse worker running the stemcell builder.
+#
+# If DHCP is enabled on the network, setting all GUEST_NETWORK_* to null
+# disables manual network configuration.
+#
+# Additionally, ports must be open for SSH (22), VNC (5900+) and WinRM
+# (5985 and 5986) on the applicable network(s).
+#
+GUEST_NETWORK_ADDRESS: '10.10.10.10'
+GUEST_NETWORK_GATEWAY: '10.10.10.1'
+GUEST_NETWORK_MASK: '255.255.255.0'
+
+# VM CPU and Memory allocation.
+GUEST_MEMSIZE: 8192
+GUEST_CPUS: 6
+
+# Administrator password of the output stemcell.  Normal Windows password
+# complexity rules apply.  If the password does not meet the complexity
+# rules it is not changed and will remain the default ('vagrant').
+WINDOWS_PASSWORD: 'Password123!'
