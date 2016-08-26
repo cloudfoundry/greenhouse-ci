@@ -13,6 +13,7 @@ yml['jobs'].each do |j|
   j['templates'].push('name' => 'longrunning-server',
                       'release' => 'windows-tools-release')
 end
+yml['jobs'].first['networks'].first['default'] = ['dns', 'gateway']
 yml['jobs'].first['networks'].push('name' => 'longrunning-cell',
                                    'static_ips' => ['54.87.171.179'])
 
