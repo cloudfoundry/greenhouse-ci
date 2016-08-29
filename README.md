@@ -1,8 +1,12 @@
 ## Greenhouse CI
 
-### Setup [BOSH Windows Stemcell Bulder Pipeline](./bosh-windows-consumer.yml)
+### Setup [BOSH Windows Stemcell Builder Pipeline](./bosh-windows-consumer.yml)
 
 Concourse pipeline for creating BOSH Windows Stemcells.
+
+#### Prerequisites
+
+[Stemcell builder](https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder), please refer to the [README](https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/blob/master/README.md) for additional requirements.
 
 #### Install Concourse
 
@@ -11,7 +15,3 @@ Follow the instructions at [Concourse](http://concourse.ci/installing.html).  Th
 #### Configure Pipeline
 
 [Example parameters](./examples/consumer-vars.yml).
-
-#### Pre-Requisites
-
-Refer to the [stemcell builder README](https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder/blob/master/README.md).
