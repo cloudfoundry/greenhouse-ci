@@ -6,10 +6,10 @@ appname=`mktemp noraXXXXX`
 domain=greenhouse-development2.cf-app.com
 url=$appname.$domain
 
-function cleanup {		
-  if [ $? -eq 0 ]; then		
-    return		
-  fi		
+function cleanup {
+  if [ $? -eq 0 ]; then
+    return
+  fi
   cf d "$appname" -r -f >/dev/null 2>&1 || echo "could not kill app"
 }
 trap "cleanup" EXIT
