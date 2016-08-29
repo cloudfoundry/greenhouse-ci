@@ -59,4 +59,10 @@ function background_curl() {
 background_curl &
 
 cf d $appname -r -f
+
+source ./greenhouse-private/longrunning/bootstrap_environment
+target_ip=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" | jq -r '.Reservations | map(select(.Instances[].Platform == "windows"))[0] | .Instances[0] | .PrivateIpAddress')
+export TARGET_URL="http://$target_ip:8080"
+export SSH_KEY=$(cat greenhouse-private/longrunning/keypair/id_rsa_bosh)
+
 greenhouse-ci/scripts/run-monitor-health.rb
