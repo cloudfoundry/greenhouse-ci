@@ -4,8 +4,10 @@
 AWS_ACCESS_KEY: REPLACE_ME
 AWS_SECRET_KEY: REPLACE_ME
 
-# S3 bucket containing the VMware ovftool
+# S3 bucket containing VMware OVF Tool for Linux 64-bit
 # Resource key must match: VMware-ovftool-(.*)-lin.x86_64.bundle
+# The latest tested version is 4.1.0 and can be found here:
+# https://www.vmware.com/support/developer/ovf/
 S3_OVFTOOL_BUCKET: REPLACE_ME
 
 # S3 bucket containing PSWindowsUpdate PowerShell module
