@@ -10,6 +10,8 @@ S3_OVFTOOL_BUCKET: REPLACE_ME
 
 # S3 bucket containing PSWindowsUpdate PowerShell module
 # Resource key must match: PSWindowsUpdate_v(.*).zip
+# The latest tested version is 1.5.1 and can be found here:
+# https://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc
 S3_WINDOWS_UPDATE_BUCKET: REPLACE_ME
 
 # S3 bucket containing the output BOSH-Windows stemcell
