@@ -4,6 +4,12 @@
 AWS_ACCESS_KEY: REPLACE_ME
 AWS_SECRET_KEY: REPLACE_ME
 
+# If a S3 compatible provider is being used, specify the hostname or IP here
+# and disable SSL if needed
+# Example when using minio.io: 192.168.3.254:9000 (Notes: You may also need to disable_ssl in bosh-windows-consumer.yml for minio)
+# Example when using Amazon S3: https://s3.amazonaws.com
+S3_ENDPOINT: REPLACE_ME
+
 # S3 bucket containing VMware OVF Tool for Linux 64-bit
 # Resource key must match: VMware-ovftool-(.*)-lin.x86_64.bundle
 # The latest tested version is 4.1.0 and can be found here:

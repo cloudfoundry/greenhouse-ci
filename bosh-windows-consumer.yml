@@ -2,6 +2,8 @@ resources:
 - name: ovftool-linux
   type: s3
   source:
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
     bucket: {{S3_OVFTOOL_BUCKET}}
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: {{AWS_ACCESS_KEY}}
@@ -9,6 +11,8 @@ resources:
 - name: bosh-vsphere-stemcell
   type: s3
   source:
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
     bucket: {{S3_STEMCELL_OUTPUT_BUCKET}}
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{AWS_ACCESS_KEY}}
@@ -16,6 +20,8 @@ resources:
 - name: ps-windows-update
   type: s3
   source:
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
     bucket: {{S3_WINDOWS_UPDATE_BUCKET}}
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
