@@ -19,7 +19,7 @@ resources:
 - name: stemcell-builder
   type: git
   source:
-    branch: master
+    branch: develop
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
 - name: bosh-agent-zip-version
   type: semver
@@ -47,6 +47,13 @@ resources:
   source:
     bucket: bosh-windows-client-consumable
     regexp: bosh-windows-(.*).json
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: base-iso
+  type: s3
+  source:
+    bucket: bosh-temp-bucket
+    regexp: windows-(.*).iso
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-agent-zip
@@ -162,6 +169,8 @@ jobs:
       trigger: true
     - get: ovftool-linux
       tags: [vsphere]
+    - get: base-iso
+      tags: [vsphere]
     - put: version
       resource: bosh-vsphere-stemcell-version
       tags: [vsphere]
@@ -186,7 +195,6 @@ jobs:
     tags: [vsphere]
     params:
       OUTPUT_DIR: bosh-windows-stemcell
-      ISO_URL: "http://care.dlservice.microsoft.com/dl/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO"
       ISO_CHECKSUM_TYPE: "md5"
       ISO_CHECKSUM: "5b5e08c490ad16b59b1d9fab0def883a"
       MEMSIZE: "8192"
