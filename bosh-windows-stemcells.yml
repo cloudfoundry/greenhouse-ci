@@ -170,6 +170,7 @@ jobs:
         bump: patch
     - get: ps-windows-update
     - get: bosh-windows-acceptance-tests
+    - get: ci
   - task: agent-sha
     config:
       platform: linux
@@ -203,7 +204,8 @@ jobs:
       GUEST_NETWORK_MASK: "255.255.255.0"
       GUEST_NETWORK_GATEWAY: "10.85.58.1"
     ensure:
-      task: ci/tasks/cleanup-vsphere.yml
+      task: cleanup-vsphere
+      file: ci/tasks/cleanup-vsphere.yml
       tags: [vsphere]
       params:
         REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
