@@ -202,6 +202,13 @@ jobs:
       GUEST_NETWORK_ADDRESS: "10.85.58.10"
       GUEST_NETWORK_MASK: "255.255.255.0"
       GUEST_NETWORK_GATEWAY: "10.85.58.1"
+    ensure:
+      task: ci/tasks/cleanup-vsphere.yml
+      tags: [vsphere]
+      params:
+        REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
+        REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
+        REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
   - task: test-stemcell
     file: bosh-windows-acceptance-tests/concourse.yml
     tags: [vsphere]
