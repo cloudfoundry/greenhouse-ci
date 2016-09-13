@@ -39,8 +39,10 @@ ESXI_DATASTORE: SOME_UUID
 # the same as ESXI_DATASTORE.
 ESXI_CACHE_DATASTORE: SOME_UUID
 
-# URL or file path of the Windows ISO (may be to an S3 Bucket).
-WINDOWS_ISO_URL: 'http://care.dlservice.microsoft.com/dl/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO'
+# S3 bucket containing Windows ISOs
+# File names must match: windows-(.*).iso
+# ie: windows-1.iso
+S3_WINDOWS_ISO_BUCKET: REPLACE_ME
 
 # MD5 checksum used to verify Windows ISO download.
 WINDOWS_ISO_CHECKSUM: '5b5e08c490ad16b59b1d9fab0def883a'

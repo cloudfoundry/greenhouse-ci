@@ -26,6 +26,15 @@ resources:
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: base-iso
+  type: s3
+  source:
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_WINDOWS_ISO_BUCKET}}
+    regexp: windows-(.*).iso
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
 
 - name: version
   type: semver
@@ -60,6 +69,7 @@ jobs:
     - get: stemcell-builder
     - get: version
     - get: ps-windows-update
+    - get: base-iso
 
   - task: extract-consumable
     file: ci/tasks/extract-consumable.yml
@@ -68,7 +78,6 @@ jobs:
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
-      ISO_URL: {{WINDOWS_ISO_URL}}
       ISO_CHECKSUM_TYPE: "md5"
       ISO_CHECKSUM: {{WINDOWS_ISO_CHECKSUM}}
       MEMSIZE: {{GUEST_MEMSIZE}}
