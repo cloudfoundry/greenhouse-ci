@@ -11,13 +11,13 @@ AWS_SECRET_KEY: REPLACE_ME
 S3_ENDPOINT: REPLACE_ME
 
 # S3 bucket containing VMware OVF Tool for Linux 64-bit
-# Resource key must match: VMware-ovftool-(.*)-lin.x86_64.bundle
+# File names must match: VMware-ovftool-(.*)-linux86_64.bundle
 # The latest tested version is 4.1.0 and can be found here:
 # https://www.vmware.com/support/developer/ovf/
 S3_OVFTOOL_BUCKET: REPLACE_ME
 
 # S3 bucket containing PSWindowsUpdate PowerShell module
-# Resource key must match: PSWindowsUpdate_v(.*).zip
+# File names must match: PSWindowsUpdate_v(.*).zip
 # The latest tested version is 1.5.1 and can be found here:
 # https://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc
 S3_WINDOWS_UPDATE_BUCKET: REPLACE_ME
