@@ -6,6 +6,7 @@ PACKER_VM_NAME = 'packer-vmware-iso'
 REMOTE_HOST = ENV.fetch('REMOTE_HOST')
 REMOTE_USERNAME = ENV.fetch('REMOTE_USERNAME')
 REMOTE_PASSWORD = ENV.fetch('REMOTE_PASSWORD')
+REMOTE_DATASTORE = ENV.fetch('REMOTE_DATASTORE')
 
 def find_vmid (vms,vm_name)
   packer_present = false
@@ -40,4 +41,8 @@ Net::SSH.start(REMOTE_HOST, REMOTE_USERNAME, :password => REMOTE_PASSWORD) do |s
 
   ssh.exec!("vim-cmd vmsvc/power.off #{vm_id}")
   ssh.exec!("vim-cmd vmsvc/destroy #{vm_id}")
+
+  # Check if vm data is still in datastore and remove if so
+  vm_datastore_dir = "/vmfs/volumes/#{REMOTE_DATASTORE}/#{PACKER_VM_NAME}"
+  puts ssh.exec!("if [ -d #{vm_datastore_dir} ]; then rm -r #{vm_datastore_dir}; fi")
 end

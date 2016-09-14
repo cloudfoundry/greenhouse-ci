@@ -211,6 +211,7 @@ jobs:
         REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
         REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
         REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
+        REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
   - task: test-stemcell
     file: bosh-windows-acceptance-tests/concourse.yml
     tags: [vsphere]
