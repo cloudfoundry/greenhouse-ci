@@ -218,7 +218,7 @@ jobs:
     params:
       BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
       BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
-      DIRECTOR_UUID: 66bf0aa2-6fa3-4551-aae8-dc83fa81c751
+      DIRECTOR_UUID: {{STONETALON_DIRECTOR_UUID}}
       DIRECTOR_IP: {{STONETALON_BOSH_DIRECTOR_IP}}
       STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
