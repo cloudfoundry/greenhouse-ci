@@ -5,7 +5,7 @@ set -ex
 DEPS_VERSION=$(cat version/number | tr -d '[[:space:]]')
 
 mv tar/tar-*.exe tar/tar.exe
-mv zlib1/zlib1-*.exe zlib1/zlib1.exe
+mv zlib1/zlib1-*.dll zlib1/zlib1.dll
 
 zip "bosh-agent-deps-zip/agent-dependencies-v$DEPS_VERSION.zip" \
 	bosh-blobstore-dav/bosh-blobstore-dav-*.exe \
