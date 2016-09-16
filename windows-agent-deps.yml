@@ -1,0 +1,93 @@
+---
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: version
+  type: semver
+  source:
+    bucket: bosh-windows-dependencies
+    key: version/number
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-blobstore-dav
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: bosh-blobstore-dav-(.*).exe
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-blobstore-s3
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: bosh-blobstore-s3-(.*).exe
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: job-service-wrapper
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: job-service-wrapper-(.*).exe
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: tar
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: tar-(.*).exe
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: zlib1
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: zlib1-(.*).dll
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: bosh-agent-deps-zip
+  type: s3
+  source:
+    bucket: bosh-temp-bucket
+    regexp: agent-dependencies-v(.*).zip
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+
+jobs:
+- name: collect-and-zip
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - put: version
+      params:
+        bump: minor
+    - get: bosh-blobstore-dav
+    - get: bosh-blobstore-s3
+    - get: job-service-wrapper
+    - get: tar
+    - get: zlib1
+  - task: collect-and-zip
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: pivotalgreenhouse/ci
+      inputs:
+      - name: ci
+      - name: version
+      - name: bosh-blobstore-dav
+      - name: bosh-blobstore-s3
+      - name: job-service-wrapper
+      - name: tar
+      - name: zlib1
+      outputs:
+      - name: bosh-agent-deps-zip
+      run:
+        path: ci/scripts/collect-and-zip-agent-deps.sh
+  - put: bosh-agent-deps-zip
+    params:
+      file: bosh-agent-deps-zip/agent-dependencies-v*.zip
