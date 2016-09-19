@@ -6,7 +6,8 @@ AWS_SECRET_KEY: REPLACE_ME
 
 # If a S3 compatible provider is being used, specify the hostname or IP here
 # and disable SSL if needed
-# Example when using minio.io: 192.168.3.254:9000 (Notes: You may also need to disable_ssl in bosh-windows-consumer.yml for minio)
+# Example when using minio.io: 192.168.3.254:9000 (Notes: You may also need to
+# disable_ssl in bosh-windows-consumer.yml for minio).
 # Example when using Amazon S3: https://s3.amazonaws.com
 S3_ENDPOINT: REPLACE_ME
 
@@ -15,6 +16,11 @@ S3_ENDPOINT: REPLACE_ME
 # The latest tested version is 4.1.0 and can be found here:
 # https://www.vmware.com/support/developer/ovf/
 S3_OVFTOOL_BUCKET: REPLACE_ME
+
+# S3 bucket containing version 7.0.1 of the ultradefrag tool:
+# https://sourceforge.net/projects/ultradefrag/files/stable-release/7.0.1/ultradefrag-portable-7.0.1.bin.amd64.zip/download
+# File name must match: ultradefrag-portable-(.*).bin.amd64.zip
+S3_ULTRADEFRAG_BUCKET: REPLACE_ME
 
 # S3 bucket containing PSWindowsUpdate PowerShell module
 # File names must match: PSWindowsUpdate_v(.*).zip

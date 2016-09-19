@@ -70,6 +70,13 @@ resources:
     regexp: agent-dependencies-v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: ultradefrag-zip
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: ultradefrag-portable-(.*).bin.amd64.zip
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
 - name: bosh-vsphere-stemcell-version
   type: semver
   source:
@@ -160,6 +167,8 @@ jobs:
       passed: [compile-and-push]
       trigger: true
     - get: ovftool-linux
+      tags: [vsphere]
+    - get: ultradefrag-zip
       tags: [vsphere]
     - get: base-iso
       tags: [vsphere]

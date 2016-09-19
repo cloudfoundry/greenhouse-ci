@@ -35,6 +35,15 @@ resources:
     regexp: windows-(.*).iso
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: ultradefrag-zip
+  type: s3
+  source:
+    disable_ssl: false
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_ULTRADEFRAG_BUCKET}}
+    regexp: ultradefrag-portable-(.*).bin.amd64.zip
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
 
 - name: version
   type: semver
@@ -70,6 +79,7 @@ jobs:
     - get: version
     - get: ps-windows-update
     - get: base-iso
+    - get: ultradefrag-zip
 
   - task: extract-consumable
     file: ci/tasks/extract-consumable.yml
