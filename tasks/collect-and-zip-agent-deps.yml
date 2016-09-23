@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+
+inputs:
+- name: ci
+- name: version
+- name: bosh-blobstore-dav
+- name: bosh-blobstore-s3
+- name: winsw-exe
+- name: tar
+- name: zlib1
+
+outputs:
+- name: bosh-agent-deps-zip
+
+run:
+  path: ci/scripts/collect-and-zip-agent-deps.sh
