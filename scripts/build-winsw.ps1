@@ -14,4 +14,4 @@ if ($LastExitCode -ne 0)
 }
 
 $version = $(cat ../version/number)
-Copy-Item ./bin/Debug/winsw.exe ../winsw-output/job-service-wrapper-$version.exe
+Copy-Item ./bin/Debug/winsw.exe ../winsw-output/winsw-$version.exe
