@@ -13,6 +13,6 @@ mv bosh-blobstore-s3/bosh-blobstore-s3{-*,}.exe
 zip -j "bosh-agent-deps-zip/agent-dependencies-v$DEPS_VERSION.zip" \
 	bosh-blobstore-dav/*.exe \
 	bosh-blobstore-s3/*.exe \
-	winsw/*.exe \
+	winsw-exe/*.exe \
 	tar/*.exe \
 	zlib1/*.dll
