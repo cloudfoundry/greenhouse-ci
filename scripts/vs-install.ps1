@@ -29,6 +29,3 @@ if(!(Test-Path $VCTargetsPath)) {
   New-ItemProperty -Path $VCTargetsPath -Name $name -Value $value -Force
 }
 
-Write-Host "Installing .NET Framework 3.5"
-Install-WindowsFeature Net-Framework-Core
-Write-Host "Installed .NET Framework 3.5"

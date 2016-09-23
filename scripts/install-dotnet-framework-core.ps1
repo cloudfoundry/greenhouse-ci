@@ -1,18 +1,18 @@
 $Error.Clear()
 
-Configuration CFWindows {
+Configuration Features {
   Node "localhost" {
 
-    WindowsFeature IISWebServer {
+    WindowsFeature NetFrameworkCore {
       Ensure = "Present"
-        Name = "Web-Webserver"
+        Name = "Net-Framework-Core"
     }
   }
 }
 
 Install-WindowsFeature DSC-Service
-CFWindows
-Start-DscConfiguration -Wait -Path .\CFWindows -Force -Verbose
+Features
+Start-DscConfiguration -Wait -Path .\Features -Force -Verbose
 
 if ($Error) {
   Write-Host "Error summary:"
