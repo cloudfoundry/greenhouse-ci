@@ -26,13 +26,6 @@ resources:
     regexp: bosh-blobstore-s3-(.*).exe
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-- name: job-service-wrapper
-  type: s3
-  source:
-    bucket: bosh-windows-dependencies
-    regexp: job-service-wrapper-(.*).exe
-    access_key_id: {{AWS_ACCESS_KEY}}
-    secret_access_key: {{AWS_SECRET_KEY}}
 - name: tar
   type: s3
   source:
@@ -54,8 +47,62 @@ resources:
     regexp: agent-dependencies-v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: winsw-upstream
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/kohsuke/winsw.git
+    tag_filter: winsw-*
+- name: winsw-version
+  type: semver
+  source:
+    bucket: bosh-windows-winsw
+    key: version/number
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+- name: winsw
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/winsw.git
+    private_key: {{PIVOTALCF_WINSW_DEPLOY_KEY}}
+- name: winsw-exe
+  type: s3
+  source:
+    bucket: bosh-windows-winsw
+    regexp: winsw-(.*).exe
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
 
 jobs:
+- name: merge-winsw-upstream
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: release-master
+      resource: winsw-upstream
+      trigger: true
+    - get: release-develop
+      resource: winsw
+  - task: merge-winsw-upstream
+    file: ci/tasks/merge-master-into-develop.yml
+  - put: winsw
+    params: { repository: merged-master/release-develop }
+- name: build-winsw
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winsw
+      trigger: true
+    - put: version
+      resource: winsw-version
+      params: { bump: minor }
+  - task: build-winsw
+    file: ci/tasks/build-winsw.yml
+  - put: winsw-exe
+    params: { file: winsw-output/winsw-*.exe }
 - name: collect-and-zip
   serial: true
   plan:
@@ -66,28 +113,12 @@ jobs:
         bump: minor
     - get: bosh-blobstore-dav
     - get: bosh-blobstore-s3
-    - get: job-service-wrapper
+    - get: winsw-exe
+      passed: [build-winsw]
     - get: tar
     - get: zlib1
   - task: collect-and-zip
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: pivotalgreenhouse/ci
-      inputs:
-      - name: ci
-      - name: version
-      - name: bosh-blobstore-dav
-      - name: bosh-blobstore-s3
-      - name: job-service-wrapper
-      - name: tar
-      - name: zlib1
-      outputs:
-      - name: bosh-agent-deps-zip
-      run:
-        path: ci/scripts/collect-and-zip-agent-deps.sh
+    file: ci/tasks/collect-and-zip-agent-deps.yml
   - put: bosh-agent-deps-zip
     params:
       file: bosh-agent-deps-zip/agent-dependencies-v*.zip
