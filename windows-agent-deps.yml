@@ -43,7 +43,7 @@ resources:
 - name: bosh-agent-deps-zip
   type: s3
   source:
-    bucket: bosh-temp-bucket
+    bucket: bosh-windows-dependencies
     regexp: agent-dependencies-v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
