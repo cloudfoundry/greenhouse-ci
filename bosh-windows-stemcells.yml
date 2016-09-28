@@ -141,10 +141,12 @@ jobs:
 - name: compile-and-push
   serial: true
   plan:
-  - get: bosh-agent
-  - put: bosh-agent-zip-version
-    params:
-      bump: patch
+  - aggregate:
+    - get: bosh-agent
+    - get: bosh-agent-deps-zip
+    - put: bosh-agent-zip-version
+      params:
+        bump: patch
   - task: compile-agent
     privileged: true
     file: bosh-agent/ci/tasks/compile-agent-windows.yml
