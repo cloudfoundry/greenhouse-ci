@@ -110,7 +110,7 @@ jobs:
     - get: ci
     - put: version
       params:
-        bump: minor
+        bump: major
     - get: bosh-blobstore-dav
     - get: bosh-blobstore-s3
     - get: winsw-exe
