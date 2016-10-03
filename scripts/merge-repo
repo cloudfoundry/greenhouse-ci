@@ -2,15 +2,15 @@
 
 set -e -x -u
 
-pushd release-develop
+pushd to-repo
   echo "----- Set git identity"
   git config user.email "cf-netgarden-eng@pivotal.io"
   git config user.name "CI (Automated)"
 
   echo "----- Adding master cloned release as remote"
-  git remote add local-release-master ../release-master
-  git fetch local-release-master
-  git merge --no-edit local-release-master/master
+  git remote add local-from ../from-repo
+  git fetch local-from
+  git merge --no-edit local-from/${FROM_BRANCH}
 popd
 
-cp -a release-develop merged-master/
+cp -a to-repo merged-repo/

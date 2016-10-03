@@ -1,12 +1,15 @@
 platform: linux
 image_resource: {type: docker-image, source: {repository: cloudfoundry/diego-pipeline } }
 inputs:
-  - name: release-develop
-  - name: release-master
+  - name: to-repo
+  - name: from-repo
   - name: ci
 
 outputs:
-  - name: merged-master
+  - name: merged-repo
 
 run:
-  path: ci/scripts/merge-master-into-develop
+  path: ci/scripts/merge-repo
+
+params:
+  FROM_BRANCH: ~
