@@ -80,15 +80,17 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: release-master
+    - get: from-repo
       resource: winsw-upstream
       trigger: true
-    - get: release-develop
+    - get: to-repo
       resource: winsw
   - task: merge-winsw-upstream
-    file: ci/tasks/merge-master-into-develop.yml
+    file: ci/tasks/merge-repo.yml
+    params:
+      FROM_BRANCH: master
   - put: winsw
-    params: { repository: merged-master/release-develop }
+    params: { repository: merged-repo/to-repo }
 - name: build-winsw
   serial: true
   plan:
