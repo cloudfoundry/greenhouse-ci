@@ -15,17 +15,13 @@ resources:
 - name: bosh-blobstore-dav
   type: s3
   source:
-    bucket: bosh-windows-dependencies
-    regexp: bosh-blobstore-dav-(.*).exe
-    access_key_id: {{AWS_ACCESS_KEY}}
-    secret_access_key: {{AWS_SECRET_KEY}}
+    bucket: davcli
+    regexp: davcli-(.*)-windows-amd64.exe
 - name: bosh-blobstore-s3
   type: s3
   source:
-    bucket: bosh-windows-dependencies
-    regexp: bosh-blobstore-s3-(.*).exe
-    access_key_id: {{AWS_ACCESS_KEY}}
-    secret_access_key: {{AWS_SECRET_KEY}}
+    bucket: s3cli-artifacts
+    regexp: s3cli-(.*)-windows-amd64.exe
 - name: tar
   type: s3
   source:
