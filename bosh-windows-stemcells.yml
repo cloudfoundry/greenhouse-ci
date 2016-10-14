@@ -105,12 +105,24 @@ resources:
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-- name: windows-ami
+- name: windows-ami-us-east-1
   type: ami-resource
   source:
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
     region: us-east-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-us-west-2
+  type: ami-resource
+  source:
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    region: us-west-2
     search_options:
       filters:
       - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
@@ -245,7 +257,8 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: windows-ami
+    - get: windows-ami-us-east-1
+    - get: windows-ami-us-west-2
     - get: stemcell-builder
     - get: bosh-agent
       passed: [compile-and-push]
@@ -275,8 +288,10 @@ jobs:
       OUTPUT_DIR: bosh-windows-stemcell
       AWS_ACCESS_KEY: {{AWS_ACCESS_KEY}}
       AWS_SECRET_KEY: {{AWS_SECRET_KEY}}
-      VPC_ID: vpc-3e38385b
-      SUBNET_ID: subnet-110fae67
+      VPC_ID_US_EAST_1: vpc-3e38385b
+      SUBNET_ID_US_EAST_1: subnet-110fae67
+      VPC_ID_US_WEST_2: vpc-fddc4a98
+      SUBNET_ID_US_WEST_2: subnet-b46de0c3
   - task: test-stemcell
     file: bosh-windows-acceptance-tests/concourse.yml
     params:
