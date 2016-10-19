@@ -105,6 +105,18 @@ resources:
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
+- name: windows-ami-eu-west-1
+  type: ami-resource
+  source:
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    region: eu-west-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
 - name: windows-ami-us-east-1
   type: ami-resource
   source:
@@ -143,7 +155,7 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{AWS_ACCESS_KEY}}
     secret_access_key: {{AWS_SECRET_KEY}}
-- name: bosh-windows-acceptance-tests
+- name: bwats
   type: git
   source:
     branch: master
@@ -192,7 +204,7 @@ jobs:
       params:
         bump: patch
     - get: ps-windows-update
-    - get: bosh-windows-acceptance-tests
+    - get: bwats
     - get: ci
   - task: agent-sha
     config:
@@ -236,7 +248,7 @@ jobs:
         REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
         REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
   - task: test-stemcell
-    file: bosh-windows-acceptance-tests/concourse.yml
+    file: bwats/concourse.yml
     tags: [vsphere]
     params:
       BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
@@ -257,6 +269,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
+    - get: windows-ami-eu-west-1
     - get: windows-ami-us-east-1
     - get: windows-ami-us-west-2
     - get: stemcell-builder
@@ -270,7 +283,7 @@ jobs:
       passed: [compile-and-push]
       trigger: true
     - get: bosh-agent-deps-zip
-    - get: bosh-windows-acceptance-tests
+    - get: bwats
   - task: agent-sha
     config:
       platform: linux
@@ -282,18 +295,23 @@ jobs:
       run:
         path: bash
         args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
+  - task: collect-amis
+    file: ci/tasks/collect-stemcell-region-amis.yml
+    params:
+      VPC_ID_EU_WEST_1: vpc-944df7f1
+      SUBNET_ID_EU_WEST_1: subnet-0978c850
+      VPC_ID_US_EAST_1: vpc-3e38385b
+      SUBNET_ID_US_EAST_1: subnet-110fae67
+      VPC_ID_US_WEST_2: vpc-fddc4a98
+      SUBNET_ID_US_WEST_2: subnet-b46de0c3
   - task: create-stemcell
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
       AWS_ACCESS_KEY: {{AWS_ACCESS_KEY}}
       AWS_SECRET_KEY: {{AWS_SECRET_KEY}}
-      VPC_ID_US_EAST_1: vpc-3e38385b
-      SUBNET_ID_US_EAST_1: subnet-110fae67
-      VPC_ID_US_WEST_2: vpc-fddc4a98
-      SUBNET_ID_US_WEST_2: subnet-b46de0c3
   - task: test-stemcell
-    file: bosh-windows-acceptance-tests/concourse.yml
+    file: bwats/concourse.yml
     params:
       BOSH_PASSWORD: {{AWS_BOSH_PASSWORD}}
       BOSH_USER: {{AWS_BOSH_USER}}
