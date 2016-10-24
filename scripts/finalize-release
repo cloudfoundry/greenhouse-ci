@@ -4,7 +4,7 @@
 set -e -x -u
 
 # echo "----- Copy private blobstore credentials into garden-windows-release"
-cp greenhouse-private/garden-windows-bosh-release/private.yml release-develop/config/private.yml
+cp greenhouse-private/repos/garden-windows-bosh-release/private.yml release-develop/config/private.yml
 
 FINAL_RELEASE_VERSION=$(cat version/number)
 DEV_RELEASE_TARBALL=$(ls $PWD/bucket-develop/*.tgz)
