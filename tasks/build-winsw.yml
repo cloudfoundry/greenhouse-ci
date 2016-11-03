@@ -2,8 +2,8 @@
 platform: windows
 
 inputs:
+- name: win-sw
 - name: version
-- name: winsw
 - name: ci
 
 outputs:

@@ -1,10 +1,10 @@
 # Add MSBuild to Path
-$env:PATH = $env:Path + "C:\Windows\Microsoft.Net\Framework\v4.0.30319"
+$env:PATH =$env:Path + ";" + "C:\Windows\Microsoft.Net\Framework\v4.0.30319"
 
 # Install Net-Framework-Core - required for building winsw
 PowerShell -File 'ci\scripts\install-dotnet-framework-core.ps1'
 
-cd winsw
+cd win-sw
 MSBuild ./winsw.csproj
 
 if ($LastExitCode -ne 0)
