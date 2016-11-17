@@ -183,24 +183,17 @@ jobs:
   plan:
   - aggregate:
     - get: bosh-agent
-      tags: [vsphere]
       passed: [compile-and-push]
     - get: stemcell-builder
     - get: bosh-agent-deps-zip
-      tags: [vsphere]
     - get: bosh-agent-zip
-      tags: [vsphere]
       passed: [compile-and-push]
       trigger: true
     - get: ovftool-linux
-      tags: [vsphere]
     - get: ultradefrag-zip
-      tags: [vsphere]
     - get: base-iso
-      tags: [vsphere]
     - put: version
       resource: bosh-vsphere-stemcell-version
-      tags: [vsphere]
       params:
         bump: patch
     - get: ps-windows-update
@@ -220,7 +213,7 @@ jobs:
   - task: create-vsphere-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
-    tags: [vsphere]
+    tags: [vsphere-windows]
     params:
       OUTPUT_DIR: bosh-windows-stemcell
       ISO_CHECKSUM_TYPE: "md5"
@@ -241,7 +234,7 @@ jobs:
     ensure:
       task: cleanup-vsphere
       file: ci/tasks/cleanup-vsphere.yml
-      tags: [vsphere]
+      tags: [vsphere-windows]
       params:
         REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
         REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
@@ -249,7 +242,7 @@ jobs:
         REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
   - task: test-stemcell
     file: bwats/concourse.yml
-    tags: [vsphere]
+    tags: [vsphere-windows]
     params:
       BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
       BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
@@ -259,7 +252,7 @@ jobs:
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
   - put: bosh-vsphere-stemcell
-    tags: [vsphere]
+    tags: [vsphere-windows]
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: windows-updates-list
