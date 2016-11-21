@@ -14,9 +14,9 @@ bosh login --ca-cert=$ROOT_CA --environment=$(bbl director-address) --user=$(bbl
 ## Generate manifest
 cf-filler -dnsname $DOMAIN -recipe $ROOT/cf-deployment/cf-filler/recipe-cf-deployment.yml > vars.yml
 
-bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell $ROOT/aws-linux-stemcells/stemcell.tgz
-WINDOWS_STEMCELL=$(basename $ROOT/aws-windows-stemcells/*.tgz)
-bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell "$ROOT/aws-windows-stemcells/$WINDOWS_STEMCELL"
+bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell $ROOT/aws-linux-stemcell/stemcell.tgz
+WINDOWS_STEMCELL=$(basename $ROOT/aws-windows-stemcell/*.tgz)
+bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell "$ROOT/aws-windows-stemcell/$WINDOWS_STEMCELL"
 
 bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) -d cf deploy $ROOT/cf-deployment/cf-deployment.yml -l vars.yml -o $ROOT/cf-deployment/opsfiles/disable-router-tls-termination.yml
 
