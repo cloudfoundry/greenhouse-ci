@@ -6,6 +6,8 @@ inputs:
 - name: cf-deployment
 - name: aws-windows-stemcell
 - name: aws-linux-stemcell
+outputs:
+- name: greenhouse-private-output
 run:
   path: greenhouse-ci/scripts/bbl-deploy.sh
 params:

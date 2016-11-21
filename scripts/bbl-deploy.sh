@@ -3,7 +3,9 @@
 set -ex
 
 export ROOT=$PWD
-cd "greenhouse-private/bbl/${ENVIRONMENT}"
+cp -r greenhouse-private/* greenhouse-private-output/*
+
+pushd "greenhouse-private-output/bbl/${ENVIRONMENT}"
 
 export ROOT_CA="/tmp/rootCA.pem"
 bbl director-ca-cert > $ROOT_CA
@@ -16,3 +18,12 @@ bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell $ROOT/aws-
 bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) upload-stemcell $ROOT/aws-windows-stemcells/stemcell.tgz
 
 bosh -n --ca-cert $ROOT_CA -e $(bbl director-address) -d cf deploy $ROOT/cf-deployment/cf-deployment.yml -l vars.yml -o $ROOT/cf-deployment/opsfiles/disable-router-tls-termination.yml
+popd
+
+echo "----- Set git identity"
+git config user.email "cf-netgarden-eng@pivotal.io"
+git config user.name "CI (Automated)"
+
+git commit -am ":rocket: Update ${ENVIRONMENT}"
+popd
+
