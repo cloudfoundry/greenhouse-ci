@@ -2,6 +2,7 @@
 platform: linux
 image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bbl } }
 inputs:
+- name: ci
 - name: greenhouse-private
 - name: cf-deployment
 - name: aws-windows-stemcell
@@ -9,7 +10,7 @@ inputs:
 outputs:
 - name: greenhouse-private-output
 run:
-  path: greenhouse-ci/scripts/bbl-deploy.sh
+  path: ci/scripts/bbl-deploy.sh
 params:
   DOMAIN:
   ENVIRONMENT:
