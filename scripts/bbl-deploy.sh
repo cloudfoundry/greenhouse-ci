@@ -3,7 +3,7 @@
 set -ex
 
 export ROOT=$PWD
-cp -r greenhouse-private/* greenhouse-private-output/*
+cp -r greenhouse-private/* greenhouse-private-output/
 
 pushd "greenhouse-private-output/bbl/${ENVIRONMENT}"
 
