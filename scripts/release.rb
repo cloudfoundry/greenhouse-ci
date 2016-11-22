@@ -4,7 +4,6 @@ require 'octokit'
 require 'time'
 require 'open-uri'
 require 'tempfile'
-require_relative './cloudformation_template'
 require_relative './ami_query'
 
 def token
@@ -92,30 +91,6 @@ def get_release_resource(repo, release)
   github.releases(repo).select { |r| r.tag_name == release}.first
 end
 
-def create_cloudformation_release
-  ami_query = AMIQuery.new(aws_credentials: {
-    access_key_id: ENV.fetch("AWS_ACCESS_KEY_ID"),
-    secret_access_key: ENV.fetch("AWS_SECRET_ACCESS_KEY")
-  })
-
-  template_json_file = Dir::glob("diego-windows-cloudformation-template-file/*.json.template").first
-  template_json = File.read(template_json_file)
-  template = CloudformationTemplate.new(template_json: template_json)
-  diego_base_url = "https://github.com/cloudfoundry/diego-windows-release/releases/download/#{diego_version}"
-  garden_base_url = "https://github.com/cloudfoundry/garden-windows-release/releases/download/#{garden_version}"
-  template.ami = ami_query.latest_ami
-  template.generator_url = "#{diego_base_url}/generate.exe"
-  template.diego_windows_msi_url = "#{diego_base_url}/DiegoWindows.msi"
-  template.garden_windows_msi_url = "#{garden_base_url}/GardenWindows.msi"
-  template.setup_ps1_url = "#{garden_base_url}/setup.ps1"
-  template.hakim_url = "#{diego_base_url}/hakim.exe"
-
-  Tempfile.new('cloudformation-release.json').tap do |tempfile|
-    tempfile.write(template.to_json)
-    tempfile.close
-  end
-end
-
 def diego_repo
   "cloudfoundry/diego-windows-release"
 end
@@ -160,7 +135,6 @@ def diego_release_resources
   {
     diego_windows_msi_file => "DiegoWindows.msi",
     generate_file => "generate.exe",
-    create_cloudformation_release.path => "cloudformation.json",
     hakim_file => "hakim.exe"
   }
 end
