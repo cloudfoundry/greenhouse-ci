@@ -5,7 +5,7 @@ set -ex
 export ROOT=$PWD
 cp -r greenhouse-private/. greenhouse-private-output
 
-pushd "greenhouse-private-output/bbl/${ENVIRONMENT}"
+pushd "greenhouse-private-output/${ENVIRONMENT}"
 
 export ROOT_CA="/tmp/rootCA.pem"
 bbl director-ca-cert > $ROOT_CA
