@@ -301,6 +301,7 @@ jobs:
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
+      OS_VERSION: windows2012R2
       AWS_ACCESS_KEY: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
       AWS_SECRET_KEY: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
   - task: test-stemcell
