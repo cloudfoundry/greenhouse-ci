@@ -309,8 +309,8 @@ jobs:
     params:
       BOSH_PASSWORD: {{AWS_BOSH_PASSWORD}}
       BOSH_USER: {{AWS_BOSH_USER}}
-      DIRECTOR_IP: 52.1.65.226:25555
-      DIRECTOR_UUID: 5c99d18a-8615-4b1f-bb5a-268b798db37a
+      DIRECTOR_IP: {{AWS_BOSH_DIRECTOR_IP}}
+      DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
       STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
   - put: bosh-aws-stemcell
