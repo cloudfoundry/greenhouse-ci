@@ -1,7 +1,7 @@
 #docker pull pivotalgreenhouse/bbl
 FROM golang
 
-RUN wget -q https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-0.0.114-linux-amd64 -O /usr/local/bin/bosh && chmod +x /usr/local/bin/bosh
+RUN wget -q https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-0.0.125-linux-amd64 -O /usr/local/bin/bosh && chmod +x /usr/local/bin/bosh
 RUN wget -q https://s3.amazonaws.com/bosh-init-artifacts/bosh-init-0.0.99-linux-amd64 -O /usr/local/bin/bosh-init && chmod +x /usr/local/bin/bosh-init
 RUN go get github.com/cloudfoundry/bosh-bootloader/bbl
 RUN go get github.com/rosenhouse/cf-filler
