@@ -26,90 +26,90 @@ resources:
   source:
     bucket: windows-bosh-integration
     key: versions/bosh-agent-version
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: windows-updates-list
   type: s3
   source:
     bucket: windows-updates-list
     regexp: update-list-(.*).csv
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-windows-shipit-version
   type: semver
   source:
     bucket: bosh-windows-client-consumable
     key: versions/consumable-version
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-windows-client-consumable
   type: s3
   source:
     bucket: bosh-windows-client-consumable
     regexp: bosh-windows-(.*).json
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: base-iso
   type: s3
   source:
     bucket: windows-bosh-private
     regexp: windows-(.*).iso
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-agent-zip
   type: s3
   source:
     bucket: windows-bosh-integration
     regexp: bosh-windows-integration-v(.*).zip
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-agent-deps-zip
   type: s3
   source:
     bucket: bosh-windows-dependencies
     regexp: agent-dependencies-v(.*).zip
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: ultradefrag-zip
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: ultradefrag-portable-(.*).bin.amd64.zip
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-vsphere-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/bosh-vsphere-stemcell-version
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-vsphere-stemcell
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: ovftool-linux
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: ps-windows-update
   type: s3
   source:
     bucket: ps-windows-updates-module
     regexp: PSWindowsUpdate_v(.*).zip
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: windows-ami-eu-west-1
   type: ami-resource
   source:
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     region: eu-west-1
     search_options:
       filters:
@@ -120,8 +120,8 @@ resources:
 - name: windows-ami-us-east-1
   type: ami-resource
   source:
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     region: us-east-1
     search_options:
       filters:
@@ -132,8 +132,8 @@ resources:
 - name: windows-ami-us-west-2
   type: ami-resource
   source:
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     region: us-west-2
     search_options:
       filters:
@@ -146,15 +146,15 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     key: versions/bosh-aws-stemcell-version
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-aws-stemcell
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bwats
   type: git
   source:
@@ -303,14 +303,14 @@ jobs:
     params:
       OUTPUT_DIR: bosh-windows-stemcell
       OS_VERSION: windows2012R2
-      AWS_ACCESS_KEY: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
-      AWS_SECRET_KEY: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+      AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+      AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
   - task: ami-status
     file: ci/tasks/ami-status.yml
     attempts: 10
     params:
-      AWS_ACCESS_KEY: {{BOSH_CONCOURSE_INTEGRATION_AWS_ACCESS_KEY}}
-      AWS_SECRET_KEY: {{BOSH_CONCOURSE_INTEGRATION_AWS_SECRET_KEY}}
+      AWS_ACCESS_KEY_ID: {{BOSH_CONCOURSE_INTEGRATION_AWS_ACCESS_KEY}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_CONCOURSE_INTEGRATION_AWS_SECRET_KEY}}
   - task: test-stemcell
     file: bwats/concourse.yml
     params:
