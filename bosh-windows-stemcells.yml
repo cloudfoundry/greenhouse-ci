@@ -305,6 +305,12 @@ jobs:
       OS_VERSION: windows2012R2
       AWS_ACCESS_KEY: {{BOSH_CONCOURSE_ACCESS_KEY_ID}}
       AWS_SECRET_KEY: {{BOSH_CONCOURSE_SECRET_ACCESS_KEY}}
+  - task: ami-status
+    file: ci/tasks/ami-status.yml
+    attempts: 10
+    params:
+      AWS_ACCESS_KEY: {{BOSH_CONCOURSE_INTEGRATION_AWS_ACCESS_KEY}}
+      AWS_SECRET_KEY: {{BOSH_CONCOURSE_INTEGRATION_AWS_SECRET_KEY}}
   - task: test-stemcell
     file: bwats/concourse.yml
     params:

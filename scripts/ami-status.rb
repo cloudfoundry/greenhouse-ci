@@ -26,6 +26,7 @@ class AMIStatus
 
 end
 
+sleep(60)
 file = File.read(File.join("amis","amis.json"))
 cred = Aws::Credentials.new(ENV.fetch('AWS_ACCESS_KEY_ID'), ENV.fetch('AWS_SECRET_ACCESS_KEY'))
 AMIStatus.new(aws_credentials: cred, amis:JSON.parse(file)).ready
