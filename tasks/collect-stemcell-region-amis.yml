@@ -17,11 +17,3 @@ outputs:
 
 run:
   path: ci/scripts/collect-stemcell-region-amis.rb
-
-params:
-  VPC_ID_EU_WEST_1:
-  SUBNET_ID_EU_WEST_1:
-  VPC_ID_US_EAST_1:
-  SUBNET_ID_US_EAST_1:
-  VPC_ID_US_WEST_2:
-  SUBNET_ID_US_WEST_2:
