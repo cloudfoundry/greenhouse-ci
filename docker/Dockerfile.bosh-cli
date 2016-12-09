@@ -2,12 +2,11 @@
 FROM golang
 
 # gcloud CLI
-RUN apt-get update && apt-get install apt-transport-https && \
+RUN apt-get update && apt-get install -y apt-transport-https && \
   echo "deb https://packages.cloud.google.com/apt cloud-sdk-jessie main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
   apt-get update && \
-  apt-get install google-cloud-sdk && \
-  apt-get clean
+  apt-get install -y google-cloud-sdk
 
 # bosh Golang CLI
 RUN curl https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/bosh:cli/resources/release-bucket-linux/versions | \
