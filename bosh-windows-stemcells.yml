@@ -63,13 +63,6 @@ resources:
     regexp: bosh-windows-integration-v(.*).zip
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-agent-deps-zip
-  type: s3
-  source:
-    bucket: bosh-windows-dependencies
-    regexp: agent-dependencies-v(.*).zip
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: ultradefrag-zip
   type: s3
   source:
@@ -166,14 +159,14 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: ci
     - get: bosh-agent
-    - get: bosh-agent-deps-zip
     - put: bosh-agent-zip-version
       params:
         bump: patch
   - task: compile-agent
     privileged: true
-    file: bosh-agent/ci/tasks/compile-agent-windows.yml
+    file: ci/tasks/compile-agent-windows.yml
   - put: bosh-agent-zip
     params:
       file: compiled-agent-zip/bosh-windows-integration-v*.zip
@@ -185,7 +178,6 @@ jobs:
     - get: bosh-agent
       passed: [compile-and-push]
     - get: stemcell-builder
-    - get: bosh-agent-deps-zip
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
@@ -202,14 +194,20 @@ jobs:
   - task: agent-sha
     config:
       platform: linux
-      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci } }
       inputs:
       - name: bosh-agent
       outputs:
       - name: bosh-agent-sha
+      - name: bosh-agent-deps-zip
       run:
         path: bash
-        args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
+        args:
+        - "-c"
+        - |
+          git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha
+          DEST=$PWD/bosh-agent-deps-zip
+          cd bosh-agent/integration/windows/fixtures && zip $DEST/agent-dependencies.zip *.exe zlib1.dll
   - task: create-vsphere-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
@@ -276,28 +274,36 @@ jobs:
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
-    - get: bosh-agent-deps-zip
     - get: bwats
   - task: agent-sha
     config:
       platform: linux
-      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci } }
       inputs:
       - name: bosh-agent
       outputs:
       - name: bosh-agent-sha
+      - name: bosh-agent-deps-zip
       run:
         path: bash
-        args: ["-c","git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha"]
+        args:
+        - "-c"
+        - |
+          git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha
+          DEST=$PWD/bosh-agent-deps-zip
+          cd bosh-agent/integration/windows/fixtures && zip $DEST/agent-dependencies.zip *.exe zlib1.dll
   - task: collect-amis
     file: ci/tasks/collect-stemcell-region-amis.yml
     params:
       VPC_ID_EU_WEST_1: vpc-944df7f1
       SUBNET_ID_EU_WEST_1: subnet-0978c850
+      SECURITY_GROUP_EU_WEST_1: sg-c63baaa0
       VPC_ID_US_EAST_1: vpc-3e38385b
       SUBNET_ID_US_EAST_1: subnet-110fae67
+      SECURITY_GROUP_US_EAST_1: sg-233e695e
       VPC_ID_US_WEST_2: vpc-fddc4a98
       SUBNET_ID_US_WEST_2: subnet-b46de0c3
+      SECURITY_GROUP_US_WEST_2: sg-2a626d53
   - task: create-stemcell
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
@@ -331,8 +337,6 @@ jobs:
     - get: bosh-agent
       passed: [create-vsphere-stemcell]
     - get: bosh-agent-zip
-      passed: [create-vsphere-stemcell]
-    - get: bosh-agent-deps-zip
       passed: [create-vsphere-stemcell]
     - get: windows-updates-list
       passed: [create-vsphere-stemcell]
