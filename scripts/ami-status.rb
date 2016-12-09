@@ -3,16 +3,15 @@ require 'aws-sdk'
 require 'json'
 
 class AMIStatus
-  def initialize(aws_credentials:,amis:)
-    @aws_credentials= aws_credentials
+  def initialize(amis:)
     @amis = amis
   end
 
   def ami_ready(ami)
-    ec2 = Aws::EC2::Client.new(region: ami["region"],credentials: @aws_credentials)
+    ENV["AWS_DEFAULT_REGION"] = ami["region"]
+    image = Aws::EC2::Image.new(ami["ami_id"])
     begin
-      image_results = ec2.describe_images(image_ids: [ ami["ami_id"] ])
-      return (image_results.images[0].state == "available")
+      return (image.state == "available")
     rescue
       puts "#{ami["region"]}: #{ami["ami_id"]} is not ready "
       return false
@@ -21,13 +20,14 @@ class AMIStatus
 
   def ready
     if !@amis.map { |a| ami_ready(a) }.reduce(:&)
+      sleep(60)
       abort
     end
   end
 
 end
 
-sleep(60)
 file = File.read(File.join("amis","amis.json"))
-cred = Aws::Credentials.new(ENV.fetch('AWS_ACCESS_KEY_ID'), ENV.fetch('AWS_SECRET_ACCESS_KEY'))
-AMIStatus.new(aws_credentials: cred, amis:JSON.parse(file)).ready
+abort "AWS_ACCESS_KEY_ID not set" unless ENV.has_key?('AWS_ACCESS_KEY_ID')
+abort "AWS_SECRET_ACCESS_KEY not set" unless ENV.has_key?('AWS_SECRET_ACCESS_KEY')
+AMIStatus.new(amis:JSON.parse(file)).ready
