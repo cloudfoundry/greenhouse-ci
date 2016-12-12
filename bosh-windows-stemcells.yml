@@ -148,6 +148,13 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: bosh-gcp-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/bosh-gcp-stemcell-version
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bwats
   type: git
   source:
@@ -325,6 +332,47 @@ jobs:
   - put: bosh-aws-stemcell
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+- name: create-gcp-stemcell
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+    - get: bosh-agent
+      passed: [compile-and-push]
+    - put: version
+      resource: bosh-gcp-stemcell-version
+      params:
+        bump: patch
+    - get: bosh-agent-zip
+      passed: [compile-and-push]
+      trigger: true
+    - get: bwats
+  - task: agent-sha
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+      inputs:
+      - name: bosh-agent
+      outputs:
+      - name: bosh-agent-sha
+      - name: bosh-agent-deps-zip
+      run:
+        path: bash
+        args:
+        - "-c"
+        - |
+          git --git-dir bosh-agent/.git rev-parse HEAD > bosh-agent-sha/sha
+          DEST=$PWD/bosh-agent-deps-zip
+          cd bosh-agent/integration/windows/fixtures && zip $DEST/agent-dependencies.zip *.exe zlib1.dll
+  - task: create-stemcell
+    file: stemcell-builder/tasks/create-gcp-stemcell.yml
+    params:
+      OUTPUT_DIR: bosh-windows-stemcell
+      OS_VERSION: windows-2012-r2
+      ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+  - put: bosh-aws-stemcell
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows-2012-r2-go_agent.tgz
 - name: shipit
   plan:
   - aggregate:
