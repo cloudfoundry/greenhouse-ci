@@ -1,6 +1,9 @@
 #docker pull pivotalgreenhouse/bosh-cli
 FROM golang
 
+#install jq
+RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
+
 # gcloud CLI
 RUN apt-get update && apt-get install -y apt-transport-https && \
   echo "deb https://packages.cloud.google.com/apt cloud-sdk-jessie main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
