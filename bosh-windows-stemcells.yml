@@ -155,6 +155,13 @@ resources:
     key: versions/bosh-gcp-stemcell-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: bosh-gcp-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows-2012-r2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bwats
   type: git
   source:
@@ -370,7 +377,7 @@ jobs:
       OUTPUT_DIR: bosh-windows-stemcell
       OS_VERSION: windows-2012-r2
       ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
-  - put: bosh-aws-stemcell
+  - put: bosh-gcp-stemcell
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows-2012-r2-go_agent.tgz
 - name: shipit
