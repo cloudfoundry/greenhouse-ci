@@ -372,6 +372,7 @@ jobs:
           DEST=$PWD/bosh-agent-deps-zip
           cd bosh-agent/integration/windows/fixtures && zip $DEST/agent-dependencies.zip *.exe zlib1.dll
   - task: create-stemcell
+    attempts: 10
     file: stemcell-builder/tasks/create-gcp-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
