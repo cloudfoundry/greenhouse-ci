@@ -257,6 +257,7 @@ jobs:
     tags: [vsphere-windows]
     params:
       AZ: default
+      VM_TYPE: xlarge
       BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
       BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
       DIRECTOR_UUID: {{STONETALON_DIRECTOR_UUID}}
