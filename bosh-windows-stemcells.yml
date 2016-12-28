@@ -254,6 +254,7 @@ jobs:
         REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
   - task: test-stemcell
     file: bwats/concourse.yml
+    attempts: 5
     tags: [vsphere-windows]
     params:
       AZ: default
