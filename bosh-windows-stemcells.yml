@@ -378,7 +378,7 @@ jobs:
     file: stemcell-builder/tasks/create-gcp-stemcell.yml
     params:
       OUTPUT_DIR: bosh-windows-stemcell
-      OS_VERSION: windows-2012-r2
+      OS_VERSION: windows2012R2
       ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
   - put: bosh-gcp-stemcell
     params:
