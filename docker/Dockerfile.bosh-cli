@@ -12,9 +12,8 @@ RUN apt-get update && apt-get install -y apt-transport-https && \
   apt-get install -y google-cloud-sdk
 
 # bosh Golang CLI
-# RUN curl https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/bosh:cli/resources/release-bucket-linux/versions | \
-#   jq -r '.[0].metadata[]|select(.name=="url").value' | \
-#   xargs -I {} curl {} -o /usr/local/bin/bosh && \
-#   chmod 755 /usr/local/bin/bosh
-RUN curl https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-0.0.138-linux-amd64 -o /usr/local/bin/bosh &&  \
-chmod 755 /usr/local/bin/bosh
+RUN curl https://main.bosh-ci.cf-app.com/api/v1/teams/main/pipelines/bosh:cli/resources/release-bucket-linux/versions | \
+  jq -r '.[0].metadata[]|select(.name=="url").value' | \
+  xargs -I {} curl {} -o /usr/local/bin/bosh && \
+  chmod 755 /usr/local/bin/bosh
+
