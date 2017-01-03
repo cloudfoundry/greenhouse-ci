@@ -27,6 +27,8 @@ cat > ./service_wrapper.xml <<EOF
   <description>BOSH Agent</description>
   <executable>bosh-agent.exe</executable>
   <arguments>-P windows -C agent.json -M windows</arguments>
+  <env name="TMP" value="C:\var\vcap\data\tmp"/>
+  <env name="TEMP" value="C:\var\vcap\data\tmp"/>
   <logpath>/var/vcap/bosh/log</logpath>
   <log mode="roll-by-size">
     <sizeThreshold>10240</sizeThreshold>
