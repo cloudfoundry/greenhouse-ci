@@ -331,8 +331,8 @@ jobs:
     file: bwats/concourse.yml
     attempts: 5
     params:
-      BOSH_PASSWORD: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
-      BOSH_USER: {{BOSH_CONCOURSE_BOSH_USER}}
+      BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
+      BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
       DIRECTOR_IP: {{BOSH_CONCOURSE_DIRECTOR_IP}}
       DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
       STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
