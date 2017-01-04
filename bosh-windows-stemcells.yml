@@ -74,9 +74,10 @@ resources:
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/bosh-vsphere-stemcell-version
+    key: versions/vsphere-stemcell-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1000.0.0
 - name: bosh-vsphere-stemcell
   type: s3
   source:
@@ -138,9 +139,10 @@ resources:
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/bosh-aws-stemcell-version
+    key: versions/aws-stemcell-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1000.0.0
 - name: bosh-aws-stemcell
   type: s3
   source:
@@ -152,9 +154,10 @@ resources:
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/bosh-gcp-stemcell-version
+    key: versions/gcp-stemcell-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1000.0.0
 - name: bosh-gcp-stemcell
   type: s3
   source:
