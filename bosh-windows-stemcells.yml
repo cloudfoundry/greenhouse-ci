@@ -162,7 +162,7 @@ resources:
   type: s3
   source:
     bucket: bosh-windows-stemcells
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows-2012-r2-go_agent.tgz
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bwats
@@ -391,7 +391,7 @@ jobs:
       ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
   - put: bosh-gcp-stemcell
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows-2012-r2-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 - name: shipit
   plan:
   - aggregate:
