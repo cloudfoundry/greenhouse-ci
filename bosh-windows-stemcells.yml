@@ -198,13 +198,15 @@ jobs:
     - get: ovftool-linux
     - get: ultradefrag-zip
     - get: base-iso
-    - put: version
+    - put: three-digit-version
       resource: bosh-vsphere-stemcell-version
       params:
-        bump: patch
+        bump: major
     - get: ps-windows-update
     - get: bwats
     - get: ci
+  - task: shorten-version
+    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
@@ -283,14 +285,16 @@ jobs:
     - get: stemcell-builder
     - get: bosh-agent
       passed: [compile-and-push]
-    - put: version
+    - put: three-digit-version
       resource: bosh-aws-stemcell-version
       params:
-        bump: patch
+        bump: major
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
     - get: bwats
+  - task: shorten-version
+    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
@@ -348,14 +352,16 @@ jobs:
     - get: stemcell-builder
     - get: bosh-agent
       passed: [compile-and-push]
-    - put: version
+    - put: three-digit-version
       resource: bosh-gcp-stemcell-version
       params:
-        bump: patch
+        bump: major
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
     - get: bwats
+  - task: shorten-version
+    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
