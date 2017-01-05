@@ -28,27 +28,6 @@ resources:
     key: versions/bosh-agent-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: windows-updates-list
-  type: s3
-  source:
-    bucket: windows-updates-list
-    regexp: update-list-(.*).csv
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-windows-shipit-version
-  type: semver
-  source:
-    bucket: bosh-windows-client-consumable
-    key: versions/consumable-version
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-windows-client-consumable
-  type: s3
-  source:
-    bucket: bosh-windows-client-consumable
-    regexp: bosh-windows-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: base-iso
   type: s3
   source:
@@ -258,7 +237,7 @@ jobs:
         REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
         REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
   - task: test-stemcell
-    file: bwats/concourse.yml
+    file: bwats/ci/task.yml
     attempts: 5
     tags: [vsphere-windows]
     params:
@@ -275,9 +254,6 @@ jobs:
     tags: [vsphere-windows]
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: windows-updates-list
-    params:
-      file: updates-list/*.csv
 - name: create-aws-stemcell
   plan:
   - aggregate:
@@ -335,7 +311,7 @@ jobs:
       AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
       AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
   - task: test-stemcell
-    file: bwats/concourse.yml
+    file: bwats/ci/task.yml
     attempts: 5
     params:
       BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
@@ -389,25 +365,19 @@ jobs:
       OUTPUT_DIR: bosh-windows-stemcell
       OS_VERSION: windows2012R2
       ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+  - task: test-stemcell
+    file: bwats/ci/task.yml
+    attempts: 5
+    params:
+      IAAS: gcp
+      ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
+      BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
+      BOSH_CLIENT: {{OTTER_BOSH_USER}}
+      DIRECTOR_IP: {{OTTER_DIRECTOR_IP}}
+      DIRECTOR_UUID: {{OTTER_DIRECTOR_UUID}}
+      STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
+      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
   - put: bosh-gcp-stemcell
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-- name: shipit
-  plan:
-  - aggregate:
-    - get: ci
-    - get: bosh-agent
-      passed: [create-vsphere-stemcell]
-    - get: bosh-agent-zip
-      passed: [create-vsphere-stemcell]
-    - get: windows-updates-list
-      passed: [create-vsphere-stemcell]
-    - get: bosh-windows-shipit-version
-  - put: bosh-windows-shipit-version
-    params:
-      bump: patch
-  - task: create-consumable
-    file: ci/tasks/create-consumable.yml
-  - put: bosh-windows-client-consumable
-    params:
-      file: bosh-windows-client-consumable/bosh-windows-*.json
