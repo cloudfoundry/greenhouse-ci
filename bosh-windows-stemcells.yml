@@ -19,7 +19,7 @@ resources:
 - name: stemcell-builder
   type: git
   source:
-    branch: develop
+    branch: master
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
 - name: bosh-agent-zip-version
   type: semver
@@ -166,7 +166,6 @@ jobs:
   - put: bosh-agent-zip
     params:
       file: compiled-agent-zip/bosh-windows-integration-v*.zip
-
 - name: create-vsphere-stemcell
   serial: true
   plan:
@@ -180,15 +179,13 @@ jobs:
     - get: ovftool-linux
     - get: ultradefrag-zip
     - get: base-iso
-    - put: three-digit-version
+    - put: version
       resource: bosh-vsphere-stemcell-version
       params:
-        bump: major
+        pre: rc
     - get: ps-windows-update
     - get: bwats
     - get: ci
-  - task: shorten-version
-    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
@@ -250,10 +247,20 @@ jobs:
       STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
+  - put: version
+    resource: bosh-vsphere-stemcell-version
+    params:
+      bump: final
+  - task: set-stemcell-version
+    file: ci/tasks/set-stemcell-version.yml
   - put: bosh-vsphere-stemcell
     tags: [vsphere-windows]
     params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+  - put: version
+    resource: bosh-vsphere-stemcell-version
+    params:
+      bump: minor
 - name: create-aws-stemcell
   plan:
   - aggregate:
@@ -264,16 +271,14 @@ jobs:
     - get: stemcell-builder
     - get: bosh-agent
       passed: [compile-and-push]
-    - put: three-digit-version
+    - put: version
       resource: bosh-aws-stemcell-version
       params:
-        bump: major
+        pre: rc
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
     - get: bwats
-  - task: shorten-version
-    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
@@ -321,9 +326,19 @@ jobs:
       STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
+  - put: version
+    resource: bosh-aws-stemcell-version
+    params:
+      bump: final
+  - task: set-stemcell-version
+    file: ci/tasks/set-stemcell-version.yml
   - put: bosh-aws-stemcell
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+      file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+  - put: version
+    resource: bosh-aws-stemcell-version
+    params:
+      bump: minor
 - name: create-gcp-stemcell
   plan:
   - aggregate:
@@ -331,16 +346,14 @@ jobs:
     - get: stemcell-builder
     - get: bosh-agent
       passed: [compile-and-push]
-    - put: three-digit-version
+    - put: version
       resource: bosh-gcp-stemcell-version
       params:
-        bump: major
+        pre: rc
     - get: bosh-agent-zip
       passed: [compile-and-push]
       trigger: true
     - get: bwats
-  - task: shorten-version
-    file: ci/tasks/shorten-version.yml
   - task: agent-sha
     config:
       platform: linux
@@ -378,6 +391,16 @@ jobs:
       STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
+  - put: version
+    resource: bosh-gcp-stemcell-version
+    params:
+      bump: final
+  - task: set-stemcell-version
+    file: ci/tasks/set-stemcell-version.yml
   - put: bosh-gcp-stemcell
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+  - put: version
+    resource: bosh-gcp-stemcell-version
+    params:
+      bump: minor
