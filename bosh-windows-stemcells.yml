@@ -252,6 +252,7 @@ jobs:
     params:
       bump: final
   - task: set-stemcell-version
+    tags: [vsphere-windows]
     file: ci/tasks/set-stemcell-version.yml
   - put: bosh-vsphere-stemcell
     tags: [vsphere-windows]
