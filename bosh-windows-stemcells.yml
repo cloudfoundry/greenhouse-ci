@@ -11,6 +11,14 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bosh-windows-stemcells-major-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/stemcells-major-version
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1004.0.0
 - name: bosh-agent
   type: git
   source:
@@ -137,12 +145,35 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
 jobs:
+- name: build-stemcells
+  serial: true
+  plan:
+  - aggregate:
+    - get: bosh-agent
+    - get: version
+      resource: bosh-windows-stemcells-major-version
+      params:
+        bump: major
+  - put: bosh-windows-stemcells-major-version
+    params:
+      file: version/number
+  - put: bosh-vsphere-stemcell-version
+    params:
+      file: version/number
+  - put: bosh-aws-stemcell-version
+    params:
+      file: version/number
+  - put: bosh-gcp-stemcell-version
+    params:
+      file: version/number
 - name: create-vsphere-stemcell
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: bosh-agent
+      passed: [build-stemcells]
+      trigger: true
     - get: stemcell-builder
     - get: ovftool-linux
     - get: ultradefrag-zip
@@ -224,6 +255,8 @@ jobs:
     - get: windows-ami-us-west-2
     - get: stemcell-builder
     - get: bosh-agent
+      passed: [build-stemcells]
+      trigger: true
     - put: version
       resource: bosh-aws-stemcell-version
       params:
@@ -280,6 +313,8 @@ jobs:
     - get: ci
     - get: stemcell-builder
     - get: bosh-agent
+      passed: [build-stemcells]
+      trigger: true
     - put: version
       resource: bosh-gcp-stemcell-version
       params:
