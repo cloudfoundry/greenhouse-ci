@@ -42,16 +42,6 @@ jobs:
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
-    on_failure:
-      task: cleanup-deployment
-      tags: [vsphere]
-      file: ci/tasks/cleanup-cf-deployment.yml
-      params:
-        ENVIRONMENT: mulgore
-        BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
   - task: save-cf-vars
     file: ci/tasks/save-cf-vars.yml
     params:
