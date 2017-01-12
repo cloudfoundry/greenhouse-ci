@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+
+inputs:
+  - name: cf-deployment
+  - name: greenhouse-private
+  - name: ci
+  - name: vsphere-windows-stemcell
+
+run:
+  path: ci/scripts/cf-deployment-with-windows.sh
+
+params:
+  ENVIRONMENT:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_ENVIRONMENT:
+  BOSH_CA_CERT:
+
+outputs:
+  - name: cf-vars

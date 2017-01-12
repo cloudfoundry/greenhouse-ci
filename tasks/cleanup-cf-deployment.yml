@@ -1,0 +1,18 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+
+inputs:
+  - name: greenhouse-private
+  - name: ci
+
+run:
+  path: ci/scripts/cleanup-cf-deployment.sh
+
+params:
+  ENVIRONMENT:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_ENVIRONMENT:
+  BOSH_CA_CERT:

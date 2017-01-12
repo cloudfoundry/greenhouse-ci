@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: greenhouse-private
+  - name: ci
+  - name: cf-vars
+
+run:
+  path: ci/scripts/save-cf-vars.sh
+
+params:
+  ENVIRONMENT:
+  GITHUB_SSH_KEY:
