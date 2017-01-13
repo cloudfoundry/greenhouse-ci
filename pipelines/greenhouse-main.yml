@@ -20,6 +20,11 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+- name: wats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/wats.git
 
 jobs:
 - name: mulgore-deploy-cf
@@ -33,6 +38,7 @@ jobs:
     - get: vsphere-windows-stemcell
       trigger: true
       tags: [vsphere]
+    - get: wats
   - task: deploy-cf
     tags: [vsphere]
     file: ci/tasks/cf-deployment-with-windows.yml
@@ -42,8 +48,19 @@ jobs:
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+      CF_DOMAIN: mulgore.cf-app.com
   - task: save-cf-vars
     file: ci/tasks/save-cf-vars.yml
     params:
       ENVIRONMENT: mulgore
       GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+  - task: wats
+    tags: [vsphere]
+    file: ci/tasks/run-wats.yml
+    params:
+      ADMIN_PASSWORD: {{ADMIN_PASSWORD}}
+      ADMIN_USER: admin
+      API: api.mulgore.cf-app.com
+      APPS_DOMAIN: mulgore.cf-app.com
+      NUM_WIN_CELLS: 1
+      SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.85.51.16:25555
