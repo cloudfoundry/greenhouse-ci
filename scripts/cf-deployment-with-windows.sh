@@ -12,4 +12,4 @@ bosh -n upload-stemcell vsphere-windows-stemcell/*.tgz
 
 ./greenhouse-private/$ENVIRONMENT/cf/deploy create
 
-cp ./greenhouse-private/$ENVIRONMENT/cf/vars.yml ./cf-vars/vars.yml
+cp ./greenhouse-private/$ENVIRONMENT/cf/deployment-vars.yml ./cf-vars/deployment-vars.yml
