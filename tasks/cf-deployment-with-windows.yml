@@ -18,6 +18,7 @@ params:
   BOSH_CLIENT_SECRET:
   BOSH_ENVIRONMENT:
   BOSH_CA_CERT:
+  CF_DOMAIN:
 
 outputs:
   - name: cf-vars

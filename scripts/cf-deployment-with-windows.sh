@@ -10,6 +10,7 @@ set -x
 
 bosh -n upload-stemcell vsphere-windows-stemcell/*.tgz
 
-./greenhouse-private/$ENVIRONMENT/cf/deploy create
+export CF_DEPLOYMENT=./cf-deployment
+./greenhouse-private/$ENVIRONMENT/cf-deploy create
 
-cp ./greenhouse-private/$ENVIRONMENT/cf/deployment-vars.yml ./cf-vars/deployment-vars.yml
+cp ./greenhouse-private/$ENVIRONMENT/deployment-vars.yml ./cf-vars/deployment-vars.yml

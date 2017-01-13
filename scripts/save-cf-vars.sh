@@ -9,8 +9,8 @@ ssh-add github_private_key.pem > /dev/null
 
 set -x
 
-cp cf-vars/deployment-vars.yml greenhouse-private/$ENVIRONMENT/cf/
-pushd greenhouse-private/$ENVIRONMENT/cf >/dev/null
+cp cf-vars/deployment-vars.yml greenhouse-private/$ENVIRONMENT/
+pushd greenhouse-private/$ENVIRONMENT >/dev/null
   if ! git diff --exit-code; then
     git config user.email "pivotal-netgarden-eng@pivotal.io"
     git config user.name "CI (Automated)"
