@@ -20,13 +20,41 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+- name: linux-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
 - name: wats
   type: git
   source:
-    branch: master
+    branch: develop
     uri: https://github.com/cloudfoundry/wats.git
 
 jobs:
+- name: upload-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: linux-stemcell
+      trigger: true
+  - task: upload-stemcell
+    tags: [vsphere]
+    params:
+      BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      inputs:
+      - name: linux-stemcell
+      run:
+        path: bosh
+        args:
+          - -n
+          - upload-stemcell
+          - linux-stemcell/stemcell.tgz
 - name: mulgore-deploy-cf
   serial: true
   plan:
@@ -39,6 +67,7 @@ jobs:
       trigger: true
       tags: [vsphere]
     - get: wats
+      trigger: true
   - task: deploy-cf
     tags: [vsphere]
     file: ci/tasks/cf-deployment-with-windows.yml
@@ -64,3 +93,19 @@ jobs:
       APPS_DOMAIN: mulgore.cf-app.com
       NUM_WIN_CELLS: 1
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.85.51.16:25555
+  - task: clean-up
+    tags: [vsphere]
+    params:
+      BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - clean-up
+          - --all
