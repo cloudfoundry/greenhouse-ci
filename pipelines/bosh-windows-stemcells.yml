@@ -29,18 +29,17 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+- name: windows-stemcell-dependencies
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
+    private_key: {{PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY}}
 - name: base-iso
   type: s3
   source:
     bucket: windows-bosh-private
     regexp: windows-(.*).iso
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: ultradefrag-zip
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells
-    regexp: ultradefrag-portable-(.*).bin.amd64.zip
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-vsphere-stemcell-version
@@ -56,20 +55,6 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: ovftool-linux
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells
-    regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: ps-windows-update
-  type: s3
-  source:
-    bucket: ps-windows-updates-module
-    regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: windows-ami-us-east-1
@@ -307,14 +292,14 @@ jobs:
       passed: [build-stemcells]
       trigger: true
     - get: stemcell-builder
-    - get: ovftool-linux
-    - get: ultradefrag-zip
+    - get: windows-stemcell-dependencies
+      tags: [vsphere-windows]
     - get: base-iso
+      tags: [vsphere-windows]
     - put: version
       resource: bosh-vsphere-stemcell-version
       params:
         pre: build
-    - get: ps-windows-update
     - get: bwats
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
