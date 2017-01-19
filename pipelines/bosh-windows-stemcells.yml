@@ -72,18 +72,6 @@ resources:
     regexp: PSWindowsUpdate_v(.*).zip
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: windows-ami-eu-west-1
-  type: ami-resource
-  source:
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    region: eu-west-1
-    search_options:
-      filters:
-      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
-      - {name: "state", values: ["available"]}
-      owners:
-      - amazon
 - name: windows-ami-us-east-1
   type: ami-resource
   source:
@@ -96,12 +84,156 @@ resources:
       - {name: "state", values: ["available"]}
       owners:
       - amazon
+- name: windows-ami-us-east-2
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: us-east-2
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-us-west-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: us-west-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
 - name: windows-ami-us-west-2
   type: ami-resource
   source:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     region: us-west-2
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ca-central-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ca-central-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ap-south-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ap-south-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ap-northeast-2
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ap-northeast-2
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ap-southeast-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ap-southeast-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ap-southeast-2
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ap-southeast-2
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-ap-northeast-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: ap-northeast-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-eu-central-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: eu-central-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-eu-west-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: eu-west-1
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-eu-west-2
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: eu-west-2
+    search_options:
+      filters:
+      - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
+      - {name: "state", values: ["available"]}
+      owners:
+      - amazon
+- name: windows-ami-sa-east-1
+  type: ami-resource
+  source:
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    region: sa-east-1
     search_options:
       filters:
       - {name: "name", values: ["Windows_Server-2012-R2_RTM-English-64Bit-Base*"]}
@@ -181,7 +313,7 @@ jobs:
     - put: version
       resource: bosh-vsphere-stemcell-version
       params:
-        pre: rc
+        pre: build
     - get: ps-windows-update
     - get: bwats
   - task: compile-bosh-agent
@@ -250,9 +382,20 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: windows-ami-eu-west-1
     - get: windows-ami-us-east-1
+    - get: windows-ami-us-east-2
+    - get: windows-ami-us-west-1
     - get: windows-ami-us-west-2
+    - get: windows-ami-ca-central-1
+    - get: windows-ami-ap-south-1
+    - get: windows-ami-ap-northeast-2
+    - get: windows-ami-ap-southeast-1
+    - get: windows-ami-ap-southeast-2
+    - get: windows-ami-ap-northeast-1
+    - get: windows-ami-eu-central-1
+    - get: windows-ami-eu-west-1
+    - get: windows-ami-eu-west-2
+    - get: windows-ami-sa-east-1
     - get: stemcell-builder
     - get: bosh-agent
       passed: [build-stemcells]
@@ -260,22 +403,16 @@ jobs:
     - put: version
       resource: bosh-aws-stemcell-version
       params:
-        pre: rc
+        pre: build
     - get: bwats
-  - task: compile-bosh-agent
-    file: ci/tasks/compile-bosh-agent.yml
-  - task: collect-amis
-    file: ci/tasks/collect-stemcell-region-amis.yml
-    params:
-      VPC_ID_EU_WEST_1: vpc-944df7f1
-      SUBNET_ID_EU_WEST_1: subnet-0978c850
-      SECURITY_GROUP_EU_WEST_1: sg-c63baaa0
-      VPC_ID_US_EAST_1: vpc-3e38385b
-      SUBNET_ID_US_EAST_1: subnet-110fae67
-      SECURITY_GROUP_US_EAST_1: sg-233e695e
-      VPC_ID_US_WEST_2: vpc-fddc4a98
-      SUBNET_ID_US_WEST_2: subnet-b46de0c3
-      SECURITY_GROUP_US_WEST_2: sg-2a626d53
+  - aggregate:
+    - task: compile-bosh-agent
+      file: ci/tasks/compile-bosh-agent.yml
+    - task: collect-amis
+      file: ci/tasks/collect-stemcell-region-amis.yml
+      params:
+        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
   - task: create-stemcell
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
@@ -318,7 +455,7 @@ jobs:
     - put: version
       resource: bosh-gcp-stemcell-version
       params:
-        pre: rc
+        pre: build
     - get: bwats
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
