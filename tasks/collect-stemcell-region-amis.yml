@@ -12,7 +12,7 @@ inputs:
 - name: windows-ami-us-east-2
 - name: windows-ami-us-west-1
 - name: windows-ami-us-west-2
-# - name: windows-ami-ca-central-1
+- name: windows-ami-ca-central-1
 - name: windows-ami-ap-south-1
 - name: windows-ami-ap-northeast-2
 - name: windows-ami-ap-southeast-1
