@@ -8,7 +8,7 @@ export BOSH_CA_CERT=$CERT_FILE
 
 set -x
 
-bosh -n upload-stemcell vsphere-windows-stemcell/*.tgz
+bosh -n upload-stemcell windows-stemcell/*.tgz
 
 export CF_DEPLOYMENT=./cf-deployment
 ./greenhouse-private/$ENVIRONMENT/cf-deploy create

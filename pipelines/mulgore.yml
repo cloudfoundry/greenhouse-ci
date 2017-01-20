@@ -15,7 +15,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: vsphere-windows-stemcell
+- name: windows-stemcell
   type: s3
   source:
     bucket: bosh-windows-stemcells
@@ -63,7 +63,7 @@ jobs:
       trigger: true
     - get: greenhouse-private
     - get: ci
-    - get: vsphere-windows-stemcell
+    - get: windows-stemcell
       trigger: true
       tags: [vsphere]
     - get: wats
