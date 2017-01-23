@@ -1,0 +1,191 @@
+groups:
+- name: all
+  jobs:
+  - dolphin-upload-linux-stemcell
+  - dolphin-deploy-cf
+  - ferret-upload-linux-stemcell
+  - ferret-deploy-cf
+- name: ferret
+  jobs:
+  - ferret-upload-linux-stemcell
+  - ferret-deploy-cf
+- name: dolphin
+  jobs:
+  - dolphin-upload-linux-stemcell
+  - dolphin-deploy-cf
+
+resources:
+- name: cf-deployment
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+- name: greenhouse-private
+  type: git
+  source:
+    branch: master
+    private_key: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+    uri: git@github.com:pivotal-cf/greenhouse-private
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: aws-windows-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+- name: gcp-windows-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+- name: aws-linux-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+- name: gcp-linux-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-trusty-go_agent
+- name: weekly-trigger
+  type: time
+  source:
+    days: [Saturday]
+    location: US/Eastern
+    start: 12:00 AM
+    stop: 1:00 AM
+
+jobs:
+- name: dolphin-upload-linux-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: linux-stemcell
+      resource: gcp-linux-stemcell
+      trigger: true
+  - task: upload-stemcell
+    params:
+      BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      inputs:
+      - name: linux-stemcell
+      run:
+        path: bosh
+        args:
+          - -n
+          - upload-stemcell
+          - linux-stemcell/stemcell.tgz
+- name: dolphin-deploy-cf
+  serial: true
+  plan:
+  - aggregate:
+    - get: cf-deployment
+      trigger: true
+    - get: greenhouse-private
+    - get: ci
+    - get: windows-stemcell
+      resource: gcp-windows-stemcell
+    - get: weekly-trigger
+      trigger: true
+  - task: deploy-cf
+    file: ci/tasks/cf-deployment-with-windows.yml
+    params:
+      ENVIRONMENT: dolphin
+      BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+      CF_DOMAIN: dolphin.cf-app.com
+  - task: save-cf-vars
+    file: ci/tasks/save-cf-vars.yml
+    params:
+      ENVIRONMENT: dolphin
+      GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+  - task: clean-up
+    params:
+      BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - clean-up
+          - --all
+
+- name: ferret-upload-linux-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: linux-stemcell
+      resource: aws-linux-stemcell
+      trigger: true
+  - task: upload-stemcell
+    params:
+      BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      inputs:
+      - name: linux-stemcell
+      run:
+        path: bosh
+        args:
+          - -n
+          - upload-stemcell
+          - linux-stemcell/stemcell.tgz
+- name: ferret-deploy-cf
+  serial: true
+  plan:
+  - aggregate:
+    - get: cf-deployment
+      trigger: true
+    - get: greenhouse-private
+    - get: ci
+    - get: windows-stemcell
+      resource: aws-windows-stemcell
+    - get: weekly-trigger
+      trigger: true
+  - task: deploy-cf
+    file: ci/tasks/cf-deployment-with-windows.yml
+    params:
+      ENVIRONMENT: ferret
+      BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+      CF_DOMAIN: greenhouse-ferret.cf-app.com
+  - task: save-cf-vars
+    file: ci/tasks/save-cf-vars.yml
+    params:
+      ENVIRONMENT: ferret
+      GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+  - task: clean-up
+    params:
+      BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - clean-up
+          - --all
