@@ -24,6 +24,13 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+- name: weekly-trigger
+  type: time
+  source:
+    days: [Saturday]
+    location: US/Eastern
+    start: 12:00 AM
+    stop: 1:00 AM
 
 jobs:
 - name: upload-stemcell
@@ -58,6 +65,8 @@ jobs:
     - get: greenhouse-private
     - get: ci
     - get: windows-stemcell
+    - get: weekly-trigger
+      trigger: true
   - task: deploy-cf
     file: ci/tasks/cf-deployment-with-windows.yml
     params:
