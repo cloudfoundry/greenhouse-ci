@@ -16,6 +16,6 @@ pushd greenhouse-private/$ENVIRONMENT >/dev/null
     git config user.name "CI (Automated)"
     git add deployment-vars.yml
     git commit -m "Update cf-vars for $ENVIRONMENT"
-    git push
+    git push origin HEAD:master
   fi
 popd >/dev/null
