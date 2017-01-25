@@ -111,11 +111,10 @@ jobs:
       BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
       CF_DOMAIN: dolphin.cf-app.com
-  - task: save-cf-vars
-    file: ci/tasks/save-cf-vars.yml
+  - put: greenhouse-private
     params:
-      ENVIRONMENT: dolphin
-      GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+      repository: output/greenhouse-private
+      rebase: true
   - task: clean-up
     params:
       BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
@@ -171,11 +170,10 @@ jobs:
       BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
       CF_DOMAIN: greenhouse-ferret.cf-app.com
-  - task: save-cf-vars
-    file: ci/tasks/save-cf-vars.yml
+  - put: greenhouse-private
     params:
-      ENVIRONMENT: ferret
-      GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+      repository: output/greenhouse-private
+      rebase: true
   - task: clean-up
     params:
       BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
@@ -237,11 +235,10 @@ jobs:
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
       CF_DOMAIN: mulgore.cf-app.com
-  - task: save-cf-vars
-    file: ci/tasks/save-cf-vars.yml
+  - put: greenhouse-private
     params:
-      ENVIRONMENT: mulgore
-      GITHUB_SSH_KEY: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
+      repository: output/greenhouse-private
+      rebase: true
   - task: wats
     tags: [vsphere]
     file: ci/tasks/run-wats.yml
