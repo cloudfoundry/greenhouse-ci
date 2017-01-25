@@ -10,7 +10,16 @@ set -x
 
 bosh -n upload-stemcell windows-stemcell/*.tgz
 
-export CF_DEPLOYMENT=./cf-deployment
-./greenhouse-private/$ENVIRONMENT/cf-deploy create
+export CF_DEPLOYMENT="$PWD/cf-deployment"
+pushd greenhouse-private/$ENVIRONMENT >/dev/null
+  ./cf-deploy create
 
-cp ./greenhouse-private/$ENVIRONMENT/deployment-vars.yml ./cf-vars/deployment-vars.yml
+  if ! git diff --exit-code; then
+    git config user.email "pivotal-netgarden-eng@pivotal.io"
+    git config user.name "CI (Automated)"
+    git add deployment-vars.yml
+    git commit -m "Update cf-vars for $ENVIRONMENT"
+  fi
+popd >/dev/null
+
+cp -a greenhouse-private output/

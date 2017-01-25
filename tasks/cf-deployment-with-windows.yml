@@ -21,4 +21,4 @@ params:
   CF_DOMAIN:
 
 outputs:
-  - name: cf-vars
+  - name: output
