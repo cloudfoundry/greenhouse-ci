@@ -1,23 +1,17 @@
 groups:
 - name: all
   jobs:
-  - dolphin-upload-linux-stemcell
   - dolphin-deploy-cf
-  - ferret-upload-linux-stemcell
   - ferret-deploy-cf
-  - mulgore-upload-linux-stemcell
   - mulgore-deploy-cf
 - name: dolphin
   jobs:
-  - dolphin-upload-linux-stemcell
   - dolphin-deploy-cf
 - name: ferret
   jobs:
-  - ferret-upload-linux-stemcell
   - ferret-deploy-cf
 - name: mulgore
   jobs:
-  - mulgore-upload-linux-stemcell
   - mulgore-deploy-cf
 
 resources:
@@ -78,14 +72,21 @@ resources:
     stop: 1:00 AM
 
 jobs:
-- name: dolphin-upload-linux-stemcell
+- name: dolphin-deploy-cf
   serial: true
   plan:
   - aggregate:
+    - get: cf-deployment
+      trigger: true
+    - get: greenhouse-private
+    - get: ci
+    - get: windows-stemcell
+      resource: gcp-windows-stemcell
     - get: linux-stemcell
       resource: gcp-linux-stemcell
+    - get: weekly-trigger
       trigger: true
-  - task: upload-stemcell
+  - task: upload-linux-stemcell
     params:
       BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
@@ -102,18 +103,6 @@ jobs:
           - -n
           - upload-stemcell
           - linux-stemcell/stemcell.tgz
-- name: dolphin-deploy-cf
-  serial: true
-  plan:
-  - aggregate:
-    - get: cf-deployment
-      trigger: true
-    - get: greenhouse-private
-    - get: ci
-    - get: windows-stemcell
-      resource: gcp-windows-stemcell
-    - get: weekly-trigger
-      trigger: true
   - task: deploy-cf
     file: ci/tasks/cf-deployment-with-windows.yml
     params:
@@ -144,14 +133,21 @@ jobs:
           - clean-up
           - --all
 
-- name: ferret-upload-linux-stemcell
+- name: ferret-deploy-cf
   serial: true
   plan:
   - aggregate:
+    - get: cf-deployment
+      trigger: true
+    - get: greenhouse-private
+    - get: ci
+    - get: windows-stemcell
+      resource: aws-windows-stemcell
     - get: linux-stemcell
       resource: aws-linux-stemcell
+    - get: weekly-trigger
       trigger: true
-  - task: upload-stemcell
+  - task: upload-linux-stemcell
     params:
       BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
@@ -168,18 +164,6 @@ jobs:
           - -n
           - upload-stemcell
           - linux-stemcell/stemcell.tgz
-- name: ferret-deploy-cf
-  serial: true
-  plan:
-  - aggregate:
-    - get: cf-deployment
-      trigger: true
-    - get: greenhouse-private
-    - get: ci
-    - get: windows-stemcell
-      resource: aws-windows-stemcell
-    - get: weekly-trigger
-      trigger: true
   - task: deploy-cf
     file: ci/tasks/cf-deployment-with-windows.yml
     params:
@@ -210,15 +194,25 @@ jobs:
           - clean-up
           - --all
 
-- name: mulgore-upload-linux-stemcell
+- name: mulgore-deploy-cf
   serial: true
   plan:
   - aggregate:
+    - get: cf-deployment
+      trigger: true
+    - get: greenhouse-private
+    - get: ci
+    - get: windows-stemcell
+      resource: vsphere-windows-stemcell
+      tags: [vsphere]
+      trigger: true
+      tags: [vsphere]
     - get: linux-stemcell
       resource: vsphere-linux-stemcell
       tags: [vsphere]
+    - get: wats
       trigger: true
-  - task: upload-stemcell
+  - task: upload-linux-stemcell
     tags: [vsphere]
     params:
       BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
@@ -236,21 +230,6 @@ jobs:
           - -n
           - upload-stemcell
           - linux-stemcell/stemcell.tgz
-- name: mulgore-deploy-cf
-  serial: true
-  plan:
-  - aggregate:
-    - get: cf-deployment
-      trigger: true
-    - get: greenhouse-private
-    - get: ci
-    - get: windows-stemcell
-      resource: vsphere-windows-stemcell
-      tags: [vsphere]
-      trigger: true
-      tags: [vsphere]
-    - get: wats
-      trigger: true
   - task: deploy-cf
     tags: [vsphere]
     file: ci/tasks/cf-deployment-with-windows.yml
