@@ -405,6 +405,12 @@ jobs:
       OS_VERSION: windows2012R2
       AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
       AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+    ensure:
+      task: delete-orphan-vms
+      file: ci/tasks/delete-vms.yml
+      params:
+        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
   - task: test-stemcell
     file: bwats/ci/task.yml
     attempts: 5
