@@ -2,17 +2,23 @@ groups:
 - name: all
   jobs:
   - dolphin-deploy-cf
+  - dolphin-destroy-cf
   - ferret-deploy-cf
+  - ferret-destroy-cf
   - mulgore-deploy-cf
+  - mulgore-destroy-cf
 - name: dolphin
   jobs:
   - dolphin-deploy-cf
+  - dolphin-destroy-cf
 - name: ferret
   jobs:
   - ferret-deploy-cf
+  - ferret-destroy-cf
 - name: mulgore
   jobs:
   - mulgore-deploy-cf
+  - mulgore-destroy-cf
 
 resources:
 - name: cf-deployment
@@ -141,6 +147,27 @@ jobs:
       NUM_WIN_CELLS: 1
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
 
+- name: dolphin-destroy-cf
+  serial: true
+  plan:
+  - task: destroy-cf
+    params:
+      BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - -d
+          - cf
+          - delete-deployment
+          - --force
+
 - name: ferret-deploy-cf
   serial: true
   plan:
@@ -209,6 +236,27 @@ jobs:
       APPS_DOMAIN: greenhouse-ferret.cf-app.com
       NUM_WIN_CELLS: 1
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+
+- name: ferret-destroy-cf
+  serial: true
+  plan:
+  - task: destroy-cf
+    params:
+      BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - -d
+          - cf
+          - delete-deployment
+          - --force
 
 - name: mulgore-deploy-cf
   serial: true
@@ -285,3 +333,24 @@ jobs:
       APPS_DOMAIN: mulgore.cf-app.com
       NUM_WIN_CELLS: 1
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.85.51.16:25555
+
+- name: mulgore-destroy-cf
+  serial: true
+  plan:
+  - task: destroy-cf
+    params:
+      BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
+      BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+      run:
+        path: bosh
+        args:
+          - -n
+          - -d
+          - cf
+          - delete-deployment
+          - --force
