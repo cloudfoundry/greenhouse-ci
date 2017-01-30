@@ -8,20 +8,6 @@ image_resource:
 
 inputs:
 - name: ci
-- name: windows-ami-us-east-1
-- name: windows-ami-us-east-2
-- name: windows-ami-us-west-1
-- name: windows-ami-us-west-2
-- name: windows-ami-ca-central-1
-- name: windows-ami-ap-south-1
-- name: windows-ami-ap-northeast-2
-- name: windows-ami-ap-southeast-1
-- name: windows-ami-ap-southeast-2
-- name: windows-ami-ap-northeast-1
-- name: windows-ami-eu-central-1
-- name: windows-ami-eu-west-1
-- name: windows-ami-eu-west-2
-- name: windows-ami-sa-east-1
 
 outputs:
 - name: stemcell-regions
