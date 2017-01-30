@@ -267,6 +267,8 @@ jobs:
   plan:
   - aggregate:
     - get: bosh-agent
+    - get: stemcell-builder
+    - get: bwats
     - get: version
       resource: bosh-windows-stemcells-major-version
       params:
@@ -292,6 +294,7 @@ jobs:
       passed: [build-stemcells]
       trigger: true
     - get: stemcell-builder
+      passed: [build-stemcells]
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
     - get: base-iso
@@ -301,6 +304,7 @@ jobs:
       params:
         pre: build
     - get: bwats
+      passed: [build-stemcells]
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
     tags: [vsphere-windows]
@@ -359,10 +363,6 @@ jobs:
     tags: [vsphere-windows]
     params:
       file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: version
-    resource: bosh-vsphere-stemcell-version
-    params:
-      bump: minor
 - name: create-aws-stemcell
   plan:
   - aggregate:
@@ -382,6 +382,7 @@ jobs:
     - get: windows-ami-eu-west-2
     - get: windows-ami-sa-east-1
     - get: stemcell-builder
+      passed: [build-stemcells]
     - get: bosh-agent
       passed: [build-stemcells]
       trigger: true
@@ -390,6 +391,7 @@ jobs:
       params:
         pre: build
     - get: bwats
+      passed: [build-stemcells]
   - aggregate:
     - task: compile-bosh-agent
       file: ci/tasks/compile-bosh-agent.yml
@@ -431,15 +433,12 @@ jobs:
   - put: bosh-aws-stemcell
     params:
       file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-  - put: version
-    resource: bosh-aws-stemcell-version
-    params:
-      bump: minor
 - name: create-gcp-stemcell
   plan:
   - aggregate:
     - get: ci
     - get: stemcell-builder
+      passed: [build-stemcells]
     - get: bosh-agent
       passed: [build-stemcells]
       trigger: true
@@ -448,6 +447,7 @@ jobs:
       params:
         pre: build
     - get: bwats
+      passed: [build-stemcells]
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
@@ -479,7 +479,3 @@ jobs:
   - put: bosh-gcp-stemcell
     params:
       file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-  - put: version
-    resource: bosh-gcp-stemcell-version
-    params:
-      bump: minor
