@@ -39,7 +39,7 @@ resources:
   type: s3
   source:
     bucket: windows-bosh-private
-    regexp: windows-(.*).iso
+    regexp: en_windows_server_2012_r2_x64_dvd_(.*).iso
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-vsphere-stemcell-version
@@ -317,7 +317,7 @@ jobs:
     params:
       OUTPUT_DIR: bosh-windows-stemcell
       ISO_CHECKSUM_TYPE: "md5"
-      ISO_CHECKSUM: "5b5e08c490ad16b59b1d9fab0def883a"
+      ISO_CHECKSUM: "0e7c09aab20dec3cd7eab236dab90e78"
       MEMSIZE: "8192"
       NUMVCPUS: "6"
       REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
