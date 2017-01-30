@@ -295,6 +295,7 @@ jobs:
       trigger: true
     - get: stemcell-builder
       passed: [build-stemcells]
+      trigger: true
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
     - get: base-iso
@@ -305,6 +306,7 @@ jobs:
         pre: build
     - get: bwats
       passed: [build-stemcells]
+      trigger: true
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
     tags: [vsphere-windows]
@@ -383,6 +385,7 @@ jobs:
     - get: windows-ami-sa-east-1
     - get: stemcell-builder
       passed: [build-stemcells]
+      trigger: true
     - get: bosh-agent
       passed: [build-stemcells]
       trigger: true
@@ -392,6 +395,7 @@ jobs:
         pre: build
     - get: bwats
       passed: [build-stemcells]
+      trigger: true
   - aggregate:
     - task: compile-bosh-agent
       file: ci/tasks/compile-bosh-agent.yml
@@ -439,6 +443,7 @@ jobs:
     - get: ci
     - get: stemcell-builder
       passed: [build-stemcells]
+      trigger: true
     - get: bosh-agent
       passed: [build-stemcells]
       trigger: true
@@ -448,6 +453,7 @@ jobs:
         pre: build
     - get: bwats
       passed: [build-stemcells]
+      trigger: true
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
