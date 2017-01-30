@@ -24,8 +24,9 @@ region_names.each do |region_name|
   region_info['name'] = region_name
 
   amis = JSON.parse(`aws ec2 describe-images \
-           --owners amazon \
-          --filters "Name=name,Values=Windows_Server-2012-R2_RTM-English-64Bit-Base*" "Name=state,Values=available"`)
+            --region #{region_name} \
+            --owners amazon \
+            --filters "Name=name,Values=Windows_Server-2012-R2_RTM-English-64Bit-Base*" "Name=state,Values=available"`)
   base_ami = (amis['Images'].sort { |a,b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
   region_info['base_ami'] = base_ami
 
