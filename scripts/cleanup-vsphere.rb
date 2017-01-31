@@ -17,6 +17,7 @@ def find_vmid (vms,vm_name)
       return vm_info[0]
     end
   end
+  nil
 end
 
 Net::SSH.start(REMOTE_HOST, REMOTE_USERNAME, :password => REMOTE_PASSWORD) do |ssh|
@@ -24,12 +25,12 @@ Net::SSH.start(REMOTE_HOST, REMOTE_USERNAME, :password => REMOTE_PASSWORD) do |s
 
   puts vms
 
-  if vms.nil?
+  if vms.nil? || vms.empty?
     puts "No running VMs, '#{PACKER_VM_NAME}' already cleaned up"
     next
   end
   vm_id = find_vmid(vms,PACKER_VM_NAME)
-  if vm_id.empty?
+  if vm_id.nil? || vm_id.empty?
     puts "VM '#{PACKER_VM_NAME}' not running, already cleaned up"
     next
   end
