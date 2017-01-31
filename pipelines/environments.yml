@@ -93,22 +93,12 @@ jobs:
     - get: weekly-trigger
       trigger: true
   - task: upload-linux-stemcell
+    file: ci/tasks/upload-stemcell.yml
     params:
       BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      inputs:
-      - name: linux-stemcell
-      run:
-        path: bosh
-        args:
-          - -n
-          - upload-stemcell
-          - linux-stemcell/stemcell.tgz
   - task: deploy-cf
     file: ci/tasks/cf-deployment-with-windows.yml
     params:
@@ -123,20 +113,12 @@ jobs:
       repository: output/greenhouse-private
       rebase: true
   - task: clean-up
+    file: ci/tasks/clean-up.yml
     params:
       BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - clean-up
-          - --all
   - task: wats
     file: ci/tasks/run-wats.yml
     params:
@@ -151,22 +133,12 @@ jobs:
   serial: true
   plan:
   - task: destroy-cf
+    file: ci/tasks/delete-deployment.yml
     params:
       BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - -d
-          - cf
-          - delete-deployment
-          - --force
 
 - name: ferret-deploy-cf
   serial: true
@@ -183,22 +155,12 @@ jobs:
     - get: weekly-trigger
       trigger: true
   - task: upload-linux-stemcell
+    file: ci/tasks/upload-stemcell.yml
     params:
       BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      inputs:
-      - name: linux-stemcell
-      run:
-        path: bosh
-        args:
-          - -n
-          - upload-stemcell
-          - linux-stemcell/stemcell.tgz
   - task: deploy-cf
     file: ci/tasks/cf-deployment-with-windows.yml
     params:
@@ -213,20 +175,12 @@ jobs:
       repository: output/greenhouse-private
       rebase: true
   - task: clean-up
+    file: ci/tasks/clean-up.yml
     params:
       BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - clean-up
-          - --all
   - task: wats
     file: ci/tasks/run-wats.yml
     params:
@@ -241,22 +195,12 @@ jobs:
   serial: true
   plan:
   - task: destroy-cf
+    file: ci/tasks/delete-deployment.yml
     params:
       BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - -d
-          - cf
-          - delete-deployment
-          - --force
 
 - name: mulgore-deploy-cf
   serial: true
@@ -276,23 +220,13 @@ jobs:
     - get: wats
       trigger: true
   - task: upload-linux-stemcell
+    file: ci/tasks/upload-stemcell.yml
     tags: [vsphere]
     params:
       BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      inputs:
-      - name: linux-stemcell
-      run:
-        path: bosh
-        args:
-          - -n
-          - upload-stemcell
-          - linux-stemcell/stemcell.tgz
   - task: deploy-cf
     tags: [vsphere]
     file: ci/tasks/cf-deployment-with-windows.yml
@@ -308,21 +242,13 @@ jobs:
       repository: output/greenhouse-private
       rebase: true
   - task: clean-up
+    file: ci/tasks/clean-up.yml
     tags: [vsphere]
     params:
       BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - clean-up
-          - --all
   - task: wats
     tags: [vsphere]
     file: ci/tasks/run-wats.yml
@@ -338,19 +264,9 @@ jobs:
   serial: true
   plan:
   - task: destroy-cf
+    file: ci/tasks/delete-deployment.yml
     params:
       BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
       BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
       BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
-      run:
-        path: bosh
-        args:
-          - -n
-          - -d
-          - cf
-          - delete-deployment
-          - --force
