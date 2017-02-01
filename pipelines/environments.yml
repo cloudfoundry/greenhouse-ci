@@ -132,6 +132,8 @@ jobs:
 - name: dolphin-destroy-cf
   serial: true
   plan:
+  - aggregate:
+    - get: ci
   - task: destroy-cf
     file: ci/tasks/delete-deployment.yml
     params:
@@ -194,6 +196,8 @@ jobs:
 - name: ferret-destroy-cf
   serial: true
   plan:
+  - aggregate:
+    - get: ci
   - task: destroy-cf
     file: ci/tasks/delete-deployment.yml
     params:
@@ -263,6 +267,8 @@ jobs:
 - name: mulgore-destroy-cf
   serial: true
   plan:
+  - aggregate:
+    - get: ci
   - task: destroy-cf
     file: ci/tasks/delete-deployment.yml
     params:
