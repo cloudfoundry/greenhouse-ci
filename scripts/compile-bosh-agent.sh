@@ -18,8 +18,7 @@ zip -j compiled-agent/agent.zip \
 	$BOSH_AGENT/bosh-agent.exe \
 	$BOSH_AGENT/pipe.exe \
 	$BOSH_AGENT_DEPS/service_wrapper.exe \
-  $BOSH_AGENT_DEPS/service_wrapper.xml \
-	$BOSH_AGENT_DEPS/service_wrapper.exe.config
+	$BOSH_AGENT_DEPS/service_wrapper.xml
 
 zip -j compiled-agent/agent-dependencies.zip \
 	$BOSH_AGENT_DEPS/bosh-blobstore-dav.exe \
