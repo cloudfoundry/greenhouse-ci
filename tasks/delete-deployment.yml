@@ -2,13 +2,10 @@
 platform: linux
 image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
 run:
-  path: bosh
+  path: bash
   args:
-    - -n
-    - -d
-    - "${BOSH_DEPLOYMENT}"
-    - delete-deployment
-    - --force
+    - -c
+    - 'bosh -n -d "${BOSH_DEPLOYMENT}" delete-deployment --force'
 params:
   BOSH_DEPLOYMENT: cf
   BOSH_CLIENT:
