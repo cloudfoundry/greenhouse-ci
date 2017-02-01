@@ -271,6 +271,7 @@ jobs:
     - get: ci
   - task: destroy-cf
     file: ci/tasks/delete-deployment.yml
+    tags: [vsphere]
     params:
       BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
