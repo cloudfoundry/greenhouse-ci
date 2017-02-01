@@ -6,7 +6,7 @@ run:
   args:
     - -n
     - -d
-    - ${BOSH_DEPLOYMENT}
+    - "${BOSH_DEPLOYMENT}"
     - delete-deployment
     - --force
 params:
