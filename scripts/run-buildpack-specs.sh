@@ -4,7 +4,7 @@ set -e
 
 cd buildpack
 
-BUNDLE_GEMFILE=cf.Gemfile
+export BUNDLE_GEMFILE=cf.Gemfile
 bundle install --jobs="$(nproc)" --no-cache
 
 bundle exec buildpack-build --uncached --stack=$STACK --host=$HOST
