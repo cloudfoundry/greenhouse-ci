@@ -67,6 +67,11 @@ end
 
 puts JSON.pretty_generate(region_infos)
 
-File.open(File.join('stemcell-regions', 'regions.json'), 'w') do |f|
+if !File.file?('version/number')
+  raise 'Error: no version number available'
+end
+version = File.read('version/number').chomp
+
+File.open(File.join('base-amis', "base-amis-#{version}.json"), 'w') do |f|
   f.write(region_infos.to_json)
 end

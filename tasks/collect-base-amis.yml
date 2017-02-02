@@ -8,13 +8,14 @@ image_resource:
 
 inputs:
 - name: ci
+- name: version
 
 outputs:
-- name: stemcell-regions
+- name: base-amis
 
 params:
   AWS_ACCESS_KEY_ID:
   AWS_SECRET_ACCESS_KEY:
 
 run:
-  path: ci/scripts/collect-stemcell-region-amis.rb
+  path: ci/scripts/collect-base-amis.rb

@@ -1,10 +1,3 @@
-resource_types:
-- name: ami-resource
-  type: docker-image
-  source:
-    repository: pivotalgreenhouse/ami-resource
-    tag: latest
-
 resources:
 - name: ci
   type: git
@@ -72,6 +65,21 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: base-amis-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/base-amis-version
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1.0.0
+- name: base-amis
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-amis-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bosh-gcp-stemcell-version
   type: semver
   source:
@@ -94,6 +102,12 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
 jobs:
+- name: bump-base-amis
+  serial: true
+  plan:
+  - get: version
+    resource: base-amis-version
+  - 
 - name: build-stemcells
   serial: true
   plan:
@@ -105,6 +119,7 @@ jobs:
       resource: bosh-windows-stemcells-major-version
       params:
         bump: major
+    - get: 
   - put: bosh-windows-stemcells-major-version
     params:
       file: version/number
@@ -117,6 +132,12 @@ jobs:
   - put: bosh-gcp-stemcell-version
     params:
       file: version/number
+  - task: collect-amis
+    file: ci/tasks/collect-stemcell-region-amis.yml
+    params:
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
+  - put: base-amis
 - name: create-vsphere-stemcell
   serial: true
   plan:
@@ -208,6 +229,8 @@ jobs:
     - get: bosh-agent
       passed: [build-stemcells]
       trigger: true
+    - get: base-amis
+      passed: [build-stemcells]
     - put: version
       resource: bosh-aws-stemcell-version
       params:
@@ -215,14 +238,8 @@ jobs:
     - get: bwats
       passed: [build-stemcells]
       trigger: true
-  - aggregate:
-    - task: compile-bosh-agent
-      file: ci/tasks/compile-bosh-agent.yml
-    - task: collect-amis
-      file: ci/tasks/collect-stemcell-region-amis.yml
-      params:
-        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
+  - task: compile-bosh-agent
+    file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
     file: stemcell-builder/tasks/create-aws-stemcell.yml
     params:
