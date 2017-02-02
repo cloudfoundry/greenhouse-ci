@@ -27,6 +27,7 @@ jobs:
   plan:
   - aggregate:
     - get: aws-stemcell
+      trigger: true
   - task: pivnet-metadata
     config:
       inputs: [{name: aws-stemcell}]
