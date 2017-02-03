@@ -40,7 +40,7 @@ resources:
 - name: aws-windows-stemcell
   type: s3
   source:
-    bucket: bosh-windows-stemcells
+    bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
 - name: gcp-windows-stemcell
   type: s3
@@ -50,7 +50,7 @@ resources:
 - name: vsphere-windows-stemcell
   type: s3
   source:
-    bucket: bosh-windows-stemcells
+    bucket: bosh-windows-stemcells-release-candidates
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
 - name: aws-linux-stemcell
   type: bosh-io-stemcell
