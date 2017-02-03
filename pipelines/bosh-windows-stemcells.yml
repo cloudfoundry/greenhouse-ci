@@ -4,7 +4,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: bosh-windows-stemcells-major-version
+- name: stemcells-major-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
@@ -35,7 +35,7 @@ resources:
     regexp: en_windows_server_2012_r2_x64_dvd_(.*).iso
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-vsphere-stemcell-version
+- name: vsphere-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
@@ -43,14 +43,21 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
-- name: bosh-vsphere-stemcell
+- name: vsphere-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: vsphere-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-aws-stemcell-version
+- name: aws-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
@@ -58,7 +65,14 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
-- name: bosh-aws-stemcell
+- name: aws-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: aws-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells
@@ -72,7 +86,7 @@ resources:
     regexp: base-amis-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bosh-gcp-stemcell-version
+- name: gcp-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
@@ -80,7 +94,14 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
-- name: bosh-gcp-stemcell
+- name: gcp-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: gcp-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells
@@ -98,23 +119,26 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: ci
     - get: bosh-agent
     - get: stemcell-builder
+    - get: base-iso
+    - get: windows-stemcell-dependencies
     - get: bwats
     - get: version
-      resource: bosh-windows-stemcells-major-version
+      resource: stemcells-major-version
       params:
         bump: major
-  - put: bosh-windows-stemcells-major-version
+  - put: stemcells-major-version
     params:
       file: version/number
-  - put: bosh-vsphere-stemcell-version
+  - put: vsphere-stemcell-version
     params:
       file: version/number
-  - put: bosh-gcp-stemcell-version
+  - put: gcp-stemcell-version
     params:
       file: version/number
-  - put: bosh-aws-stemcell-version
+  - put: aws-stemcell-version
     params:
       file: version/number
   - task: collect-base-amis
@@ -132,21 +156,24 @@ jobs:
     - get: ci
     - get: bosh-agent
       passed: [build-stemcells]
-      trigger: true
     - get: stemcell-builder
       passed: [build-stemcells]
-      trigger: true
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
+      passed: [build-stemcells]
     - get: base-iso
       tags: [vsphere-windows]
-    - put: version
-      resource: bosh-vsphere-stemcell-version
-      params:
-        pre: build
-    - get: bwats
+      passed: [build-stemcells]
+    - get: version
+      resource: vsphere-stemcell-version
       passed: [build-stemcells]
       trigger: true
+    - get: bwats
+      passed: [build-stemcells]
+  - put: version
+    resource: vsphere-stemcell-version
+    params:
+      pre: build
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
     tags: [vsphere-windows]
@@ -194,17 +221,10 @@ jobs:
       STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
-  - put: version
-    resource: bosh-vsphere-stemcell-version
-    params:
-      bump: final
-  - task: set-stemcell-version
-    tags: [vsphere-windows]
-    file: ci/tasks/set-stemcell-version.yml
-  - put: bosh-vsphere-stemcell
+  - put: vsphere-stemcell-release-candidate
     tags: [vsphere-windows]
     params:
-      file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 - name: create-aws-stemcell
   serial: true
   plan:
@@ -212,19 +232,20 @@ jobs:
     - get: ci
     - get: stemcell-builder
       passed: [build-stemcells]
-      trigger: true
     - get: bosh-agent
       passed: [build-stemcells]
-      trigger: true
     - get: base-amis
       passed: [build-stemcells]
-    - put: version
-      resource: bosh-aws-stemcell-version
-      params:
-        pre: build
-    - get: bwats
+    - get: version
+      resource: aws-stemcell-version
       passed: [build-stemcells]
       trigger: true
+    - get: bwats
+      passed: [build-stemcells]
+  - put: version
+    resource: aws-stemcell-version
+    params:
+      pre: build
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
@@ -251,15 +272,9 @@ jobs:
       STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
-  - put: version
-    resource: bosh-aws-stemcell-version
+  - put: aws-stemcell-release-candidate
     params:
-      bump: final
-  - task: set-stemcell-version
-    file: ci/tasks/set-stemcell-version.yml
-  - put: bosh-aws-stemcell
-    params:
-      file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
 - name: create-gcp-stemcell
   serial: true
   plan:
@@ -267,17 +282,18 @@ jobs:
     - get: ci
     - get: stemcell-builder
       passed: [build-stemcells]
-      trigger: true
     - get: bosh-agent
       passed: [build-stemcells]
-      trigger: true
-    - put: version
-      resource: bosh-gcp-stemcell-version
-      params:
-        pre: build
-    - get: bwats
+    - get: version
+      resource: gcp-stemcell-version
       passed: [build-stemcells]
       trigger: true
+    - get: bwats
+      passed: [build-stemcells]
+  - put: version
+    resource: gcp-stemcell-version
+    params:
+      pre: build
   - task: compile-bosh-agent
     file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
@@ -300,12 +316,43 @@ jobs:
       STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
       BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
-  - put: version
-    resource: bosh-gcp-stemcell-version
+  - put: gcp-stemcell-release-candidate
     params:
-      bump: final
-  - task: set-stemcell-version
-    file: ci/tasks/set-stemcell-version.yml
-  - put: bosh-gcp-stemcell
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+- name: promote-stemcells
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: vsphere-stemcell-release-candidate
+      tags: [vsphere-windows]
+      passed: [create-vsphere-stemcell]
+    - get: aws-stemcell-release-candidate
+      passed: [create-aws-stemcell]
+    - get: gcp-stemcell-release-candidate
+      passed: [create-gcp-stemcell]
+  - aggregate:
+    - task: set-stemcell-version
+      tags: [vsphere-windows]
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+      output_mapping: { final-stemcell: vsphere-stemcell-final }
+      file: ci/tasks/set-stemcell-version.yml
+    - task: set-stemcell-version
+      input_mapping: { bosh-windows-stemcell: aws-stemcell-release-candidate }
+      output_mapping: { final-stemcell: aws-stemcell-final }
+      file: ci/tasks/set-stemcell-version.yml
+    - task: set-stemcell-version
+      tags: [vsphere-windows]
+      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+      output_mapping: { final-stemcell: gcp-stemcell-final }
+      file: ci/tasks/set-stemcell-version.yml
+  - put: vsphere-stemcell-final
+    tags: [vsphere-windows]
     params:
-      file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+  - put: aws-stemcell-final
+    params:
+      file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+  - put: gcp-stemcell-final
+    params:
+      file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
