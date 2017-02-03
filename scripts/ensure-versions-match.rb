@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'fileutils'
+
+stemcells = Dir.glob("*-release-candidate/*.tgz")
+versions = stemcells.collect do |tarball|
+  File.basename(tarball.scan(/\d+\.\d+/)[0])
+end
+
+if versions.uniq.size > 1
+  abort "Unable to find the same major version for the inputs #{stemcells}"
+end
+
+puts "All stemcells have the same major version."

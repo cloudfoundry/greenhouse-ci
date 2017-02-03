@@ -377,6 +377,8 @@ jobs:
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
+  - task: ensure-versions-match
+    file: ci/tasks/ensure-versions-match.yml
   - aggregate:
     - task: set-stemcell-version
       tags: [vsphere-windows]
