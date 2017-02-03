@@ -132,15 +132,16 @@ jobs:
   - put: stemcells-major-version
     params:
       file: version/number
-  - put: vsphere-stemcell-version
-    params:
-      file: version/number
-  - put: gcp-stemcell-version
-    params:
-      file: version/number
-  - put: aws-stemcell-version
-    params:
-      file: version/number
+  - aggregate:
+    - put: vsphere-stemcell-version
+      params:
+        file: version/number
+    - put: aws-stemcell-version
+      params:
+        file: version/number
+    - put: gcp-stemcell-version
+      params:
+        file: version/number
   - task: collect-base-amis
     file: ci/tasks/collect-base-amis.yml
     params:
