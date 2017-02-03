@@ -384,6 +384,12 @@ jobs:
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
+    - get: bosh-agent
+      passed: [create-gcp-stemcell,create-aws-stemcell,create-vsphere-stemcell]
+    - get: bwats
+      passed: [create-gcp-stemcell,create-aws-stemcell,create-vsphere-stemcell]
+    - get: stemcell-builder
+      passed: [create-gcp-stemcell,create-aws-stemcell,create-vsphere-stemcell]
   - task: ensure-versions-match
     file: ci/tasks/ensure-versions-match.yml
   - aggregate:
