@@ -8,7 +8,7 @@ resources:
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/stemcells-major-version
+    key: versions/stemcells-major-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1007.0.0
