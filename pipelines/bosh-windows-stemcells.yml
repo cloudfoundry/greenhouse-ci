@@ -35,6 +35,13 @@ resources:
     regexp: en_windows_server_2012_r2_x64_dvd_(.*).iso
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: major-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: stemcell-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: vsphere-lock
   type: pool
   source:
@@ -394,6 +401,12 @@ jobs:
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
       file: ci/tasks/set-stemcell-version.yml
+  - task: create-major-stemcell
+    file: ci/tasks/create-major-stemcell.yml
+    input_mapping: { final-stemcell: aws-stemcell-final }
+  - put: major-stemcell
+    params:
+      file: stemcell-info/stemcell-*.json
   - put: vsphere-stemcell-final
     tags: [vsphere-windows]
     params:
