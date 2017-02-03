@@ -123,7 +123,8 @@ jobs:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
   - put: base-amis
-    file: base-amis/base-amis-*.json
+    params:
+      file: base-amis/base-amis-*.json
 - name: create-vsphere-stemcell
   serial: true
   plan:
