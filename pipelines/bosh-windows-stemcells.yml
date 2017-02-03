@@ -35,11 +35,18 @@ resources:
     regexp: en_windows_server_2012_r2_x64_dvd_(.*).iso
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: vsphere-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-vsphere
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
 - name: vsphere-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/vsphere-stemcell-version
+    key: versions/vsphere-stemcell-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
@@ -57,11 +64,18 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
 - name: aws-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/aws-stemcell-version
+    key: versions/aws-stemcell-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
@@ -86,11 +100,18 @@ resources:
     regexp: base-amis-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-gcp
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
 - name: gcp-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
-    key: versions/gcp-stemcell-version
+    key: versions/gcp-stemcell-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
@@ -153,173 +174,197 @@ jobs:
 - name: create-vsphere-stemcell
   serial: true
   plan:
-  - aggregate:
-    - get: ci
-    - get: bosh-agent
-      passed: [build-stemcells]
-    - get: stemcell-builder
-      passed: [build-stemcells]
-    - get: windows-stemcell-dependencies
-      tags: [vsphere-windows]
-      passed: [build-stemcells]
-    - get: base-iso
-      tags: [vsphere-windows]
-      passed: [build-stemcells]
-    - get: version
+  - put: vsphere-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: bosh-agent
+        passed: [build-stemcells]
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: windows-stemcell-dependencies
+        tags: [vsphere-windows]
+        passed: [build-stemcells]
+      - get: base-iso
+        tags: [vsphere-windows]
+        passed: [build-stemcells]
+      - get: version
+        resource: vsphere-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: bwats
+        passed: [build-stemcells]
+    - put: version
       resource: vsphere-stemcell-version
-      passed: [build-stemcells]
-      trigger: true
-    - get: bwats
-      passed: [build-stemcells]
-  - put: version
-    resource: vsphere-stemcell-version
-    params:
-      pre: build
-  - task: compile-bosh-agent
-    file: ci/tasks/compile-bosh-agent.yml
-    tags: [vsphere-windows]
-  - task: create-vsphere-stemcell
-    privileged: true
-    file: stemcell-builder/tasks/create-vsphere-stemcell.yml
-    tags: [vsphere-windows]
-    params:
-      OUTPUT_DIR: bosh-windows-stemcell
-      ISO_CHECKSUM_TYPE: "md5"
-      ISO_CHECKSUM: "0e7c09aab20dec3cd7eab236dab90e78"
-      MEMSIZE: "8192"
-      NUMVCPUS: "6"
-      REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
-      REMOTE_PORT: "22"
-      REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
-      REMOTE_CACHE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
-      REMOTE_CACHE_DIRECTORY: "packer-cache"
-      REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
-      REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
-      ADMINISTRATOR_PASSWORD: {{WINDOWS_PASSWORD}}
-      GUEST_NETWORK_ADDRESS: "10.85.58.10"
-      GUEST_NETWORK_MASK: "255.255.255.0"
-      GUEST_NETWORK_GATEWAY: "10.85.58.1"
-    ensure:
-      task: cleanup-vsphere
-      file: ci/tasks/cleanup-vsphere.yml
+      params:
+        pre: build
+    - task: compile-bosh-agent
+      file: ci/tasks/compile-bosh-agent.yml
+      tags: [vsphere-windows]
+    - task: create-vsphere-stemcell
+      privileged: true
+      file: stemcell-builder/tasks/create-vsphere-stemcell.yml
       tags: [vsphere-windows]
       params:
+        OUTPUT_DIR: bosh-windows-stemcell
+        ISO_CHECKSUM_TYPE: "md5"
+        ISO_CHECKSUM: "0e7c09aab20dec3cd7eab236dab90e78"
+        MEMSIZE: "8192"
+        NUMVCPUS: "6"
         REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
+        REMOTE_PORT: "22"
+        REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+        REMOTE_CACHE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+        REMOTE_CACHE_DIRECTORY: "packer-cache"
         REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
         REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
-        REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
-  - task: test-stemcell
-    file: bwats/ci/task.yml
-    attempts: 5
-    tags: [vsphere-windows]
-    params:
-      AZ: default
-      VM_TYPE: xlarge
-      BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
-      BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
-      DIRECTOR_UUID: {{STONETALON_DIRECTOR_UUID}}
-      DIRECTOR_IP: {{STONETALON_BOSH_DIRECTOR_IP}}
-      STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-      BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
-  - put: vsphere-stemcell-release-candidate
-    tags: [vsphere-windows]
-    params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        ADMINISTRATOR_PASSWORD: {{WINDOWS_PASSWORD}}
+        GUEST_NETWORK_ADDRESS: "10.85.58.10"
+        GUEST_NETWORK_MASK: "255.255.255.0"
+        GUEST_NETWORK_GATEWAY: "10.85.58.1"
+      ensure:
+        task: cleanup-vsphere
+        file: ci/tasks/cleanup-vsphere.yml
+        tags: [vsphere-windows]
+        params:
+          REMOTE_HOST: {{ESXI_REMOTE_ADDRESS}}
+          REMOTE_USERNAME: {{ESXI_REMOTE_USER}}
+          REMOTE_PASSWORD: {{ESXI_REMOTE_PASSWORD}}
+          REMOTE_DATASTORE: "578921d3-1b48ca03-9708-02505600004b"
+    - task: test-stemcell
+      file: bwats/ci/task.yml
+      attempts: 5
+      tags: [vsphere-windows]
+      params:
+        AZ: default
+        VM_TYPE: xlarge
+        BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
+        BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
+        DIRECTOR_UUID: {{STONETALON_DIRECTOR_UUID}}
+        DIRECTOR_IP: {{STONETALON_BOSH_DIRECTOR_IP}}
+        STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
+        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
+    - put: vsphere-stemcell-release-candidate
+      tags: [vsphere-windows]
+      params:
+        file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+    ensure:
+      put: vsphere-lock
+      params:
+        release: vsphere-lock
 - name: create-aws-stemcell
   serial: true
   plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [build-stemcells]
-    - get: bosh-agent
-      passed: [build-stemcells]
-    - get: base-amis
-      passed: [build-stemcells]
-    - get: version
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: bosh-agent
+        passed: [build-stemcells]
+      - get: base-amis
+        passed: [build-stemcells]
+      - get: version
+        resource: aws-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: bwats
+        passed: [build-stemcells]
+    - put: version
       resource: aws-stemcell-version
-      passed: [build-stemcells]
-      trigger: true
-    - get: bwats
-      passed: [build-stemcells]
-  - put: version
-    resource: aws-stemcell-version
-    params:
-      pre: build
-  - task: compile-bosh-agent
-    file: ci/tasks/compile-bosh-agent.yml
-  - task: create-stemcell
-    file: stemcell-builder/tasks/create-aws-stemcell.yml
-    params:
-      OUTPUT_DIR: bosh-windows-stemcell
-      OS_VERSION: windows2012R2
-      AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-      AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-    ensure:
-      task: delete-orphan-vms
-      file: ci/tasks/delete-vms.yml
       params:
-        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-  - task: test-stemcell
-    file: bwats/ci/task.yml
-    attempts: 5
-    params:
-      BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
-      BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
-      DIRECTOR_IP: {{BOSH_CONCOURSE_DIRECTOR_IP}}
-      DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
-      STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
-      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-      BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
-  - put: aws-stemcell-release-candidate
-    params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        pre: build
+    - task: compile-bosh-agent
+      file: ci/tasks/compile-bosh-agent.yml
+    - task: create-stemcell
+      file: stemcell-builder/tasks/create-aws-stemcell.yml
+      params:
+        OUTPUT_DIR: bosh-windows-stemcell
+        OS_VERSION: windows2012R2
+        AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+        AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+      ensure:
+        task: delete-orphan-vms
+        file: ci/tasks/delete-vms.yml
+        params:
+          AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+    - task: test-stemcell
+      file: bwats/ci/task.yml
+      attempts: 5
+      params:
+        BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
+        BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
+        DIRECTOR_IP: {{BOSH_CONCOURSE_DIRECTOR_IP}}
+        DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
+        STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
+    - put: aws-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
 - name: create-gcp-stemcell
   serial: true
   plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [build-stemcells]
-    - get: bosh-agent
-      passed: [build-stemcells]
-    - get: version
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: bosh-agent
+        passed: [build-stemcells]
+      - get: version
+        resource: gcp-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: bwats
+        passed: [build-stemcells]
+    - put: version
       resource: gcp-stemcell-version
-      passed: [build-stemcells]
-      trigger: true
-    - get: bwats
-      passed: [build-stemcells]
-  - put: version
-    resource: gcp-stemcell-version
-    params:
-      pre: build
-  - task: compile-bosh-agent
-    file: ci/tasks/compile-bosh-agent.yml
-  - task: create-stemcell
-    attempts: 10
-    file: stemcell-builder/tasks/create-gcp-stemcell.yml
-    params:
-      OUTPUT_DIR: bosh-windows-stemcell
-      OS_VERSION: windows2012R2
-      ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
-  - task: test-stemcell
-    file: bwats/ci/task.yml
-    attempts: 5
-    params:
-      IAAS: gcp
-      ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
-      BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
-      BOSH_CLIENT: {{OTTER_BOSH_USER}}
-      DIRECTOR_IP: {{OTTER_DIRECTOR_IP}}
-      DIRECTOR_UUID: {{OTTER_DIRECTOR_UUID}}
-      STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
-      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-      BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
-  - put: gcp-stemcell-release-candidate
-    params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      params:
+        pre: build
+    - task: compile-bosh-agent
+      file: ci/tasks/compile-bosh-agent.yml
+    - task: create-stemcell
+      attempts: 10
+      file: stemcell-builder/tasks/create-gcp-stemcell.yml
+      params:
+        OUTPUT_DIR: bosh-windows-stemcell
+        OS_VERSION: windows2012R2
+        ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+    - task: test-stemcell
+      file: bwats/ci/task.yml
+      attempts: 5
+      params:
+        IAAS: gcp
+        ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
+        BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
+        BOSH_CLIENT: {{OTTER_BOSH_USER}}
+        DIRECTOR_IP: {{OTTER_DIRECTOR_IP}}
+        DIRECTOR_UUID: {{OTTER_DIRECTOR_UUID}}
+        STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
+    - put: gcp-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
 - name: promote-stemcells
   serial: true
   plan:
