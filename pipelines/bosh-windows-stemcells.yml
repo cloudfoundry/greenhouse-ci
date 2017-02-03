@@ -65,14 +65,6 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: base-amis-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/base-amis-version
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1.0.0
 - name: base-amis
   type: s3
   source:
@@ -102,12 +94,6 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
 jobs:
-- name: bump-base-amis
-  serial: true
-  plan:
-  - get: version
-    resource: base-amis-version
-  - 
 - name: build-stemcells
   serial: true
   plan:
@@ -119,25 +105,25 @@ jobs:
       resource: bosh-windows-stemcells-major-version
       params:
         bump: major
-    - get: 
   - put: bosh-windows-stemcells-major-version
     params:
       file: version/number
   - put: bosh-vsphere-stemcell-version
     params:
       file: version/number
-  - put: bosh-aws-stemcell-version
-    params:
-      file: version/number
   - put: bosh-gcp-stemcell-version
     params:
       file: version/number
-  - task: collect-amis
-    file: ci/tasks/collect-stemcell-region-amis.yml
+  - put: bosh-aws-stemcell-version
+    params:
+      file: version/number
+  - task: collect-base-amis
+    file: ci/tasks/collect-base-amis.yml
     params:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
   - put: base-amis
+    file: base-amis/base-amis-*.json
 - name: create-vsphere-stemcell
   serial: true
   plan:
