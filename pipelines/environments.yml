@@ -45,7 +45,7 @@ resources:
 - name: gcp-windows-stemcell
   type: s3
   source:
-    bucket: bosh-windows-stemcells
+    bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
 - name: vsphere-windows-stemcell
   type: s3
