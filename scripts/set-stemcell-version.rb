@@ -10,7 +10,7 @@ FileUtils.mkdir_p("output-stemcell")
 `tar xzvf #{stemcell[0]} -C output-stemcell`
 
 stemcell_mf = YAML.load_file("output-stemcell/stemcell.MF")
-final_version = File.read('version/number').match(/\d+\.\d+/)[0]
+final_version = stemcell[0].match(/\d+\.\d+/)[0]
 stemcell_mf["version"] = final_version
 File.open("output-stemcell/stemcell.MF", "w") {|f| f.write stemcell_mf.to_yaml }
 
