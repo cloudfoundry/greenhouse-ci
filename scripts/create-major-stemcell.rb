@@ -3,7 +3,7 @@ require 'json'
 
 dirs = %w(bosh-agent stemcell-builder bwats)
 
-stemcell = Dir.glob("bosh-windows-stemcell/*.tgz")[0]
+stemcell = Dir.glob("final-stemcell/*.tgz")[0]
 final_version = stemcell.match(/\d+\.\d+/)[0]
 
 shas = dirs.inject({}) do |acc, dir|
