@@ -2,6 +2,14 @@
 
 require 'json'
 
+base_ami = ENV["BASE_AMI"]
+base_ami_name = ""
+if base_ami == "windows2012R2"
+  base_ami_name = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
+else if base_ami == "windows2016"
+  base_ami_name = "Windows_Server-2016-English-Nano-Base*"
+end
+
 region_names = [
   "us-east-1",
   "us-east-2",
@@ -26,7 +34,7 @@ region_names.each do |region_name|
   amis = JSON.parse(`aws ec2 describe-images \
             --region #{region_name} \
             --owners amazon \
-            --filters "Name=name,Values=Windows_Server-2012-R2_RTM-English-64Bit-Base*" "Name=state,Values=available"`)
+            --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
   base_ami = (amis['Images'].sort { |a,b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
   region_info['base_ami'] = base_ami
 
@@ -72,6 +80,6 @@ if !File.file?('version/number')
 end
 version = File.read('version/number').chomp
 
-File.open(File.join('base-amis', "base-amis-#{version}.json"), 'w') do |f|
+File.open(File.join('base-amis', "base-amis-#{base_ami}-#{version}.json"), 'w') do |f|
   f.write(region_infos.to_json)
 end

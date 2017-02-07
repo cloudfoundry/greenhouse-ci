@@ -100,11 +100,18 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: base-amis
+- name: base-amis-win2012r2
   type: s3
   source:
     bucket: bosh-windows-stemcells
-    regexp: base-amis-(.*).json
+    regexp: base-amis-win2012r2-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: base-amis-win2016
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-amis-win2016-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: gcp-lock
@@ -170,14 +177,26 @@ jobs:
     - put: gcp-stemcell-version
       params:
         file: version/number
-  - task: collect-base-amis
+  - task: collect-win2012r2-amis
     file: ci/tasks/collect-base-amis.yml
+    output_mapping: { base-amis: win2012r2-amis }
     params:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
-  - put: base-amis
+      BASE_AMI: windows2012R2
+  - task: collect-win2016-amis
+    file: ci/tasks/collect-base-amis.yml
+    output_mapping: { base-amis: win2016-amis }
     params:
-      file: base-amis/base-amis-*.json
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
+      BASE_AMI: windows2016
+  - put: base-amis-win2012r2
+    params:
+      file: win2012r2-amis/base-amis-*.json
+  - put: base-amis-win2016
+    params:
+      file: win2016-amis/base-amis-*.json
 - name: create-vsphere-stemcell
   serial: true
   plan:
@@ -265,6 +284,65 @@ jobs:
       put: vsphere-lock
       params:
         release: vsphere-lock
+- name: create-aws-stemcell-2016
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: bosh-agent
+        passed: [build-stemcells]
+      - get: base-amis
+        resource: base-amis-win2016
+        passed: [build-stemcells]
+      - get: version
+        resource: aws-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: bwats
+        passed: [build-stemcells]
+    - put: version
+      resource: aws-stemcell-version
+      params:
+        pre: build
+    - task: compile-bosh-agent
+      file: ci/tasks/compile-bosh-agent.yml
+    - task: create-stemcell
+      file: stemcell-builder/tasks/create-aws-stemcell.yml
+      params:
+        OUTPUT_DIR: bosh-windows-stemcell
+        OS_VERSION: windows2016
+        AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+        AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+      ensure:
+        task: delete-orphan-vms
+        file: ci/tasks/delete-vms.yml
+        params:
+          AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+    - task: test-stemcell
+      file: bwats/ci/task.yml
+      attempts: 5
+      params:
+        BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
+        BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
+        DIRECTOR_IP: {{BOSH_CONCOURSE_DIRECTOR_IP}}
+        DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
+        STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
+    - put: aws-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
 - name: create-aws-stemcell
   serial: true
   plan:
@@ -279,6 +357,7 @@ jobs:
       - get: bosh-agent
         passed: [build-stemcells]
       - get: base-amis
+        resource: base-amis-win2012r2
         passed: [build-stemcells]
       - get: version
         resource: aws-stemcell-version
