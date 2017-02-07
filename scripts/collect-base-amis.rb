@@ -37,8 +37,8 @@ region_names.each do |region_name|
             --region #{region_name} \
             --owners amazon \
             --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
-  base_ami = (amis['Images'].sort { |a,b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
-  region_info['base_ami'] = base_ami
+  ami_id = (amis['Images'].sort { |a,b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
+  region_info['base_ami'] = ami_id
 
   vpcs = JSON.parse(`aws ec2 describe-vpcs \
               --region #{region_name}`)
