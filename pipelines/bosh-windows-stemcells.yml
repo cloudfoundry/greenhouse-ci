@@ -104,14 +104,14 @@ resources:
   type: s3
   source:
     bucket: bosh-windows-stemcells
-    regexp: base-amis-win2012r2-(.*).json
+    regexp: base-amis-windows2012R2-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: base-amis-win2016
   type: s3
   source:
     bucket: bosh-windows-stemcells
-    regexp: base-amis-win2016-(.*).json
+    regexp: base-amis-windows2016-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: gcp-lock
@@ -193,10 +193,10 @@ jobs:
       BASE_AMI: windows2016
   - put: base-amis-win2012r2
     params:
-      file: win2012r2-amis/base-amis-*.json
+      file: win2012r2-amis/base-amis-windows2012R2-*.json
   - put: base-amis-win2016
     params:
-      file: win2016-amis/base-amis-*.json
+      file: win2016-amis/base-amis-windows2016-*.json
 - name: create-vsphere-stemcell
   serial: true
   plan:
