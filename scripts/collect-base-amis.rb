@@ -7,7 +7,7 @@ base_ami_name = ""
 if base_ami == "windows2012R2"
   base_ami_name = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
 elsif base_ami == "windows2016"
-  base_ami_name = "Windows_Server-2016-English-Full-Base*"
+  base_ami_name = "Windows_Server-2016-English-Nano-Base*"
 else
   abort "Define BASE_AMI environment variable (e.g. windows2012R2,windows2016) "
 end
