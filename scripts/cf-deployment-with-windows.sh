@@ -14,7 +14,7 @@ export CF_DEPLOYMENT="$PWD/cf-deployment"
 pushd greenhouse-private/$ENVIRONMENT >/dev/null
   $PWD/cf-deploy create
 
-  if ! git diff --exit-code &> /dev/null; then
+  if [ -n "$(git status --porcelain)" ]; then
     git config user.email "pivotal-netgarden-eng@pivotal.io"
     git config user.name "CI (Automated)"
     git add deployment-vars.yml
