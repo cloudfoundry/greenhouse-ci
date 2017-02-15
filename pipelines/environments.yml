@@ -3,6 +3,8 @@ groups:
   jobs:
   - dolphin-deploy-cf
   - dolphin-destroy-cf
+  - baboon-deploy-cf
+  - baboon-destroy-cf
   - ferret-deploy-cf
   - ferret-destroy-cf
   - mulgore-deploy-cf
@@ -11,6 +13,10 @@ groups:
   jobs:
   - dolphin-deploy-cf
   - dolphin-destroy-cf
+- name: baboon
+  jobs:
+  - baboon-deploy-cf
+  - baboon-destroy-cf
 - name: ferret
   jobs:
   - ferret-deploy-cf
@@ -81,6 +87,13 @@ resources:
   source:
     branch: master
     pool: dolphin
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+- name: baboon-lock-pool
+  type: pool
+  source:
+    branch: master
+    pool: baboon
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
 - name: ferret-lock-pool
@@ -178,6 +191,86 @@ jobs:
       put: dolphin-lock-pool
       params:
         release: dolphin-lock-pool
+
+- name: baboon-deploy-cf
+  serial: true
+  plan:
+  - put: baboon-lock-pool
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: cf-deployment
+      - get: greenhouse-private
+      - get: ci
+      - get: windows-stemcell
+        resource: gcp-windows-stemcell
+      - get: linux-stemcell
+        resource: gcp-linux-stemcell
+      - get: wats
+      - get: weekly-trigger
+        trigger: true
+    - task: upload-linux-stemcell
+      file: ci/tasks/upload-stemcell.yml
+      params:
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+    - task: deploy-cf
+      file: ci/tasks/cf-deployment-with-windows.yml
+      params:
+        ENVIRONMENT: baboon
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+        CF_DOMAIN: baboon.cf-app.com
+    - put: greenhouse-private
+      params:
+        repository: output/greenhouse-private
+        rebase: true
+    - task: clean-up
+      file: ci/tasks/clean-up.yml
+      params:
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+    - task: wats
+      file: ci/tasks/run-wats.yml
+      params:
+        ADMIN_PASSWORD: {{BABOON_ADMIN_PASSWORD}}
+        ADMIN_USER: admin
+        API: api.baboon.cf-app.com
+        APPS_DOMAIN: baboon.cf-app.com
+        NUM_WIN_CELLS: 1
+        SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+    ensure:
+      put: baboon-lock-pool
+      params:
+        release: baboon-lock-pool
+
+- name: baboon-destroy-cf
+  serial: true
+  plan:
+  - put: baboon-lock-pool
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+    - task: destroy-cf
+      file: ci/tasks/delete-deployment.yml
+      params:
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+    ensure:
+      put: baboon-lock-pool
+      params:
+        release: baboon-lock-pool
 
 - name: ferret-deploy-cf
   serial: true
