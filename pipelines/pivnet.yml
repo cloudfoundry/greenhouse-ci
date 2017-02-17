@@ -7,13 +7,20 @@ resource_types:
     tag: latest-final
 
 resources:
-- name: pivnet-stemcell-release
+- name: pivnet-aws-stemcell-release
   type: pivnet
   source:
     api_token: {{PIVNET_AJAMALI_API_TOKEN}}
     product_slug: stemcells-windows-server
     access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
     secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
+- name: pivnet-vsphere-stemcell-release
+  type: pivnet
+  source:
+    api_token: {{PIVNET_AJAMALI_API_TOKEN}}
+    product_slug: stemcells-windows-server-internal
+    access_key_id: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_ACCESS_KEY}}
+    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_SECRET_ACCESS_KEY}}
 - name: aws-stemcell
   type: s3
   source:
@@ -21,13 +28,20 @@ resources:
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: vsphere-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-private
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
 jobs:
-- name: push-stemcell
+- name: upload-aws-stemcell
   serial: true
   plan:
   - aggregate:
     - get: aws-stemcell
-      trigger: true
   - task: pivnet-metadata
     config:
       inputs: [{name: aws-stemcell}]
@@ -53,9 +67,43 @@ jobs:
           - file: $(ls aws-stemcell/*.tgz)
             upload_as: "AWS Light Stemcell for Windows 2012R2 Server"
           EOF
-
-  - put: pivnet-stemcell-release
+  - put: pivnet-aws-stemcell-release
     params:
       file_glob: aws-stemcell/*.tgz
       s3_filepath_prefix: {{PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX}}
+      metadata_file: pivnet-metadata/metadata
+- name: upload-vsphere-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: vsphere-stemcell
+  - task: pivnet-metadata
+    config:
+      inputs: [{name: vsphere-stemcell}]
+      outputs: [{name: pivnet-metadata}]
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          cat > pivnet-metadata/metadata <<EOF
+          ---
+          release:
+            version: "$(cat vsphere-stemcell/version)"
+            release_type: Beta Release
+            eula_slug: "pivotal_beta_eula"
+            availability: Admins Only
+            user_group_ids: []
+            eccn: ""
+            license_exception: ""
+          product_files:
+          - file: $(ls vsphere-stemcell/*.tgz)
+            upload_as: "vSphere Stemcell for Windows 2012R2 Server"
+          EOF
+  - put: pivnet-vsphere-stemcell-release
+    params:
+      file_glob: vsphere-stemcell/*.tgz
+      s3_filepath_prefix: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX}}
       metadata_file: pivnet-metadata/metadata
