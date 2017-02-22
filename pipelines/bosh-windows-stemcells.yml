@@ -207,7 +207,7 @@ jobs:
       BASE_AMI: windows2016
   - task: collect-win2012r2-gcp-image
     file: ci/tasks/get-base-gcp-image-id.yml
-    output_mapping: { base-image: win2012r2-gcp-image }
+    output_mapping: { base-gcp-image: win2012r2-gcp-image }
     params:
       ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
       BASE_OS: windows2012R2
