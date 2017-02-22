@@ -10,17 +10,17 @@ resources:
 - name: pivnet-aws-stemcell-release
   type: pivnet
   source:
-    api_token: {{PIVNET_AJAMALI_API_TOKEN}}
+    api_token: {{PIVNET_BOT_API_TOKEN}}
     product_slug: stemcells-windows-server
     access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
     secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
 - name: pivnet-vsphere-stemcell-release
   type: pivnet
   source:
-    api_token: {{PIVNET_AJAMALI_API_TOKEN}}
+    api_token: {{PIVNET_BOT_API_TOKEN}}
     product_slug: stemcells-windows-server-internal
-    access_key_id: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_ACCESS_KEY}}
-    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_SECRET_ACCESS_KEY}}
+    access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
+    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
 - name: aws-stemcell
   type: s3
   source:
