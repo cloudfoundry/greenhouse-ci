@@ -21,5 +21,5 @@ fi
 
 image_id=$(gcloud compute images list --regexp ${base_image_regex} --format json | jq -r .[0].name)
 
-printf $image_id > image/id
-
+version=$(cat version/number)
+echo -n "{\"base_image\":\"$image_id\"}" > base-gcp-image/base-gcp-image-windows2012R2-$version.json

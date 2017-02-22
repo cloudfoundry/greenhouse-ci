@@ -121,6 +121,13 @@ resources:
     regexp: base-amis-windows2016-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: base-gcp-image-win2012r2
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-gcp-image-windows2012R2-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: gcp-lock
   type: pool
   source:
@@ -198,12 +205,21 @@ jobs:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
       BASE_AMI: windows2016
+  - task: collect-win2012r2-gcp-image
+    file: ci/tasks/get-base-gcp-image-id.yml
+    output_mapping: { base-image: win2012r2-gcp-image }
+    params:
+      ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+      BASE_OS: windows2012R2
   - put: base-amis-win2012r2
     params:
       file: win2012r2-amis/base-amis-windows2012R2-*.json
   - put: base-amis-win2016
     params:
       file: win2016-amis/base-amis-windows2016-*.json
+  - put: base-gcp-image-win2012r2
+    params:
+      file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
 - name: create-vsphere-stemcell
   serial: true
   plan:
@@ -424,6 +440,9 @@ jobs:
       - get: stemcell-builder
         passed: [build-stemcells]
       - get: bosh-agent
+        passed: [build-stemcells]
+      - get: base-gcp-image
+        resource: base-gcp-image-win2012r2
         passed: [build-stemcells]
       - get: version
         resource: gcp-stemcell-version
