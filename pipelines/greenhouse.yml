@@ -423,7 +423,7 @@ jobs:
         DESIRED_CAPACITY: "2"
         KEY_PAIR: bosh
         NAT_INSTANCE_ID: {{PESTO_NAT_INSTANCE_ID}}
-        SECURITY_GROUP: sg-8eef69f3
+        SECURITY_GROUP: {{PESTO_SECURITY_GROUP}}
         STACKNAME: windows-cells
         SUBNET_CIDR: 10.10.100.0/24
         VPC_ID: {{PESTO_VPC_ID}}
