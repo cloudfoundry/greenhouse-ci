@@ -56,7 +56,7 @@ resources:
 - name: vsphere-windows-stemcell
   type: s3
   source:
-    bucket: bosh-windows-stemcells-release-candidates
+    bucket: bosh-windows-stemcells-private-release-candidates
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
 - name: aws-linux-stemcell
   type: bosh-io-stemcell
