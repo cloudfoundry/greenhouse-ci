@@ -1,0 +1,32 @@
+resources:
+- name: greenhouse-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bsdtar
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/greenhouse-org/bsdtar.git
+
+resource_types: []
+
+jobs:
+- name: build-tar
+  serial: true
+  plan:
+  - aggregate:
+    - get: bsdtar
+      # trigger: true
+    - get: greenhouse-ci
+  - task: build-tar
+    config:
+      platform: windows
+      inputs:
+      - name: bsdtar
+      - name: greenhouse-ci
+      run:
+        path: powershell
+        args:
+        - bsdtar/install.ps1
