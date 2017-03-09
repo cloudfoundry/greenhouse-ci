@@ -1,9 +1,11 @@
 resources:
-- name: greenhouse-ci
-  type: git
+- name: s3-bucket
+  type: s3
   source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    bucket: bosh-windows-dependencies
+    regexp: tar-(.*).exe
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: bsdtar
   type: git
   source:
@@ -19,14 +21,18 @@ jobs:
   - aggregate:
     - get: bsdtar
       # trigger: true
-    - get: greenhouse-ci
+    - get: s3-bucket
   - task: build-tar
     config:
       platform: windows
       inputs:
       - name: bsdtar
-      - name: greenhouse-ci
+      outputs:
+      - name: tar-output
       run:
         path: powershell
         args:
         - bsdtar/install.ps1
+  - put: s3-bucket
+    params:
+      file: tar-output/tar-*.exe
