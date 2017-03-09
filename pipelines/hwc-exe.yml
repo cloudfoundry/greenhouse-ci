@@ -1,0 +1,70 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: hwc-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/hwc.git
+- name: hwc-master
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/hwc.git
+    # uri: git@github.com:cloudfoundry-incubator/hwc.git
+    # private_key: {{}}
+
+jobs:
+- name: test
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: hwc-develop
+    - get: hwc-master
+  - task: test-hwc
+    input_mapping: { hwc: hwc-develop }
+    config:
+      platform: windows
+      inputs:
+      - name: ci
+      - name: hwc
+        path: src/github.com/cloudfoundry-incubator/hwc
+      run:
+        path: powershell
+        args:
+        - "-ExecutionPolicy"
+        - "Bypass"
+        - "-File"
+        - ci/scripts/test-hwc.ps1
+  # - task: merge-develop-to-master
+  #   input_mapping: { from-repo: hwc-develop, to-repo: hwc-master }
+  #   file: ci/tasks/merge-repo.yml
+  #   params:
+  #     FROM_BRANCH: develop
+  # - put: wats-mergedback
+  #     params: { repository: merged-repo/to-repo }
+- name: build
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: hwc
+      resource: hwc-master
+      passed: [test]
+  - task: build-hwc
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: pivotalgreenhouse/ci
+      inputs:
+      - name: ci
+      - name: hwc
+        path: src/github.com/cloudfoundry-incubator/hwc
+      run:
+        path: ci/scripts/build-hwc.sh
