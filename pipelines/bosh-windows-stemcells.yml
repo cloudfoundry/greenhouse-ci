@@ -241,9 +241,9 @@ jobs:
   - task: compile-bosh-agent
     tags: [vsphere-windows]
     file: ci/tasks/compile-bosh-agent.yml
-  - task: create-vmx-stemcell
+  - task: create-stemcell
     privileged: true
-    file: stemcell-builder/tasks/create-vmx-stemcell.yml
+    file: stemcell-builder/tasks/create-vsphere-stemcell.yml
     tags: [vsphere-windows-worker]
     params:
       ADMINISTRATOR_PASSWORD: "Password123!"
@@ -300,9 +300,9 @@ jobs:
     - get: windows-stemcell-dependencies
     - get: vmx-version
       resource: updated-vmx-version
-  - task: create-vmx-add-updates
+  - task: add-updates
     privileged: true
-    file: stemcell-builder/tasks/create-vmx-add-updates-stemcell.yml
+    file: stemcell-builder/tasks/create-vsphere-add-updates-stemcell.yml
     tags: [vsphere-windows-worker]
     params:
       ADMINISTRATOR_PASSWORD: "Password123!"
