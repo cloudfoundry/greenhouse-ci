@@ -17,7 +17,7 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Go is installed!"
 }
 
-cd $env:GOPATH/src/github.com/cloudfoundry-incubator/hwc/hwc
+cd $env:GOPATH/src/github.com/cloudfoundry-incubator/hwc
 
 Write-Host "Installing Ginkgo"
 go.exe install ./vendor/github.com/onsi/ginkgo/ginkgo
