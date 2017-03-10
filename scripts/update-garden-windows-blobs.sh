@@ -12,7 +12,7 @@ ruby -e '
 require "yaml"
 file_name = "config/blobs.yml"
 result=YAML.load_file(file_name)
-result = result.reject {|x| x.include?("garden-windows")}.to_yaml
+result = result.reject {|x| x.include?("garden-windows")}
 File.open(file_name, "w") {|f| f.write result.to_yaml }
 '
 
