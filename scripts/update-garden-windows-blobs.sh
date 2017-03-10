@@ -7,9 +7,16 @@ tar -czf garden-windows-$sha.tgz -C garden-artifacts/bosh-executables .
 
 pushd release
 
+
+ruby -e '
+require "yaml"
+file_name = "config/blobs.yml"
+result=YAML.load_file(file_name)
+result = result.reject {|x| x.include?("garden-windows")}.to_yaml
+File.open(file_name, "w") {|f| f.write result.to_yaml }
+'
+
 bosh add blob ../garden-windows-$sha.tgz garden-windows
-oldBlob=$(cat config/blobs.yml | grep garden-windows | sed s/://)
-bosh remove blob $oldBlob
 
 if [ -n "$ACCESS_KEY_ID" -a -n "$SECRET_ACCESS_KEY" ]; then
   cat > config/private.yml << EOF
