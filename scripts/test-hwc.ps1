@@ -17,17 +17,18 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Go is installed!"
 }
 
+Install-WindowsFeature Web-WHC
+Install-WindowsFeature Web-WebSockets
+
 cd $env:GOPATH/src/github.com/cloudfoundry-incubator/hwc
 
 Write-Host "Installing Ginkgo"
 go.exe install ./vendor/github.com/onsi/ginkgo/ginkgo
 if ($LastExitCode -ne 0) {
-    Write-Error $_
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
 ginkgo.exe -r -race -keepGoing
 if ($LastExitCode -ne 0) {
-    Write-Error $_
     throw "Testing hwc returned error code: $LastExitCode"
 }
