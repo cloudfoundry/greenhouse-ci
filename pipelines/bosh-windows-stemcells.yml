@@ -158,11 +158,6 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: bwats
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
 jobs:
 - name: build-stemcells
@@ -174,7 +169,6 @@ jobs:
     - get: stemcell-builder
     - get: base-iso
     - get: windows-stemcell-dependencies
-    - get: bwats
     - get: version
       resource: stemcells-major-version
       params:
@@ -218,8 +212,6 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere-windows]
-    - get: bwats
-      tags: [vsphere-windows]
     - get: bosh-agent
       tags: [vsphere-windows]
     - get: stemcell-builder
@@ -238,9 +230,6 @@ jobs:
     resource: vsphere-stemcell-version
     params:
       pre: build
-  - task: compile-bosh-agent
-    tags: [vsphere-windows]
-    file: ci/tasks/compile-bosh-agent.yml
   - task: create-stemcell
     privileged: true
     file: stemcell-builder/tasks/create-vsphere-stemcell.yml
@@ -260,8 +249,6 @@ jobs:
   - aggregate:
     - get: ci
       passed: [create-vsphere-stemcell]
-    - get: bwats
-      passed: [create-vsphere-stemcell]
     - get: bosh-agent
       passed: [create-vsphere-stemcell]
     - get: bosh-windows-stemcell
@@ -275,7 +262,7 @@ jobs:
       passed: [create-vsphere-stemcell]
   - task: test-stemcell
     tags: [vsphere-windows]
-    file: bwats/ci/task.yml
+    file: stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests/ci/task.yml
     attempts: 5
     params:
       AZ: default
@@ -331,14 +318,11 @@ jobs:
         resource: aws-stemcell-version
         passed: [build-stemcells]
         trigger: true
-      - get: bwats
-        passed: [build-stemcells]
+      - get: windows-stemcell-dependencies
     - put: version
       resource: aws-stemcell-version
       params:
         pre: build
-    - task: compile-bosh-agent
-      file: ci/tasks/compile-bosh-agent.yml
     - task: create-stemcell
       file: stemcell-builder/tasks/create-aws-stemcell.yml
       params:
@@ -352,7 +336,7 @@ jobs:
           AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
     - task: test-stemcell
-      file: bwats/ci/task.yml
+      file: stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests/ci/task.yml
       attempts: 5
       params:
         BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
@@ -392,21 +376,18 @@ jobs:
         resource: gcp-stemcell-version
         passed: [build-stemcells]
         trigger: true
-      - get: bwats
-        passed: [build-stemcells]
+      - get: windows-stemcell-dependencies
     - put: version
       resource: gcp-stemcell-version
       params:
         pre: build
-    - task: compile-bosh-agent
-      file: ci/tasks/compile-bosh-agent.yml
     - task: create-stemcell
       file: stemcell-builder/tasks/create-gcp-stemcell.yml
       params:
         OS_VERSION: windows2012R2
         ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
     - task: test-stemcell
-      file: bwats/ci/task.yml
+      file: stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests/ci/task.yml
       params:
         IAAS: gcp
         ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
@@ -439,8 +420,6 @@ jobs:
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
     - get: bosh-agent
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
-    - get: bwats
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
     - get: stemcell-builder
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
