@@ -1,5 +1,5 @@
 #docker pull pivotalgreenhouse/packer-base
-FROM ruby:2.1
+FROM pivotalgreenhouse/ci
 
 ENV PACKER_URL "https://releases.hashicorp.com/packer/0.12.2/packer_0.12.2_linux_amd64.zip"
 
