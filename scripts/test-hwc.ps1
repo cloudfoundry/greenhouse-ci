@@ -28,11 +28,6 @@ if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
-Write-Host "Building Nora fixture app"
-cd fixtures\nora
-make.bat
-cd ..\..
-
 ginkgo.exe -r -race -keepGoing
 if ($LastExitCode -ne 0) {
     throw "Testing hwc returned error code: $LastExitCode"
