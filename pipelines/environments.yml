@@ -9,19 +9,17 @@ groups:
   - ferret-destroy-cf
   - mulgore-deploy-cf
   - mulgore-destroy-cf
-- name: dolphin
+- name: gcp
   jobs:
   - dolphin-deploy-cf
   - dolphin-destroy-cf
-- name: baboon
-  jobs:
   - baboon-deploy-cf
   - baboon-destroy-cf
-- name: ferret
+- name: aws
   jobs:
   - ferret-deploy-cf
   - ferret-destroy-cf
-- name: mulgore
+- name: vsphere
   jobs:
   - mulgore-deploy-cf
   - mulgore-destroy-cf
