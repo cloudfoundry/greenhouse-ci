@@ -1,3 +1,14 @@
+groups:
+- name: stemcells
+  jobs:
+  - build-stemcells
+  - create-vsphere-add-updates
+  - create-vsphere-stemcell
+  - test-vsphere-stemcell
+  - create-aws-stemcell
+  - create-gcp-stemcell
+  - promote-stemcells
+
 resources:
 - name: ci
   type: git
