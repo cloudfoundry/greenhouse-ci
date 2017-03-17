@@ -8,6 +8,9 @@ groups:
   - create-aws-stemcell
   - create-gcp-stemcell
   - promote-stemcells
+- name: stemcell-builder
+  jobs:
+  - test-stemcell-builder
 
 resources:
 - name: ci
@@ -28,11 +31,17 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/bosh-agent.git
+- name: stemcell-builder-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
 - name: stemcell-builder
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
 - name: windows-stemcell-dependencies
   type: git
   source:
@@ -171,6 +180,29 @@ resources:
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
 jobs:
+- name: test-stemcell-builder
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder-develop
+      trigger: true
+    - get: stemcell-builder-master
+      resource: stemcell-builder
+  - task: test-stemcell-builder
+    file: ci/tasks/test-stemcell-builder.yml
+    input_mapping: {stemcell-builder: stemcell-builder-develop}
+  # - task: test-bosh-psmodules
+  #   file: ci/tasks/test-bosh-psmodules.yml
+  #   input_mapping: {stemcell-builder: stemcell-builder-develop}
+  - task: merge-to-master
+    input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
+    file: ci/tasks/merge-repo.yml
+    params:
+      FROM_BRANCH: develop
+  - put: stemcell-builder
+    params: { repository: merged-repo/to-repo }
+
 - name: build-stemcells
   serial: true
   plan:
