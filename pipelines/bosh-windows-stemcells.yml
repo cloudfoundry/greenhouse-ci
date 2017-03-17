@@ -216,6 +216,7 @@ jobs:
       tags: [vsphere-windows]
     - get: stemcell-builder
       tags: [vsphere-windows]
+      passed: [build-stemcells]
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
     - get: version
