@@ -112,6 +112,29 @@ resources:
     uri: git@github.com:greenhouse-ci/locks
 
 jobs:
+- name: dolphin-destroy-cf
+  serial: true
+  plan:
+  - put: dolphin-lock-pool
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: weekly-trigger
+        trigger: true
+    - task: destroy-cf
+      file: ci/tasks/delete-deployment.yml
+      params:
+        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+    ensure:
+      put: dolphin-lock-pool
+      params:
+        release: dolphin-lock-pool
+
 - name: dolphin-deploy-cf
   serial: true
   plan:
@@ -130,6 +153,7 @@ jobs:
       - get: wats
       - get: weekly-trigger
         trigger: true
+        passed: [dolphin-destroy-cf]
     - task: upload-linux-stemcell
       file: ci/tasks/upload-stemcell.yml
       params:
@@ -171,26 +195,28 @@ jobs:
       params:
         release: dolphin-lock-pool
 
-- name: dolphin-destroy-cf
+- name: baboon-destroy-cf
   serial: true
   plan:
-  - put: dolphin-lock-pool
+  - put: baboon-lock-pool
     params:
       acquire: true
   - do:
     - aggregate:
       - get: ci
+      - get: weekly-trigger
+        trigger: true
     - task: destroy-cf
       file: ci/tasks/delete-deployment.yml
       params:
-        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     ensure:
-      put: dolphin-lock-pool
+      put: baboon-lock-pool
       params:
-        release: dolphin-lock-pool
+        release: baboon-lock-pool
 
 - name: baboon-deploy-cf
   serial: true
@@ -210,6 +236,7 @@ jobs:
       - get: wats
       - get: weekly-trigger
         trigger: true
+        passed: [baboon-destroy-cf]
     - task: upload-linux-stemcell
       file: ci/tasks/upload-stemcell.yml
       params:
@@ -251,26 +278,28 @@ jobs:
       params:
         release: baboon-lock-pool
 
-- name: baboon-destroy-cf
+- name: ferret-destroy-cf
   serial: true
   plan:
-  - put: baboon-lock-pool
+  - put: ferret-lock-pool
     params:
       acquire: true
   - do:
     - aggregate:
       - get: ci
+      - get: weekly-trigger
+        trigger: true
     - task: destroy-cf
       file: ci/tasks/delete-deployment.yml
       params:
-        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     ensure:
-      put: baboon-lock-pool
+      put: ferret-lock-pool
       params:
-        release: baboon-lock-pool
+        release: ferret-lock-pool
 
 - name: ferret-deploy-cf
   serial: true
@@ -290,6 +319,7 @@ jobs:
       - get: wats
       - get: weekly-trigger
         trigger: true
+        passed: [ferret-destroy-cf]
     - task: upload-linux-stemcell
       file: ci/tasks/upload-stemcell.yml
       params:
@@ -331,26 +361,29 @@ jobs:
       params:
         release: ferret-lock-pool
 
-- name: ferret-destroy-cf
+- name: mulgore-destroy-cf
   serial: true
   plan:
-  - put: ferret-lock-pool
+  - put: mulgore-lock-pool
     params:
       acquire: true
   - do:
     - aggregate:
       - get: ci
+      - get: weekly-trigger
+        trigger: true
     - task: destroy-cf
       file: ci/tasks/delete-deployment.yml
+      tags: [vsphere]
       params:
-        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+        BOSH_CLIENT: admin
+        BOSH_CLIENT_SECRET: {{mulgore_client_secret}}
+        BOSH_ENVIRONMENT: {{mulgore_environment}}
+        BOSH_CA_CERT: {{mulgore_ca_cert}}
     ensure:
-      put: ferret-lock-pool
+      put: mulgore-lock-pool
       params:
-        release: ferret-lock-pool
+        release: mulgore-lock-pool
 
 - name: mulgore-deploy-cf
   serial: true
@@ -373,6 +406,9 @@ jobs:
         tags: [vsphere]
       - get: wats
         trigger: true
+      - get: weekly-trigger
+        trigger: true
+        passed: [mulgore-destroy-cf]
     - task: upload-linux-stemcell
       file: ci/tasks/upload-stemcell.yml
       tags: [vsphere]
@@ -418,24 +454,3 @@ jobs:
       params:
         release: mulgore-lock-pool
 
-- name: mulgore-destroy-cf
-  serial: true
-  plan:
-  - put: mulgore-lock-pool
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-    - task: destroy-cf
-      file: ci/tasks/delete-deployment.yml
-      tags: [vsphere]
-      params:
-        BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{mulgore_client_secret}}
-        BOSH_ENVIRONMENT: {{mulgore_environment}}
-        BOSH_CA_CERT: {{mulgore_ca_cert}}
-    ensure:
-      put: mulgore-lock-pool
-      params:
-        release: mulgore-lock-pool
