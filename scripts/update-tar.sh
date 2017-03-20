@@ -3,4 +3,7 @@
 set -ex
 
 cp -r repo/. updated_repo
-cp s3-bucket/tar-*.exe updated_repo/$TAR_PATH
+
+for tar_path in $TAR_PATHS; do
+	cp s3-bucket/tar-*.exe updated_repo/$tar_path
+done

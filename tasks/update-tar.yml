@@ -15,4 +15,4 @@ run:
   path: ci/scripts/update-tar.sh
 
 params:
-  TAR_PATH:
+  TAR_PATHS:
