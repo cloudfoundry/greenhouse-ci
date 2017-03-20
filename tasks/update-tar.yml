@@ -1,7 +1,7 @@
 ---
 platform: linux
 
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
 
 inputs:
   - name: ci
@@ -11,9 +11,7 @@ outputs:
   - name: updated_repo
 
 run:
-  path: /bin/bash
-  args:
-    - ci/scripts/update-tar.sh
+  path: ci/scripts/update-tar.sh
 
 params:
   PATH:
