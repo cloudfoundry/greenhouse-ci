@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: repo
+
+outputs:
+  - name: updated_repo
+
+run:
+  path: ci/scripts/update-tar
+
+params:
+  PATH:
