@@ -11,7 +11,7 @@ outputs:
   - name: updated_repo
 
 run:
-  path: bash
+  path: /bin/bash
   args:
     - ci/scripts/update-tar.sh
 
