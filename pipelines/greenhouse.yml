@@ -438,6 +438,7 @@ jobs:
         APPS_DOMAIN: pesto.cf-app.com
         NUM_WIN_CELLS: "2"
         SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.10.0.6:25555
+        CONSUL_MUTUAL_TLS: false
     ensure:
       do:
       - put: pesto-lock-pool
