@@ -7,13 +7,8 @@ image_resource:
     repository: pivotalgreenhouse/bosh-windows-stemcell-builder
 
 inputs:
+  - name: ci
   - name: stemcell-builder
 
 run:
-  path: bash
-  args:
-    - -ex
-    - |
-      cd stemcell-builder
-      bundle install
-      bundle exec rspec
+  path: ci/bosh-windows-stemcell-builder/rspec/run
