@@ -12,8 +12,8 @@ inputs:
 run:
   path: bash
   args:
-   - -ex
-   - |
-    cd stemcell-builder
-    bundle install
-    bundle exec rspec
+    - -ex
+    - |
+      cd stemcell-builder
+      bundle install
+      bundle exec rspec
