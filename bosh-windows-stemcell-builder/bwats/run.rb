@@ -2,7 +2,7 @@
 
 require 'fileutils'
 
-require_relative '../lib/exec_command'
+require_relative '../../../stemcell-builder/lib/exec_command'
 
 Dir.chdir 'stemcell-builder' do
   exec_command('bundle install')
