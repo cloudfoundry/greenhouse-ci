@@ -1,0 +1,19 @@
+----
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/bosh-windows-stemcell-builder
+
+inputs:
+  - name: stemcell-builder
+
+run:
+  path: bash
+  args:
+   - -ex
+   - |
+    cd stemcell-builder
+    bundle install
+    bundle exec rspec

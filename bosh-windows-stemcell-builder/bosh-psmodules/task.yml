@@ -2,8 +2,8 @@
 platform: windows
 
 inputs:
-- name: ci
-- name: stemcell-builder
+  - name: ci
+  - name: stemcell-builder
 
 run:
   path: powershell
@@ -11,4 +11,4 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/scripts/test-bosh-psmodules.ps1
+  - ci/bosh-windows-stemcell-builder/bosh-psmodules/run.ps1

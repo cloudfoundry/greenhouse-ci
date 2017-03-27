@@ -1,0 +1,27 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/bosh-windows-stemcell-builder
+
+inputs:
+  - name: ci
+  - name: stemcell-builder
+  - name: base-amis
+  - name: version
+  - name: windows-stemcell-dependencies
+
+outputs:
+  - name: bosh-windows-stemcell
+  - name: amis
+  - name: sha
+
+run:
+  path: ci/bosh-windows-stemcell-builder/create-aws-stemcell/run.rb
+
+params:
+  OS_VERSION: windows2012R2
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:

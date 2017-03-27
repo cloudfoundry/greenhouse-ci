@@ -7,4 +7,3 @@ foreach ($module in $modules) {
     Invoke-Pester -EnableExit
   Pop-Location
 }
-
