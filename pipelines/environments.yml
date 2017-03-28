@@ -64,6 +64,13 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+# - name: azure-windows-stemcell
+#   type: s3
+#   source:
+#     bucket: bosh-windows-stemcells-release-candidates
+#     regexp: # FILL ME IN
+#     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+#     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: aws-linux-stemcell
   type: bosh-io-stemcell
   source:
@@ -76,6 +83,10 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
+- name: azure-linux-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-azure-hyperv-ubuntu-trusty-go_agent
 - name: wats
   type: git
   source:
@@ -114,6 +125,13 @@ resources:
   source:
     branch: master
     pool: mulgore
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+- name: dingo-lock-pool
+  type: pool
+  source:
+    branch: master
+    pool: dingo
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
 
@@ -501,13 +519,12 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      - get: windows-stemcell
-        resource: azure-windows-stemcell
-        trigger: true
+      # - get: windows-stemcell
+      #   resource: azure-windows-stemcell
+      #   trigger: true
       - get: linux-stemcell
         resource: azure-linux-stemcell
       - get: wats
-        trigger: true
       - get: weekly-trigger
         trigger: true
         passed: [dingo-destroy-cf]
@@ -544,4 +561,3 @@ jobs:
       put: dingo-lock-pool
       params:
         release: dingo-lock-pool
-
