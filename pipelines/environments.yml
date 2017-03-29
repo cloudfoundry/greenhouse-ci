@@ -201,7 +201,7 @@ jobs:
           BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/cf-deployment-with-windows.yml
+      file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: dolphin
         BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
@@ -292,7 +292,7 @@ jobs:
           BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/cf-deployment-with-windows.yml
+      file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: baboon
         BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
@@ -383,7 +383,7 @@ jobs:
           BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/cf-deployment-with-windows.yml
+      file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: ferret
         BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
@@ -481,7 +481,7 @@ jobs:
           BOSH_CA_CERT: {{mulgore_ca_cert}}
     - task: deploy-cf
       tags: [vsphere]
-      file: ci/tasks/cf-deployment-with-windows.yml
+      file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: mulgore
         BOSH_CLIENT: admin
@@ -573,7 +573,7 @@ jobs:
       #     BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
       #     BOSH_CA_CERT: {{DINGO_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/cf-deployment-with-windows.yml
+      file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: dingo
         BOSH_CLIENT: admin

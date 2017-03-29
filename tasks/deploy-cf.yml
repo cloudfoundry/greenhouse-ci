@@ -9,7 +9,7 @@ inputs:
   - name: ci
 
 run:
-  path: ci/scripts/cf-deployment-with-windows.sh
+  path: ci/scripts/deploy-cf.sh
 
 params:
   ENVIRONMENT:
