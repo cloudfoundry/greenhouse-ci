@@ -586,15 +586,15 @@ jobs:
       params:
         repository: output/greenhouse-private
         rebase: true
-    # - task: wats
-    #   file: ci/tasks/run-wats.yml
-    #   params:
-    #     ADMIN_PASSWORD: {{dingo_cf_admin_password}}
-    #     ADMIN_USER: admin
-    #     API: api.dingo.cf-app.com
-    #     APPS_DOMAIN: dingo.cf-app.com
-    #     NUM_WIN_CELLS: 1
-    #     SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+    - task: wats
+      file: ci/tasks/run-wats.yml
+      params:
+        ADMIN_PASSWORD: {{dingo_cf_admin_password}}
+        ADMIN_USER: admin
+        API: api.dingo.cf-app.com
+        APPS_DOMAIN: dingo.cf-app.com
+        NUM_WIN_CELLS: 1
+        SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
     ensure:
       put: dingo-lock-pool
       params:
