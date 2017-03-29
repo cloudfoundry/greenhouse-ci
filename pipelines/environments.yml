@@ -177,21 +177,29 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      - get: windows-stemcell
-        resource: gcp-windows-stemcell
-      - get: linux-stemcell
-        resource: gcp-linux-stemcell
+      - get: gcp-windows-stemcell
+      - get: gcp-linux-stemcell
       - get: wats
       - get: weekly-trigger
         trigger: true
         passed: [dolphin-destroy-cf]
-    - task: upload-linux-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      params:
-        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+    - aggregate:
+      - task: upload-linux-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: gcp-linux-stemcell}
+        params:
+          BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
+      - task: upload-windows-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: gcp-windows-stemcell}
+        params:
+          BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
     - task: deploy-cf
       file: ci/tasks/cf-deployment-with-windows.yml
       params:
@@ -266,22 +274,23 @@ jobs:
       - get: weekly-trigger
         trigger: true
         passed: [baboon-destroy-cf]
-    - task: upload-linux-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      input_mapping: {stemcell: gcp-linux-stemcell}
-      params:
-        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
-    - task: upload-windows-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      input_mapping: {stemcell: gcp-windows-stemcell}
-      params:
-        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+    - aggregate:
+      - task: upload-linux-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: gcp-linux-stemcell}
+        params:
+          BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+      - task: upload-windows-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: gcp-windows-stemcell}
+        params:
+          BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     - task: deploy-cf
       file: ci/tasks/cf-deployment-with-windows.yml
       params:
@@ -350,21 +359,29 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      - get: windows-stemcell
-        resource: aws-windows-stemcell
-      - get: linux-stemcell
-        resource: aws-linux-stemcell
+      - get: aws-windows-stemcell
+      - get: aws-linux-stemcell
       - get: wats
       - get: weekly-trigger
         trigger: true
         passed: [ferret-destroy-cf]
-    - task: upload-linux-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      params:
-        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+    - aggregate:
+      - task: upload-linux-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: aws-linux-stemcell}
+        params:
+          BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
+      - task: upload-windows-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: aws-windows-stemcell}
+        params:
+          BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
+          BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     - task: deploy-cf
       file: ci/tasks/cf-deployment-with-windows.yml
       params:
@@ -435,27 +452,33 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      - get: windows-stemcell
-        resource: vsphere-windows-stemcell
+      - get: vsphere-windows-stemcell
         tags: [vsphere]
-        trigger: true
-        tags: [vsphere]
-      - get: linux-stemcell
-        resource: vsphere-linux-stemcell
+      - get: vsphere-linux-stemcell
         tags: [vsphere]
       - get: wats
-        trigger: true
       - get: weekly-trigger
         trigger: true
         passed: [mulgore-destroy-cf]
-    - task: upload-linux-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      tags: [vsphere]
-      params:
-        BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{mulgore_client_secret}}
-        BOSH_ENVIRONMENT: {{mulgore_environment}}
-        BOSH_CA_CERT: {{mulgore_ca_cert}}
+    - aggregate:
+      - task: upload-linux-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: vsphere-linux-stemcell}
+        tags: [vsphere]
+        params:
+          BOSH_CLIENT: admin
+          BOSH_CLIENT_SECRET: {{mulgore_client_secret}}
+          BOSH_ENVIRONMENT: {{mulgore_environment}}
+          BOSH_CA_CERT: {{mulgore_ca_cert}}
+      - task: upload-windows-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: vsphere-windows-stemcell}
+        tags: [vsphere]
+        params:
+          BOSH_CLIENT: admin
+          BOSH_CLIENT_SECRET: {{mulgore_client_secret}}
+          BOSH_ENVIRONMENT: {{mulgore_environment}}
+          BOSH_CA_CERT: {{mulgore_ca_cert}}
     - task: deploy-cf
       tags: [vsphere]
       file: ci/tasks/cf-deployment-with-windows.yml
@@ -526,22 +549,29 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      # - get: windows-stemcell
-      #   resource: azure-windows-stemcell
-      #   trigger: true
-      - get: linux-stemcell
-        resource: azure-linux-stemcell
+      # - get: azure-windows-stemcell
+      - get: azure-linux-stemcell
       - get: wats
       - get: weekly-trigger
         trigger: true
         passed: [dingo-destroy-cf]
-    - task: upload-linux-stemcell
-      file: ci/tasks/upload-stemcell.yml
-      params:
-        BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DINGO_CA_CERT}}
+    - aggregate:
+      - task: upload-linux-stemcell
+        file: ci/tasks/upload-stemcell.yml
+        input_mapping: {stemcell: azure-linux-stemcell}
+        params:
+          BOSH_CLIENT: admin
+          BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
+          BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
+          BOSH_CA_CERT: {{DINGO_CA_CERT}}
+      # - task: upload-windows-stemcell
+      #   file: ci/tasks/upload-stemcell.yml
+      #   input_mapping: {stemcell: azure-windows-stemcell}
+      #   params:
+      #     BOSH_CLIENT: admin
+      #     BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
+      #     BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
+      #     BOSH_CA_CERT: {{DINGO_CA_CERT}}
     - task: deploy-cf
       file: ci/tasks/cf-deployment-with-windows.yml
       params:
@@ -555,15 +585,15 @@ jobs:
       params:
         repository: output/greenhouse-private
         rebase: true
-    - task: wats
-      file: ci/tasks/run-wats.yml
-      params:
-        ADMIN_PASSWORD: {{DINGO_CF_ADMIN_PASSWORD}}
-        ADMIN_USER: admin
-        API: api.dingo.cf-app.com
-        APPS_DOMAIN: dingo.cf-app.com
-        NUM_WIN_CELLS: 1
-        SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+    # - task: wats
+    #   file: ci/tasks/run-wats.yml
+    #   params:
+    #     ADMIN_PASSWORD: {{DINGO_CF_ADMIN_PASSWORD}}
+    #     ADMIN_USER: admin
+    #     API: api.dingo.cf-app.com
+    #     APPS_DOMAIN: dingo.cf-app.com
+    #     NUM_WIN_CELLS: 1
+    #     SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
     ensure:
       put: dingo-lock-pool
       params:
