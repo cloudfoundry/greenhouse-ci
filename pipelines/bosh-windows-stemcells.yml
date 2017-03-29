@@ -8,6 +8,7 @@ groups:
   - create-aws-stemcell
   - create-gcp-stemcell
   - promote-stemcells
+  - ship-bosh-stemcell-builder
 - name: stemcell-builder
   jobs:
   - test-stemcell-builder
@@ -178,6 +179,12 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: stemcell-builder-release
+  type: github-release
+  source:
+    user: greenhouse-org
+    repository: bosh-windows-stemcell-builder
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
 jobs:
 - name: test-stemcell-builder
@@ -248,6 +255,7 @@ jobs:
   - put: base-gcp-image-win2012r2
     params:
       file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
+
 - name: create-vsphere-stemcell
   serial: true
   serial_groups: [vsphere]
@@ -270,6 +278,8 @@ jobs:
     - get: vmx-version
       tags: [vsphere-windows]
       resource: updated-vmx-version
+    - get: stemcells-major-version
+      passed: [build-stemcells]
   - put: version
     resource: vsphere-stemcell-version
     params:
@@ -286,6 +296,7 @@ jobs:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
       AWS_REGION: us-east-1
+
 - name: test-vsphere-stemcell
   serial: true
   serial_groups: [vsphere]
@@ -304,6 +315,8 @@ jobs:
     - get: version
       resource: vsphere-stemcell-version
       passed: [create-vsphere-stemcell]
+    - get: stemcells-major-version
+      passed: [create-vsphere-stemcell]
   - task: test-stemcell
     tags: [vsphere-windows]
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
@@ -321,6 +334,7 @@ jobs:
   - put: vsphere-stemcell-release-candidate
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+
 - name: create-vsphere-add-updates
   serial: true
   serial_groups: [vsphere]
@@ -342,6 +356,7 @@ jobs:
       AWS_REGION: us-east-1
   - put: updated-vmx-version
     params: {bump: major}
+
 - name: create-aws-stemcell
   serial: true
   plan:
@@ -363,6 +378,8 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
+      - get: stemcells-major-version
+        passed: [build-stemcells]
     - put: version
       resource: aws-stemcell-version
       params:
@@ -400,6 +417,7 @@ jobs:
       put: aws-lock
       params:
         release: aws-lock
+
 - name: create-gcp-stemcell
   serial: true
   plan:
@@ -421,6 +439,8 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
+      - get: stemcells-major-version
+        passed: [build-stemcells]
     - put: version
       resource: gcp-stemcell-version
       params:
@@ -449,6 +469,7 @@ jobs:
       put: gcp-lock
       params:
         release: gcp-lock
+
 - name: promote-stemcells
   serial: true
   plan:
@@ -466,6 +487,8 @@ jobs:
     - get: bosh-agent
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
     - get: stemcell-builder
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
+    - get: stemcells-major-version
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
   - task: ensure-versions-match
     tags: [vsphere-windows]
@@ -512,3 +535,57 @@ jobs:
     tags: [vsphere-windows]
     params:
       file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+
+- name: ship-bosh-stemcell-builder
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-builder
+      passed: [promote-stemcells]
+    - get: stemcells-major-version
+      passed: [promote-stemcells]
+  - task: extract-updates-txt
+    config:
+      platform: linux
+      image: docker:///pivotalgreenhouse/ci
+      outputs:
+      - name: updates-txt
+      run:
+        path: bash
+        args:
+        - "-c"
+        - "echo update >updates-txt/updates.txt"
+  - task: build-psmodules-zip
+    config:
+      platform: linux
+      image: docker:///pivotalgreenhouse/ci
+      inputs:
+      - name: stemcell-builder
+      outputs:
+      - name: bosh-psmodules
+      run:
+        path: bash
+        args:
+        - "-c"
+        - "cd stemcell-builder && bundle && rake package:psmodules && mv build/*.zip ../bosh-psmodules"
+  - task: build-agent-zip
+    config:
+      platform: linux
+      image: docker:///pivotalgreenhouse/ci
+      inputs:
+      - name: stemcell-builder
+      outputs:
+      - name: bosh-agent
+      run:
+        path: bash
+        args:
+        - "-c"
+        - "cd stemcell-builder && bundle && rake package:agent && mv build/*.zip ../bosh-agent"
+  - put: stemcell-builder-release
+    params:
+      name: stemcells-major-version/version
+      tag: stemcells-major-version/version
+      globs:
+      - updates-txt/updates.txt
+      - bosh-psmodules/bosh-psmodules.zip
+      - bosh-agent/agent.zip
