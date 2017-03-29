@@ -256,6 +256,28 @@ jobs:
     params:
       file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
 
+- name: create-vsphere-add-updates
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+    - get: windows-stemcell-dependencies
+    - get: vmx-version
+      resource: updated-vmx-version
+  - task: add-updates
+    privileged: true
+    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+    tags: [vsphere-windows-worker]
+    params:
+      ADMINISTRATOR_PASSWORD: "Password123!"
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_REGION: us-east-1
+  - put: updated-vmx-version
+    params: {bump: major}
+
 - name: create-vsphere-stemcell
   serial: true
   serial_groups: [vsphere]
@@ -326,36 +348,13 @@ jobs:
       VM_TYPE: xlarge
       BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
       BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
-      DIRECTOR_UUID: {{STONETALON_DIRECTOR_UUID}}
-      DIRECTOR_IP: {{STONETALON_BOSH_DIRECTOR_IP}}
-      STEMCELL_NAME: bosh-vsphere-esxi-windows-2012R2-go_agent
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      BOSH_UUID: {{STONETALON_DIRECTOR_UUID}}
+      BOSH_TARGET: {{STONETALON_BOSH_DIRECTOR_IP}}
       BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
+      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: vsphere-stemcell-release-candidate
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-
-- name: create-vsphere-add-updates
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-    - get: windows-stemcell-dependencies
-    - get: vmx-version
-      resource: updated-vmx-version
-  - task: add-updates
-    privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
-    tags: [vsphere-windows-worker]
-    params:
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-      AWS_REGION: us-east-1
-  - put: updated-vmx-version
-    params: {bump: major}
 
 - name: create-aws-stemcell
   serial: true
@@ -402,11 +401,10 @@ jobs:
       params:
         BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
         BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
-        DIRECTOR_IP: {{BOSH_CONCOURSE_DIRECTOR_IP}}
-        DIRECTOR_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
-        STEMCELL_NAME: bosh-aws-xen-hvm-windows-stemcell-go_agent
-        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        BOSH_TARGET: {{BOSH_CONCOURSE_DIRECTOR_IP}}
+        BOSH_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
         BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
@@ -456,12 +454,12 @@ jobs:
         IAAS: gcp
         ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
         BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
+        BOSH_PRIVATE_IP: {{OTTER_DIRECTOR_IP}}
         BOSH_CLIENT: {{OTTER_BOSH_USER}}
-        DIRECTOR_IP: {{OTTER_DIRECTOR_IP}}
-        DIRECTOR_UUID: {{OTTER_DIRECTOR_UUID}}
-        STEMCELL_NAME: bosh-google-kvm-windows2012R2-go_agent
-        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        BOSH_TARGET: 127.0.0.1
+        BOSH_UUID: {{OTTER_DIRECTOR_UUID}}
         BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
     - put: gcp-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
