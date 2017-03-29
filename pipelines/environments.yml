@@ -524,16 +524,16 @@ jobs:
       file: ci/tasks/delete-deployment.yml
       params:
         BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DINGO_CA_CERT}}
+        BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+        BOSH_ENVIRONMENT: {{dingo_environment}}
+        BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: clean-up
       file: ci/tasks/clean-up-director.yml
       params:
         BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DINGO_CA_CERT}}
+        BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+        BOSH_ENVIRONMENT: {{dingo_environment}}
+        BOSH_CA_CERT: {{dingo_ca_cert}}
     ensure:
       put: dingo-lock-pool
       params:
@@ -562,25 +562,25 @@ jobs:
         input_mapping: {stemcell: azure-linux-stemcell}
         params:
           BOSH_CLIENT: admin
-          BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-          BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-          BOSH_CA_CERT: {{DINGO_CA_CERT}}
+          BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+          BOSH_ENVIRONMENT: {{dingo_environment}}
+          BOSH_CA_CERT: {{dingo_ca_cert}}
       # - task: upload-windows-stemcell
       #   file: ci/tasks/upload-stemcell.yml
       #   input_mapping: {stemcell: azure-windows-stemcell}
       #   params:
       #     BOSH_CLIENT: admin
-      #     BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-      #     BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-      #     BOSH_CA_CERT: {{DINGO_CA_CERT}}
+      #     BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+      #     BOSH_ENVIRONMENT: {{dingo_environment}}
+      #     BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: deploy-cf
       file: ci/tasks/deploy-cf.yml
       params:
         ENVIRONMENT: dingo
         BOSH_CLIENT: admin
-        BOSH_CLIENT_SECRET: {{DINGO_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DINGO_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DINGO_CA_CERT}}
+        BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+        BOSH_ENVIRONMENT: {{dingo_environment}}
+        BOSH_CA_CERT: {{dingo_ca_cert}}
         CF_DOMAIN: dingo.cf-app.com
     - put: greenhouse-private
       params:
@@ -589,7 +589,7 @@ jobs:
     # - task: wats
     #   file: ci/tasks/run-wats.yml
     #   params:
-    #     ADMIN_PASSWORD: {{DINGO_CF_ADMIN_PASSWORD}}
+    #     ADMIN_PASSWORD: {{dingo_cf_admin_password}}
     #     ADMIN_USER: admin
     #     API: api.dingo.cf-app.com
     #     APPS_DOMAIN: dingo.cf-app.com
