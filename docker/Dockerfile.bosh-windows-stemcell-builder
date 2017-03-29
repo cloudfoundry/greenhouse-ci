@@ -14,6 +14,13 @@ RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/lat
   curl "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${version_number}-linux-amd64" -o /usr/local/bin/bosh && \
   chmod 755 /usr/local/bin/bosh
 
+# gcloud CLI
+RUN apt-get update && apt-get install -y apt-transport-https && \
+  echo "deb https://packages.cloud.google.com/apt cloud-sdk-jessie main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+  apt-get update && \
+  apt-get install -y google-cloud-sdk
+
 #install go
 # gcc for cgo
 RUN apt-get update && apt-get install -y --no-install-recommends \
