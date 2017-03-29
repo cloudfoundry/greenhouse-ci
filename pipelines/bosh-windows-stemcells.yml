@@ -7,6 +7,7 @@ groups:
   - test-vsphere-stemcell
   - create-aws-stemcell
   - create-gcp-stemcell
+  - create-azure-stemcell
   - promote-stemcells
   - ship-bosh-stemcell-builder
 - name: stemcell-builder
@@ -179,6 +180,21 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: azure-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-azure
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+- name: azure-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/azure-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1000.0.0
 - name: stemcell-builder-release
   type: github-release
   source:
@@ -234,6 +250,9 @@ jobs:
       params:
         file: version/number
     - put: gcp-stemcell-version
+      params:
+        file: version/number
+    - put: azure-stemcell-version
       params:
         file: version/number
   - task: collect-win2012r2-amis
@@ -467,6 +486,62 @@ jobs:
       put: gcp-lock
       params:
         release: gcp-lock
+
+- name: create-azure-stemcell
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: bosh-agent
+        passed: [build-stemcells]
+      - get: version
+        resource: azure-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-major-version
+        passed: [build-stemcells]
+    - put: version
+      resource: azure-stemcell-version
+      params:
+        pre: build
+    - task: create-stemcell
+      file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+      params:
+        OS_VERSION: windows2012R2
+        CLIENT_ID: 'a9bc6003-c3a3-4c15-a367-fde9ddbde92a'
+        CLIENT_SECRET: 'u39tv6DZr7RhHV'
+        TENANT_ID: '29248f74-371f-4db2-9a50-c62a6877a0c1'
+        SUBSCRIPTION_ID: '53100230-0566-46b8-8c49-54858f097092'
+        OBJECT_ID: '0cc8b3da-cfa9-4964-a294-c3506a401a96'
+        RESOURCE_GROUP_NAME: 'koala-res-group'
+        STORAGE_ACCOUNT: 'koalapremiumstore'
+        LOCATION: 'East US'
+        VM_SIZE: Standard_DS2_v2
+        ADMIN_PASSWORD: 'SNzNTlUxwLG7gg2qtXjorzhlLo86KOc+ygBQCWGD'
+    # - task: test-stemcell
+    #   file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    #   params:
+    #     BOSH_CLIENT_SECRET:
+    #     BOSH_CLIENT:
+    #     DIRECTOR_IP:
+    #     DIRECTOR_UUID:
+    #     STEMCELL_NAME:
+    #     STEMCELL_PATH: bosh-windows-stemcell/
+    #     BOSH_CA_CERT:
+    # - put: azure-stemcell-release-candidate
+    #   params:
+    #     file: bosh-windows-stemcell/
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
 
 - name: promote-stemcells
   serial: true
