@@ -10,6 +10,7 @@ inputs:
   - name: ci
   - name: version
   - name: stemcell-builder
+  - name: windows-stemcell-dependencies
 
 outputs:
   - name: bosh-windows-stemcell
