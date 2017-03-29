@@ -155,7 +155,7 @@ jobs:
         BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
     - task: clean-up
-      file: ci/tasks/clean-up.yml
+      file: ci/tasks/clean-up-director.yml
       params:
         BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
@@ -238,7 +238,7 @@ jobs:
         BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     - task: clean-up
-      file: ci/tasks/clean-up.yml
+      file: ci/tasks/clean-up-director.yml
       params:
         BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
@@ -321,7 +321,7 @@ jobs:
         BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     - task: clean-up
-      file: ci/tasks/clean-up.yml
+      file: ci/tasks/clean-up-director.yml
       params:
         BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
@@ -405,7 +405,7 @@ jobs:
         BOSH_ENVIRONMENT: {{mulgore_environment}}
         BOSH_CA_CERT: {{mulgore_ca_cert}}
     - task: clean-up
-      file: ci/tasks/clean-up.yml
+      file: ci/tasks/clean-up-director.yml
       tags: [vsphere]
       params:
         BOSH_CLIENT: admin
@@ -497,7 +497,7 @@ jobs:
         BOSH_ENVIRONMENT: {{dingo_environment}}
         BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: clean-up
-      file: ci/tasks/clean-up.yml
+      file: ci/tasks/clean-up-director.yml
       params:
         BOSH_CLIENT: admin
         BOSH_CLIENT_SECRET: {{dingo_client_secret}}
