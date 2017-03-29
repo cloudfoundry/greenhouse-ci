@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: compiled-agent
   - name: version
   - name: stemcell-builder
 
