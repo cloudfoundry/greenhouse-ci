@@ -7,7 +7,6 @@ inputs:
   - name: cf-deployment
   - name: greenhouse-private
   - name: ci
-  - name: windows-stemcell
 
 run:
   path: ci/scripts/cf-deployment-with-windows.sh

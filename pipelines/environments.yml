@@ -260,16 +260,23 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      - get: windows-stemcell
-        resource: gcp-windows-stemcell
-      - get: linux-stemcell
-        resource: gcp-linux-stemcell
+      - get: gcp-windows-stemcell
+      - get: gcp-linux-stemcell
       - get: wats
       - get: weekly-trigger
         trigger: true
         passed: [baboon-destroy-cf]
     - task: upload-linux-stemcell
       file: ci/tasks/upload-stemcell.yml
+      input_mapping: {stemcell: gcp-linux-stemcell}
+      params:
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+    - task: upload-windows-stemcell
+      file: ci/tasks/upload-stemcell.yml
+      input_mapping: {stemcell: gcp-windows-stemcell}
       params:
         BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}

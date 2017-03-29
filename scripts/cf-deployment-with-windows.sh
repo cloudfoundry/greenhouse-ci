@@ -8,17 +8,15 @@ export BOSH_CA_CERT=$CERT_FILE
 
 set -x
 
-bosh -n upload-stemcell windows-stemcell/*.tgz
-
 export CF_DEPLOYMENT="$PWD/cf-deployment"
-pushd greenhouse-private/$ENVIRONMENT >/dev/null
-  $PWD/cf-deploy create
+pushd greenhouse-private >/dev/null
+  $PWD/$ENVIRONMENT/cf/deploy create
 
   if [ -n "$(git status --porcelain)" ]; then
     git config user.email "pivotal-netgarden-eng@pivotal.io"
     git config user.name "CI (Automated)"
-    git add deployment-vars.yml
-    git commit -m "Update cf deployment-vars.yml for $ENVIRONMENT"
+    git add $PWD/$ENVIRONMENT/cf/creds.yml
+    git commit -m "Update cf creds.yml for $ENVIRONMENT"
   fi
 popd >/dev/null
 
