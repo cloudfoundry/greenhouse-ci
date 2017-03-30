@@ -2,7 +2,7 @@
 FROM ruby:2.3.3
 
 #ENV PACKER_URL "https://releases.hashicorp.com/packer/0.12.2/packer_0.12.2_linux_amd64.zip"
-ENV PACKER_URL "https://s3.amazonaws.com/windows-bosh-temp/packer-1.zip"
+ENV PACKER_URL "https://s3.amazonaws.com/windows-bosh-temp/packer-2.zip"
 
 RUN apt-get update && apt-get -y install zip unzip wget
 RUN wget ${PACKER_URL} -O packer.zip
