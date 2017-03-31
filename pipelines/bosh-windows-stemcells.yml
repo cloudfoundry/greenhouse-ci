@@ -499,16 +499,19 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
         OS_VERSION: windows2012R2
-        CLIENT_ID: 'a9bc6003-c3a3-4c15-a367-fde9ddbde92a'
-        CLIENT_SECRET: 'u39tv6DZr7RhHV'
-        TENANT_ID: '29248f74-371f-4db2-9a50-c62a6877a0c1'
-        SUBSCRIPTION_ID: '53100230-0566-46b8-8c49-54858f097092'
-        OBJECT_ID: '0cc8b3da-cfa9-4964-a294-c3506a401a96'
-        RESOURCE_GROUP_NAME: 'koala-res-group'
-        STORAGE_ACCOUNT: 'koalapremiumstore'
+        CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
+        CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
+        TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
+        SUBSCRIPTION_ID: {{KOALA_AZURE_SUBSCRIPTION_ID}}
+        OBJECT_ID: {{KOALA_AZURE_OBJECT_ID}}
+        RESOURCE_GROUP_NAME: {{KOALA_AZURE_RESOURCE_GROUP}}
+        STORAGE_ACCOUNT: {{KOALA_AZURE_STORAGE_ACCOUNT}}
         LOCATION: 'East US'
         VM_SIZE: Standard_DS2_v2
-        ADMIN_PASSWORD: 'SNzNTlUxwLG7gg2qtXjorzhlLo86KOc+ygBQCWGD'
+        PUBLISHER: 'pivotal'
+        OFFER: 'bosh-windows-server'
+        SKU: '2012r2'
+        ADMIN_PASSWORD: {{AZURE_STEMCELL_ADMIN_PASSWORD}}
     # - task: test-stemcell
     #   file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     #   params:

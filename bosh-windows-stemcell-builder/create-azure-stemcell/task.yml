@@ -19,14 +19,17 @@ run:
   path: ci/bosh-windows-stemcell-builder/create-azure-stemcell/run.rb
 
 params:
-  OS_VERSION: replace-me
-  CLIENT_ID: replace-me
-  CLIENT_SECRET: replace-me
-  TENANT_ID: replace-me
-  SUBSCRIPTION_ID: replace-me
-  OBJECT_ID: replace-me
-  RESOURCE_GROUP_NAME: replace-me
-  STORAGE_ACCOUNT: replace-me
-  LOCATION: replace-me
-  VM_SIZE: replace-me
-  ADMIN_PASSWORD: replace-me
+  OS_VERSION:
+  CLIENT_ID:
+  CLIENT_SECRET:
+  TENANT_ID:
+  SUBSCRIPTION_ID:
+  OBJECT_ID:
+  RESOURCE_GROUP_NAME:
+  STORAGE_ACCOUNT:
+  LOCATION:
+  VM_SIZE:
+  PUBLISHER:
+  OFFER:
+  SKU:
+  ADMIN_PASSWORD:
