@@ -240,25 +240,27 @@ jobs:
     - put: azure-stemcell-version
       params:
         file: version/number
-  - task: collect-win2012r2-amis
-    file: ci/tasks/collect-base-amis.yml
-    output_mapping: { base-amis: win2012r2-amis }
-    params:
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
-      BASE_AMI: windows2012R2
-  - task: collect-win2012r2-gcp-image
-    file: ci/tasks/get-base-gcp-image-id.yml
-    output_mapping: { base-gcp-image: win2012r2-gcp-image }
-    params:
-      ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
-      BASE_OS: windows2012R2
-  - put: base-amis-win2012r2
-    params:
-      file: win2012r2-amis/base-amis-windows2012R2-*.json
-  - put: base-gcp-image-win2012r2
-    params:
-      file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
+  - aggregate:
+    - task: collect-win2012r2-amis
+      file: ci/tasks/collect-base-amis.yml
+      output_mapping: { base-amis: win2012r2-amis }
+      params:
+        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
+        BASE_AMI: windows2012R2
+    - task: collect-win2012r2-gcp-image
+      file: ci/tasks/get-base-gcp-image-id.yml
+      output_mapping: { base-gcp-image: win2012r2-gcp-image }
+      params:
+        ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+        BASE_OS: windows2012R2
+  - aggregate:
+    - put: base-amis-win2012r2
+      params:
+        file: win2012r2-amis/base-amis-windows2012R2-*.json
+    - put: base-gcp-image-win2012r2
+      params:
+        file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
 
 - name: create-vsphere-add-updates
   serial: true
