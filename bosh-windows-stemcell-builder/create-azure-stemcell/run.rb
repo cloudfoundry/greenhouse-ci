@@ -13,4 +13,5 @@ Dir.chdir 'stemcell-builder' do
   exec_command('rake package:agent')
   exec_command('rake package:psmodules')
   exec_command('rake build:azure')
+  exec_command("mv bosh-windows-stemcell/* ../bosh-windows-stemcell")
 end
