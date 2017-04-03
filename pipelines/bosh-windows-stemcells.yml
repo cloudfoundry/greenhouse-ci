@@ -196,12 +196,13 @@ jobs:
       trigger: true
     - get: stemcell-builder-master
       resource: stemcell-builder
-  - task: test-stemcell-builder
-    file: ci/bosh-windows-stemcell-builder/rspec/task.yml
-    input_mapping: {stemcell-builder: stemcell-builder-develop}
-  - task: test-bosh-psmodules
-    file: ci/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
-    input_mapping: {stemcell-builder: stemcell-builder-develop}
+  - aggregate:
+    - task: test-stemcell-builder
+      file: ci/bosh-windows-stemcell-builder/rspec/task.yml
+      input_mapping: {stemcell-builder: stemcell-builder-develop}
+    - task: test-bosh-psmodules
+      file: ci/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
     file: ci/tasks/merge-repo.yml
