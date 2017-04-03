@@ -512,7 +512,6 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [build-stemcells]
       - get: bosh-agent
         passed: [build-stemcells]
       - get: version
