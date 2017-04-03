@@ -588,12 +588,12 @@ jobs:
     tags: [vsphere-windows]
     params:
       file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-  - task: post-boshio-aws-stemcell-sha
-    tags: [vsphere-windows]
-    file: ci/tasks/post-boshio-stemcell-sha.yml
-    input_mapping: { sha: aws-stemcell-sha }
-    params:
-      BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+  # - task: post-boshio-aws-stemcell-sha
+  #   tags: [vsphere-windows]
+  #   file: ci/tasks/post-boshio-stemcell-sha.yml
+  #   input_mapping: { sha: aws-stemcell-sha }
+  #   params:
+  #     BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
   - put: gcp-stemcell-final
     tags: [vsphere-windows]
     params:
