@@ -88,13 +88,13 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
-- name: aws-stemcell-sha
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells
-    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz.sha
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+# - name: aws-stemcell-sha
+#   type: s3
+#   source:
+#     bucket: bosh-windows-stemcells
+#     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz.sha
+#     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+#     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: aws-stemcell-release-candidate
   type: s3
   source:
@@ -422,9 +422,6 @@ jobs:
     - put: aws-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    - put: aws-stemcell-sha
-      params:
-        file: sha/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz.sha
     ensure:
       put: aws-lock
       params:
@@ -605,8 +602,6 @@ jobs:
       tags: [vsphere-windows]
       passed: [test-vsphere-stemcell]
     - get: aws-stemcell-release-candidate
-      passed: [create-aws-stemcell]
-    - get: aws-stemcell-sha
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
