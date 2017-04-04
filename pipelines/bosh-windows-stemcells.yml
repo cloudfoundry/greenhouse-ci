@@ -198,7 +198,7 @@ resources:
 - name: stemcell-builder-release
   type: github-release
   source:
-    user: greenhouse-org
+    user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
