@@ -12,11 +12,6 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1007.0.0
-- name: bosh-agent
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-agent.git
 - name: stemcell-builder-develop
   type: git
   source:
@@ -34,13 +29,6 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: {{PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY}}
-- name: base-iso
-  type: s3
-  source:
-    bucket: windows-bosh-private
-    regexp: en_windows_server_2012_r2_x64_dvd_(.*).iso
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: major-stemcell
   type: s3
   source:
@@ -244,10 +232,8 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: bosh-agent
     - get: stemcell-builder
       passed: [test-stemcell-builder]
-    - get: base-iso
     - get: windows-stemcell-dependencies
     - get: version
       resource: stemcells-major-version
@@ -320,8 +306,6 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere-windows]
-    - get: bosh-agent
-      tags: [vsphere-windows]
     - get: stemcell-builder
       tags: [vsphere-windows]
       passed: [build-stemcells]
@@ -360,8 +344,6 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: bosh-agent
-      passed: [create-vsphere-stemcell]
     - get: bosh-windows-stemcell
       tags: [vsphere-windows]
       resource: vsphere-stemcell-pre-release-candidate
@@ -400,8 +382,6 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [build-stemcells]
-      - get: bosh-agent
         passed: [build-stemcells]
       - get: base-amis
         resource: base-amis-win2012r2
@@ -461,8 +441,6 @@ jobs:
       - get: ci
       - get: stemcell-builder
         passed: [build-stemcells]
-      - get: bosh-agent
-        passed: [build-stemcells]
       - get: base-gcp-image
         resource: base-gcp-image-win2012r2
         passed: [build-stemcells]
@@ -518,8 +496,6 @@ jobs:
       - get: ci
       - get: stemcell-builder
         # passed: [build-stemcells]
-      - get: bosh-agent
-        passed: [build-stemcells]
       - get: version
         resource: azure-stemcell-version
         passed: [build-stemcells]
@@ -634,8 +610,6 @@ jobs:
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
-    - get: bosh-agent
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
     - get: stemcell-builder
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
     - get: stemcells-major-version
