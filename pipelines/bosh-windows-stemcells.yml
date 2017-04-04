@@ -673,6 +673,19 @@ jobs:
       passed: [promote-stemcells]
       tags: [vsphere-windows]
   - aggregate:
+    - task: shorten-stemcell-version
+      config:
+        platform: linux
+        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        inputs:
+        - name: stemcells-major-version
+        outputs:
+        - name: stemcell-builder-release-version
+        run:
+          path: bash
+          args:
+          - "-c"
+          - "cat stemcells-major-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"
     - task: extract-updates-txt
       tags: [vsphere-windows]
       config:
@@ -716,8 +729,8 @@ jobs:
   - put: stemcell-builder-release
     tags: [vsphere-windows]
     params:
-      name: stemcells-major-version/version
-      tag: stemcells-major-version/version
+      name: stemcell-builder-release-version/version
+      tag: stemcell-builder-release-version/version
       globs:
       - updates-txt/updates.txt
       - bosh-psmodules/bosh-psmodules.zip
