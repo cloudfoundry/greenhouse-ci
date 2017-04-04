@@ -281,7 +281,7 @@ jobs:
       file: ci/tasks/get-base-gcp-image-id.yml
       output_mapping: { base-gcp-image: win2012r2-gcp-image }
       params:
-        ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
         BASE_OS: windows2012R2
   - aggregate:
     - put: base-amis-win2012r2
@@ -481,7 +481,12 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
       params:
         OS_VERSION: windows2012R2
-        ACCOUNT_JSON: {{MUSTANG_GCP_STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+    - task: expose-gcp-image
+      file: ci/bosh-windows-stemcell-builder/expose-gcp-image/task.yml
+      params:
+        PROJECT_ID: {{CFF-BOSH-WINDOWS-STEMCELLS_PROJECT_ID}}
+        API_KEY: {{CFF-BOSH-WINDOWS-STEMCELLS_API_KEY}}
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
