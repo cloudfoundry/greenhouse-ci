@@ -193,13 +193,13 @@ resources:
     regexp: bosh-stemcell-(.*)-azure-vhd-uri.txt
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: azure-stemcell-release-candidate
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells-private-release-candidates
-    regexp: bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+# - name: azure-stemcell-release-candidate
+#   type: s3
+#   source:
+#     bucket: bosh-windows-stemcells-private-release-candidates
+#     regexp: bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
+#     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+#     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 # - name: azure-stemcell-final
 #   type: s3
 #   source:
@@ -577,6 +577,8 @@ jobs:
     - get: stemcells-major-version
       passed: [create-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
+      passed: [create-azure-stemcell]
+    - get: azure-base-vhd-uri
       passed: [create-azure-stemcell]
   - task: publish-stemcell
     file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
