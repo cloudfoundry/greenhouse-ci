@@ -517,6 +517,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
+        # passed: [build-stemcells]
       - get: bosh-agent
         passed: [build-stemcells]
       - get: version
@@ -547,16 +548,6 @@ jobs:
         OFFER: 'bosh-windows-server'
         SKU: '2012r2'
         ADMIN_PASSWORD: {{AZURE_STEMCELL_ADMIN_PASSWORD}}
-    # - task: test-stemcell
-    #   file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    #   params:
-    #     BOSH_CLIENT_SECRET:
-    #     BOSH_CLIENT:
-    #     DIRECTOR_IP:
-    #     DIRECTOR_UUID:
-    #     STEMCELL_NAME:
-    #     STEMCELL_PATH: bosh-windows-stemcell/
-    #     BOSH_CA_CERT:
     - put: azure-stemcell-pre-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
@@ -591,11 +582,38 @@ jobs:
       PUBLISHER_URL: 'https://publish.windowsazure.com/publishers/pivotal/offers/bosh-windows-server'
       SKU: '2012r2'
       API_KEY: {{AZURE_PUBLISHER_API_KEY}}
-  # - put: azure-stemcell-release-candidate
-  #   params:
-  #     file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
 
-# - name: test-azure-stemcell
+- name: test-azure-stemcell
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        # passed: [publish-azure-stemcell]
+      - get: stemcells-major-version
+        passed: [publish-azure-stemcell]
+      # - put: azure-stemcell-release-candidate
+      #   params:
+      #     file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+      - get: azure-stemcell-release-candidate
+    - task: test-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        IAAS: azure
+        ACCOUNT_JSON:
+        BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
+        BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
+        BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
+        BOSH_IP: {{DINGO_BOSH_DIRECTOR_IP}}
+        BOSH_UUID: {{DINGO_DIRECTOR_UUID}}
+        STEMCELL_PATH: azure-stemcell-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+        AZ: z1
+        VM_TYPE: large
+        NETWORK: default
 
 - name: promote-stemcells
   serial: true
