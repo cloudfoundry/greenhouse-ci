@@ -664,6 +664,7 @@ jobs:
   - aggregate:
     - get: stemcell-builder
       passed: [promote-stemcells]
+      trigger: true
     - get: stemcells-major-version
       passed: [promote-stemcells]
     - get: vsphere-stemcell
