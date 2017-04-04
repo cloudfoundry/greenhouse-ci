@@ -490,7 +490,7 @@ jobs:
         BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
         BOSH_PRIVATE_IP: {{OTTER_DIRECTOR_IP}}
         BOSH_CLIENT: {{OTTER_BOSH_USER}}
-        BOSH_TARGET: 127.0.0.1
+        BOSH_TARGET: localhost
         BOSH_UUID: {{OTTER_DIRECTOR_UUID}}
         BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
