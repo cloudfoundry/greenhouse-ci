@@ -457,11 +457,6 @@ jobs:
       params:
         OS_VERSION: windows2012R2
         ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
-    - task: expose-gcp-image
-      file: ci/bosh-windows-stemcell-builder/expose-gcp-image/task.yml
-      params:
-        PROJECT_ID: {{CFF-BOSH-WINDOWS-STEMCELLS_PROJECT_ID}}
-        API_KEY: {{CFF-BOSH-WINDOWS-STEMCELLS_API_KEY}}
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
@@ -474,6 +469,11 @@ jobs:
         BOSH_UUID: {{OTTER_DIRECTOR_UUID}}
         BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    - task: expose-gcp-image
+      file: ci/bosh-windows-stemcell-builder/expose-gcp-image/task.yml
+      params:
+        PROJECT_ID: {{CFF-BOSH-WINDOWS-STEMCELLS_PROJECT_ID}}
+        API_KEY: {{CFF-BOSH-WINDOWS-STEMCELLS_API_KEY}}
     - put: gcp-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
