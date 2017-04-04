@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/bosh-windows-stemcell-builder
+
+inputs:
+  - name: ci
+  - name: version
+  - name: stemcell-builder
+  - name: azure-base-vhd-uri
+
+run:
+  path: ci/bosh-windows-stemcell-builder/publish_azure_stemcell/run.rb
+
+params:
+  PUBLISHER_URL:
+  SKU:
+  API_KEY:

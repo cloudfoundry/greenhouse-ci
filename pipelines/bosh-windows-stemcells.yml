@@ -581,13 +581,12 @@ jobs:
   - task: publish-stemcell
     file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
     params:
-      PUBLISHER: 'pivotal'
-      OFFER: 'bosh-windows-server'
+      PUBLISHER_URL: 'https://publish.windowsazure.com/publishers/pivotal/offers/bosh-windows-server'
       SKU: '2012r2'
-      ADMIN_PASSWORD: {{AZURE_STEMCELL_ADMIN_PASSWORD}}
-  - put: azure-stemcell-release-candidate
-    params:
-      file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+      API_KEY: {{AZURE_PUBLISHER_API_KEY}}
+  # - put: azure-stemcell-release-candidate
+  #   params:
+  #     file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
 
 # - name: test-azure-stemcell
 
