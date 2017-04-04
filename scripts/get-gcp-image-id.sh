@@ -6,7 +6,7 @@ ACCOUNT_EMAIL=$(echo $ACCOUNT_JSON | jq -r .client_email)
 PROJECT_ID=$(echo $ACCOUNT_JSON | jq -r .project_id)
 
 gcloud auth activate-service-account --quiet $ACCOUNT_EMAIL --key-file <(echo $ACCOUNT_JSON)
-gcloud config set project cf-greenhouse-mustang
+gcloud config set project $PROJECT_ID
 
 set -x
 
