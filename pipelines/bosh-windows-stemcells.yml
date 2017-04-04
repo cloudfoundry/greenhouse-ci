@@ -615,6 +615,10 @@ jobs:
         AZ: z1
         VM_TYPE: large
         NETWORK: default
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
 
 - name: promote-stemcells
   serial: true
