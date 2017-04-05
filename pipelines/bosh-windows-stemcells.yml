@@ -468,7 +468,7 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
         IAAS: gcp
-        ACCOUNT_JSON: {{OTTER_GCP_BOSH_ACCOUNT_JSON}}
+        ACCOUNT_JSON: {{CFF-GREENHOUSE-OTTER_ACCOUNT_JSON}}
         BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
         BOSH_PRIVATE_IP: {{OTTER_DIRECTOR_IP}}
         BOSH_CLIENT: {{OTTER_BOSH_USER}}
