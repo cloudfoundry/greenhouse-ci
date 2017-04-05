@@ -463,8 +463,7 @@ jobs:
     - task: expose-gcp-image
       file: ci/bosh-windows-stemcell-builder/expose-gcp-image/task.yml
       params:
-        PROJECT_ID: {{CFF-BOSH-WINDOWS-STEMCELLS_PROJECT_ID}}
-        API_KEY: {{CFF-BOSH-WINDOWS-STEMCELLS_API_KEY}}
+        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:

@@ -14,5 +14,4 @@ run:
   path: ci/bosh-windows-stemcell-builder/expose-gcp-image/run.rb
 
 params:
-  PROJECT_ID:
-  API_KEY:
+  ACCOUNT_JSON:
