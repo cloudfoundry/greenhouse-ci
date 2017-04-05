@@ -634,28 +634,29 @@ jobs:
     tags: [vsphere-windows]
     file: ci/tasks/create-major-stemcell.yml
     input_mapping: { final-stemcell: aws-stemcell-final }
-  - put: major-stemcell
-    tags: [vsphere-windows]
-    params:
-      file: stemcell-info/stemcell-*.json
-  - put: vsphere-stemcell-final
-    tags: [vsphere-windows]
-    params:
-      file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: aws-stemcell-final
-    tags: [vsphere-windows]
-    params:
-      file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-  # - task: post-boshio-aws-stemcell-sha
-  #   tags: [vsphere-windows]
-  #   file: ci/tasks/post-boshio-stemcell-sha.yml
-  #   input_mapping: { sha: aws-stemcell-sha }
-  #   params:
-  #     BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
-  - put: gcp-stemcell-final
-    tags: [vsphere-windows]
-    params:
-      file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+  - aggregate:
+    - put: major-stemcell
+      tags: [vsphere-windows]
+      params:
+        file: stemcell-info/stemcell-*.json
+    - put: vsphere-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+    - put: aws-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    # - task: post-boshio-aws-stemcell-sha
+    #   tags: [vsphere-windows]
+    #   file: ci/tasks/post-boshio-stemcell-sha.yml
+    #   input_mapping: { sha: aws-stemcell-sha }
+    #   params:
+    #     BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+    - put: gcp-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 
 - name: ship-bosh-stemcell-builder
   serial: true
