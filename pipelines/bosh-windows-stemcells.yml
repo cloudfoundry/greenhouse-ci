@@ -554,7 +554,7 @@ jobs:
   - task: publish-stemcell
     file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
     params:
-      PUBLISHER_URL: 'https://publish.windowsazure.com/publishers/pivotal/offers/bosh-windows-server'
+      PUBLISHER_URL: 'https://publish.windowsazure.com/publishers/pivotal/offers/bosh-windows-server/'
       SKU: '2012r2'
       API_KEY: {{AZURE_PUBLISHER_API_KEY}}
 
