@@ -615,17 +615,17 @@ jobs:
     tags: [vsphere-windows]
     file: ci/tasks/ensure-versions-match.yml
   - aggregate:
-    - task: set-stemcell-version
+    - task: vsphere-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
       output_mapping: { final-stemcell: vsphere-stemcell-final }
       file: ci/tasks/set-stemcell-version.yml
-    - task: set-stemcell-version
+    - task: aws-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: aws-stemcell-release-candidate }
       output_mapping: { final-stemcell: aws-stemcell-final }
       file: ci/tasks/set-stemcell-version.yml
-    - task: set-stemcell-version
+    - task: gcp-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
