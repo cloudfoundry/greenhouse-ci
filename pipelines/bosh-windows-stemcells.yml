@@ -725,11 +725,25 @@ jobs:
           args:
           - "-c"
           - "cd stemcell-builder && bundle && rake package:agent && mv build/*.zip ../bosh-agent"
+    - task: get-stemcell-builder-sha
+      config:
+        platform: linux
+        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        inputs:
+        - name: stemcell-builder
+        outputs:
+        - name: stemcell-builder-commit
+        run:
+          path: bash
+          args:
+          - "-c"
+          - "cd stemcell-builder && git rev-parse HEAD > ../stemcell-builder-commit/sha"
   - put: stemcell-builder-release
     tags: [vsphere-windows]
     params:
       name: stemcell-builder-release-version/version
       tag: stemcell-builder-release-version/version
+      commitish: stemcell-builder-commit/sha
       globs:
       - updates-txt/updates.txt
       - bosh-psmodules/bosh-psmodules.zip
