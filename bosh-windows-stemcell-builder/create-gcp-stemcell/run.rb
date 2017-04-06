@@ -15,4 +15,5 @@ Dir.chdir "stemcell-builder" do
   exec_command("rake package:psmodules")
   exec_command("rake build:gcp")
   exec_command("mv bosh-windows-stemcell/*.tgz ../bosh-windows-stemcell")
+  exec_command("rake publish:gcp")
 end
