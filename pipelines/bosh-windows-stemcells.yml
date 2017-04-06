@@ -468,14 +468,14 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
         IAAS: gcp
-        ACCOUNT_JSON: {{CFF-GREENHOUSE-OTTER_ACCOUNT_JSON}}
-        BOSH_CLIENT_SECRET: {{OTTER_BOSH_PASSWORD}}
-        BOSH_PRIVATE_IP: {{OTTER_DIRECTOR_IP}}
-        BOSH_CLIENT: {{OTTER_BOSH_USER}}
-        BOSH_TARGET: localhost
-        BOSH_UUID: {{OTTER_DIRECTOR_UUID}}
-        BOSH_CA_CERT: {{OTTER_BOSH_TARGET_CERT}}
+        ACCOUNT_JSON: {{CF-GREENHOUSE-GOOSE_ACCOUNT_JSON}}
+        BOSH_CLIENT_SECRET: {{goose_client_secret}}
+        BOSH_CLIENT: {{goose_client}}
+        BOSH_TARGET: {{goose_environment}}
+        BOSH_UUID: b5322975-2afe-4e4b-9625-2b6ff10dd3a0
+        BOSH_CA_CERT: {{goose_ca_cert}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        NETWORK: private
     - put: gcp-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
