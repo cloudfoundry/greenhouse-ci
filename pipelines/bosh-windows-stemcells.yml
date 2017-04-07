@@ -21,18 +21,18 @@ groups:
   - build-stemcells
   - promote-stemcells
   - ship-bosh-stemcell-builder
-- name: vsphere-stemcell
+- name: vsphere
   jobs:
   - create-vsphere-add-updates
   - create-vsphere-stemcell
   - test-vsphere-stemcell
-- name: aws-stemcell
+- name: aws
   jobs:
   - create-aws-stemcell
-- name: gcp-stemcell
+- name: gcp
   jobs:
   - create-gcp-stemcell
-- name: azure-stemcell
+- name: azure
   jobs:
   - create-azure-stemcell
   - test-azure-stemcell
@@ -445,12 +445,12 @@ jobs:
     attempts: 5
     params:
       AZ: default
-      VM_TYPE: xlarge
-      BOSH_CLIENT_SECRET: {{STONETALON_BOSH_CLIENT_SECRET}}
-      BOSH_CLIENT: {{STONETALON_BOSH_CLIENT_ID}}
-      BOSH_UUID: {{STONETALON_DIRECTOR_UUID}}
-      BOSH_TARGET: {{STONETALON_BOSH_DIRECTOR_IP}}
-      BOSH_CA_CERT: {{STONETALON_BOSH_TARGET_CERT}}
+      VM_TYPE: large
+      BOSH_CLIENT_SECRET: {{regina_client_secret}}
+      BOSH_CLIENT: {{regina_client}}
+      BOSH_UUID: b0c35750-2e3c-484c-835d-0d6d211ea311
+      BOSH_TARGET: {{regina_environment}}
+      BOSH_CA_CERT: {{regina_ca_cert}}
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: vsphere-stemcell-release-candidate
     params:
