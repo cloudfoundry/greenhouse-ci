@@ -9,7 +9,7 @@ pushd source-repo
     git config user.email "pivotal-netgarden-eng@pivotal.io"
     git config user.name "CI (Automated)"
     git add .
-    git commit -m "Update submodule: $(basename $SUBMODULE_PATH)"
+    git commit -m "Update submodules"
   fi
 popd
 
