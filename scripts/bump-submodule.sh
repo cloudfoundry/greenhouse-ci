@@ -2,13 +2,8 @@
 
 set -ex
 
-COMMITISH=$(cat commitish/*)
-
 pushd source-repo
-  pushd $SUBMODULE_PATH
-    git fetch --all
-    git checkout $COMMITISH
-  popd
+  git submodule update --recursive --remote
 
   if [ -n "$(git status --porcelain)" ]; then
     git config user.email "pivotal-netgarden-eng@pivotal.io"
@@ -18,4 +13,4 @@ pushd source-repo
   fi
 popd
 
-rm -rf bumped-repo && cp -r source-repo bumped-repo
+cp -r source-repo/. bumped-repo/
