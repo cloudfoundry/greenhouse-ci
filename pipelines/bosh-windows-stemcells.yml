@@ -448,7 +448,6 @@ jobs:
       VM_TYPE: large
       BOSH_CLIENT_SECRET: {{regina_client_secret}}
       BOSH_CLIENT: {{regina_client}}
-      BOSH_UUID: b0c35750-2e3c-484c-835d-0d6d211ea311
       BOSH_TARGET: {{regina_environment}}
       BOSH_CA_CERT: {{regina_ca_cert}}
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
@@ -500,7 +499,6 @@ jobs:
         BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
         BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
         BOSH_TARGET: {{BOSH_CONCOURSE_DIRECTOR_IP}}
-        BOSH_UUID: 54af1a2c-c84e-4a95-a723-3771ec7da4d9
         BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
@@ -549,7 +547,6 @@ jobs:
         BOSH_CLIENT_SECRET: {{goose_client_secret}}
         BOSH_CLIENT: {{goose_client}}
         BOSH_TARGET: {{goose_environment}}
-        BOSH_UUID: b5322975-2afe-4e4b-9625-2b6ff10dd3a0
         BOSH_CA_CERT: {{goose_ca_cert}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
         NETWORK: private
@@ -663,7 +660,6 @@ jobs:
         BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
         BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
         BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
-        BOSH_UUID: {{DINGO_DIRECTOR_UUID}}
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
         AZ: z1
         VM_TYPE: default
