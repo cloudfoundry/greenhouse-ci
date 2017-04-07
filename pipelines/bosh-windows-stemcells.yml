@@ -1,6 +1,7 @@
 groups:
 - name: all
   jobs:
+  - bump-stemcell-builder-submodules
   - test-stemcell-builder
   - build-stemcells
   - promote-stemcells
@@ -15,6 +16,7 @@ groups:
   - publish-azure-stemcell
 - name: main
   jobs:
+  - bump-stemcell-builder-submodules
   - test-stemcell-builder
   - build-stemcells
   - promote-stemcells
@@ -35,12 +37,23 @@ groups:
   - create-azure-stemcell
   - test-azure-stemcell
   - publish-azure-stemcell
+
 resources:
 - name: ci
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bosh-agent
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-agent.git
+- name: bwats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 - name: stemcells-major-version
   type: semver
   source:
@@ -53,7 +66,8 @@ resources:
   type: git
   source:
     branch: develop
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
 - name: stemcell-builder
   type: git
   source:
@@ -240,6 +254,36 @@ resources:
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
 jobs:
+- name: bump-stemcell-builder-submodules
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder-develop
+    - get: bosh-agent
+      trigger: true
+    - get: bwats
+      trigger: true
+  - task: bump-submodules
+    input_mapping:
+      source-repo: stemcell-builder-develop
+    output_mapping:
+      bumped-repo: stemcell-builder-bumped
+    config:
+      platform: linux
+      image: docker:///pivotalgreenhouse/ci
+      inputs:
+      - name: ci
+      - name: source-repo
+      outputs:
+      - name: bumped-repo
+      run:
+        path: ci/scripts/bump-submodules.sh
+  - put: stemcell-builder-develop
+    params:
+      repository: stemcell-builder-bumped
+      rebase: true
+
 - name: test-stemcell-builder
   serial: true
   plan:
