@@ -444,7 +444,6 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
-      AZ: default
       VM_TYPE: large
       BOSH_CLIENT_SECRET: {{regina_client_secret}}
       BOSH_CLIENT: {{regina_client}}
