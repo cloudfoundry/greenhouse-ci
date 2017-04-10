@@ -3,7 +3,7 @@ platform: windows
 
 inputs:
   - name: ci
-  - name: vmx-version
+  - name: version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
 outputs:
@@ -24,4 +24,5 @@ params:
   INPUT_BUCKET: "bosh-windows-stemcell-vmx"
   OUTPUT_BUCKET: "bosh-windows-stemcell-vmx"
   VMX_CACHE_DIR: "C:\\vmx-data"
+  VERSION_DIR: ../version
 

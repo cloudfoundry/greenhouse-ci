@@ -311,6 +311,7 @@ jobs:
       resource: updated-vmx-version
   - task: add-updates
     privileged: true
+    input_mapping: { version: vmx-version }
     file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
     tags: [vsphere-windows-worker]
     params:

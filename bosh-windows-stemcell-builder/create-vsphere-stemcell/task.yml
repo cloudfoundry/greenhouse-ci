@@ -31,3 +31,7 @@ params:
   ORGANIZATION:
   OWNER:
 
+  VERSION_DIR: ../version
+  VMX_VERSION_DIR: ../vmx-version
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+
