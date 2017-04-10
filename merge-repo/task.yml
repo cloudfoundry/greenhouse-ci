@@ -9,7 +9,7 @@ outputs:
   - name: merged-repo
 
 run:
-  path: ci/merge-repo/task.yml
+  path: ci/merge-repo/run
 
 params:
   FROM_BRANCH: ~
