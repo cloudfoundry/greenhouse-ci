@@ -75,13 +75,13 @@ jobs:
       passed: [build-tar]
     - get: ci
   - task: update-tar
-    file: ci/tasks/update-tar.yml
+    file: ci/update-tar/task.yml
     params:
       TAR_PATHS: Builder/Resources/bsdtar.exe Builder.Tests/Resources/bsdtar.exe bin/bsdtar.exe
     input_mapping:
       repo: windows_app_lifecycle
   - task: commit
-    file: ci/tasks/commit.yml
+    file: ci/commit/task.yml
     params:
       MESSAGE: "Update bsdtar.exe"
     input_mapping:
@@ -115,13 +115,13 @@ jobs:
       passed: [build-tar]
     - get: ci
   - task: update-tar
-    file: ci/tasks/update-tar.yml
+    file: ci/update-tar/task.yml
     params:
       TAR_PATHS: integration/windows/fixtures/tar.exe
     input_mapping:
       repo: bosh-agent
   - task: commit
-    file: ci/tasks/commit.yml
+    file: ci/commit/task.yml
     params:
       MESSAGE: "Update tar.exe"
     input_mapping:

@@ -1,0 +1,13 @@
+---
+platform: windows
+inputs:
+- name: ci
+- name: hwc
+  path: src/github.com/cloudfoundry-incubator/hwc
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/test-hwc/run.ps1

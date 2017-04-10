@@ -1,0 +1,12 @@
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+inputs:
+  - name: ci
+  - name: final-stemcell
+  - name: stemcell-builder
+
+outputs:
+  - name: stemcell-info
+
+run:
+  path: ci/create-major-stemcell/run

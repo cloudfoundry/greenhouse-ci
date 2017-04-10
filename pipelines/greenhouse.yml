@@ -264,7 +264,7 @@ jobs:
     - get: ci
       resource: greenhouse-ci
   - task: sync-submodules
-    file: ci/tasks/sync-submodules.yml
+    file: ci/sync-submodules/task.yml
     params:
       SUBMODULES: "src/code.cloudfoundry.org/garden,src/github.com/bmizerany/pat,src/github.com/cloudfoundry/dropsonde,src/github.com/cloudfoundry/gosteno,src/github.com/cloudfoundry/sonde-go,src/github.com/gogo/protobuf,src/github.com/golang/protobuf,src/github.com/gorilla/context,src/github.com/gorilla/mux,src/github.com/nu7hatch/gouuid,src/github.com/onsi/ginkgo,src/github.com/onsi/gomega,src/github.com/pivotal-golang/localip,src/github.com/tedsuo/ifrit,src/golang.org/x/net,src/gopkg.in/yaml.v2"
   - put: garden-windows-release
@@ -532,7 +532,7 @@ jobs:
     - get: garden-windows-bosh-artifacts
       trigger: true
   - task: update-blobs
-    file: ci/tasks/update-garden-windows-blobs.yml
+    file: ci/update-garden-windows-blobs/task.yml
     params:
       ACCESS_KEY_ID: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
       SECRET_ACCESS_KEY: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
@@ -573,7 +573,7 @@ jobs:
       params: {pre: rc}
     - task: create-release
       privileged: true
-      file: ci/tasks/bosh-create-release.yml
+      file: ci/create-release/task.yml
     - task: generate-manifest
       privileged: true
       file: ci/tasks/generate-windows-cell-deployment-manifest.yml
@@ -606,7 +606,7 @@ jobs:
         file: garden-windows-output/garden-windows-*.tgz
     - task: merge-develop-to-master
       input_mapping: { from-repo: wats, to-repo: wats-master }
-      file: ci/tasks/merge-repo.yml
+      file: ci/merge-repo/task.yml
       params:
         FROM_BRANCH: develop
     - put: wats-mergedback
@@ -643,7 +643,7 @@ jobs:
   - put: version
     params: {file: version/number}
   - task: finalize-release
-    file: ci/tasks/finalize-release.yml
+    file: ci/finalize-release/task.yml
   - put: garden-windows-bosh-release-bucket-final
     params:
       file: finalized-release/garden-windows-*.tgz
@@ -653,7 +653,7 @@ jobs:
       tag: version/number
       tag_prefix: v
   - task: generate-release
-    file: ci/tasks/generate-github-release.yml
+    file: ci/generate-github-release/task.yml
   - put: garden-windows-bosh-github-release
     params:
       commitish: generated-release/commitish
@@ -677,7 +677,7 @@ jobs:
         params:
           submodules: none
     - task: merge-master-into-develop
-      file: ci/tasks/merge-repo.yml
+      file: ci/merge-repo/task.yml
       params:
         FROM_BRANCH: master
     - put: garden-windows-bosh-release-develop-mergedback

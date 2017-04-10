@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+bosh -n clean-up --all

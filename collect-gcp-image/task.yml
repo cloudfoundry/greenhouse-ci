@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/bosh-cli
+
+inputs:
+- name: version
+- name: ci
+
+outputs:
+  - name: base-gcp-image
+
+params:
+  ACCOUNT_JSON:
+  BASE_OS:
+
+run:
+  path: ci/collect-gcp-image/run

@@ -39,22 +39,10 @@ jobs:
     - get: hwc-master
   - task: test-hwc
     input_mapping: { hwc: hwc-develop }
-    config:
-      platform: windows
-      inputs:
-      - name: ci
-      - name: hwc
-        path: src/github.com/cloudfoundry-incubator/hwc
-      run:
-        path: powershell
-        args:
-        - "-ExecutionPolicy"
-        - "Bypass"
-        - "-File"
-        - ci/scripts/test-hwc.ps1
+    file: ci/test-hwc/task.yml
   - task: merge-develop-to-master
     input_mapping: { from-repo: hwc-develop, to-repo: hwc-master }
-    file: ci/tasks/merge-repo.yml
+    file: ci/merge-repo/task.yml
     params: { FROM_BRANCH: develop }
   - put: hwc-master
     params: { repository: merged-repo/to-repo }
@@ -69,20 +57,7 @@ jobs:
       passed: [test]
     - get: hwc-version
   - task: build-hwc
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: pivotalgreenhouse/ci
-      inputs:
-      - name: ci
-      - name: hwc
-        path: src/github.com/cloudfoundry-incubator/hwc
-      outputs:
-      - name: hwc-rel
-      run:
-        path: ci/scripts/build-hwc.sh
+    file: ci/build-hwc/task.yml
   - put: hwc-version
     params: {bump: major}
   - put: hwc-release

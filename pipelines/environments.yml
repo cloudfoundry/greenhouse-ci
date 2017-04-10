@@ -179,7 +179,7 @@ jobs:
         passed: [dolphin-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: gcp-linux-stemcell}
         params:
           BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
@@ -187,7 +187,7 @@ jobs:
           BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
       - task: upload-windows-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: gcp-windows-stemcell}
         params:
           BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
@@ -195,7 +195,7 @@ jobs:
           BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/deploy-cf.yml
+      file: ci/deploy-cf/task.yml
       params:
         ENVIRONMENT: dolphin
         BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
@@ -208,7 +208,7 @@ jobs:
         repository: output/greenhouse-private
         rebase: true
     - task: clean-up
-      file: ci/tasks/clean-up-director.yml
+      file: ci/bosh-cleanup/task.yml
       params:
         BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
@@ -270,7 +270,7 @@ jobs:
         passed: [baboon-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: gcp-linux-stemcell}
         params:
           BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
@@ -278,7 +278,7 @@ jobs:
           BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
       - task: upload-windows-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: gcp-windows-stemcell}
         params:
           BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
@@ -286,7 +286,7 @@ jobs:
           BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/deploy-cf.yml
+      file: ci/deploy-cf/task.yml
       params:
         ENVIRONMENT: baboon
         BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
@@ -299,7 +299,7 @@ jobs:
         repository: output/greenhouse-private
         rebase: true
     - task: clean-up
-      file: ci/tasks/clean-up-director.yml
+      file: ci/bosh-cleanup/task.yml
       params:
         BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
@@ -361,7 +361,7 @@ jobs:
         passed: [ferret-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: aws-linux-stemcell}
         params:
           BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
@@ -369,7 +369,7 @@ jobs:
           BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
       - task: upload-windows-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: aws-windows-stemcell}
         params:
           BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
@@ -377,7 +377,7 @@ jobs:
           BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
           BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     - task: deploy-cf
-      file: ci/tasks/deploy-cf.yml
+      file: ci/deploy-cf/task.yml
       params:
         ENVIRONMENT: ferret
         BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
@@ -390,7 +390,7 @@ jobs:
         repository: output/greenhouse-private
         rebase: true
     - task: clean-up
-      file: ci/tasks/clean-up-director.yml
+      file: ci/bosh-cleanup/task.yml
       params:
         BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
@@ -455,7 +455,7 @@ jobs:
         passed: [sudbury-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: vsphere-linux-stemcell}
         tags: [vsphere]
         params:
@@ -464,7 +464,7 @@ jobs:
           BOSH_ENVIRONMENT: {{sudbury_environment}}
           BOSH_CA_CERT: {{sudbury_ca_cert}}
       - task: upload-windows-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: vsphere-windows-stemcell}
         tags: [vsphere]
         params:
@@ -474,7 +474,7 @@ jobs:
           BOSH_CA_CERT: {{sudbury_ca_cert}}
     - task: deploy-cf
       tags: [vsphere]
-      file: ci/tasks/deploy-cf.yml
+      file: ci/deploy-cf/task.yml
       params:
         ENVIRONMENT: sudbury
         BOSH_CLIENT: admin
@@ -487,7 +487,7 @@ jobs:
         repository: output/greenhouse-private
         rebase: true
     - task: clean-up
-      file: ci/tasks/clean-up-director.yml
+      file: ci/bosh-cleanup/task.yml
       tags: [vsphere]
       params:
         BOSH_CLIENT: admin
@@ -551,7 +551,7 @@ jobs:
         passed: [dingo-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
-        file: ci/tasks/upload-stemcell.yml
+        file: ci/bosh-us/task.yml
         input_mapping: {stemcell: azure-linux-stemcell}
         params:
           BOSH_CLIENT: admin
@@ -559,7 +559,7 @@ jobs:
           BOSH_ENVIRONMENT: {{dingo_environment}}
           BOSH_CA_CERT: {{dingo_ca_cert}}
       # - task: upload-windows-stemcell
-      #   file: ci/tasks/upload-stemcell.yml
+      #   file: ci/bosh-us/task.yml
       #   input_mapping: {stemcell: azure-windows-stemcell}
       #   params:
       #     BOSH_CLIENT: admin
@@ -567,7 +567,7 @@ jobs:
       #     BOSH_ENVIRONMENT: {{dingo_environment}}
       #     BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: deploy-cf
-      file: ci/tasks/deploy-cf.yml
+      file: ci/deploy-cf/task.yml
       params:
         ENVIRONMENT: dingo
         BOSH_CLIENT: admin
@@ -580,7 +580,7 @@ jobs:
         repository: output/greenhouse-private
         rebase: true
     - task: clean-up
-      file: ci/tasks/clean-up-director.yml
+      file: ci/bosh-cleanup/task.yml
       params:
         BOSH_CLIENT: admin
         BOSH_CLIENT_SECRET: {{dingo_client_secret}}

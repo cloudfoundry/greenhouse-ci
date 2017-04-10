@@ -269,16 +269,7 @@ jobs:
       source-repo: stemcell-builder-develop
     output_mapping:
       bumped-repo: stemcell-builder-bumped
-    config:
-      platform: linux
-      image: docker:///pivotalgreenhouse/ci
-      inputs:
-      - name: ci
-      - name: source-repo
-      outputs:
-      - name: bumped-repo
-      run:
-        path: ci/scripts/bump-submodules.sh
+    file: ci/bump-submodules/task.yml
   - put: stemcell-builder-develop
     params:
       repository: stemcell-builder-bumped
@@ -302,7 +293,7 @@ jobs:
       input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
-    file: ci/tasks/merge-repo.yml
+    file: ci/merge-repo/task.yml
     params:
       FROM_BRANCH: develop
   - put: stemcell-builder
@@ -362,14 +353,14 @@ jobs:
         file: version/number
   - aggregate:
     - task: collect-win2012r2-amis
-      file: ci/tasks/collect-base-amis.yml
+      file: ci/collect-base-amis/task.yml
       output_mapping: { base-amis: win2012r2-amis }
       params:
         AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
         AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
         BASE_AMI: windows2012R2
     - task: collect-win2012r2-gcp-image
-      file: ci/tasks/get-base-gcp-image-id.yml
+      file: ci/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2012r2-gcp-image }
       params:
         ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
@@ -487,7 +478,7 @@ jobs:
         AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
       ensure:
         task: delete-orphan-vms
-        file: ci/tasks/delete-vms.yml
+        file: ci/delete-vms/task.yml
         params:
           AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
@@ -691,26 +682,26 @@ jobs:
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
   - task: ensure-versions-match
     tags: [vsphere-windows]
-    file: ci/tasks/ensure-versions-match.yml
+    file: ci/match-stemcell-versions/task.yml
   - aggregate:
     - task: vsphere-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
       output_mapping: { final-stemcell: vsphere-stemcell-final }
-      file: ci/tasks/set-stemcell-version.yml
+      file: ci/set-stemcell-version/task.yml
     - task: aws-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: aws-stemcell-release-candidate }
       output_mapping: { final-stemcell: aws-stemcell-final }
-      file: ci/tasks/set-stemcell-version.yml
+      file: ci/set-stemcell-version/task.yml
     - task: gcp-set-stemcell-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
-      file: ci/tasks/set-stemcell-version.yml
+      file: ci/set-stemcell-version/task.yml
   - task: create-major-stemcell
     tags: [vsphere-windows]
-    file: ci/tasks/create-major-stemcell.yml
+    file: ci/create-major-stemcell/task.yml
     input_mapping: { final-stemcell: aws-stemcell-final }
   - aggregate:
     - put: major-stemcell
@@ -727,7 +718,7 @@ jobs:
         file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     # - task: post-boshio-aws-stemcell-sha
     #   tags: [vsphere-windows]
-    #   file: ci/tasks/post-boshio-stemcell-sha.yml
+    #   file: ci/post-boshio-stemcell-sha/task.yml
     #   input_mapping: { sha: aws-stemcell-sha }
     #   params:
     #     BOSHIO_TOKEN: {{BOSHIO_TOKEN}}

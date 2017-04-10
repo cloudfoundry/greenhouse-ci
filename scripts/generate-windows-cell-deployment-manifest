@@ -5,7 +5,6 @@ set -ex
 environment_path="${PWD}/greenhouse-private/${ENVIRONMENT_NAME}"
 stubs_path="${environment_path}/stubs"
 templates_path="${environment_path}/templates"
-ADD_WINDOWS_TOOLS=${ADD_WINDOWS_TOOLS:-0}
 
 pushd cf-release
   ./scripts/generate_deployment_manifest \
@@ -34,9 +33,3 @@ pushd diego-release
     -v ${stubs_path}/diego-windows/release-versions.yml \
     > ../generated-manifest/diego-windows-deployment.yml
 popd
-
-if [[ $ADD_WINDOWS_TOOLS -eq 1 ]]; then
-  ci/scripts/add_windows_tools.rb \
-    generated-manifest/diego-windows-deployment.yml \
-    generated-manifest/diego-windows-deployment.yml
-fi
