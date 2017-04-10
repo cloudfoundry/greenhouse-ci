@@ -431,6 +431,7 @@ jobs:
         diego-windows-cloudformation-template-file: generated-cloudformation-template-file
     - task: wats
       file: greenhouse-ci/tasks/run-wats.yml
+      attempts: 5
       params:
         ADMIN_PASSWORD: {{PESTO_CF_PASSWORD}}
         ADMIN_USER: admin
@@ -590,6 +591,7 @@ jobs:
     - task: wats
       privileged: true
       file: ci/tasks/run-wats.yml
+      attempts: 5
       params:
           ADMIN_PASSWORD: {{PESTO_CF_PASSWORD}}
           ADMIN_USER: admin
