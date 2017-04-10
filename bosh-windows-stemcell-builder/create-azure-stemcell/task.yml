@@ -33,3 +33,4 @@ params:
   OFFER:
   SKU:
   ADMIN_PASSWORD:
+  VERSION_DIR: ../version
