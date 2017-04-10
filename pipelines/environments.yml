@@ -215,7 +215,7 @@ jobs:
         BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
     - task: wats
-      file: ci/tasks/run-wats.yml
+      file: ci/run-wats/task.yml
       params:
         ADMIN_PASSWORD: {{DOLPHIN_ADMIN_PASSWORD}}
         ADMIN_USER: admin
@@ -306,7 +306,7 @@ jobs:
         BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
     - task: wats
-      file: ci/tasks/run-wats.yml
+      file: ci/run-wats/task.yml
       params:
         ADMIN_PASSWORD: {{BABOON_ADMIN_PASSWORD}}
         ADMIN_USER: admin
@@ -397,7 +397,7 @@ jobs:
         BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
     - task: wats
-      file: ci/tasks/run-wats.yml
+      file: ci/run-wats/task.yml
       params:
         ADMIN_PASSWORD: {{FERRET_ADMIN_PASSWORD}}
         ADMIN_USER: admin
@@ -496,7 +496,7 @@ jobs:
         BOSH_CA_CERT: {{sudbury_ca_cert}}
     - task: wats
       tags: [vsphere]
-      file: ci/tasks/run-wats.yml
+      file: ci/run-wats/task.yml
       params:
         ADMIN_PASSWORD: {{sudbury_cf_admin_password}}
         ADMIN_USER: admin
@@ -587,7 +587,7 @@ jobs:
         BOSH_ENVIRONMENT: {{dingo_environment}}
         BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: wats
-      file: ci/tasks/run-wats.yml
+      file: ci/run-wats/task.yml
       params:
         ADMIN_PASSWORD: {{dingo_cf_admin_password}}
         ADMIN_USER: admin
