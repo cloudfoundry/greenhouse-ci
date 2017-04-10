@@ -25,3 +25,7 @@ params:
   OS_VERSION: windows2012R2
   AWS_ACCESS_KEY:
   AWS_SECRET_KEY:
+
+  VERSION_DIR: version
+  BASE_AMIS_DIR: base-amis
+
