@@ -13,7 +13,7 @@ inputs:
   - name: azure-base-vhd-uri
 
 run:
-  path: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/run.rb
+  path: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/run
 
 params:
   SKU:

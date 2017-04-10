@@ -12,7 +12,7 @@ inputs:
   - name: bosh-windows-stemcell
 
 run:
-  path: ci/bosh-windows-stemcell-builder/bwats/run.rb
+  path: ci/bosh-windows-stemcell-builder/bwats/run
 
 params:
   IAAS:

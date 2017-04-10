@@ -17,7 +17,7 @@ outputs:
   - name: bosh-windows-stemcell
 
 run:
-  path: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/run.rb
+  path: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/run
 
 params:
   OS_VERSION: windows2012R2

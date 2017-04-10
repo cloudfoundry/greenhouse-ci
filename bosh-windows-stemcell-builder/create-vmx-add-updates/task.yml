@@ -12,7 +12,7 @@ outputs:
 run:
   path: ruby.exe
   args:
-    - ci/bosh-windows-stemcell-builder/create-vmx-add-updates/run.rb
+    - ci/bosh-windows-stemcell-builder/create-vmx-add-updates/run
 
 params:
   AWS_ACCESS_KEY_ID:

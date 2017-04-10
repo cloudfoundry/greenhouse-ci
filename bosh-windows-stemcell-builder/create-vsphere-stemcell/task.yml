@@ -13,7 +13,7 @@ outputs:
 run:
   path: ruby.exe
   args:
-    - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run.rb
+    - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run
 
 params:
   AWS_ACCESS_KEY_ID:
