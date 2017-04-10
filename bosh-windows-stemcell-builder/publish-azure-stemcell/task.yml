@@ -16,6 +16,11 @@ run:
   path: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/run.rb
 
 params:
-  PUBLISHER_URL:
   SKU:
   API_KEY:
+  AZURE_STORAGE_ACCOUNT:
+  AZURE_STORAGE_ACCESS_KEY:
+  AZURE_TENANT_ID:
+  AZURE_CLIENT_ID:
+  AZURE_CLIENT_SECRET:
+  CONTAINER_NAME:

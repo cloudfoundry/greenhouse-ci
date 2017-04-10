@@ -568,7 +568,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        # passed: [build-stemcells]
+        passed: [build-stemcells]
       - get: version
         resource: azure-stemcell-version
         passed: [build-stemcells]
@@ -628,9 +628,14 @@ jobs:
   - task: publish-stemcell
     file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
     params:
-      PUBLISHER_URL: 'https://publish.windowsazure.com/publishers/pivotal/offers/bosh-windows-server/'
       SKU: '2012r2'
       API_KEY: {{AZURE_PUBLISHER_API_KEY}}
+      AZURE_STORAGE_ACCOUNT: {{KOALA_AZURE_STORAGE_ACCOUNT}}
+      AZURE_STORAGE_ACCESS_KEY: {{KOALA_AZURE_STORAGE_ACCESS_KEY}}
+      AZURE_TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
+      AZURE_CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
+      AZURE_CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
+      CONTAINER_NAME: 'images'
 
 - name: test-azure-stemcell
   serial: true
