@@ -605,7 +605,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      # passed: [create-azure-stemcell]
+      passed: [create-azure-stemcell]
     - get: version
       resource: azure-stemcell-version
       passed: [create-azure-stemcell]
