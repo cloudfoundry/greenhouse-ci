@@ -1,26 +1,67 @@
 #docker pull pivotalgreenhouse/ci
-FROM ruby:2.1
+FROM ruby:2.3.3
 
-RUN gem install bosh_cli bundler
+#ENV PACKER_URL "https://releases.hashicorp.com/packer/0.12.2/packer_0.12.2_linux_amd64.zip"
+ENV PACKER_URL "https://s3.amazonaws.com/windows-bosh-temp/packer-2.zip"
+
+RUN apt-get update -qq && \
+  apt-get install -qqy --no-install-recommends apt-transport-https && rm -rf /var/lib/apt/lists/*
+RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk-jessie main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get update -qq && \
+  apt-get install -qqy --no-install-recommends \
+    apt-utils \
+    build-essential \
+    ca-certificates \
+    curl \
+    g++ \
+    gcc \
+    git \
+    google-cloud-sdk \
+    libc6-dev \
+    lsb-release \
+    make \
+    nano \
+    pkg-config \
+    python-all \
+    python-dev \
+    python-pip \
+    rlwrap \
+    unzip \
+    vim \
+    wget \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget ${PACKER_URL} -O packer.zip
+RUN unzip packer.zip && mv packer /usr/local/bin/packer && rm packer.zip
+
+RUN gem install bundler
+
+# bosh Golang CLI
+RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' 2>&1 | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') && \
+  curl "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${version_number}-linux-amd64" -o /usr/local/bin/bosh && \
+  chmod 755 /usr/local/bin/bosh
+
+# azure CLI
+# see https://github.com/Azure/azure-cli-docker/blob/master/0.10.0/Dockerfile
+ENV AZURE_CLI_VERSION "0.10.0"
+ENV NODEJS_APT_ROOT "node_4.x"
+ENV NODEJS_VERSION "4.2.4"
+
+RUN curl https://deb.nodesource.com/${NODEJS_APT_ROOT}/pool/main/n/nodejs/nodejs_${NODEJS_VERSION}-1nodesource1~jessie1_amd64.deb > node.deb && \
+  dpkg -i node.deb && \
+  rm node.deb && \
+  npm install --global azure-cli@${AZURE_CLI_VERSION} && \
+  azure --completion >> ~/azure.completion.sh && \
+  echo 'source ~/azure.completion.sh' >> ~/.bashrc && \
+  azure
+
+RUN azure config mode arm
 
 RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
-RUN apt-get update && apt-get install -y python-pip zip apt-utils python-dev
+
 RUN pip install awscli
-
-# required for https://github.com/cloudfoundry-incubator/greenhouse-ci/tree/master/scripts/ami_status.rb
-RUN gem install aws-sdk
-
-RUN echo $(jq --version && bosh --version && aws --version)
-
-#install go
-# gcc for cgo
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        g++ \
-        gcc \
-        libc6-dev \
-        make \
-        pkg-config \
-    && rm -rf /var/lib/apt/lists/*
 
 ENV GOLANG_VERSION 1.7.4
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
@@ -34,6 +75,5 @@ RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
-
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 755 "$GOPATH/bin"
 

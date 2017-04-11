@@ -1,9 +1,11 @@
 ---
 platform: windows
+
 inputs:
 - name: ci
 - name: hwc
   path: src/github.com/cloudfoundry-incubator/hwc
+
 run:
   path: powershell
   args:

@@ -1,6 +1,8 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ruby } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: diego-windows-msi-file
   - name: garden-windows-msi-file
@@ -9,9 +11,11 @@ inputs:
   - name: greenhouse-install-script-generator-file
   - name: greenhouse-ci
   - name: hakim
+
 run:
   path: greenhouse-ci/scripts/deploy_msi.rb
   args: [msi-file]
+
 params:
   AWS_ACCESS_KEY_ID:
   AWS_SECRET_ACCESS_KEY:

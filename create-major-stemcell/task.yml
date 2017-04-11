@@ -1,5 +1,8 @@
+---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: ci
   - name: final-stemcell

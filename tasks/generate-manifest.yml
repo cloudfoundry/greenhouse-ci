@@ -1,12 +1,16 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: cloudfoundry/diego-pipeline } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: cf-release
   - name: diego-github-release
   - name: greenhouse-ci
   - name: greenhouse-private
-run:
-  path: greenhouse-ci/scripts/generate-manifest.sh
+
 outputs:
 - name: generate-manifest
+
+run:
+  path: greenhouse-ci/scripts/generate-manifest.sh

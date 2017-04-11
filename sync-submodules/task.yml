@@ -1,11 +1,15 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: ruby } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: downstream-release
   - name: upstream-release
   - name: ci
+
 run:
   path: ci/sync-submodules/run
+
 outputs:
 - name: bumped-downstream-release

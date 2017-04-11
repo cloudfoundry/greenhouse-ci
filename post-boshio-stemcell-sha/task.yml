@@ -1,13 +1,15 @@
 ---
 platform: linux
-image_resouce:
-  type: docker-image
-  source: {repository: pivotalgreenhouse/ci}
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
 - name: ci
 - name: sha
+
 run:
   path: ci/post-boshio-stemcell-sha/run
+
 params:
   BOSHIO_TOKEN:
 

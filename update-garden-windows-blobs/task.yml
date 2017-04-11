@@ -1,11 +1,15 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ruby } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ruby-bosh-cli}}
+
 inputs:
   - name: garden-windows-bosh-artifacts
   - name: release
   - name: ci
+
 outputs:
   - name: release-output
+
 run:
   path: ci/update-garden-windows-blobs/run

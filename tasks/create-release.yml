@@ -1,6 +1,8 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ruby } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: diego-windows-release
   - name: garden-windows-msi-file
@@ -9,8 +11,10 @@ inputs:
   - name: diego-windows-msi-file
   - name: greenhouse-install-script-generator-file
   - name: hakim
+
 run:
   path: greenhouse-ci/scripts/release.rb
+
 params:
   GITHUB_TOKEN:
 

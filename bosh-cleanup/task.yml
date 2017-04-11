@@ -1,10 +1,13 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/bosh-cli}}
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
 - name: ci
+
 run:
   path: ci/bosh-cleanup/run
+
 params:
   BOSH_CLIENT:
   BOSH_CLIENT_SECRET:

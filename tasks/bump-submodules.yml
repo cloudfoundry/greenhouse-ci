@@ -1,12 +1,16 @@
 ---
 platform: linux
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ruby } }
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
 inputs:
   - name: diego-release
   - name: cf-release
   - name: diego-windows-release
   - name: greenhouse-ci
+
 run:
   path: greenhouse-ci/scripts/bump_submodules.rb
+
 outputs:
 - name: bumped-diego-windows-release
