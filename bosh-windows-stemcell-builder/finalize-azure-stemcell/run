@@ -4,5 +4,5 @@ require_relative '../../../stemcell-builder/lib/exec_command'
 
 Dir.chdir "stemcell-builder" do
   exec_command("bundle install --without test")
-  exec_command("rake publish:production:azure")
+  exec_command("rake publish:finalize:azure")
 end

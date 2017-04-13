@@ -600,7 +600,7 @@ jobs:
       params:
         release: azure-lock
 
-- name: publish-azure-stemcell
+- name: stage-azure-stemcell
   serial: true
   plan:
   - aggregate:
@@ -617,8 +617,8 @@ jobs:
       passed: [create-azure-stemcell]
     - get: azure-base-vhd-uri
       passed: [create-azure-stemcell]
-  - task: publish-stemcell
-    file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
+  - task: stage-stemcell
+    file: ci/bosh-windows-stemcell-builder/stage-azure-stemcell/task.yml
     params:
       SKU: '2012r2'
       API_KEY: {{AZURE_PUBLISHER_API_KEY}}
@@ -629,53 +629,85 @@ jobs:
       AZURE_CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
       CONTAINER_NAME: 'system'
 
-# - name: promote-azure-pre-release-candidate
-#   serial: true
-#   plan:
-#   - aggregate:
-#     - get: ci
-#     - get: stemcell-builder
-#       passed: [publish-azure-stemcell]
-#     - get: stemcells-major-version
-#       passed: [publish-azure-stemcell]
-#     - get: azure-stemcell-pre-release-candidate
-#       passed: [publish-azure-stemcell]
-#     - put: azure-stemcell-release-candidate
-#       params:
-#         file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+- name: publish-azure-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [stage-azure-stemcell]
+    - get: version
+      resource: azure-stemcell-version
+      passed: [create-azure-stemcell]
+      trigger: true
+    - get: stemcells-major-version
+      passed: [stage-azure-stemcell]
+    - get: azure-stemcell-pre-release-candidate
+      passed: [stage-azure-stemcell]
+  - task: publish-stemcell
+    file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
+    params:
+      API_KEY: {{AZURE_PUBLISHER_API_KEY}}
 
-# - name: test-azure-stemcell
-#   serial: true
-#   plan:
-#   - put: azure-lock
-#     params:
-#       acquire: true
-#   - do:
-#     - aggregate:
-#       - get: ci
-#       - get: stemcell-builder
-#         passed: [promote-azure-pre-release-candidate]
-#       - get: stemcells-major-version
-#         passed: [promote-azure-pre-release-candidate]
-#       - get: bosh-windows-stemcell
-#         resource: azure-stemcell-release-candidate
-#     - task: test-stemcell
-#       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-#       params:
-#         IAAS: azure
-#         ACCOUNT_JSON:
-#         BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
-#         BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
-#         BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
-#         BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
-#         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
-#         AZ: z1
-#         VM_TYPE: default
-#         NETWORK: private
-#     ensure:
-#       put: azure-lock
-#       params:
-#         release: azure-lock
+- name: finalize-azure-stemcell
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [publish-azure-stemcell]
+    - get: version
+      resource: azure-stemcell-version
+      passed: [publish-azure-stemcell]
+      trigger: true
+    - get: stemcells-major-version
+      passed: [publish-azure-stemcell]
+    - get: azure-stemcell-pre-release-candidate
+      passed: [publish-azure-stemcell]
+  - task: finalize-stemcell
+    file: ci/bosh-windows-stemcell-builder/finalize-azure-stemcell/task.yml
+    params:
+      API_KEY: {{AZURE_PUBLISHER_API_KEY}}
+  - put: azure-stemcell-release-candidate
+    params:
+      file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+
+- name: test-azure-stemcell
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [finalize-azure-stemcell]
+      - get: version
+        resource: azure-stemcell-version
+        passed: [finalize-azure-stemcell]
+        trigger: true
+      - get: stemcells-major-version
+        passed: [finalize-azure-stemcell]
+      - get: bosh-windows-stemcell
+        resource: azure-stemcell-release-candidate
+    - task: test-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        IAAS: azure
+        ACCOUNT_JSON:
+        BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
+        BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
+        BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
+        BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+        AZ: z1
+        VM_TYPE: default
+        NETWORK: private
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
 
 - name: promote-stemcells
   serial: true

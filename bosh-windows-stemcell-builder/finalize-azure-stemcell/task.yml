@@ -9,7 +9,7 @@ inputs:
   - name: stemcell-builder
 
 run:
-  path: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/run
+  path: ci/bosh-windows-stemcell-builder/finalize-azure-stemcell/run
 
 params:
   API_KEY:
