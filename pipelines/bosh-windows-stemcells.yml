@@ -12,8 +12,10 @@ groups:
   - create-aws-stemcell
   - create-gcp-stemcell
   - create-azure-stemcell
-  # - test-azure-stemcell
+  - stage-azure-stemcell
   - publish-azure-stemcell
+  - finalize-azure-stemcell
+  - test-azure-stemcell
 - name: main
   jobs:
   - bump-stemcell-builder-submodules
@@ -35,8 +37,10 @@ groups:
 - name: azure
   jobs:
   - create-azure-stemcell
-  # - test-azure-stemcell
+  - stage-azure-stemcell
   - publish-azure-stemcell
+  - finalize-azure-stemcell
+  - test-azure-stemcell
 
 resources:
 - name: ci
@@ -232,13 +236,13 @@ resources:
     regexp: bosh-stemcell-(.*)-azure-vhd-uri.txt
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-# - name: azure-stemcell-release-candidate
-#   type: s3
-#   source:
-#     bucket: bosh-windows-stemcells-release-candidates
-#     regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
-#     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-#     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: azure-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 # - name: azure-stemcell-final
 #   type: s3
 #   source:
@@ -552,6 +556,7 @@ jobs:
 
 - name: create-azure-stemcell
   serial: true
+  serial_groups: [azure]
   plan:
   - put: azure-lock
     params:
@@ -602,6 +607,7 @@ jobs:
 
 - name: stage-azure-stemcell
   serial: true
+  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -631,6 +637,7 @@ jobs:
 
 - name: publish-azure-stemcell
   serial: true
+  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -638,7 +645,7 @@ jobs:
       passed: [stage-azure-stemcell]
     - get: version
       resource: azure-stemcell-version
-      passed: [create-azure-stemcell]
+      passed: [stage-azure-stemcell]
       trigger: true
     - get: stemcells-major-version
       passed: [stage-azure-stemcell]
@@ -651,6 +658,7 @@ jobs:
 
 - name: finalize-azure-stemcell
   serial: true
+  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -674,6 +682,7 @@ jobs:
 
 - name: test-azure-stemcell
   serial: true
+  serial_groups: [azure]
   plan:
   - put: azure-lock
     params:
