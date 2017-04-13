@@ -3,5 +3,5 @@
 set -ex
 
 cd stemcell-builder
-bundle install --with test
+bundle install
 bundle exec rspec

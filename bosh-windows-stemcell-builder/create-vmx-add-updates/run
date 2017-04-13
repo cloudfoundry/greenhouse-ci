@@ -6,7 +6,7 @@ require 'fileutils'
 require_relative '../../../stemcell-builder/lib/exec_command'
 
 Dir.chdir "stemcell-builder" do
-  exec_command("bundle install --without test")
+  exec_command("bundle install")
   exec_command("rake package:psmodules")
   exec_command("rake build:vsphere_add_updates")
 end
