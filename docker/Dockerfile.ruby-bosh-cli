@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y python-pip zip apt-utils python-dev
 RUN pip install awscli
 
 # required for https://github.com/cloudfoundry-incubator/greenhouse-ci/tree/master/scripts/ami_status.rb
-RUN gem install aws-sdk-v1 aws-sdk
+RUN gem install aws-sdk-v1 aws-sdk octokit
 
 RUN echo $(jq --version && bosh --version && aws --version)
 
