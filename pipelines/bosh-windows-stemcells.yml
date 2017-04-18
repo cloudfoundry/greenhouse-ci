@@ -556,7 +556,6 @@ jobs:
 
 - name: create-azure-stemcell
   serial: true
-  serial_groups: [azure]
   plan:
   - put: azure-lock
     params:
@@ -607,7 +606,6 @@ jobs:
 
 - name: stage-azure-stemcell
   serial: true
-  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -637,7 +635,6 @@ jobs:
 
 - name: publish-azure-stemcell
   serial: true
-  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -658,7 +655,6 @@ jobs:
 
 - name: finalize-azure-stemcell
   serial: true
-  serial_groups: [azure]
   plan:
   - aggregate:
     - get: ci
@@ -682,41 +678,33 @@ jobs:
 
 - name: test-azure-stemcell
   serial: true
-  serial_groups: [azure]
   plan:
-  - put: azure-lock
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [finalize-azure-stemcell]
+    - get: version
+      resource: azure-stemcell-version
+      passed: [finalize-azure-stemcell]
+      trigger: true
+    - get: stemcells-major-version
+      passed: [finalize-azure-stemcell]
+    - get: bosh-windows-stemcell
+      resource: azure-stemcell-release-candidate
+      passed: [finalize-azure-stemcell]
+  - task: test-stemcell
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [finalize-azure-stemcell]
-      - get: version
-        resource: azure-stemcell-version
-        passed: [finalize-azure-stemcell]
-        trigger: true
-      - get: stemcells-major-version
-        passed: [finalize-azure-stemcell]
-      - get: bosh-windows-stemcell
-        resource: azure-stemcell-release-candidate
-    - task: test-stemcell
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      params:
-        IAAS: azure
-        ACCOUNT_JSON:
-        BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
-        BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
-        BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
-        BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
-        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
-        AZ: z1
-        VM_TYPE: default
-        NETWORK: private
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+      IAAS: azure
+      ACCOUNT_JSON:
+      BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
+      BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
+      BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
+      BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
+      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
+      AZ: z1
+      VM_TYPE: default
+      NETWORK: default
 
 - name: promote-stemcells
   serial: true
