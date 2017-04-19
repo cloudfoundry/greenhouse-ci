@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -e
+
+appDir=wats/assets/nora/NoraPublished/
+
+cf login -a "https://api.$DOMAIN" -u admin -p $ADMIN_PASSWORD --skip-ssl-validation -o system \
+&& echo create-org \
+&& cf create-org longrunning \
+&& echo target \
+&& cf target -o longrunning \
+&& echo create-space \
+&& cf create-space s \
+&& echo target \
+&& cf target -s s \
+&& echo push nora \
+&& cf push nora -s windows2012R2 -p $appDir
+
+if [[ $? > 0 ]]; then
+  echo error in setup
+  exit 1
+fi
+
+result=`curl nora.$DOMAIN`
+if [[ $result != *"hello i am nora"* ]]; then
+  echo string $result is not expected from nora
+  exit 1
+fi
+
+cf delete-org longrunning -f
+if [[ $? > 0 ]]; then
+  echo could not delete longrunning org
+  exit 1
+fi
+
+echo passed on `date`

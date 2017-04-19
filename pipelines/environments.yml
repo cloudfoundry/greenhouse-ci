@@ -9,6 +9,7 @@ groups:
   - ferret-destroy-cf
   - sudbury-deploy-cf
   - sudbury-destroy-cf
+  - sudbury-longrunning-test
   - dingo-deploy-cf
   - dingo-destroy-cf
 - name: gcp
@@ -25,6 +26,7 @@ groups:
   jobs:
   - sudbury-deploy-cf
   - sudbury-destroy-cf
+  - sudbury-longrunning-test
 - name: azure
   jobs:
   - dingo-deploy-cf
@@ -100,6 +102,10 @@ resources:
     location: US/Eastern
     start: 12:00 AM
     stop: 1:00 AM
+- name: hourly-trigger 
+  type: time
+  source:
+    interval: 1h
 - name: dolphin-lock-pool
   type: pool
   source:
@@ -599,3 +605,16 @@ jobs:
       put: dingo-lock-pool
       params:
         release: dingo-lock-pool
+
+- name: sudbury-longrunning-test
+  plan:
+  - aggregate:
+    - get: hourly-trigger
+      trigger: true
+    - get: ci
+    - get: wats
+  - task: run
+    file: ci/longrunning/task.yml
+    params:
+      DOMAIN: sudbury.cf-app.com
+      ADMIN_PASSWORD: {{sudbury_cf_admin_password}}

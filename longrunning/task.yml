@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: wats
+
+run:
+  path: ci/longrunning/run
+
+params:
+  DOMAIN:
+  ADMIN_PASSWORD:
+
