@@ -4,4 +4,4 @@ set -e -x
 
 export GOPATH=$PWD
 
-./src/github.com/cloudfoundry-incubator/hwc/scripts/build.sh
+./src/code.cloudfoundry.org/hwc/scripts/build.sh

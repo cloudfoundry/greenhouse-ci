@@ -4,7 +4,7 @@ platform: windows
 inputs:
 - name: ci
 - name: hwc
-  path: src/github.com/cloudfoundry-incubator/hwc
+  path: src/code.cloudfoundry.org/hwc
 
 run:
   path: powershell

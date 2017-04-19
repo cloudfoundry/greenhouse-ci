@@ -20,7 +20,7 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
 Install-WindowsFeature Web-WHC
 Install-WindowsFeature Web-WebSockets
 
-cd $env:GOPATH/src/github.com/cloudfoundry-incubator/hwc
+cd $env:GOPATH/src/code.cloudfoundry.org/hwc
 
 Write-Host "Installing Ginkgo"
 go.exe install ./vendor/github.com/onsi/ginkgo/ginkgo
