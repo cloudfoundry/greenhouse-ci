@@ -63,6 +63,7 @@ RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -
 
 RUN pip install awscli
 RUN gem install aws-sdk
+RUN gem install azure_mgmt_resources
 
 ENV GOLANG_VERSION 1.7.4
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
