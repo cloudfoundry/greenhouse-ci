@@ -612,6 +612,7 @@ jobs:
         release: dingo-lock-pool
 
 - name: sudbury-longrunning-test
+  serial: true
   plan:
   - aggregate:
     - get: hourly-trigger
