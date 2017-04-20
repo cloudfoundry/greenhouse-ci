@@ -5,7 +5,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
   - name: ci
-  - name: wats
+  - name: cf-smoke-tests
 
 run:
   path: ci/longrunning/run

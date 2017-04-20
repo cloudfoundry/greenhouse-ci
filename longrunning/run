@@ -2,35 +2,31 @@
 
 set -e
 
-appDir=wats/assets/nora/NoraPublished/
+export CONFIG=$PWD/integration_config.json
 
-cf login -a "https://api.$DOMAIN" -u admin -p $ADMIN_PASSWORD --skip-ssl-validation -o system \
-&& echo create-org \
-&& cf create-org longrunning \
-&& echo target \
-&& cf target -o longrunning \
-&& echo create-space \
-&& cf create-space s \
-&& echo target \
-&& cf target -s s \
-&& echo push nora \
-&& cf push nora -s windows2012R2 -p $appDir
+cat > $CONFIG <<HERE
+{
+  "suite_name": "CF_SMOKE_TESTS",
+  "apps_domain": "$DOMAIN",
+  "api": "api.$DOMAIN",
+  "use_existing_org": false,
+  "use_existing_space": false,
+  "org": "CF-SMOKE-ORG",
+  "space": "CF-SMOKE-SPACE",
+  "user": "admin",
+  "password": "$ADMIN_PASSWORD",
+  "enable_windows_tests": true,
+  "skip_ssl_validation": true
+}
+HERE
 
-if [[ $? > 0 ]]; then
-  echo error in setup
-  exit 1
-fi
+mkdir -p $GOPATH/src/github.com/cloudfoundry
+mv cf-smoke-tests $GOPATH/src/github.com/cloudfoundry/.
 
-result=`curl nora.$DOMAIN`
-if [[ $result != *"hello i am nora"* ]]; then
-  echo string $result is not expected from nora
-  exit 1
-fi
+pushd $GOPATH/src/github.com/cloudfoundry/cf-smoke-tests
+./bin/test
+popd
 
-cf delete-org longrunning -f
-if [[ $? > 0 ]]; then
-  echo could not delete longrunning org
-  exit 1
-fi
+rm $CONFIG
 
 echo passed on `date`

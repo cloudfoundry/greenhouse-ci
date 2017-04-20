@@ -95,6 +95,11 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/wats.git
+- name: cf-smoke-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-smoke-tests.git
 - name: weekly-trigger
   type: time
   source:
@@ -612,8 +617,9 @@ jobs:
     - get: hourly-trigger
       trigger: true
     - get: ci
-    - get: wats
+    - get: cf-smoke-tests
   - task: run
+    tags: [vsphere]
     file: ci/longrunning/task.yml
     params:
       DOMAIN: sudbury.cf-app.com
