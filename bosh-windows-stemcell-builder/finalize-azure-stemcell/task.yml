@@ -12,4 +12,7 @@ run:
   path: ci/bosh-windows-stemcell-builder/finalize-azure-stemcell/run
 
 params:
-  API_KEY:
+  SKU:
+  AZURE_TENANT_ID:
+  AZURE_CLIENT_ID:
+  AZURE_CLIENT_SECRET:
