@@ -3,6 +3,7 @@
 require 'aws-sdk'
 require 'azure_mgmt_resources'
 require 'json'
+require 'tempfile'
 
 module DeleteVms
   class Aws
@@ -39,7 +40,7 @@ module DeleteVms
       end
 
       `gcloud config set project #{account_data['project_id']}`
-      `gcloud compute instances delete $(gcloud compute instances list --uri --regexp packer.*)`
+      `gcloud compute instances delete --quiet $(gcloud compute instances list --uri --regexp packer.*)`
     end
   end
 
