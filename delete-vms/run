@@ -1,21 +1,20 @@
 #!/usr/bin/env ruby
 
 require 'aws-sdk'
+require 'azure_mgmt_resources'
+require 'json'
 
-class VMs
-  def initialize()
-    @regions = ["us-east-1","us-east-2","us-west-1","us-west-2",
-    "ca-central-1","ap-south-1","ap-northeast-1","ap-northeast-2",
-    "ap-southeast-1","ap-southeast-2","eu-central-1","eu-west-1",
-    "eu-west-2","sa-east-1"]
-  end
-
-  def delete
-    @regions.each do |region|
+class Aws
+  def self.delete
+    regions = ["us-east-1","us-east-2","us-west-1","us-west-2",
+               "ca-central-1","ap-south-1","ap-northeast-1","ap-northeast-2",
+               "ap-southeast-1","ap-southeast-2","eu-central-1","eu-west-1",
+               "eu-west-2","sa-east-1"]
+    regions.each do |region|
       ec2 = Aws::EC2::Client.new(region: region)
       reservations = ec2.describe_instances()
       instances = reservations.map { |r| r.reservations.map(&:instances).flatten.map { |x| x.instance_id } }.flatten
-      if instances.any? then
+      if instances.any?
         puts "Deleting #{instances.to_s} in region #{region}"
         ec2.terminate_instances({
           dry_run: false,
@@ -24,9 +23,54 @@ class VMs
       end
     end
   end
-
 end
 
-abort "AWS_ACCESS_KEY_ID not set" unless ENV.has_key?('AWS_ACCESS_KEY_ID')
-abort "AWS_SECRET_ACCESS_KEY not set" unless ENV.has_key?('AWS_SECRET_ACCESS_KEY')
-VMs.new().delete
+class Gcp
+  def self.delete
+    account_json = ENV['ACCOUNT_JSON']
+    account_data = JSON.parse(account_json)
+    account_email = account_data['client_email']
+
+    Tempfile.create(['account','.json']) do |f|
+      f.write(account_json)
+      f.close
+      `gcloud auth activate-service-account --quiet #{account_email} --key-file #{f.path}`
+    end
+
+    `gcloud config set project #{account_data['project_id']}`
+    `gcloud compute instances delete $(gcloud compute instances list --uri --regexp packer.*)`
+  end
+end
+
+class Azure
+  def self.delete
+    token_provider = MsRestAzure::ApplicationTokenProvider.new(ENV['TENANT_ID'], ENV['CLIENT_ID'], ENV['CLIENT_SECRET'])
+    credentials = MsRest::TokenCredentials.new(token_provider)
+    client = Azure::ARM::Resources::ResourceManagementClient.new(credentials)
+    client.subscription_id = ENV['SUBSCRIPTION_ID']
+    packer_resource_groups = client.resource_groups.list.select { |g| g.name.start_with? "packer" }
+    packer_resource_groups.each { |g| client.resource_groups.delete_async(g.name) }
+  end
+end
+
+def aws?
+  ENV.has_key?('AWS_ACCESS_KEY_ID') && ENV.has_key?('AWS_SECRET_ACCESS_KEY')
+end
+
+def azure?
+  ENV.has_key?('TENANT_ID') && ENV.has_key?('CLIENT_ID') && ENV.has_key?('CLIENT_SECRET') && ENV.has_key?('SUBSCRIPTION_ID')
+end
+
+def gcp?
+  ENV.has_key?('ACCOUNT_JSON')
+end
+
+if aws?
+  Aws.delete
+elsif azure?
+  Azure.delete
+elsif gcp?
+  Gcp.delete
+else
+  throw "Could not find an environment to run delete"
+end
