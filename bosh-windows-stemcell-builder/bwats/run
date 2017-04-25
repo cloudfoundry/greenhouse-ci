@@ -2,7 +2,7 @@
 
 set -ex
 
-export STEMCELL_PATH=$(cd $STEMCELL_PATH && pwd)
+export STEMCELL_PATH=$(readlink -f $STEMCELL_PATH)
 
 cd stemcell-builder
 bundle install --without test
