@@ -11,9 +11,7 @@ outputs:
   - name: bosh-windows-stemcell
 
 run:
-  path: ruby.exe
-  args:
-    - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run
+  path: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run
 
 params:
   AWS_ACCESS_KEY_ID:
