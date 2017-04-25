@@ -1,8 +1,7 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 
-require_relative '../../../stemcell-builder/lib/exec_command'
+set -ex
 
-Dir.chdir "stemcell-builder" do
-  exec_command("bundle install")
-  exec_command("rake publish:production:azure")
-end
+cd stemcell-builder
+bundle install
+rake publish:production:azure

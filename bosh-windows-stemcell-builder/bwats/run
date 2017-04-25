@@ -1,13 +1,10 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 
-require 'fileutils'
+set -ex
 
-require_relative '../../../stemcell-builder/lib/exec_command'
+export STEMCELL_PATH=$(cd $STEMCELL_PATH && pwd)
 
-ENV["STEMCELL_PATH"] = File.absolute_path(ENV["STEMCELL_PATH"])
-
-Dir.chdir 'stemcell-builder' do
-  exec_command("bundle install --without test")
-  exec_command('rake package:bwats')
-  exec_command("rake run:bwats[#{ENV["IAAS"]}]")
-end
+cd stemcell-builder
+bundle install --without test
+rake package:bwats
+rake run:bwats[$IAAS]
