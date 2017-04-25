@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-set -ex
+#!/usr/bin/env powershell
 
 cd "stemcell-builder"
 bundle install

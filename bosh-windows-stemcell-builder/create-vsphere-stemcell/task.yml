@@ -11,8 +11,12 @@ outputs:
   - name: bosh-windows-stemcell
 
 run:
-  path: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run
-
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/run.ps1
 params:
   AWS_ACCESS_KEY_ID:
   AWS_SECRET_ACCESS_KEY:

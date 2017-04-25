@@ -10,7 +10,12 @@ outputs:
   - name: bosh-windows-stemcell
 
 run:
-  path: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/run
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/bosh-windows-stemcell-builder/create-vmx-add-updates/run.ps1
 
 params:
   AWS_ACCESS_KEY_ID:
