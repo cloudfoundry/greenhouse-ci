@@ -35,6 +35,13 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: azure-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: vsphere-stemcell
   type: s3
   source:
@@ -49,14 +56,14 @@ jobs:
   plan:
   - aggregate:
     - get: aws-stemcell
-      trigger: true
     - get: gcp-stemcell
-      trigger: true
+    - get: azure-stemcell
   - task: pivnet-metadata
     config:
       inputs:
       - name: aws-stemcell
       - name: gcp-stemcell
+      - name: azure-stemcell
       outputs:
       - name: pivnet-metadata
       platform: linux
@@ -81,6 +88,8 @@ jobs:
             upload_as: "AWS light Stemcell for Windows 2012R2 Server"
           - file: $(ls gcp-stemcell/*.tgz)
             upload_as: "GCP light Stemcell for Windows 2012R2 Server"
+          - file: $(ls azure-stemcell/*.tgz)
+            upload_as: "Azure light Stemcell for Windows 2012R2 Server"
           EOF
   - put: pivnet-public-stemcells-release
     params:
@@ -92,7 +101,6 @@ jobs:
   plan:
   - aggregate:
     - get: vsphere-stemcell
-      trigger: true
   - task: pivnet-metadata
     config:
       inputs: [{name: vsphere-stemcell}]
