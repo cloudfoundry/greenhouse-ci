@@ -11,4 +11,4 @@ outputs:
   - name: final-stemcell
 
 run:
-  path: ci/scripts/set-stemcell-version.rb
+  path: ci/set-stemcell-version/run
