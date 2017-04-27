@@ -67,13 +67,13 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-# - name: azure-windows-stemcell
-#   type: s3
-#   source:
-#     bucket: bosh-windows-stemcells-release-candidates
-#     regexp: # FILL ME IN
-#     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-#     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: azure-windows-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: aws-linux-stemcell
   type: bosh-io-stemcell
   source:
@@ -554,7 +554,7 @@ jobs:
       - get: cf-deployment
       - get: greenhouse-private
       - get: ci
-      # - get: azure-windows-stemcell
+      - get: azure-windows-stemcell
       - get: azure-linux-stemcell
       - get: wats
       - get: weekly-trigger
@@ -569,14 +569,14 @@ jobs:
           BOSH_CLIENT_SECRET: {{dingo_client_secret}}
           BOSH_ENVIRONMENT: {{dingo_environment}}
           BOSH_CA_CERT: {{dingo_ca_cert}}
-      # - task: upload-windows-stemcell
-      #   file: ci/bosh-us/task.yml
-      #   input_mapping: {stemcell: azure-windows-stemcell}
-      #   params:
-      #     BOSH_CLIENT: admin
-      #     BOSH_CLIENT_SECRET: {{dingo_client_secret}}
-      #     BOSH_ENVIRONMENT: {{dingo_environment}}
-      #     BOSH_CA_CERT: {{dingo_ca_cert}}
+      - task: upload-windows-stemcell
+        file: ci/bosh-us/task.yml
+        input_mapping: {stemcell: azure-windows-stemcell}
+        params:
+          BOSH_CLIENT: admin
+          BOSH_CLIENT_SECRET: {{dingo_client_secret}}
+          BOSH_ENVIRONMENT: {{dingo_environment}}
+          BOSH_CA_CERT: {{dingo_ca_cert}}
     - task: deploy-cf
       file: ci/deploy-cf/task.yml
       params:
