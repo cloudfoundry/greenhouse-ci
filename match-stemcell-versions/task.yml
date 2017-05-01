@@ -8,6 +8,7 @@ inputs:
   - name: vsphere-stemcell-release-candidate
   - name: aws-stemcell-release-candidate
   - name: gcp-stemcell-release-candidate
+  - name: azure-stemcell-release-candidate
 
 run:
   path: ci/match-stemcell-versions/run

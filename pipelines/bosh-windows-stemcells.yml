@@ -243,13 +243,13 @@ resources:
     regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-# - name: azure-stemcell-final
-#   type: s3
-#   source:
-#    bucket: bosh-windows-stemcells
-#    regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
-#    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-#    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: azure-stemcell-final
+  type: s3
+  source:
+   bucket: bosh-windows-stemcells
+   regexp: light-bosh-stemcell-(.*)-azure-windows2012R2-go_agent.tgz
+   access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+   secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: stemcell-builder-release
   type: github-release
   source:
@@ -734,10 +734,12 @@ jobs:
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
+    - get: azure-stemcell-release-candidate
+      passed: [test-azure-stemcell]
     - get: stemcell-builder
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
     - get: stemcells-major-version
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell]
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
   - task: ensure-versions-match
     tags: [vsphere-windows]
     file: ci/match-stemcell-versions/task.yml
@@ -757,6 +759,11 @@ jobs:
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
       file: ci/set-stemcell-version/task.yml
+    - task: azure-set-stemcell-version
+      tags: [vsphere-windows]
+      input_mapping: { bosh-windows-stemcell: azure-stemcell-release-candidate }
+      output_mapping: { final-stemcell: azure-stemcell-final }
+      file: ci/set-stemcell-version/task.yml
   - task: create-major-stemcell
     tags: [vsphere-windows]
     file: ci/create-major-stemcell/task.yml
@@ -774,16 +781,20 @@ jobs:
       tags: [vsphere-windows]
       params:
         file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    - put: gcp-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    - put: azure-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: azure-stemcell-final/light-bosh-stemcell-*-azure-windows2012R2-go_agent.tgz
     # - task: post-boshio-aws-stemcell-sha
     #   tags: [vsphere-windows]
     #   file: ci/post-boshio-stemcell-sha/task.yml
     #   input_mapping: { sha: aws-stemcell-sha }
     #   params:
     #     BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
-    - put: gcp-stemcell-final
-      tags: [vsphere-windows]
-      params:
-        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 
 - name: ship-bosh-stemcell-builder
   serial: true
@@ -802,7 +813,7 @@ jobs:
     - task: shorten-stemcell-version
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        image: docker:///pivotalgreenhouse/ci
         inputs:
         - name: stemcells-major-version
         outputs:
@@ -816,7 +827,7 @@ jobs:
       tags: [vsphere-windows]
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        image: docker:///pivotalgreenhouse/ci
         inputs:
         - name: vsphere-stemcell
         outputs:
@@ -829,7 +840,7 @@ jobs:
     - task: build-psmodules-zip
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        image: docker:///pivotalgreenhouse/ci
         inputs:
         - name: stemcell-builder
         outputs:
@@ -842,7 +853,7 @@ jobs:
     - task: build-agent-zip
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        image: docker:///pivotalgreenhouse/ci
         inputs:
         - name: stemcell-builder
         outputs:
@@ -855,7 +866,7 @@ jobs:
     - task: get-stemcell-builder-sha
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/bosh-windows-stemcell-builder
+        image: docker:///pivotalgreenhouse/ci
         inputs:
         - name: stemcell-builder
         outputs:
