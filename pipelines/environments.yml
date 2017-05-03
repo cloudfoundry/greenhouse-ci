@@ -183,6 +183,7 @@ jobs:
       - get: greenhouse-private
       - get: ci
       - get: gcp-windows-stemcell
+        trigger: true
       - get: gcp-linux-stemcell
       - get: wats
       - get: weekly-trigger
@@ -274,6 +275,7 @@ jobs:
       - get: greenhouse-private
       - get: ci
       - get: gcp-windows-stemcell
+        trigger: true
       - get: gcp-linux-stemcell
       - get: wats
       - get: weekly-trigger
@@ -365,6 +367,7 @@ jobs:
       - get: greenhouse-private
       - get: ci
       - get: aws-windows-stemcell
+        trigger: true
       - get: aws-linux-stemcell
       - get: wats
       - get: weekly-trigger
@@ -458,6 +461,7 @@ jobs:
       - get: ci
       - get: vsphere-windows-stemcell
         tags: [vsphere]
+        trigger: true
       - get: vsphere-linux-stemcell
         tags: [vsphere]
       - get: wats
@@ -555,6 +559,7 @@ jobs:
       - get: greenhouse-private
       - get: ci
       - get: azure-windows-stemcell
+        trigger: true
       - get: azure-linux-stemcell
       - get: wats
       - get: weekly-trigger
