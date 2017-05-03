@@ -11,6 +11,7 @@ groups:
   - test-vsphere-stemcell
   - create-aws-stemcell
   - create-gcp-stemcell
+  - create-gcp-2016-stemcell
   - create-azure-stemcell
   - stage-azure-stemcell
   - publish-azure-stemcell
@@ -34,6 +35,7 @@ groups:
 - name: gcp
   jobs:
   - create-gcp-stemcell
+  - create-gcp-2016-stemcell
 - name: azure
   jobs:
   - create-azure-stemcell
@@ -178,6 +180,13 @@ resources:
     regexp: base-gcp-image-windows2012R2-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: base-gcp-image-win2016
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-gcp-image-windows2016-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: gcp-lock
   type: pool
   source:
@@ -193,11 +202,26 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: 1000.0.0
-- name: gcp-stemcell-release-candidate
+- name: gcp-2016-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/gcp-2016-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1000.0.0
+- name: gcp-2012R2-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: gcp-2016-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: gcp-stemcell-final
@@ -356,6 +380,9 @@ jobs:
     - put: azure-stemcell-version
       params:
         file: version/number
+    - put: gcp-2016-stemcell-version
+      params:
+        file: version/number
   - aggregate:
     - task: collect-win2012r2-amis
       file: ci/collect-base-amis/task.yml
@@ -370,6 +397,12 @@ jobs:
       params:
         ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
         BASE_OS: windows2012R2
+    - task: collect-win2016-gcp-image
+      file: ci/collect-gcp-image/task.yml
+      output_mapping: { base-gcp-image: win2016-gcp-image }
+      params:
+        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+        BASE_OS: windows2016
   - aggregate:
     - put: base-amis-win2012r2
       params:
@@ -377,6 +410,9 @@ jobs:
     - put: base-gcp-image-win2012r2
       params:
         file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
+    - put: base-gcp-image-win2016
+      params:
+        file: win2016-gcp-image/base-gcp-image-windows2016-*.json
 
 - name: create-vsphere-stemcell
   serial: true
@@ -551,9 +587,52 @@ jobs:
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
         NETWORK: private
         VM_EXTENSIONS: "50GB_ephemeral_disk"
-    - put: gcp-stemcell-release-candidate
+    - put: gcp-2012R2-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+
+- name: create-gcp-2016-stemcell
+  serial: true
+  plan:
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: base-gcp-image
+        resource: base-gcp-image-win2016
+        passed: [build-stemcells]
+      - get: version
+        resource: gcp-2016-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-major-version
+        passed: [build-stemcells]
+    - put: version
+      resource: gcp-2016-stemcell-version
+      params:
+        pre: build
+    - task: create-stemcell
+      file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+      params:
+        OS_VERSION: windows2016
+        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+      ensure:
+        task: delete-orphan-vms
+        file: ci/delete-vms/task.yml
+        params:
+          ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+    - put: gcp-2016-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     ensure:
       put: gcp-lock
       params:
@@ -732,7 +811,7 @@ jobs:
       passed: [test-vsphere-stemcell]
     - get: aws-stemcell-release-candidate
       passed: [create-aws-stemcell]
-    - get: gcp-stemcell-release-candidate
+    - get: gcp-2012R2-stemcell-release-candidate
       passed: [create-gcp-stemcell]
     - get: azure-stemcell-release-candidate
       passed: [test-azure-stemcell]
@@ -756,7 +835,7 @@ jobs:
       file: ci/set-stemcell-version/task.yml
     - task: gcp-set-stemcell-version
       tags: [vsphere-windows]
-      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+      input_mapping: { bosh-windows-stemcell: gcp-2012R2-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
       file: ci/set-stemcell-version/task.yml
     - task: azure-set-stemcell-version
