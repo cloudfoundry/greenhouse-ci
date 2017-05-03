@@ -630,6 +630,19 @@ jobs:
         file: ci/delete-vms/task.yml
         params:
           ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+    - task: test-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        IAAS: gcp
+        ACCOUNT_JSON: {{CF-GREENHOUSE-GOOSE_ACCOUNT_JSON}}
+        BOSH_CLIENT_SECRET: {{goose_client_secret}}
+        BOSH_CLIENT: {{goose_client}}
+        BOSH_TARGET: {{goose_environment}}
+        BOSH_CA_CERT: {{goose_ca_cert}}
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: private
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
     - put: gcp-2016-stemcell-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
