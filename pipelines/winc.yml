@@ -1,0 +1,68 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: winc-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/winc.git
+#- name: winc-master
+#  type: git
+#  source:
+#    branch: master
+#    uri: https://github.com/cloudfoundry-incubator/winc.git
+#- name: winc-release
+#  type: github-release
+#  source:
+#    user: cloudfoundry-incubator
+#    repository: winc
+#    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+#- name: winc-version
+#  type: semver
+#  source:
+#    bucket: winc-release
+#    key: versions/winc-version
+#    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+#    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+#    initial_version: "1.0.0"
+
+jobs:
+- name: test
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-develop
+    # - get: winc-master
+  - task: test-winc
+    input_mapping: { winc: winc-develop }
+    file: ci/test-winc/task.yml
+#  - task: merge-develop-to-master
+#    input_mapping: { from-repo: winc-develop, to-repo: winc-master }
+#    file: ci/merge-repo/task.yml
+#    params: { FROM_BRANCH: develop }
+#  - put: winc-master
+#    params: { repository: merged-repo/to-repo }
+
+#- name: build-and-release
+#  serial: true
+#  plan:
+#  - aggregate:
+#    - get: ci
+#    - get: winc
+#      resource: winc-master
+#      passed: [test]
+#    - get: winc-version
+#  - task: build-winc
+#    file: ci/build-winc/task.yml
+#  - put: winc-version
+#    params: {bump: major}
+#  - put: winc-release
+#    params:
+#      name: winc-version/number
+#      tag: winc-version/number
+#      globs:
+#      - winc-rel/winc.exe
