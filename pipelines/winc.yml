@@ -36,8 +36,10 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-develop
+      trigger: true
     # - get: winc-master
   - task: test-winc
+    tags: [windows2016]
     input_mapping: { winc: winc-develop }
     file: ci/test-winc/task.yml
 #  - task: merge-develop-to-master

@@ -13,3 +13,6 @@ run:
   - "Bypass"
   - "-File"
   - ci/test-winc/run.ps1
+
+params:
+  TEST_ROOTFS_IMAGE: "microsoft/nanoserver"
