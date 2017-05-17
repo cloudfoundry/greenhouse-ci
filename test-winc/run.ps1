@@ -16,7 +16,6 @@ if ((Get-Command "docker.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installed Docker"
 }
 
-docker.exe version
 docker.exe pull $env:TEST_ROOTFS_IMAGE
 $env:WINC_TEST_ROOTFS = (docker.exe inspect $env:TEST_ROOTFS_IMAGE | ConvertFrom-Json).GraphDriver.Data.Dir
 
