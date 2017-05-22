@@ -42,5 +42,5 @@ if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
-ginkgo.exe -r -race -cover -keepGoing -randomizeSuites
+ginkgo.exe -r -race -cover -keepGoing -randomizeSuites -failOnPending
 Exit $LastExitCode
