@@ -14,6 +14,5 @@ outputs:
 run:
   path: ci/bump-submodule/run
 
-param:
+params:
   SUBMODULE:
-
