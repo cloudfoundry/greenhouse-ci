@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eux
+
+bosh -n create-release --dir=release --tarball=release-tarball/release.tgz
