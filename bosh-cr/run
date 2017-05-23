@@ -2,4 +2,12 @@
 
 set -eux
 
+cat > release/config/private.yml <<EOF
+---
+blobstore:
+  provider: s3
+  options:
+    credentials_source: env_or_profile
+EOF
+
 bosh -n create-release --dir=release --tarball=release-tarball/release.tgz
