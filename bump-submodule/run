@@ -3,6 +3,7 @@
 set -ex
 
 sha=`git -C module-repo rev-parse HEAD`
+git -C source-repo/$SUBMODULE fetch --all
 git -C source-repo/$SUBMODULE reset --hard $sha
 git -C source-repo/$SUBMODULE submodule update --init --recursive
 
