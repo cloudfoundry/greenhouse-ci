@@ -80,6 +80,13 @@ jobs:
     file: ci/bosh-cr/task.yml
     input_mapping:
       release: bumped-repo
+  - task: bosh-cleanup
+    file: ci/bosh-cleanup/task.yml
+    params:
+      BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+      BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
   - put: baboon-winc-smoke-test
     params:
       manifest: ci/winc-smoke-test-manifest/manifest.yml
@@ -97,6 +104,15 @@ jobs:
       BOSH_DEPLOYMENT: winc-smoke-test
       BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
       ERRAND_NAME: smoke-test
+    ensure:
+      task: delete-deployment
+      file: ci/bosh-deld/task.yml
+      params:
+        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        BOSH_DEPLOYMENT: winc-smoke-test
+        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
   - put: winc-release
     params:
       repository: bumped-repo
