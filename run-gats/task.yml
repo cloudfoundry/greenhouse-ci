@@ -1,0 +1,15 @@
+---
+platform: windows
+
+inputs:
+- name: ci
+- name: winc-binary
+- name: garden-runc-release
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/run-gats/run.ps1
