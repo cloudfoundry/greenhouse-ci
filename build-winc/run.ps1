@@ -17,5 +17,5 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
 $env:GOPATH = $PWD
 $env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
 
-go.exe build -o winc-binary/winc.exe src/code.cloudfoundry.org/winc/cmd/winc
+go.exe build -o winc-binary/winc.exe code.cloudfoundry.org/winc/cmd/winc
 Exit $LastExitCode
