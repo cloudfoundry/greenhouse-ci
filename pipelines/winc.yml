@@ -26,6 +26,11 @@ resources:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
+- name: garden-runc-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/garden-runc-release.git
 - name: baboon-winc-smoke-test
   type: bosh-deployment
   source:
@@ -113,6 +118,41 @@ jobs:
         BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
         BOSH_DEPLOYMENT: winc-smoke-test
         BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+- name: gats
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-master
+      passed: [test]
+      trigger: true
+    - get: garden-runc-release
+  - task: build-winc
+    file: ci/build-winc/task.yml
+    tags: [windows2016]
+    input_mapping:
+      winc: winc-master
+  - task: run-gats
+    file: ci/run-gats/task.yml
+    tags: [windows2016]
+- name: bump-winc
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release
+    - get: winc-master
+      passed:
+        - smoke-test
+        - gats
+      trigger: true
+  - task: bump-submodule
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "src/code.cloudfoundry.org/winc"
+    input_mapping:
+      source-repo: winc-release
+      module-repo: winc-master
   - put: winc-release
     params:
       repository: bumped-repo
