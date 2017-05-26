@@ -48,15 +48,15 @@ go build -o gdn.exe github.com/cloudfoundry.org/guardian/cmd/gdn
 $depotDir = "C:\depot"
 mkdir $depotDir -Force
 
-Start-Process -NoNewWindow .\gdn.exe `
-  server `
-  --skip-setup `
-  --runtime-plugin=$wincPath `
-  --image-plugin=.\noop-image-plugin.exe `
-  --network-plugin=.\noop-network-plugin.exe `
-  --bind-ip=127.0.0.1 `
-  --bind-port=7777 `
-  --default-rootfs=$wincTestRootfs `
+Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
+  server, `
+  --skip-setup, `
+  --runtime-plugin=$wincPath, `
+  --image-plugin=.\noop-image-plugin.exe, `
+  --network-plugin=.\noop-network-plugin.exe, `
+  --bind-ip=127.0.0.1, `
+  --bind-port=7777, `
+  --default-rootfs=$wincTestRootfs, `
   --depot $depotDir
 
 cd src/code.cloudfoundry.org/garden-integration-tests
