@@ -60,9 +60,8 @@ $depotDir = "$env:TEMP\depot"
 rm -Force $depotDir
 mkdir $depotDir -Force
 
-$GARDEN_IP = "127.0.0.1"
-$GARDEN_PORT = "8888"
-$env:GARDEN_ADDRESS = "${GARDEN_IP}:${GARDEN_PORT}"
+$env:GARDEN_ADDRESS = "127.0.0.1"
+$env:GARDEN_PORT = "8888"
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   "server `
@@ -70,15 +69,15 @@ Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   --runtime-plugin=$wincPath `
   --image-plugin=.\noop-image-plugin.exe `
   --network-plugin=.\noop-network-plugin.exe `
-  --bind-ip=$GARDEN_IP `
-  --bind-port=$GARDEN_PORT `
+  --bind-ip=$env:GARDEN_ADDRESS `
+  --bind-port=$env:GARDEN_PORT `
   --default-rootfs=$wincTestRootfs `
   --depot $depotDir"
   
 # wait for server to start up
 # and then curl to confirm that it is
 Start-Sleep -s 5
-$pingResult = (curl -UseBasicParsing "http://${env:GARDEN_ADDRESS}/ping").StatusCode
+$pingResult = (curl -UseBasicParsing "http://${env:GARDEN_ADDRESS}:${env:GARDEN_PORT}/ping").StatusCode
 if ($pingResult -ne 200) {
     throw "Pinging garden server failed with code: $pingResult"
 }
