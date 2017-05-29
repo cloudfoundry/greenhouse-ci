@@ -63,7 +63,11 @@ mkdir $depotDir -Force
 $env:GARDEN_ADDRESS = "127.0.0.1"
 $env:GARDEN_PORT = "8888"
 
-Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
+Start-Process `
+  -NoNewWindow `
+  -RedirectStandardOutput gdn.out.log `
+  -RedirectStandardError gdn.err.log `
+  .\gdn.exe -ArgumentList `
   "server `
   --skip-setup `
   --runtime-plugin=$wincPath `
@@ -83,5 +87,5 @@ if ($pingResult -ne 200) {
 }
 
 cd src/code.cloudfoundry.org/garden-integration-tests
-ginkgo.exe -skip=".*" .
+ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites -skip=".*" .
 Exit $LastExitCode
