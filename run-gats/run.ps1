@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = "Stop";
+$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
@@ -43,9 +43,9 @@ if ($LastExitCode -ne 0) {
 
 go build -o noop-network-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/network/noop-network-plugin.go
 go build -o noop-image-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/image/noop-image-plugin.go
-go build -o gdn.exe github.com/cloudfoundry.org/guardian/cmd/gdn
+go build -o gdn.exe ./src/code.cloudfoundry.org/guardian/cmd/gdn
 
-$depotDir = "C:\depot"
+$depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
@@ -58,6 +58,14 @@ Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   --bind-port=7777, `
   --default-rootfs=$wincTestRootfs, `
   --depot $depotDir
+  
+# wait for server to start up
+# and then curl to confirm that it is
+Start-Sleep -s 5
+$pingResult = (curl -UseBasicParsing "https://127.0.0.1:7777/ping").StatusCode
+if ($pingResult -ne 200) {
+    throw "Pinging garden server failed with code: $pingResult"
+}
 
 cd src/code.cloudfoundry.org/garden-integration-tests
 ginkgo.exe -skip=".*" .
