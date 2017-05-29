@@ -53,8 +53,15 @@ if ($LastExitCode -ne 0) {
     throw "Building gdn.exe process returned error code: $LastExitCode"
 }
 
+# Kill any existing garden servers
+Get-Process -Name gdn | foreach { kill -Force $_.Id }
+
 $depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
+
+$GARDEN_IP = "127.0.0.1"
+$GARDEN_PORT = "7777"
+$env:GARDEN_ADDRESS = "$GARDEN_IP:$GARDEN_PORT"
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   "server `
@@ -62,10 +69,10 @@ Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   --runtime-plugin=$wincPath `
   --image-plugin=.\noop-image-plugin.exe `
   --network-plugin=.\noop-network-plugin.exe `
-  --bind-ip=127.0.0.1 `
-  --bind-port=7777 `
+  --bind-ip=$GARDEN_IP `
+  --bind-port=$GARDEN_PORT `
   --default-rootfs=$wincTestRootfs `
-  --depot $depotDir "
+  --depot $depotDir"
   
 # wait for server to start up
 # and then curl to confirm that it is
