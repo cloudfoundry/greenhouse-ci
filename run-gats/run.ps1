@@ -1,7 +1,8 @@
 $ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:PATH = "C:/go/bin;C:/Program Files/Docker;" + $env:PATH
+$env:GOPATH = "$PWD/garden-runc-release"
+$env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;" + $env:PATH
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Go"
@@ -35,17 +36,22 @@ $wincPath = "$PWD/winc-binary/winc.exe"
 
 cd garden-runc-release
 
-$env:GOPATH = $PWD
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
-
 go.exe install ./src/github.com/onsi/ginkgo/ginkgo
 if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
-
 go build -o noop-network-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/network/noop-network-plugin.go
+if ($LastExitCode -ne 0) {
+    throw "Building network plugin process returned error code: $LastExitCode"
+}
 go build -o noop-image-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/image/noop-image-plugin.go
+if ($LastExitCode -ne 0) {
+    throw "Building image plugin process returned error code: $LastExitCode"
+}
 go build -o gdn.exe ./src/code.cloudfoundry.org/guardian/cmd/gdn
+if ($LastExitCode -ne 0) {
+    throw "Building gdn.exe process returned error code: $LastExitCode"
+}
 
 $depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
