@@ -61,7 +61,7 @@ mkdir $depotDir -Force
 
 $GARDEN_IP = "127.0.0.1"
 $GARDEN_PORT = "7777"
-$env:GARDEN_ADDRESS = "$GARDEN_IP:$GARDEN_PORT"
+$env:GARDEN_ADDRESS = "${GARDEN_IP}:${GARDEN_PORT}"
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   "server `
