@@ -54,7 +54,7 @@ if ($LastExitCode -ne 0) {
 }
 
 # Kill any existing garden servers
-Get-Process -Name gdn | foreach { kill -Force $_.Id }
+Get-Process -Name gdn.exe | foreach { kill -Force $_.Id }
 
 $depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
