@@ -57,7 +57,7 @@ $depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
-  'server `
+  "server `
   --skip-setup `
   --runtime-plugin=$wincPath `
   --image-plugin=.\noop-image-plugin.exe `
@@ -65,7 +65,7 @@ Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
   --bind-ip=127.0.0.1 `
   --bind-port=7777 `
   --default-rootfs=$wincTestRootfs `
-  --depot $depotDir '
+  --depot $depotDir "
   
 # wait for server to start up
 # and then curl to confirm that it is
