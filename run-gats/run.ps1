@@ -1,6 +1,8 @@
 $ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+$env:PATH = "C:/go/bin;C:/Program Files/Docker;" + $env:PATH
+
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Go"
   Invoke-WebRequest https://storage.googleapis.com/golang/go1.8.1.windows-amd64.msi -OutFile go.msi
@@ -49,15 +51,15 @@ $depotDir = "$env:TEMP\depot"
 mkdir $depotDir -Force
 
 Start-Process -NoNewWindow .\gdn.exe -ArgumentList `
-  server, `
-  --skip-setup, `
-  --runtime-plugin=$wincPath, `
-  --image-plugin=.\noop-image-plugin.exe, `
-  --network-plugin=.\noop-network-plugin.exe, `
-  --bind-ip=127.0.0.1, `
-  --bind-port=7777, `
-  --default-rootfs=$wincTestRootfs, `
-  --depot $depotDir
+  'server `
+  --skip-setup `
+  --runtime-plugin=$wincPath `
+  --image-plugin=.\noop-image-plugin.exe `
+  --network-plugin=.\noop-network-plugin.exe `
+  --bind-ip=127.0.0.1 `
+  --bind-port=7777 `
+  --default-rootfs=$wincTestRootfs `
+  --depot $depotDir '
   
 # wait for server to start up
 # and then curl to confirm that it is
