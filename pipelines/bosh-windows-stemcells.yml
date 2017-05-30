@@ -422,6 +422,13 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere-windows]
+    - get: version
+      tags: [vsphere-windows]
+    - get: stemcell-builder
+      tags: [vsphere-windows]
+    - get: windows-stemcell-dependencies
+      tags: [vsphere-windows]
+
   - task: create-vmdk
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
