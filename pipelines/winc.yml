@@ -29,8 +29,8 @@ resources:
 - name: garden-runc-release
   type: git
   source:
-    branch: master
-    uri: https://github.com/cloudfoundry/garden-runc-release.git
+    branch: gats
+    uri: https://github.com/greenhouse-org/garden-runc-release.git
 - name: baboon-winc-smoke-test
   type: bosh-deployment
   source:

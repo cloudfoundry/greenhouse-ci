@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop";
+﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
 $env:GOPATH = "$PWD/garden-runc-release"
@@ -77,7 +77,7 @@ Start-Process `
   --bind-port=$env:GARDEN_PORT `
   --default-rootfs=$wincTestRootfs `
   --depot $depotDir"
-  
+
 # wait for server to start up
 # and then curl to confirm that it is
 Start-Sleep -s 5
@@ -87,5 +87,15 @@ if ($pingResult -ne 200) {
 }
 
 cd src/code.cloudfoundry.org/garden-integration-tests
-ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites -skip=".*" .
-Exit $LastExitCode
+ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites .
+$ExitCode="$LastExitCode"
+# ginkgo exits 197 if any tests are focused but they all passed
+if ($ExitCode -eq 197) {
+  Exit 0
+} Else {
+  echo "gdn.exe STDOUT"
+  Get-Content gdn.out.log
+  echo "gdn.exe STDERR"
+  Get-Content gdn.err.log
+  Exit $ExitCode
+}
