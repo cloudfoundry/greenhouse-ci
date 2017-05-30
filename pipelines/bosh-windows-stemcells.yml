@@ -422,11 +422,14 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere-windows]
-  - task: create-stemcell
+  - task: create-vmdk
     privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-diff/task.yml
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
     tags: [vsphere-windows-worker]
     params:
+      PRODUCT_KEY: 123-1234
+      ORGANIZATION: Pivotal
+      OWNER: Pivotal
 
 - name: create-vsphere-stemcell
   serial: true
