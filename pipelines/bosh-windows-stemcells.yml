@@ -8,6 +8,7 @@ groups:
   - ship-bosh-stemcell-builder
   - create-vsphere-add-updates
   - create-vsphere-stemcell
+  - create-vsphere-diff
   - test-vsphere-stemcell
   - create-aws-stemcell
   - create-gcp-stemcell
@@ -28,6 +29,7 @@ groups:
   jobs:
   - create-vsphere-add-updates
   - create-vsphere-stemcell
+  - create-vsphere-diff
   - test-vsphere-stemcell
 - name: aws
   jobs:
@@ -413,6 +415,18 @@ jobs:
     - put: base-gcp-image-win2016
       params:
         file: win2016-gcp-image/base-gcp-image-windows2016-*.json
+- name: create-vsphere-diff
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere-windows]
+  - task: create-stemcell
+    privileged: true
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-diff/task.yml
+    tags: [vsphere-windows-worker]
+    params:
 
 - name: create-vsphere-stemcell
   serial: true
