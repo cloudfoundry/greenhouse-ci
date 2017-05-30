@@ -1,0 +1,16 @@
+---
+platform: windows
+
+inputs:
+  - name: ci
+outputs:
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/bosh-windows-stemcell-builder/create-vsphere-diff/run.ps1
+
+params:
