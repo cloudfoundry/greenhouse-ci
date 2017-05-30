@@ -54,7 +54,7 @@ if ($LastExitCode -ne 0) {
 }
 
 # Kill any existing garden servers
-Get-Process | foreach { if ($_.name -eq "gdn") { kill -Force $_.Id } }
+Stop-Process -Force -Name "gdn"
 
 $depotDir = "$env:TEMP\depot"
 rm -Force $depotDir
@@ -89,6 +89,7 @@ if ($pingResult -ne 200) {
 cd src/code.cloudfoundry.org/garden-integration-tests
 ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites .
 $ExitCode="$LastExitCode"
+Stop-Process -Force -Name "gdn"
 # ginkgo exits 197 if any tests are focused but they all passed
 if ($ExitCode -eq 197) {
   Exit 0
