@@ -1,6 +1,11 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+function Kill-Garden
+{
+  Get-Process | foreach { if ($_.name -eq "gdn") { kill -Force $_.Id } }
+}
+
 $env:GOPATH = "$PWD/garden-runc-release"
 $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;" + $env:PATH
 
@@ -54,7 +59,7 @@ if ($LastExitCode -ne 0) {
 }
 
 # Kill any existing garden servers
-Stop-Process -Force -Name "gdn"
+Kill-Garden
 
 $depotDir = "$env:TEMP\depot"
 rm -Force $depotDir
@@ -89,7 +94,9 @@ if ($pingResult -ne 200) {
 cd src/code.cloudfoundry.org/garden-integration-tests
 ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites .
 $ExitCode="$LastExitCode"
-Stop-Process -Force -Name "gdn"
+
+Kill-Garden
+
 # ginkgo exits 197 if any tests are focused but they all passed
 if ($ExitCode -eq 197) {
   Exit 0
