@@ -31,19 +31,26 @@ resources:
   source:
     branch: gats
     uri: https://github.com/greenhouse-org/garden-runc-release.git
-- name: baboon-winc-smoke-test
+- name: pesto-winc-smoke-test-deployment
   type: bosh-deployment
   source:
     deployment: winc-smoke-test
-    target: {{BABOON_BOSH_ENVIRONMENT}}
-    client: {{BABOON_BOSH_CLIENT}}
-    client_secret: {{BABOON_BOSH_CLIENT_SECRET}}
-    ca_cert: {{BABOON_BOSH_CA_CERT}}
+    target: {{PESTO_BOSH_ENVIRONMENT}}
+    client: {{PESTO_BOSH_CLIENT}}
+    client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
+    ca_cert: {{PESTO_BOSH_CA_CERT}}
 - name: stemcell
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+- name: pesto-lock-pool
+  type: pool
+  source:
+    branch: master
+    pool: pesto
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
 
 jobs:
 - name: test
@@ -67,57 +74,65 @@ jobs:
 - name: smoke-test
   serial: true
   plan:
-  - aggregate:
-    - get: ci
-    - get: winc-release
-    - get: stemcell
-    - get: winc-master
-      passed: [test]
-      trigger: true
-  - task: bump-submodule
-    file: ci/bump-submodule/task.yml
+  - put: pesto-lock-pool
     params:
-      SUBMODULE: "src/code.cloudfoundry.org/winc"
-    input_mapping:
-      source-repo: winc-release
-      module-repo: winc-master
-  - task: create-release
-    file: ci/bosh-cr/task.yml
-    input_mapping:
-      release: bumped-repo
-  - task: bosh-cleanup
-    file: ci/bosh-cleanup/task.yml
-    params:
-      BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
-      BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
-      BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
-  - put: baboon-winc-smoke-test
-    params:
-      manifest: ci/winc-smoke-test-manifest/manifest.yml
-      stemcells:
-      - stemcell/*.tgz
-      releases:
-      - release-tarball/*.tgz
-      cleanup: true
-  - task: run-smoke-test
-    file: ci/bosh-run-errand/task.yml
-    params:
-      BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
-      BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
-      BOSH_DEPLOYMENT: winc-smoke-test
-      BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
-      ERRAND_NAME: smoke-test
-    ensure:
-      task: delete-deployment
-      file: ci/bosh-deld/task.yml
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: winc-release
+      - get: stemcell
+      - get: winc-master
+        passed: [test]
+        trigger: true
+    - task: bump-submodule
+      file: ci/bump-submodule/task.yml
       params:
-        BOSH_CA_CERT: {{BABOON_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{BABOON_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{BABOON_BOSH_CLIENT_SECRET}}
+        SUBMODULE: "src/code.cloudfoundry.org/winc"
+      input_mapping:
+        source-repo: winc-release
+        module-repo: winc-master
+    - task: create-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: bumped-repo
+    - task: bosh-cleanup
+      file: ci/bosh-cleanup/task.yml
+      params:
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+    - put: pesto-winc-smoke-test-deployment
+      params:
+        manifest: ci/winc-smoke-test-manifest/manifest.yml
+        stemcells:
+        - stemcell/*.tgz
+        releases:
+        - release-tarball/*.tgz
+        cleanup: true
+    - task: run-smoke-test
+      file: ci/bosh-run-errand/task.yml
+      params:
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
         BOSH_DEPLOYMENT: winc-smoke-test
-        BOSH_ENVIRONMENT: {{BABOON_BOSH_ENVIRONMENT}}
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+        ERRAND_NAME: smoke-test
+      ensure:
+        task: delete-deployment
+        file: ci/bosh-deld/task.yml
+        params:
+          BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+          BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+          BOSH_DEPLOYMENT: winc-smoke-test
+          BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+    ensure:
+      put: pesto-lock-pool
+      params:
+        release: pesto-lock-pool
 - name: gats
   serial: true
   plan:
