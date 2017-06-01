@@ -185,10 +185,9 @@ jobs:
         params: {pre: rc}
       - get: ci
       - get: greenhouse-private
-    - aggregate:
-      - task: create-release
-        file: ci/bosh-cr/task.yml
-        input_mapping: { release: garden-windows-bosh-release-develop }
+    - task: create-release
+      file: ci/bosh-cr/task.yml
+      input_mapping: { release: garden-windows-bosh-release-develop }
     - task: clean-up
       file: ci/bosh-cleanup/task.yml
       params:
@@ -234,6 +233,13 @@ jobs:
           BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
           BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
           BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+    - task: rename
+      file: ci/rename/task.yml
+      input_mapping: { source: release-tarball }
+      output_mapping: { dest: garden-windows-output }
+      params:
+        SOURCE_NAME: "release.tgz"
+        DEST_NAME: "garden-windows-<%= @version %>.tgz"
     - put: garden-windows-bosh-release-bucket-dev
       params:
         file: garden-windows-output/garden-windows-*.tgz
