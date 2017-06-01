@@ -87,7 +87,7 @@ vmci0.present = "TRUE"
 
 $vmx_text | Out-File $env:VMX_PATH
 
-remove-item $VMDK
+Remove-Item $VMDK -ErrorAction SilentlyContinue
 StarV2Vc.exe if="${env:VHD}" of="$VMDK" ot=vmdk_s
 
 cd "stemcell-builder"
