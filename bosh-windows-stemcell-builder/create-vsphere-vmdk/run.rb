@@ -1,7 +1,5 @@
 require_relative '../../../stemcell-builder/lib/stemcell/builder'
 
-puts 'TODO VHD to VMDK'
-
 version_dir = Stemcell::Builder::validate_env_dir('VERSION_DIR')
 version = File.read(File.join(version_dir, 'number')).chomp
 
