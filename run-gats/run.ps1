@@ -21,6 +21,7 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
 
   Write-Host "Installed Go"
 }
+go.exe version
 
 if ((Get-Command "docker.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Docker"
