@@ -16,6 +16,7 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
 
   Write-Host "Installed Go"
 }
+go.exe version
 
 go.exe build -o winc-binary/winc.exe code.cloudfoundry.org/winc/cmd/winc
 Exit $LastExitCode
