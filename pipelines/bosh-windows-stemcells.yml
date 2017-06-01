@@ -95,13 +95,6 @@ resources:
     regexp: stemcell-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: latest-windows-vhd
-  type: s3
-  source:
-    bucket: TODO-windows-vhds
-    regexp: (.*).vhd
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: updated-vmx-version
   type: semver
   source:
@@ -428,12 +421,15 @@ jobs:
   plan:
   - aggregate:
     - get: ci
+      tags: [vsphere-windows]
     - get: version
+      tags: [vsphere-windows]
       resource: vsphere-stemcell-version
     - get: stemcell-builder
+      tags: [vsphere-windows]
     - get: windows-stemcell-dependencies
-    - get: vhd
-      resource: latest-windows-vhd
+      tags: [vsphere-windows]
+
   - task: create-vmdk
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
