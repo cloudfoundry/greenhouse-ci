@@ -92,6 +92,20 @@ StarV2Vc.exe if="${env:VHD}" of="$VMDK" ot=vmdk_s
 
 cd "stemcell-builder"
 bundle install
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Could not bundle install"
+  Exit 1
+}
+rake package:agent
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Could not package agent"
+  Exit 1
+}
+rake package:psmodules
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Could not package psmodules"
+  Exit 1
+}
 
 ruby ../ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/run.rb
 
