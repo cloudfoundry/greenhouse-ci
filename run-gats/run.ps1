@@ -63,7 +63,7 @@ if ($LastExitCode -ne 0) {
 Kill-Garden
 
 $depotDir = "$env:TEMP\depot"
-rm -Force $depotDir
+Remove-Item -Force -ErrorAction Ignore $depotDir
 mkdir $depotDir -Force
 
 $env:GARDEN_ADDRESS = "127.0.0.1"
