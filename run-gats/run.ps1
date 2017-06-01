@@ -11,7 +11,7 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;" + $env:PATH
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Go"
-  Invoke-WebRequest https://storage.googleapis.com/golang/go1.8.1.windows-amd64.msi -OutFile go.msi
+  Invoke-WebRequest https://storage.googleapis.com/golang/go1.8.3.windows-amd64.msi -OutFile go.msi
 
   $p = Start-Process -FilePath "msiexec" -ArgumentList "/passive /norestart /i go.msi" -Wait -PassThru
 
