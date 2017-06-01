@@ -65,6 +65,12 @@ resources:
     client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
     ca_cert: {{PESTO_BOSH_CA_CERT}}
     target: {{PESTO_BOSH_ENVIRONMENT}}
+    vars_store:
+      provider: gcs
+      config:
+        bucket: cff-greenhouse-pesto
+        file_name: vars-store.yml
+        json_key: {{PESTO_SERVICE_ACCOUNT_JSON}}
 - name: pesto-lock-pool
   type: pool
   source:
@@ -202,22 +208,23 @@ jobs:
         - cf-deployment/operations/tcp-routing-gcp.yml
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
-        - greenhouse-private/operations-common/secure-consul-agent.yml
         - greenhouse-private/pesto/cf/operations/latest-garden-windows.yml
         vars_files:
         - greenhouse-private/pesto/cf/vars.yml
         cleanup: true
+      get_params:
+        skip_get: true
     - task: wats
       file: ci/run-wats/task.yml
       input_mapping: { wats: wats-develop }
       params:
         ADMIN_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
-        input_mapping: {wats: wats-develop}
         ADMIN_USER: admin
         API: api.pesto.cf-app.com
         APPS_DOMAIN: pesto.cf-app.com
-        NUM_WIN_CELLS: 3
+        NUM_WIN_CELLS: 1
         SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+        CONSUL_MUTUAL_TLS: false
       ensure:
         task: delete-deployment
         file: ci/bosh-deld/task.yml
