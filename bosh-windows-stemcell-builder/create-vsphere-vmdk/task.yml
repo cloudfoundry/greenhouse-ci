@@ -1,21 +1,19 @@
 ---
-platform: windows
+platform: linux
 
 inputs:
   - name: ci
   - name: version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
+  - name: vhd
 outputs:
-  - name: bosh-windows-stemcell
+  - name: vhd
 
 run:
-  path: powershell
+  path: bash
   args:
-  - "-ExecutionPolicy"
-  - "Bypass"
-  - "-File"
-  - ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/run.ps1
+  - "ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/run.sh"
 params:
   ADMINISTRATOR_PASSWORD: replace-me
   OS_VERSION: windows2012R2
