@@ -105,8 +105,8 @@ if ($ExitCode -eq 197) {
   Exit 0
 } Else {
   echo "gdn.exe STDOUT"
-  Get-Content gdn.out.log
+  Get-Content garden-runc-release/gdn.out.log
   echo "gdn.exe STDERR"
-  Get-Content gdn.err.log
+  Get-Content garden-runc-release/gdn.err.log
   Exit $ExitCode
 }
