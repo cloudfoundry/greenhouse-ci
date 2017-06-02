@@ -40,7 +40,7 @@ $wincTestRootfs = (docker.exe inspect microsoft/windowsservercore | ConvertFrom-
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 
-cd garden-runc-release
+Push-Location garden-runc-release
 
 go.exe install ./src/github.com/onsi/ginkgo/ginkgo
 if ($LastExitCode -ne 0) {
@@ -92,8 +92,10 @@ if ($pingResult -ne 200) {
     throw "Pinging garden server failed with code: $pingResult"
 }
 
-cd src/code.cloudfoundry.org/garden-integration-tests
+Push-Location src/code.cloudfoundry.org/garden-integration-tests
 ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites .
+Pop-Location
+Pop-Location
 $ExitCode="$LastExitCode"
 
 Kill-Garden
