@@ -1,8 +1,6 @@
 groups:
 - name: all
   jobs:
-  - dolphin-deploy-cf
-  - dolphin-destroy-cf
   - baboon-deploy-cf
   - baboon-destroy-cf
   - ferret-deploy-cf
@@ -14,8 +12,6 @@ groups:
   - dingo-destroy-cf
 - name: gcp
   jobs:
-  - dolphin-deploy-cf
-  - dolphin-destroy-cf
   - baboon-deploy-cf
   - baboon-destroy-cf
 - name: aws
@@ -111,13 +107,6 @@ resources:
   type: time
   source:
     interval: 1h
-- name: dolphin-lock-pool
-  type: pool
-  source:
-    branch: master
-    pool: dolphin
-    private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
 - name: baboon-lock-pool
   type: pool
   source:
@@ -148,98 +137,6 @@ resources:
     uri: git@github.com:greenhouse-ci/locks
 
 jobs:
-- name: dolphin-destroy-cf
-  serial: true
-  plan:
-  - put: dolphin-lock-pool
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: weekly-trigger
-        trigger: true
-    - task: destroy-cf
-      file: ci/bosh-deld/task.yml
-      params:
-        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    ensure:
-      put: dolphin-lock-pool
-      params:
-        release: dolphin-lock-pool
-
-- name: dolphin-deploy-cf
-  serial: true
-  plan:
-  - put: dolphin-lock-pool
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: cf-deployment
-      - get: greenhouse-private
-      - get: ci
-      - get: gcp-windows-stemcell
-        trigger: true
-      - get: gcp-linux-stemcell
-      - get: wats
-      - get: weekly-trigger
-        trigger: true
-        passed: [dolphin-destroy-cf]
-    - aggregate:
-      - task: upload-linux-stemcell
-        file: ci/bosh-us/task.yml
-        input_mapping: {stemcell: gcp-linux-stemcell}
-        params:
-          BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-          BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-          BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-      - task: upload-windows-stemcell
-        file: ci/bosh-us/task.yml
-        input_mapping: {stemcell: gcp-windows-stemcell}
-        params:
-          BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-          BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-          BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    - task: deploy-cf
-      file: ci/deploy-cf/task.yml
-      params:
-        ENVIRONMENT: dolphin
-        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-        CF_DOMAIN: dolphin.cf-app.com
-    - put: greenhouse-private
-      params:
-        repository: output/greenhouse-private
-        rebase: true
-    - task: clean-up
-      file: ci/bosh-cleanup/task.yml
-      params:
-        BOSH_CLIENT: {{DOLPHIN_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{DOLPHIN_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{DOLPHIN_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{DOLPHIN_BOSH_CA_CERT}}
-    - task: wats
-      file: ci/run-wats/task.yml
-      params:
-        ADMIN_PASSWORD: {{DOLPHIN_ADMIN_PASSWORD}}
-        ADMIN_USER: admin
-        API: api.dolphin.cf-app.com
-        APPS_DOMAIN: dolphin.cf-app.com
-        NUM_WIN_CELLS: 1
-        SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
-    ensure:
-      put: dolphin-lock-pool
-      params:
-        release: dolphin-lock-pool
-
 - name: baboon-destroy-cf
   serial: true
   plan:
