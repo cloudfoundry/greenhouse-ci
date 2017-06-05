@@ -3,19 +3,9 @@ groups:
   jobs:
   - baboon-deploy-cf
   - baboon-destroy-cf
-  - ferret-deploy-cf
-  - ferret-destroy-cf
   - sudbury-deploy-cf
   - sudbury-destroy-cf
   - sudbury-longrunning-test
-- name: gcp
-  jobs:
-  - baboon-deploy-cf
-  - baboon-destroy-cf
-- name: aws
-  jobs:
-  - ferret-deploy-cf
-  - ferret-destroy-cf
 - name: vsphere
   jobs:
   - sudbury-deploy-cf
@@ -40,11 +30,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: aws-windows-stemcell
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells-release-candidates
-    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
 - name: gcp-windows-stemcell
   type: s3
   source:
@@ -57,10 +42,6 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: aws-linux-stemcell
-  type: bosh-io-stemcell
-  source:
-    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
 - name: gcp-linux-stemcell
   type: bosh-io-stemcell
   source:
@@ -95,13 +76,6 @@ resources:
   source:
     branch: master
     pool: baboon
-    private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
-- name: ferret-lock-pool
-  type: pool
-  source:
-    branch: master
-    pool: ferret
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
 - name: sudbury-lock-pool
@@ -204,98 +178,6 @@ jobs:
       put: baboon-lock-pool
       params:
         release: baboon-lock-pool
-
-- name: ferret-destroy-cf
-  serial: true
-  plan:
-  - put: ferret-lock-pool
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: weekly-trigger
-        trigger: true
-    - task: destroy-cf
-      file: ci/bosh-deld/task.yml
-      params:
-        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    ensure:
-      put: ferret-lock-pool
-      params:
-        release: ferret-lock-pool
-
-- name: ferret-deploy-cf
-  serial: true
-  plan:
-  - put: ferret-lock-pool
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: cf-deployment
-      - get: greenhouse-private
-      - get: ci
-      - get: aws-windows-stemcell
-        trigger: true
-      - get: aws-linux-stemcell
-      - get: wats
-      - get: weekly-trigger
-        trigger: true
-        passed: [ferret-destroy-cf]
-    - aggregate:
-      - task: upload-linux-stemcell
-        file: ci/bosh-us/task.yml
-        input_mapping: {stemcell: aws-linux-stemcell}
-        params:
-          BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-          BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-          BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-      - task: upload-windows-stemcell
-        file: ci/bosh-us/task.yml
-        input_mapping: {stemcell: aws-windows-stemcell}
-        params:
-          BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-          BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-          BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    - task: deploy-cf
-      file: ci/deploy-cf/task.yml
-      params:
-        ENVIRONMENT: ferret
-        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-        CF_DOMAIN: greenhouse-ferret.cf-app.com
-    - put: greenhouse-private
-      params:
-        repository: output/greenhouse-private
-        rebase: true
-    - task: clean-up
-      file: ci/bosh-cleanup/task.yml
-      params:
-        BOSH_CLIENT: {{FERRET_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{FERRET_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{FERRET_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{FERRET_BOSH_CA_CERT}}
-    - task: wats
-      file: ci/run-wats/task.yml
-      params:
-        ADMIN_PASSWORD: {{FERRET_ADMIN_PASSWORD}}
-        ADMIN_USER: admin
-        API: api.greenhouse-ferret.cf-app.com
-        APPS_DOMAIN: greenhouse-ferret.cf-app.com
-        NUM_WIN_CELLS: 1
-        SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
-    ensure:
-      put: ferret-lock-pool
-      params:
-        release: ferret-lock-pool
 
 - name: sudbury-destroy-cf
   serial: true
