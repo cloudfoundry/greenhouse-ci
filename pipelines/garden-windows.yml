@@ -188,13 +188,6 @@ jobs:
     - task: create-release
       file: ci/bosh-cr/task.yml
       input_mapping: { release: garden-windows-bosh-release-develop }
-    - task: clean-up
-      file: ci/bosh-cleanup/task.yml
-      params:
-        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
     - put: pesto-cf-deployment
       params:
         manifest: cf-deployment/cf-deployment.yml
@@ -213,6 +206,13 @@ jobs:
         cleanup: true
       get_params:
         skip_get: true
+    - task: clean-up
+      file: ci/bosh-cleanup/task.yml
+      params:
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
     - task: wats
       file: ci/run-wats/task.yml
       input_mapping: { wats: wats-develop }
