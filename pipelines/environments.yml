@@ -5,12 +5,6 @@ groups:
   - baboon-destroy-cf
   - sudbury-deploy-cf
   - sudbury-destroy-cf
-  - sudbury-longrunning-test
-- name: vsphere
-  jobs:
-  - sudbury-deploy-cf
-  - sudbury-destroy-cf
-  - sudbury-longrunning-test
 
 resources:
 - name: cf-deployment
@@ -55,11 +49,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/wats.git
-- name: cf-smoke-tests
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/cf-smoke-tests.git
 - name: weekly-trigger
   type: time
   source:
@@ -67,10 +56,6 @@ resources:
     location: US/Eastern
     start: 12:00 AM
     stop: 1:00 AM
-- name: hourly-trigger 
-  type: time
-  source:
-    interval: 1h
 - name: baboon-lock-pool
   type: pool
   source:
@@ -278,18 +263,3 @@ jobs:
       put: sudbury-lock-pool
       params:
         release: sudbury-lock-pool
-
-- name: sudbury-longrunning-test
-  serial: true
-  plan:
-  - aggregate:
-    - get: hourly-trigger
-      trigger: true
-    - get: ci
-    - get: cf-smoke-tests
-  - task: run
-    tags: [vsphere]
-    file: ci/longrunning/task.yml
-    params:
-      DOMAIN: sudbury.cf-app.com
-      ADMIN_PASSWORD: {{sudbury_cf_admin_password}}
