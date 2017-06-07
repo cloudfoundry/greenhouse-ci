@@ -93,7 +93,7 @@ if ($pingResult -ne 200) {
 }
 
 Push-Location src/code.cloudfoundry.org/garden-integration-tests
-ginkgo.exe -p -nodes=8 -failOnPending -randomizeSuites .
+ginkgo.exe -p -failOnPending -randomizeSuites .
 Pop-Location
 Pop-Location
 $ExitCode="$LastExitCode"
@@ -105,8 +105,8 @@ if ($ExitCode -eq 197) {
   Exit 0
 } Else {
   echo "gdn.exe STDOUT"
-  Get-Content garden-runc-release/gdn.out.log
+  Get-Content -Tail 100 garden-runc-release/gdn.out.log
   echo "gdn.exe STDERR"
-  Get-Content garden-runc-release/gdn.err.log
+  Get-Content -Tail 100 garden-runc-release/gdn.err.log
   Exit $ExitCode
 }
