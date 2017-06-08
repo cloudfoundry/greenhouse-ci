@@ -82,7 +82,8 @@ Start-Process `
   --bind-ip=$env:GARDEN_ADDRESS `
   --bind-port=$env:GARDEN_PORT `
   --default-rootfs=$wincTestRootfs `
-  --depot $depotDir"
+  --depot $depotDir `
+  --tar-bin C:\\windows\\tar.exe "
 
 # wait for server to start up
 # and then curl to confirm that it is
