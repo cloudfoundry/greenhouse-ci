@@ -101,10 +101,7 @@ $ExitCode="$LastExitCode"
 
 Kill-Garden
 
-# ginkgo exits 197 if any tests are focused but they all passed
-if ($ExitCode -eq 197) {
-  Exit 0
-} Else {
+if ($ExitCode -ne 0) {
   echo "gdn.exe STDOUT"
   Get-Content -Tail 100 garden-runc-release/gdn.out.log
   echo "gdn.exe STDERR"
