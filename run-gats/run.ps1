@@ -94,7 +94,7 @@ if ($pingResult -ne 200) {
 }
 
 Push-Location src/code.cloudfoundry.org/garden-integration-tests
-ginkgo.exe -p -failOnPending -randomizeSuites .
+ginkgo.exe -p -noisyPendings=false -randomizeSuites .
 Pop-Location
 Pop-Location
 $ExitCode="$LastExitCode"
