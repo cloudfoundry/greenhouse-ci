@@ -217,9 +217,11 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
+      passed: [pesto-garden-winc-deploy]
     - get: winc-master
       passed:
       - local-gats
+      - pesto-garden-winc-deploy
       trigger: true
   - task: bump-submodule
     file: ci/bump-submodule/task.yml
