@@ -211,7 +211,7 @@ jobs:
     params:
       release: pesto-lock-pool
 
-- name: bump-winc
+- name: bump-winc-release
   serial: true
   plan:
   - aggregate:
