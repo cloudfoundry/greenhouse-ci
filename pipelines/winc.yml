@@ -112,7 +112,6 @@ jobs:
     input_mapping:
       garden-integration-tests: gats-fork
       guardian: guardian-fork
-    tags: [windows2016]
   - task: run-gats
     file: ci/run-local-gats/task.yml
     input_mapping:

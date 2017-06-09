@@ -1,5 +1,7 @@
 ---
-platform: windows
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
 - name: ci
@@ -11,9 +13,4 @@ outputs:
 - name: garden-runc-release-forks
 
 run:
-  path: powershell
-  args:
-  - "-ExecutionPolicy"
-  - "Bypass"
-  - "-File"
-  - ci/copy-forks/run.ps1
+  path: ci/copy-forks/run
