@@ -62,6 +62,10 @@ resources:
     pool: pesto
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
+- name: every-2hrs
+  type: time
+  source:
+    interval: 2h
 
 jobs:
 - name: winc
@@ -69,6 +73,8 @@ jobs:
   plan:
   - aggregate:
     - get: ci
+    - get: every-2hrs
+      trigger: true
     - get: winc-develop
       trigger: true
     - get: winc-master
@@ -88,6 +94,8 @@ jobs:
   plan:
   - aggregate:
     - get: ci
+    - get: every-2hrs
+      trigger: true
     - get: gats-fork
     - get: guardian-fork
     - get: garden-runc-release
@@ -99,7 +107,7 @@ jobs:
     input_mapping:
       winc: winc-master
     tags: [windows2016]
-  - task: run-local-gats
+  - task: run-gats
     file: ci/run-local-gats/task.yml
     input_mapping:
       garden-integration-tests: gats-fork
@@ -175,7 +183,7 @@ jobs:
       passed: [pesto-garden-winc-deploy]
     - get: garden-integration-tests
       resource: gats-fork
-  - task: run-remote-gats
+  - task: run-gats
     file: ci/run-remote-gats/task.yml
     input_mapping:
     params:
