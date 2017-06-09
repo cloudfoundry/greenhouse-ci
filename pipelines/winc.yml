@@ -114,6 +114,28 @@ jobs:
       guardian: guardian-fork
     tags: [windows2016]
 
+- name: bump-winc-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release-develop
+    - get: winc-master
+      passed:
+      - local-gats
+      trigger: true
+  - task: bump-submodule
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "src/code.cloudfoundry.org/winc"
+    input_mapping:
+      source-repo: winc-release-develop
+      module-repo: winc-master
+  - put: winc-release-develop
+    params:
+      repository: bumped-repo
+      rebase: true
+
 - name: pesto-garden-winc-deploy
   serial: true
   plan:
@@ -126,20 +148,12 @@ jobs:
       - get: stemcell
       - get: garden-runc-release
       - get: winc-release-develop
-      - get: winc-master
-        passed: [winc]
+        passed: [bump-winc-release]
         trigger: true
-    - task: bump-submodule
-      file: ci/bump-submodule/task.yml
-      params:
-        SUBMODULE: "src/code.cloudfoundry.org/winc"
-      input_mapping:
-        source-repo: winc-release-develop
-        module-repo: winc-master
     - task: create-winc-release
       file: ci/bosh-cr/task.yml
       input_mapping:
-        release: bumped-repo
+        release: winc-release-develop
       output_mapping:
         release-tarball: winc-tarball
     - task: open-garden-port
@@ -175,8 +189,6 @@ jobs:
     trigger: true
   - aggregate:
     - get: ci
-    - get: winc-master
-      passed: [pesto-garden-winc-deploy]
     - get: winc-release-develop
       passed: [pesto-garden-winc-deploy]
     - get: garden-runc-release
@@ -210,27 +222,3 @@ jobs:
     put: pesto-lock-pool
     params:
       release: pesto-lock-pool
-
-- name: bump-winc-release
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: winc-release-develop
-      passed: [pesto-garden-winc-deploy]
-    - get: winc-master
-      passed:
-      - local-gats
-      - pesto-garden-winc-deploy
-      trigger: true
-  - task: bump-submodule
-    file: ci/bump-submodule/task.yml
-    params:
-      SUBMODULE: "src/code.cloudfoundry.org/winc"
-    input_mapping:
-      source-repo: winc-release-develop
-      module-repo: winc-master
-  - put: winc-release-develop
-    params:
-      repository: bumped-repo
-      rebase: true
