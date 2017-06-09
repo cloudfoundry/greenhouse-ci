@@ -34,14 +34,6 @@ push-location garden-runc-release
       throw "Ginkgo installation process returned error code: $LastExitCode"
   }
 
-  Remove-Item -Recurse -Force ./src/code.cloudfoundry.org/guardian
-  write-host "Copying guardian fork...."
-  Copy-Item  -Recurse ../guardian ./src/code.cloudfoundry.org/
-
-  Remove-Item -Recurse -Force ./src/code.cloudfoundry.org/garden-integration-tests
-  write-host "Copying GATS fork...."
-  Copy-Item  -Recurse ../garden-integration-tests ./src/code.cloudfoundry.org/
-
   go build -o noop-network-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/network/noop-network-plugin.go
   if ($LastExitCode -ne 0) {
       throw "Building network plugin process returned error code: $LastExitCode"
@@ -67,6 +59,8 @@ push-location garden-runc-release
   $env:GARDEN_ADDRESS = "127.0.0.1"
   $env:GARDEN_PORT = "8888"
 
+  $tarBin = (get-command tar.exe).source
+
   Start-Process `
     -NoNewWindow `
     -RedirectStandardOutput gdn.out.log `
@@ -80,7 +74,7 @@ push-location garden-runc-release
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
-    --tar-bin=C:\var\vcap\bosh\bin\tar.exe `
+    --tar-bin=$tarBin `
     --depot $depotDir"
 
   # wait for server to start up

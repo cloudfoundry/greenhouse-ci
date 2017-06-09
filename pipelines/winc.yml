@@ -107,11 +107,16 @@ jobs:
     input_mapping:
       winc: winc-master
     tags: [windows2016]
-  - task: run-gats
-    file: ci/run-local-gats/task.yml
+  - task: copy-forks
+    file: ci/copy-forks/task.yml
     input_mapping:
       garden-integration-tests: gats-fork
       guardian: guardian-fork
+    tags: [windows2016]
+  - task: run-gats
+    file: ci/run-local-gats/task.yml
+    input_mapping:
+      garden-runc-release: garden-runc-release-forks
     tags: [windows2016]
 
 - name: bump-winc-release

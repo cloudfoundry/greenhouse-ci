@@ -3,8 +3,12 @@ platform: windows
 
 inputs:
 - name: ci
-- name: winc-binary
+- name: garden-integration-tests
+- name: guardian
 - name: garden-runc-release
+
+outputs:
+- name: garden-runc-release-forks
 
 run:
   path: powershell
@@ -12,4 +16,4 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/run-local-gats/run.ps1
+  - ci/copy-forks/run.ps1
