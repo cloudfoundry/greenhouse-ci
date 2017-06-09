@@ -201,16 +201,8 @@ jobs:
     params:
       GARDEN_ADDRESS: 35.185.94.204
       GARDEN_PORT: 7777
-
-- name: pesto-garden-winc-destroy
-  serial: true
-  plan:
-  - get: pesto-lock-pool
-    passed: [pesto-gats]
-    trigger: true
-  - get: ci
-  - do:
-    - task: delete-deployment
+    on_success:
+      task: delete-deployment
       file: ci/bosh-deld/task.yml
       params:
         BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
