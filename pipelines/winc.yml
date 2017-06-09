@@ -142,44 +142,43 @@ jobs:
   - put: pesto-lock-pool
     params:
       acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell
-      - get: garden-runc-release
-      - get: winc-release-develop
-        passed: [bump-winc-release]
-        trigger: true
-    - task: create-winc-release
-      file: ci/bosh-cr/task.yml
-      input_mapping:
-        release: winc-release-develop
-      output_mapping:
-        release-tarball: winc-tarball
-    - task: open-garden-port
-      file: ci/open-garden-port/task.yml
-    - task: create-garden-runc-release
-      file: ci/bosh-cr/task.yml
-      input_mapping:
-        release: garden-runc-release-open-port
-      output_mapping:
-        release-tarball: garden-runc-tarball
-    - task: bosh-cleanup
-      file: ci/bosh-cleanup/task.yml
-      params:
-        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-    - put: pesto-garden-winc-deployment
-      params:
-        manifest: ci/garden-winc-manifest/manifest.yml
-        stemcells:
-        - stemcell/*.tgz
-        releases:
-        - winc-tarball/*.tgz
-        - garden-runc-tarball/*.tgz
-        cleanup: true
+  - aggregate:
+    - get: ci
+    - get: stemcell
+    - get: garden-runc-release
+    - get: winc-release-develop
+      passed: [bump-winc-release]
+      trigger: true
+  - task: create-winc-release
+    file: ci/bosh-cr/task.yml
+    input_mapping:
+      release: winc-release-develop
+    output_mapping:
+      release-tarball: winc-tarball
+  - task: open-garden-port
+    file: ci/open-garden-port/task.yml
+  - task: create-garden-runc-release
+    file: ci/bosh-cr/task.yml
+    input_mapping:
+      release: garden-runc-release-open-port
+    output_mapping:
+      release-tarball: garden-runc-tarball
+  - task: bosh-cleanup
+    file: ci/bosh-cleanup/task.yml
+    params:
+      BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+      BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+      BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+  - put: pesto-garden-winc-deployment
+    params:
+      manifest: ci/garden-winc-manifest/manifest.yml
+      stemcells:
+      - stemcell/*.tgz
+      releases:
+      - winc-tarball/*.tgz
+      - garden-runc-tarball/*.tgz
+      cleanup: true
 
 - name: pesto-gats
   serial: true
