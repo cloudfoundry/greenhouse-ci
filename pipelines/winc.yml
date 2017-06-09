@@ -172,11 +172,11 @@ jobs:
   plan:
   - get: pesto-lock-pool
     passed: [pesto-garden-winc-deploy]
+    trigger: true
   - aggregate:
     - get: ci
     - get: winc-master
       passed: [pesto-garden-winc-deploy]
-      trigger: true
     - get: winc-release-develop
       passed: [pesto-garden-winc-deploy]
     - get: garden-runc-release
