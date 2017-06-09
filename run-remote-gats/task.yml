@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+- name: ci
+- name: garden-integration-tests
+- name: garden-runc-release
+
+run:
+  path: ci/run-remote-gats/run
+
+params:
+  GARDEN_ADDRESS:
+  GARDEN_PORT:

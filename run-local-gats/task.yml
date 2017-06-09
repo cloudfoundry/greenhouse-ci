@@ -4,6 +4,8 @@ platform: windows
 inputs:
 - name: ci
 - name: winc-binary
+- name: garden-integration-tests
+- name: guardian
 - name: garden-runc-release
 
 run:
@@ -12,4 +14,4 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/run-gats/run.ps1
+  - ci/run-local-gats/run.ps1

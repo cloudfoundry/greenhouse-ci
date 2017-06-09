@@ -1,8 +1,10 @@
 ---
-name: winc-smoke-test
+name: garden-winc
 
 releases:
 - name: winc
+  version: latest
+- name: garden-runc
   version: latest
 
 stemcells:
@@ -21,14 +23,25 @@ update:
 instance_groups:
 - azs:
   - z1
+  name: garden-windows
   instances: 1
   jobs:
-  - name: smoke-test
+  - name: winc
     release: winc
-  lifecycle: errand
-  name: smoke-test
+  - name: garden-windows
+    properties:
+      garden:
+        listen_address: "0.0.0.0:7777"
+        image_plugin: "/var/vcap/packages/winc-image/winc-image.exe"
+        runtime_plugin: "/var/vcap/packages/winc/winc.exe"
+    release: garden-runc
   networks:
   - name: default
+    default:
+    - dns
+    - gateway
+  - name: vip
+    static_ips: [35.185.94.204]
   stemcell: windows
   vm_extensions:
   - 100GB_ephemeral_disk

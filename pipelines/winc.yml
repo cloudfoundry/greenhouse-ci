@@ -3,6 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
+
 resources:
 - name: ci
   type: git
@@ -20,21 +21,31 @@ resources:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/winc.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC_DEPLOY_KEY}}
-- name: winc-release
+- name: winc-release-develop
   type: git
   source:
-    branch: master
+    branch: develop
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 - name: garden-runc-release
   type: git
   source:
-    branch: gats
-    uri: https://github.com/greenhouse-org/garden-runc-release.git
-- name: pesto-winc-smoke-test-deployment
+    branch: develop
+    uri: https://github.com/cloudfoundry/garden-runc-release.git
+- name: gats-fork
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/greenhouse-org/garden-integration-tests.git
+- name: guardian-fork
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/greenhouse-org/guardian.git
+- name: pesto-garden-winc-deployment
   type: bosh-deployment
   source:
-    deployment: winc-smoke-test
+    deployment: garden-winc
     target: {{PESTO_BOSH_ENVIRONMENT}}
     client: {{PESTO_BOSH_CLIENT}}
     client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
@@ -53,7 +64,7 @@ resources:
     uri: git@github.com:greenhouse-ci/locks
 
 jobs:
-- name: test
+- name: winc
   serial: true
   plan:
   - aggregate:
@@ -61,7 +72,7 @@ jobs:
     - get: winc-develop
       trigger: true
     - get: winc-master
-  - task: test-winc
+  - task: test
     tags: [windows2016]
     input_mapping: { winc: winc-develop }
     file: ci/test-winc/task.yml
@@ -71,7 +82,31 @@ jobs:
     params: { FROM_BRANCH: develop }
   - put: winc-master
     params: { repository: merged-repo/to-repo }
-- name: smoke-test
+
+- name: local-gats
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: gats-fork
+    - get: guardian-fork
+    - get: garden-runc-release
+    - get: winc-master
+      passed: [winc]
+      trigger: true
+  - task: build-winc
+    file: ci/build-winc/task.yml
+    input_mapping:
+      winc: winc-master
+    tags: [windows2016]
+  - task: run-local-gats
+    file: ci/run-local-gats/task.yml
+    input_mapping:
+      garden-integration-tests: gats-fork
+      guardian: guardian-fork
+    tags: [windows2016]
+
+- name: pesto-garden-winc-deploy
   serial: true
   plan:
   - put: pesto-lock-pool
@@ -80,22 +115,33 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: winc-release
       - get: stemcell
+      - get: garden-runc-release
+      - get: winc-release-develop
       - get: winc-master
-        passed: [test]
+        passed: [winc]
         trigger: true
     - task: bump-submodule
       file: ci/bump-submodule/task.yml
       params:
         SUBMODULE: "src/code.cloudfoundry.org/winc"
       input_mapping:
-        source-repo: winc-release
+        source-repo: winc-release-develop
         module-repo: winc-master
-    - task: create-release
+    - task: create-winc-release
       file: ci/bosh-cr/task.yml
       input_mapping:
         release: bumped-repo
+      output_mapping:
+        release-tarball: winc-tarball
+    - task: open-garden-port
+      file: ci/open-garden-port/task.yml
+    - task: create-garden-runc-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: garden-runc-release-open-port
+      output_mapping:
+        release-tarball: garden-runc-tarball
     - task: bosh-cleanup
       file: ci/bosh-cleanup/task.yml
       params:
@@ -103,72 +149,78 @@ jobs:
         BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-    - put: pesto-winc-smoke-test-deployment
+    - put: pesto-garden-winc-deployment
       params:
-        manifest: ci/winc-smoke-test-manifest/manifest.yml
+        manifest: ci/garden-winc-manifest/manifest.yml
         stemcells:
         - stemcell/*.tgz
         releases:
-        - release-tarball/*.tgz
+        - winc-tarball/*.tgz
+        - garden-runc-tarball/*.tgz
         cleanup: true
-    - task: run-smoke-test
-      file: ci/bosh-run-errand/task.yml
+
+- name: pesto-gats
+  serial: true
+  plan:
+  - get: pesto-lock-pool
+    passed: [pesto-garden-winc-deploy]
+  - aggregate:
+    - get: ci
+    - get: winc-master
+      passed: [pesto-garden-winc-deploy]
+      trigger: true
+    - get: winc-release-develop
+      passed: [pesto-garden-winc-deploy]
+    - get: garden-runc-release
+      passed: [pesto-garden-winc-deploy]
+    - get: garden-integration-tests
+      resource: gats-fork
+  - task: run-remote-gats
+    file: ci/run-remote-gats/task.yml
+    input_mapping:
+    params:
+      GARDEN_ADDRESS: 35.185.94.204
+      GARDEN_PORT: 7777
+
+- name: pesto-garden-winc-destroy
+  serial: true
+  plan:
+  - get: pesto-lock-pool
+    passed: [pesto-gats]
+    trigger: true
+  - get: ci
+  - do:
+    - task: delete-deployment
+      file: ci/bosh-deld/task.yml
       params:
         BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
         BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_DEPLOYMENT: winc-smoke-test
+        BOSH_DEPLOYMENT: garden-winc
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-        ERRAND_NAME: smoke-test
-      ensure:
-        task: delete-deployment
-        file: ci/bosh-deld/task.yml
-        params:
-          BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
-          BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-          BOSH_DEPLOYMENT: winc-smoke-test
-          BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-    ensure:
-      put: pesto-lock-pool
-      params:
-        release: pesto-lock-pool
-- name: gats
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: winc-master
-      passed: [test]
-      trigger: true
-    - get: garden-runc-release
-  - task: build-winc
-    file: ci/build-winc/task.yml
-    tags: [windows2016]
-    input_mapping:
-      winc: winc-master
-  - task: run-gats
-    file: ci/run-gats/task.yml
-    tags: [windows2016]
+  ensure:
+    put: pesto-lock-pool
+    params:
+      release: pesto-lock-pool
+
 - name: bump-winc
   serial: true
   plan:
   - aggregate:
     - get: ci
-    - get: winc-release
+    - get: winc-release-develop
     - get: winc-master
       passed:
-        - smoke-test
-        - gats
+      - local-gats
       trigger: true
   - task: bump-submodule
     file: ci/bump-submodule/task.yml
     params:
       SUBMODULE: "src/code.cloudfoundry.org/winc"
     input_mapping:
-      source-repo: winc-release
+      source-repo: winc-release-develop
       module-repo: winc-master
-  - put: winc-release
+  - put: winc-release-develop
     params:
       repository: bumped-repo
       rebase: true
