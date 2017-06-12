@@ -1,7 +1,6 @@
-$ErrorActionPreference = "Stop";
+﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:GOPATH = $PWD
 $env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
@@ -18,5 +17,6 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
 }
 go.exe version
 
-go.exe build -o winc-binary/winc.exe code.cloudfoundry.org/winc/cmd/winc
+cd repo
+go.exe build -o "../binary-output/$env:BINARY"  $env:PACKAGE
 Exit $LastExitCode

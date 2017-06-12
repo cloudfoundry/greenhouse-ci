@@ -27,6 +27,7 @@ docker.exe pull microsoft/windowsservercore
 $wincTestRootfs = (docker.exe inspect microsoft/windowsservercore | ConvertFrom-Json).GraphDriver.Data.Dir
 
 $wincPath = "$PWD/winc-binary/winc.exe"
+$nstarPath = "$PWD/nstar-binary/nstar.exe"
 
 push-location garden-runc-release
   go install ./src/github.com/onsi/ginkgo/ginkgo
@@ -47,11 +48,6 @@ push-location garden-runc-release
   go build -o gdn.exe ./src/code.cloudfoundry.org/guardian/cmd/gdn
   if ($LastExitCode -ne 0) {
       throw "Building gdn.exe process returned error code: $LastExitCode"
-  }
-
-  go build -o nstar.exe ./src/code.cloudfoundry.org/guardian/cmd/nstar
-  if ($LastExitCode -ne 0) {
-      throw "Building nstar.exe process returned error code: $LastExitCode"
   }
 
   # Kill any existing garden servers
@@ -79,7 +75,7 @@ push-location garden-runc-release
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
-    --nstar-bin=.\nstar.exe `
+    --nstar-bin=$nstarPath `
     --tar-bin=$tarBin `
     --depot $depotDir"
 

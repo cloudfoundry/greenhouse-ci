@@ -4,6 +4,7 @@ platform: windows
 inputs:
 - name: ci
 - name: winc-binary
+- name: nstar-binary
 - name: garden-runc-release
 
 run:

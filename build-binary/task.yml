@@ -3,11 +3,10 @@ platform: windows
 
 inputs:
 - name: ci
-- name: winc
-  path: src/code.cloudfoundry.org/winc
+- name: repo
 
 outputs:
-- name: winc-binary
+- name: output-binary
 
 run:
   path: powershell
@@ -15,4 +14,9 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/build-winc/run.ps1
+  - ci/build-binary/run.ps1
+
+params:
+  GOPATH: repo
+  PACKAGE:
+  BINARY:
