@@ -49,6 +49,11 @@ push-location garden-runc-release
       throw "Building gdn.exe process returned error code: $LastExitCode"
   }
 
+  go build -o nstar.exe ./src/code.cloudfoundry.org/guardian/cmd/nstar
+  if ($LastExitCode -ne 0) {
+      throw "Building nstar.exe process returned error code: $LastExitCode"
+  }
+
   # Kill any existing garden servers
   Kill-Garden
 
@@ -74,6 +79,7 @@ push-location garden-runc-release
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
+    --nstar-bin=.\nstar.exe `
     --tar-bin=$tarBin `
     --depot $depotDir"
 
