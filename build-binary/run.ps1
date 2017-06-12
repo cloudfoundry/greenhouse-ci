@@ -1,6 +1,7 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+$env:GOPATH=(Resolve-Path $env:GOPATH).Path
 $env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
