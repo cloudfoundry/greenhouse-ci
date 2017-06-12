@@ -1,8 +1,8 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:GOPATH = $PWD + cf-external-networking
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
+$env:GOPATH = "$PWD\cf-networking-release"
+$env:PATH = $env:GOPATH + "\bin;C:\go\bin;" + $env:PATH
 
 if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installing Go"
@@ -26,12 +26,12 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Host "creating directories"
-mkdir -p  cni-config
-mkdir -p  bindmounts
-mkdir -p  state
+mkdir -Force cni-config
+mkdir -Force bindmounts
+mkdir -Force state
 
 Write-Host "bringing up network"
-gardne-external-networker -action=up -handle=XXX -configFile=ci\local-gdn-ext-net-config\config.json
+garden-external-networker -action=up -handle=XXX -configFile=ci\local-gdn-ext-net-config\config.json
 if ($LastExitCode -ne 0) {
     throw "garden-external-networker up returned error code: $LastExitCode"
 }
