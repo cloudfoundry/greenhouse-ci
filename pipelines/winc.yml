@@ -43,6 +43,11 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry/garden-runc-release.git
+- name: cf-networking-release
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/cf-networking-release.git
 - name: garden-runc-release-fork
   type: git
   source:
@@ -125,6 +130,23 @@ jobs:
     params: { FROM_BRANCH: develop }
   - put: wincni-master
     params: { repository: merged-repo/to-repo }
+
+- name: wincni-smoke
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: wincni-master
+      trigger: true
+      passed: [wincni]
+    - get: cf-networking-release
+  - task: build-wincni
+    tags: [windows2016]
+    input_mapping: { wincni: wincni-master }
+    file: ci/build-wincni/task.yml
+  - task: wincni-smoke-test
+    tags: [windows2016]
+    file: ci/wincni-smoke/task.yml
 
 - name: local-gats
   serial: true
