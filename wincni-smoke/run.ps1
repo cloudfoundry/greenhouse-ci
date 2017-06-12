@@ -26,18 +26,24 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Host "creating directories"
+Remove-Item -Recurse -Force -ErrorAction Ignore cni-config
 mkdir -Force cni-config
+add-content ".\\cni-config\\wincni.conf" '{"type": "wincni", "cniVersion": "0.3.1"}'
+
+Remove-Item -Recurse -Force -ErrorAction Ignore bindmounts
 mkdir -Force bindmounts
+
+Remove-Item -Recurse -Force -ErrorAction Ignore state
 mkdir -Force state
 
 Write-Host "bringing up network"
-garden-external-networker -action=up -handle=XXX -configFile=ci\local-gdn-ext-net-config\config.json
+echo '{"pid": 1234}' | garden-external-networker -action=up -handle=XXX -configFile=".\ci\local-gdn-ext-net-config\config.json"
 if ($LastExitCode -ne 0) {
     throw "garden-external-networker up returned error code: $LastExitCode"
 }
 
 Write-Host "bringing down network"
-gardne-external-networker -action=down -handle=XXX -configFile=ci\local-gdn-ext-net-config\config.json
+garden-external-networker -action=down -handle=XXX -configFile=".\ci\local-gdn-ext-net-config\config.json"
 if ($LastExitCode -ne 0) {
     throw "garden-external-networker down returned error code: $LastExitCode"
 }
