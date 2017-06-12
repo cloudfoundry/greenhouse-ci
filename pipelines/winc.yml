@@ -178,6 +178,20 @@ jobs:
       repository: bumped-repo
       rebase: true
 
+- name: test-nstar
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release-develop
+      trigger: true
+  - task: run-ginkgo-exe
+    tags: [windows2016]
+    file: ci/run-ginkgo-exe/task.yml
+    input_mapping:
+      repo: winc-release-develop
+    params:
+      TEST_PATH: "src/nstar"
+
 - name: pesto-garden-winc-deploy
   serial: true
   plan:
@@ -189,7 +203,7 @@ jobs:
     - get: stemcell
     - get: garden-runc-release
     - get: winc-release-develop
-      passed: [bump-winc-release]
+      passed: [bump-winc-release, test-nstar]
       trigger: true
   - task: create-winc-release
     file: ci/bosh-cr/task.yml
