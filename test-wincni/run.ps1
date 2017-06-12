@@ -17,15 +17,15 @@ if ((Get-Command "go.exe" -ErrorAction SilentlyContinue) -eq $null) {
   Write-Host "Installed Go"
 }
 
-go.exe version
+go version
 
-cd $env:GOPATH/src/code.cloudfoundry.org/winccni
+cd $env:GOPATH/src/code.cloudfoundry.org/wincni
 
 Write-Host "Installing Ginkgo"
-go.exe install ./vendor/github.com/onsi/ginkgo/ginkgo
+go install ./vendor/github.com/onsi/ginkgo/ginkgo
 if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
-ginkgo.exe -p -r -race -cover -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
+ginkgo -p -r -race -cover -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
 Exit $LastExitCode
