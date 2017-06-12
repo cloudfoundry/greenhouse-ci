@@ -32,15 +32,20 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry/garden-runc-release.git
+- name: garden-runc-release-fork
+  type: git
+  source:
+    branch: fork-develop
+    uri: https://github.com/greenhouse-org/garden-runc-release.git
 - name: gats-fork
   type: git
   source:
-    branch: master
+    branch: fork-master
     uri: https://github.com/greenhouse-org/garden-integration-tests.git
 - name: guardian-fork
   type: git
   source:
-    branch: master
+    branch: fork-master
     uri: https://github.com/greenhouse-org/guardian.git
 - name: pesto-garden-winc-deployment
   type: bosh-deployment
@@ -99,6 +104,7 @@ jobs:
     - get: gats-fork
     - get: guardian-fork
     - get: garden-runc-release
+      resource: garden-runc-release-fork
     - get: winc-master
       passed: [winc]
       trigger: true
