@@ -20,7 +20,18 @@ resources:
   source:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/winc.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC_DEPLOY_KEY}}
+    private_key: {{CLOUDFOUNDRY_WINC_DEPLOY_KEY}}
+- name: wincni-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry/wincni.git
+- name: wincni-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/wincni.git
+    private_key: {{CLOUDFOUNDRY_WINC_DEPLOY_KEY}}
 - name: winc-release-develop
   type: git
   source:
@@ -89,6 +100,27 @@ jobs:
     file: ci/test-winc/task.yml
   - task: merge-develop-to-master
     input_mapping: { from-repo: winc-develop, to-repo: winc-master }
+    file: ci/merge-repo/task.yml
+    params: { FROM_BRANCH: develop }
+  - put: winc-master
+    params: { repository: merged-repo/to-repo }
+
+- name: wincni
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: every-2hrs
+      trigger: true
+    - get: wincni-develop
+      trigger: true
+    - get: wincni-master
+  - task: test
+    tags: [windows2016]
+    input_mapping: { wincni: wincni-develop }
+    file: ci/test-wincni/task.yml
+  - task: merge-develop-to-master
+    input_mapping: { from-repo: wincni-develop, to-repo: wincni-master }
     file: ci/merge-repo/task.yml
     params: { FROM_BRANCH: develop }
   - put: winc-master
