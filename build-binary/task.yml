@@ -17,6 +17,5 @@ run:
   - ci/build-binary/run.ps1
 
 params:
-  GOPATH: repo
+  IMPORT_PATH:
   PACKAGE:
-  BINARY:
