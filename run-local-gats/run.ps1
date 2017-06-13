@@ -11,20 +11,7 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;C:/var/vcap/bo
 
 go version
 
-if ((Get-Command "docker.exe" -ErrorAction SilentlyContinue) -eq $null) {
-  Write-Host "Installing Docker"
-
-  Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-  Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
-  Install-Package -Name docker -ProviderName DockerMsftProvider -Force
-
-  Start-Service Docker
-
-  Write-Host "Installed Docker"
-}
-
-docker.exe pull microsoft/windowsservercore
-$wincTestRootfs = (docker.exe inspect microsoft/windowsservercore | ConvertFrom-Json).GraphDriver.Data.Dir
+$wincTestRootfs = (docker inspect microsoft/windowsservercore | ConvertFrom-Json).GraphDriver.Data.Dir
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 $nstarPath = "$PWD/nstar-binary/nstar.exe"
