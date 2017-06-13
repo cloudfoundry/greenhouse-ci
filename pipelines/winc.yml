@@ -162,11 +162,26 @@ jobs:
     - get: winc-master
       passed: [winc]
       trigger: true
+    - get: winc-release-develop
   - task: build-winc
-    file: ci/build-winc/task.yml
+    file: ci/build-binary/task.yml
     input_mapping:
-      winc: winc-master
+      repo: winc-master
+    output_mapping:
+      binary-output: winc-binary
     tags: [windows2016]
+    params:
+      IMPORT_PATH: "code.cloudfoundry.org/winc"
+      PACKAGE: "./cmd/winc"
+  - task: build-nstar
+    tags: [windows2016]
+    file: ci/build-binary/task.yml
+    input_mapping:
+      repo: winc-release-develop
+    output_mapping:
+      binary-output: nstar-binary
+    params:
+      PACKAGE: "./src/nstar"
   - task: copy-forks
     file: ci/copy-forks/task.yml
     input_mapping:
