@@ -142,8 +142,14 @@ jobs:
     - get: cf-networking-release
   - task: build-wincni
     tags: [windows2016]
-    input_mapping: { wincni: wincni-master }
-    file: ci/build-wincni/task.yml
+    file: ci/build-binary/task.yml
+    input_mapping:
+      repo: wincni-master
+    output_mapping:
+      binary-output: wincni-binary
+    params:
+      IMPORT_PATH: "code.cloudfoundry.org/wincni"
+      PACKAGE: "./cmd/wincni"
   - task: wincni-smoke-test
     tags: [windows2016]
     file: ci/wincni-smoke/task.yml
