@@ -1,10 +1,10 @@
-FROM microsoft/dotnet-framework
+FROM microsoft/windowsservercore
 
 RUN powershell.exe -Command \
   $ErrorActionPreference = 'Stop'; \
   \
-  Install-WindowsFeature Web-Webserver, \
-                         Web-WebSockets, \
-                         Web-WHC, \
-                         Web-ASP, \
-                         Web-ASP-Net45
+  Add-WindowsFeature Web-Webserver, \
+    Web-WebSockets, \
+    Web-WHC, \
+    Web-ASP, \
+    Web-ASP-Net45
