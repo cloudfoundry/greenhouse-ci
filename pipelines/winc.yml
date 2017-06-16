@@ -91,6 +91,7 @@ resources:
 jobs:
 - name: winc
   serial: true
+  serial_groups: [window2016]
   plan:
   - aggregate:
     - get: ci
@@ -133,6 +134,7 @@ jobs:
 
 - name: wincni-smoke
   serial: true
+  serial_groups: [window2016]
   plan:
   - aggregate:
     - get: ci
@@ -156,6 +158,7 @@ jobs:
 
 - name: local-gats
   serial: true
+  serial_groups: [window2016]
   plan:
   - aggregate:
     - get: ci
