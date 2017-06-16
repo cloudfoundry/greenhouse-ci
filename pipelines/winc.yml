@@ -278,6 +278,19 @@ jobs:
       - winc-tarball/*.tgz
       - garden-runc-tarball/*.tgz
       cleanup: true
+    on_failure:
+      task: delete-deployment
+      file: ci/bosh-deld/task.yml
+      params:
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+        BOSH_DEPLOYMENT: garden-winc
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+  on_failure:
+    put: pesto-lock-pool
+    params:
+      release: pesto-lock-pool
 
 - name: pesto-gats
   serial: true
