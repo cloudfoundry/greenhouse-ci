@@ -290,7 +290,7 @@ jobs:
         BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
         BOSH_DEPLOYMENT: garden-winc
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-  on_failure:
+  ensure:
     put: pesto-lock-pool
     params:
       release: pesto-lock-pool
@@ -298,13 +298,14 @@ jobs:
 - name: pesto-gats
   serial: true
   plan:
-  - get: pesto-lock-pool
-    passed: [pesto-garden-winc-deploy]
-    trigger: true
+  - put: pesto-lock-pool
+    params:
+      acquire: true
   - aggregate:
     - get: ci
     - get: winc-release-develop
       passed: [pesto-garden-winc-deploy]
+      trigger: true
     - get: garden-runc-release
       passed: [pesto-garden-winc-deploy]
     - get: garden-integration-tests
