@@ -173,8 +173,6 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: weekly-trigger
-        trigger: true
     - task: destroy-cf
       file: ci/bosh-deld/task.yml
       tags: [vsphere]
@@ -201,13 +199,9 @@ jobs:
       - get: ci
       - get: vsphere-windows-stemcell
         tags: [vsphere]
-        trigger: true
       - get: vsphere-linux-stemcell
         tags: [vsphere]
       - get: wats
-      - get: weekly-trigger
-        trigger: true
-        passed: [sudbury-destroy-cf]
     - aggregate:
       - task: upload-linux-stemcell
         file: ci/bosh-us/task.yml
