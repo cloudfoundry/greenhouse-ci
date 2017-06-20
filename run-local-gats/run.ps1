@@ -11,7 +11,8 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;C:/var/vcap/bo
 
 go version
 
-$wincTestRootfs = (docker inspect microsoft/windowsservercore | ConvertFrom-Json).GraphDriver.Data.Dir
+docker pull pivotalgreenhouse/cfwindowsfs
+$wincTestRootfs = (docker inspect pivotalgreenhouse/cfwindowsfs | ConvertFrom-Json).GraphDriver.Data.Dir
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 $nstarPath = "$PWD/nstar-binary/nstar.exe"
