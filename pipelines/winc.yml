@@ -101,7 +101,6 @@ jobs:
       trigger: true
     - get: winc-master
   - task: test
-    tags: [windows2016]
     input_mapping: { winc: winc-develop }
     file: ci/test-winc/task.yml
   - task: merge-develop-to-master
@@ -122,7 +121,6 @@ jobs:
       trigger: true
     - get: wincni-master
   - task: test
-    tags: [windows2016]
     input_mapping: { wincni: wincni-develop }
     file: ci/test-wincni/task.yml
   - task: merge-develop-to-master
@@ -143,7 +141,6 @@ jobs:
       passed: [wincni]
     - get: cf-networking-release
   - task: build-wincni
-    tags: [windows2016]
     file: ci/build-binary/task.yml
     input_mapping:
       repo: wincni-master
@@ -153,7 +150,6 @@ jobs:
       IMPORT_PATH: "code.cloudfoundry.org/wincni"
       PACKAGE: "./cmd/wincni"
   - task: wincni-smoke-test
-    tags: [windows2016]
     file: ci/wincni-smoke/task.yml
 
 - name: local-gats
@@ -178,12 +174,10 @@ jobs:
       repo: winc-master
     output_mapping:
       binary-output: winc-binary
-    tags: [windows2016]
     params:
       IMPORT_PATH: "code.cloudfoundry.org/winc"
       PACKAGE: "./cmd/winc"
   - task: build-nstar
-    tags: [windows2016]
     file: ci/build-binary/task.yml
     input_mapping:
       repo: winc-release-develop
@@ -200,7 +194,6 @@ jobs:
     file: ci/run-local-gats/task.yml
     input_mapping:
       garden-runc-release: garden-runc-release-forks
-    tags: [windows2016]
 
 - name: bump-winc-release
   serial: true
@@ -231,7 +224,6 @@ jobs:
     - get: winc-release-develop
       trigger: true
   - task: run-ginkgo-exe
-    tags: [windows2016]
     file: ci/run-ginkgo-exe/task.yml
     input_mapping:
       repo: winc-release-develop
