@@ -7,8 +7,6 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
 Install-WindowsFeature Web-WHC
 Install-WindowsFeature Web-Webserver
 Install-WindowsFeature Web-WebSockets
-Install-WindowsFeature AS-Web-Support
-Install-WindowsFeature AS-NET-Framework
 Install-WindowsFeature Web-WHC
 Install-WindowsFeature Web-ASP
 
