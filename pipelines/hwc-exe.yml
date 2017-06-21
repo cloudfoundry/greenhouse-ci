@@ -36,6 +36,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: hwc-develop
+      trigger: true
     - get: hwc-master
   - task: test-hwc
     input_mapping: { hwc: hwc-develop }
