@@ -46,20 +46,12 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: ci
     - get: bsdtar
       trigger: true
     - get: s3-bucket
   - task: build-tar
-    config:
-      platform: windows
-      inputs:
-      - name: bsdtar
-      outputs:
-      - name: tar-output
-      run:
-        path: powershell
-        args:
-        - bsdtar/install.ps1
+    file: ci/build-tar/task.yml
   - put: s3-bucket
     params:
       file: tar-output/tar-*.exe
