@@ -9,6 +9,7 @@ Install-WindowsFeature Web-Webserver
 Install-WindowsFeature Web-WebSockets
 Install-WindowsFeature Web-WHC
 Install-WindowsFeature Web-ASP
+Install-WindowsFeature Web-ASP-Net45
 
 cd $env:GOPATH/src/code.cloudfoundry.org/hwc
 
