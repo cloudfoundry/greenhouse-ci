@@ -10,3 +10,5 @@ RUN powershell.exe -Command \
     Web-ASP-Net45
 
 RUN cmd.exe /C net users /ADD vcap /passwordreq:no && runas /user:vcap whoami
+RUN powershell.exe -Command Invoke-WebRequest -Uri https://s3.amazonaws.com/bosh-windows-dependencies/tar-1490035387.exe -UseBasicParsing -OutFile C:\\Windows\\tar.exe
+
