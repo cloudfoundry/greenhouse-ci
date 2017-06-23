@@ -15,4 +15,4 @@ run:
   - ci/test-winc/run.ps1
 
 params:
-  TEST_ROOTFS_IMAGE: "microsoft/windowsservercore"
+  TEST_ROOTFS_IMAGE: "pivotalgreenhouse/cfwindowsfs"

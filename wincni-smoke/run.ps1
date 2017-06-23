@@ -1,5 +1,5 @@
 ﻿$ErrorActionPreference = "Stop";
-trap { 
+trap {
   winc delete smoke-test
   $host.SetShouldExit(1)
 }
