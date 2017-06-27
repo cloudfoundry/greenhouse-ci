@@ -15,4 +15,4 @@ run:
   - ci/test-winc/run.ps1
 
 params:
-  TEST_ROOTFS_IMAGE: "pivotalgreenhouse/cfwindowsfs"
+  TEST_ROOTFS_IMAGE: "cloudfoundry/cfwindowsfs"
