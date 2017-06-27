@@ -257,6 +257,14 @@ jobs:
       release: garden-runc-release-open-port
     output_mapping:
       release-tarball: garden-runc-tarball
+  - task: delete-deployment
+    file: ci/bosh-deld/task.yml
+    params:
+      BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+      BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+      BOSH_DEPLOYMENT: garden-winc
+      BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
   - task: bosh-cleanup
     file: ci/bosh-cleanup/task.yml
     params:
