@@ -140,11 +140,6 @@ resources:
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
-- name: gcp-linux-stemcell
-  type: bosh-io-stemcell
-  source:
-    name: bosh-google-kvm-ubuntu-trusty-go_agent
-    version_family: '3363.22'
 jobs:
 - name: sync-garden-windows-release-submodules
   serial: true
@@ -177,7 +172,6 @@ jobs:
         trigger: true
       - get: gcp-windows-stemcell
         trigger: true
-      - get: gcp-linux-stemcell
       - get: wats-develop
         trigger: true
       - get: wats-master
@@ -188,6 +182,9 @@ jobs:
     - task: create-release
       file: ci/bosh-cr/task.yml
       input_mapping: { release: garden-windows-bosh-release-develop }
+    - task: get-linux-stemcell
+      file: ci/get-gcp-linux-stemcell/task.yml
+      output_mapping: { stemcell: gcp-linux-stemcell }
     - put: pesto-cf-deployment
       params:
         manifest: cf-deployment/cf-deployment.yml
