@@ -4,6 +4,8 @@ platform: windows
 inputs:
 - name: ci
 - name: winc-binary
+- name: winc-network-binary
+- name: winc-image-binary
 - name: nstar-binary
 - name: garden-runc-release
 
