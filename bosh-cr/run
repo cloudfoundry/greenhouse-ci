@@ -2,4 +2,4 @@
 
 set -eux
 
-bosh -n create-release --dir=release --tarball=release-tarball/release.tgz
+bosh -n create-release --dir=release --tarball=release-tarball/release.tgz --timestamp-version
