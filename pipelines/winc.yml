@@ -241,7 +241,7 @@ jobs:
     - get: stemcell
     - get: garden-runc-release
     - get: winc-release-develop
-      passed: [bump-winc-release, test-nstar]
+      passed: [test-nstar]
       trigger: true
   - task: create-winc-release
     file: ci/bosh-cr/task.yml
