@@ -1,0 +1,15 @@
+---
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+- name: ci
+
+outputs:
+- name: stemcell
+
+run:
+  path: ci/get-gcp-linux-stemcell/run
+
+params:
+  bosh_manifest_path:
