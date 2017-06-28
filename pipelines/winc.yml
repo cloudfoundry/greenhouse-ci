@@ -321,3 +321,19 @@ jobs:
     put: pesto-lock-pool
     params:
       release: pesto-lock-pool
+
+groups:
+- name: winc
+  jobs:
+  - winc
+  - local-gats
+  - bump-winc-release
+- name: winc-release
+  jobs:
+  - test-nstar
+  - pesto-garden-winc-deploy
+  - pesto-gats
+- name: wincni
+  jobs:
+  - wincni
+  - wincni-smoke
