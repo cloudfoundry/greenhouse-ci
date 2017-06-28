@@ -15,6 +15,8 @@ docker pull cloudfoundry/cfwindowsfs
 $wincTestRootfs = (docker inspect cloudfoundry/cfwindowsfs | ConvertFrom-Json).GraphDriver.Data.Dir
 
 $wincPath = "$PWD/winc-binary/winc.exe"
+$wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
+$wincImagePath = "$PWD/winc-image-binary/winc-image.exe"
 $nstarPath = "$PWD/nstar-binary/nstar.exe"
 
 push-location garden-runc-release
@@ -23,15 +25,6 @@ push-location garden-runc-release
       throw "Ginkgo installation process returned error code: $LastExitCode"
   }
 
-  go build -o noop-network-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/network/noop-network-plugin.go
-  if ($LastExitCode -ne 0) {
-      throw "Building network plugin process returned error code: $LastExitCode"
-  }
-
-  go build -o noop-image-plugin.exe ./src/code.cloudfoundry.org/garden-integration-tests/plugins/image/noop-image-plugin.go
-  if ($LastExitCode -ne 0) {
-      throw "Building image plugin process returned error code: $LastExitCode"
-  }
 
   go build -o gdn.exe ./src/code.cloudfoundry.org/guardian/cmd/gdn
   if ($LastExitCode -ne 0) {
@@ -58,8 +51,8 @@ push-location garden-runc-release
     "server `
     --skip-setup `
     --runtime-plugin=$wincPath `
-    --image-plugin=.\noop-image-plugin.exe `
-    --network-plugin=.\noop-network-plugin.exe `
+    --image-plugin=$wincImagePath `
+    --network-plugin=$wincNetworkPath `
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
