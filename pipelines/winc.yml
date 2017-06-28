@@ -168,23 +168,41 @@ jobs:
       passed: [winc]
       trigger: true
     - get: winc-release-develop
-  - task: build-winc
-    file: ci/build-binary/task.yml
-    input_mapping:
-      repo: winc-master
-    output_mapping:
-      binary-output: winc-binary
-    params:
-      IMPORT_PATH: "code.cloudfoundry.org/winc"
-      PACKAGE: "./cmd/winc"
-  - task: build-nstar
-    file: ci/build-binary/task.yml
-    input_mapping:
-      repo: winc-release-develop
-    output_mapping:
-      binary-output: nstar-binary
-    params:
-      PACKAGE: "./src/nstar"
+  - aggregate:
+    - task: build-winc
+      file: ci/build-binary/task.yml
+      input_mapping:
+        repo: winc-master
+      output_mapping:
+        binary-output: winc-binary
+      params:
+        IMPORT_PATH: "code.cloudfoundry.org/winc"
+        PACKAGE: "./cmd/winc"
+    - task: build-winc-network
+      file: ci/build-binary/task.yml
+      input_mapping:
+        repo: winc-master
+      output_mapping:
+        binary-output: winc-network-binary
+      params:
+        IMPORT_PATH: "code.cloudfoundry.org/winc"
+        PACKAGE: "./cmd/winc-network"
+    - task: build-winc-image
+      file: ci/build-binary/task.yml
+      input_mapping:
+        repo: winc-release-develop
+      output_mapping:
+        binary-output: winc-image-binary
+      params:
+        PACKAGE: "./src/winc-image"
+    - task: build-nstar
+      file: ci/build-binary/task.yml
+      input_mapping:
+        repo: winc-release-develop
+      output_mapping:
+        binary-output: nstar-binary
+      params:
+        PACKAGE: "./src/nstar"
   - task: copy-forks
     file: ci/copy-forks/task.yml
     input_mapping:
