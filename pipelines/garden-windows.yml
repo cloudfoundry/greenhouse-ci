@@ -52,6 +52,12 @@ resources:
     branch: master
     private_key: {{GREENHOUSE_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:pivotal-cf/greenhouse-private
+- name: garden-windows-private
+  type: git
+  source:
+    branch: master
+    private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
+    uri: git@github.com:pivotal-cf/garden-windows-private
 - name: ci
   type: git
   source:
@@ -69,7 +75,7 @@ resources:
       provider: gcs
       config:
         bucket: cff-greenhouse-pesto
-        file_name: vars-store.yml
+        file_name: cf/creds.yml
         json_key: {{PESTO_SERVICE_ACCOUNT_JSON}}
 - name: pesto-lock-pool
   type: pool
@@ -178,13 +184,20 @@ jobs:
       - get: version
         params: {pre: rc}
       - get: ci
-      - get: greenhouse-private
+      - get: garden-windows-private
     - task: create-release
       file: ci/bosh-cr/task.yml
       input_mapping: { release: garden-windows-bosh-release-develop }
     - task: get-linux-stemcell
       file: ci/get-gcp-linux-stemcell/task.yml
       output_mapping: { stemcell: gcp-linux-stemcell }
+    - task: get-cf-vars
+      file: ci/get-gcs-file/task.yml
+      output_mapping: { output: cf-vars }
+      params:
+        BUCKET: cff-greenhouse-pesto
+        FILE_NAME: cf/vars.yml
+        SERVICE_ACCOUNT_KEY: {{PESTO_SERVICE_ACCOUNT_JSON}}
     - put: pesto-cf-deployment
       params:
         manifest: cf-deployment/cf-deployment.yml
@@ -197,9 +210,9 @@ jobs:
         - cf-deployment/operations/tcp-routing-gcp.yml
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
-        - greenhouse-private/pesto/cf/operations/latest-garden-windows.yml
+        - garden-windows-private/pesto/cf/operations/latest-garden-windows.yml
         vars_files:
-        - greenhouse-private/pesto/cf/vars.yml
+        - cf-vars/vars.yml
         cleanup: true
       get_params:
         skip_get: true
