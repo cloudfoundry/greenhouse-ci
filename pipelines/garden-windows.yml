@@ -210,7 +210,7 @@ jobs:
         - cf-deployment/operations/tcp-routing-gcp.yml
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
-        - garden-windows-private/pesto/cf/operations/latest-garden-windows.yml
+        - garden-windows-private/operations-common/latest-garden-windows.yml
         vars_files:
         - cf-vars/vars.yml
         cleanup: true
