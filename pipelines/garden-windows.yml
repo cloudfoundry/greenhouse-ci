@@ -216,7 +216,7 @@ jobs:
         - cf-vars/vars.yml
         cleanup: true
       get_params:
-        skip_get: true
+        skip_export: true
     - task: clean-up
       file: ci/bosh-cleanup/task.yml
       params:
