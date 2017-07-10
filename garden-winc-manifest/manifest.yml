@@ -34,6 +34,7 @@ instance_groups:
         listen_address: "0.0.0.0:7777"
         image_plugin: "/var/vcap/packages/winc-image/winc-image.exe"
         runtime_plugin: "/var/vcap/packages/winc/winc.exe"
+        network_plugin: "/var/vcap/packages/winc-network/winc-network.exe"
         nstar_bin: "/var/vcap/packages/nstar/nstar.exe"
     release: garden-runc
   networks:
