@@ -23,6 +23,7 @@ params:
   AWS_REGION: us-east-1
 
   ADMINISTRATOR_PASSWORD: replace-me
+  NEW_PASSWORD:
   OS_VERSION: windows2012R2
 
   INPUT_BUCKET: "bosh-windows-stemcell-vmx"
@@ -36,4 +37,8 @@ params:
   VERSION_DIR: ../version
   VMX_VERSION_DIR: ../vmx-version
   STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+
+  ENABLE_RDP:
+  ENABLE_KMS:
+  KMS_ADDRESS:
 

@@ -1,0 +1,102 @@
+---
+resources:
+- name: ci
+  type: git
+  source:
+    branch: private-windows-stemcells
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: stemcell-builder
+  type: git
+  source:
+    branch: private-windows-stemcell
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
+- name: windows-stemcell-dependencies
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
+    private_key: {{PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY}}
+- name: updated-vmx-version
+  type: semver
+  source:
+    bucket: private-windows-stemcells-semver
+    initial_version: 1.0.0
+    key: versions/updated-vmx-version
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: "1.0.0"
+
+- name: vsphere-stemcell-version
+  type: semver
+  source:
+    bucket: {{private_windows_stemcells_production}}
+    key: versions/vsphere-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    bucket: private-windows-stemcells-semver
+    initial_version: 1000.0.0
+
+jobs:
+- name: create-vsphere-add-updates
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+    - get: windows-stemcell-dependencies
+    - get: vmx-version
+      resource: updated-vmx-version
+  - task: add-updates
+    privileged: true
+    input_mapping:
+      version: vmx-version
+    tags:
+     - private-windows-worker
+    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+    params:
+      ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_REGION: {{REGION}}
+      INPUT_BUCKET: {{private_windows_stemcells_vmx}}
+      OUTPUT_BUCKET: {{private_windows_stemcells_vmx}}
+  - put: updated-vmx-version
+    params: {bump: major}
+
+- name: create-vsphere-stemcell
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+    - get: windows-stemcell-dependencies
+    - get: version
+      resource: vsphere-stemcell-version
+      trigger: true
+    - get: vmx-version
+      resource: updated-vmx-version
+      passed: [create-vsphere-add-updates]
+  - task: create-stemcell
+    privileged: true
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/task.yml
+    params:
+      ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
+      NEW_PASSWORD: {{STEMCELL_PASSWORD}}
+      PRODUCT_KEY: {{PRODUCT_KEY}}
+      ORGANIZATION: Pivotal
+      OWNER: Pivotal
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_REGION: {{REGION}}
+      INPUT_BUCKET: {{private_windows_stemcells_vmx}}
+      OUTPUT_BUCKET: {{private_windows_stemcells_production}}
+      ENABLE_RDP: true
+      ENABLE_KMS: true
+      KMS_ADDRESS: {{KMS_HOST}}
+    tags:
+    - private-windows-worker
+  - put: vsphere-stemcell-version
+    params: {bump: minor}

@@ -28,4 +28,5 @@ params:
   OUTPUT_BUCKET: "bosh-windows-stemcell-vmx"
   VMX_CACHE_DIR: "C:\\vmx-data"
   VERSION_DIR: ../version
+  OS_VERSION: "windows2012R2"
 
