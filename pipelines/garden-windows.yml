@@ -286,6 +286,7 @@ jobs:
     params: {file: version/number}
   - task: finalize-release
     file: ci/finalize-release/task.yml
+    input_mapping: { release: release-develop }
     params:
       RELEASE_NAME: garden-windows
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
