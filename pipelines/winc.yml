@@ -44,6 +44,12 @@ resources:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
+- name: winc-release-develop-mergedback
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry-incubator/winc-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 - name: garden-runc-release
   type: git
   source:
@@ -93,7 +99,22 @@ resources:
   type: time
   source:
     interval: 2h
-
+- name: version
+  type: semver
+  source:
+    access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
+    bucket: winc-release
+    initial_version: 0.0.0
+    key: version
+    region_name: us-east-1
+- name: winc-release-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: winc-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 jobs:
 - name: winc
   serial: true
@@ -354,13 +375,57 @@ jobs:
     - get: winc-release-develop
       passed: [pesto-gats]
     - get: winc-release-master
+    - get: version
+      params: {bump: minor}
   - task: merge-develop-to-master
     input_mapping: { from-repo: winc-release-develop, to-repo: winc-release-master }
     file: ci/merge-repo/task.yml
     params: { FROM_BRANCH: develop }
+  - put: version
+    params: {file: version/number}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping: { release: winc-release-master }
+    params:
+      RELEASE_NAME: winc
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
   - put: winc-release-master
-    params: { repository: merged-repo/to-repo }
-
+    params:
+      repository: finalized-release/release
+      tag: version/number
+      tag_prefix: v
+  - task: generate-release
+    input_mapping: { release: winc-release-master }
+    file: ci/generate-github-release/task.yml
+  - put: winc-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/winc-*.tgz
+- name: merge-master-into-develop
+  plan:
+    - aggregate:
+      - get: ci
+      - get: from-repo
+        resource: winc-release-master
+        trigger: true
+        passed: [shipit]
+        params:
+          submodules: none
+      - get: to-repo
+        resource: winc-release-develop
+        params:
+          submodules: none
+    - task: merge-master-into-develop
+      file: ci/merge-repo/task.yml
+      params:
+        FROM_BRANCH: master
+    - put: winc-release-develop-mergedback
+      params:
+        repository: merged-repo/to-repo
 groups:
 - name: winc
   jobs:
@@ -373,6 +438,7 @@ groups:
   - pesto-garden-winc-deploy
   - pesto-gats
   - shipit
+  - merge-master-into-develop
 - name: wincni
   jobs:
   - wincni

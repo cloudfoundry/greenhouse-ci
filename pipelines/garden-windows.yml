@@ -286,15 +286,20 @@ jobs:
     params: {file: version/number}
   - task: finalize-release
     file: ci/finalize-release/task.yml
+    params:
+      RELEASE_NAME: garden-windows
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
   - put: garden-windows-bosh-release-bucket-final
     params:
       file: finalized-release/garden-windows-*.tgz
   - put: garden-windows-bosh-release-master
     params:
-      repository: finalized-release/release-develop
+      repository: finalized-release/release
       tag: version/number
       tag_prefix: v
   - task: generate-release
+    input_mapping: { release: release-master }
     file: ci/generate-github-release/task.yml
   - put: garden-windows-bosh-github-release
     params:
