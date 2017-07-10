@@ -38,6 +38,12 @@ resources:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
+- name: winc-release-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/winc-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 - name: garden-runc-release
   type: git
   source:
@@ -340,6 +346,21 @@ jobs:
     params:
       release: pesto-lock-pool
 
+- name: shipit
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release-develop
+      passed: [pesto-gats]
+    - get: winc-release-master
+  - task: merge-develop-to-master
+    input_mapping: { from-repo: winc-release-develop, to-repo: winc-release-master }
+    file: ci/merge-repo/task.yml
+    params: { FROM_BRANCH: develop }
+  - put: winc-release-master
+    params: { repository: merged-repo/to-repo }
+
 groups:
 - name: winc
   jobs:
@@ -351,6 +372,7 @@ groups:
   - test-nstar
   - pesto-garden-winc-deploy
   - pesto-gats
+  - shipit
 - name: wincni
   jobs:
   - wincni
