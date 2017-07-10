@@ -1,34 +1,31 @@
 #!/bin/bash
-# vi: ft=sh
 
 set -e -x -u
 
-# echo "----- Copy private blobstore credentials into garden-windows-release"
-cp greenhouse-private/repos/garden-windows-bosh-release/private.yml release-develop/config/private.yml
+PRIVATE_YML='---
+blobstore:
+  provider: s3
+  options:
+    credentials_source: env_or_profile'
+echo "$PRIVATE_YML" > release/config/private.yml
 
 FINAL_RELEASE_VERSION=$(cat version/number)
-DEV_RELEASE_TARBALL=$(ls $PWD/bucket-develop/*.tgz)
 
-pushd release-develop
-  RELEASE_YML=$PWD/releases/garden-windows/garden-windows-${FINAL_RELEASE_VERSION}.yml
-  RELEASE_TGZ=$PWD/releases/garden-windows/garden-windows-${FINAL_RELEASE_VERSION}.tgz
+pushd release
+  RELEASE_YML=$PWD/releases/${RELEASE_NAME}/${RELEASE_NAME}-${FINAL_RELEASE_VERSION}.yml
+  RELEASE_TGZ=$PWD/releases/${RELEASE_NAME}/${RELEASE_NAME}-${FINAL_RELEASE_VERSION}.tgz
 
   # idempotently create tarball in case later parts of shipit fail
   if [ -e "${RELEASE_YML}" ]; then
     echo "----- Release already created; making tarball..."
-    bosh -n create release --with-tarball ${RELEASE_YML}
+    bosh -n create-release --tarball=${RELEASE_TGZ} ${RELEASE_YML}
   else
     echo "----- Set git identity"
     git config user.email "cf-netgarden-eng@pivotal.io"
     git config user.name "CI (Automated)"
 
     echo "----- Create final release"
-    bosh -n finalize release $DEV_RELEASE_TARBALL --version $FINAL_RELEASE_VERSION
-
-    # echo "----- Adding master cloned release as remote"
-    # git remote add local-diego-release-master ../diego-release-master
-    # git fetch local-diego-release-master
-    # git merge --no-edit local-diego-release-master/master
+    bosh -n create-release --tarball=$RELEASE_TGZ --version $FINAL_RELEASE_VERSION --final
 
     echo "----- Update master and develop branches on origin"
     git add -A
@@ -39,7 +36,7 @@ pushd release-develop
   fi
 
   # make tarball easier to reach by upstream things
-  mv $RELEASE_TGZ ../finalized-release/garden-windows-$FINAL_RELEASE_VERSION.tgz
+  mv $RELEASE_TGZ ../finalized-release/${RELEASE_NAME}-$FINAL_RELEASE_VERSION.tgz
 popd
 
-cp -a release-develop finalized-release/
+cp -a release finalized-release/

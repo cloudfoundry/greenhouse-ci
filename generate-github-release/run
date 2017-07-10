@@ -2,8 +2,8 @@
 
 set -e
 
-( cd release-master && git rev-parse HEAD ) > generated-release/commitish
+( cd release && git rev-parse HEAD ) > generated-release/commitish
 
-version=$(cat garden-windows-bosh-release-bucket-final/version)
-echo "Garden Windows v$version" > generated-release/name
+version=$(cat version/number)
+echo "v$version" > generated-release/name
 echo "v$version" > generated-release/version
