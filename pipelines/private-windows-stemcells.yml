@@ -3,12 +3,12 @@ resources:
 - name: ci
   type: git
   source:
-    branch: private-windows-stemcells
+    branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: stemcell-builder
   type: git
   source:
-    branch: private-windows-stemcell
+    branch: master
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
 - name: windows-stemcell-dependencies
@@ -26,16 +26,29 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: "1.0.0"
-
 - name: vsphere-stemcell-version
   type: semver
   source:
-    bucket: {{private_windows_stemcells_production}}
+    bucket: {{private_windows_stemcells_semver}}
     key: versions/vsphere-stemcell-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     bucket: private-windows-stemcells-semver
     initial_version: 1000.0.0
+- name: private-stemcell-pre-release-candidate
+  type: s3
+  source:
+    bucket: {{private_windows_stemcells_production}}
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: private-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: {{private_windows_stemcells_release_candidate}}
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
 jobs:
 - name: create-vsphere-add-updates
@@ -75,9 +88,9 @@ jobs:
     - get: windows-stemcell-dependencies
     - get: version
       resource: vsphere-stemcell-version
-      trigger: true
     - get: vmx-version
       resource: updated-vmx-version
+      trigger: true
       passed: [create-vsphere-add-updates]
   - task: create-stemcell
     privileged: true
@@ -100,3 +113,32 @@ jobs:
     - private-windows-worker
   - put: vsphere-stemcell-version
     params: {bump: minor}
+
+- name: test-vsphere-stemcell
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: bosh-windows-stemcell
+      resource: private-stemcell-pre-release-candidate
+      trigger: true
+    - get: stemcell-builder
+      passed: [create-vsphere-stemcell]
+    - get: version
+      resource: vsphere-stemcell-version
+      passed: [create-vsphere-stemcell]
+  - task: test-stemcell
+    tags: [private-windows-worker]
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
+    params:
+      VM_TYPE: large
+      BOSH_CLIENT_SECRET: {{regina_client_secret}}
+      BOSH_CLIENT: {{regina_client}}
+      BOSH_TARGET: {{regina_environment}}
+      BOSH_CA_CERT: {{regina_ca_cert}}
+      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+  - put: private-stemcell-release-candidate
+    params:
+      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
