@@ -27,6 +27,7 @@ RUN apt-get update -qq && \
     python-dev \
     python-pip \
     rlwrap \
+    rsync \
     unzip \
     vim \
     wget \

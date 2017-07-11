@@ -31,7 +31,8 @@ jobs:
     - get: concourse-github-release
       trigger: true
       params:
-        globs: concourse_windows_amd64.exe
+        globs: 
+          - concourse_windows_amd64.exe
     - get: concourse-windows-release
   - task: bump-concourse-windows-release
     file: ci/bump-concourse-windows-release/task.yml
@@ -48,5 +49,6 @@ jobs:
       name: concourse-github-release/version
       tag: concourse-github-release/version
       body: body/body.txt
-      globs: concourse-windows-tarball/release.tgz
+      globs:
+        - concourse-windows-tarball/release.tgz
 
