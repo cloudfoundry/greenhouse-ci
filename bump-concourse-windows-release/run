@@ -17,13 +17,14 @@ EOF
 
   version=$(cat ../concourse-github-release/version)
   bosh add-blob ../concourse-github-release/concourse_windows_amd64.exe concourse_windows/concourse_windows_amd64-$version.exe
+  bosh upload-blobs
 
   git config user.email "pivotal-netgarden-eng@pivotal.io"
   git config user.name "CI (Automated)"
   git add -A .
   git commit -m "Bump concourse worker to $version"
 
-  bosh create-release --tarball ../concourse-windows-tarball/release.tgz
+  bosh create-release --final --name concourse-windows-worker --version $version --tarball ../concourse-windows-tarball/release.tgz
   git add -A .
   git commit -m "Create $version release"
 popd
