@@ -116,7 +116,6 @@ jobs:
 
 - name: test-vsphere-stemcell
   serial: true
-  serial_groups: [vsphere]
   plan:
   - aggregate:
     - get: ci
@@ -129,7 +128,6 @@ jobs:
       resource: stemcell-version
       passed: [create-vsphere-stemcell]
   - task: test-stemcell
-    tags: [private-windows-worker]
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
