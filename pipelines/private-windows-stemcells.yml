@@ -26,15 +26,15 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: "1.0.0"
-- name: vsphere-stemcell-version
+- name: stemcell-version
   type: semver
   source:
     bucket: {{private_windows_stemcells_semver}}
-    key: versions/vsphere-stemcell-version-edge
+    key: versions/stemcell-version-private
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     bucket: private-windows-stemcells-semver
-    initial_version: 1000.0.0
+    initial_version: 1079.0.0
 - name: private-stemcell-pre-release-candidate
   type: s3
   source:
@@ -76,7 +76,7 @@ jobs:
       INPUT_BUCKET: {{private_windows_stemcells_vmx}}
       OUTPUT_BUCKET: {{private_windows_stemcells_vmx}}
   - put: updated-vmx-version
-    params: {bump: major}
+    params: {bump: minor}
 
 - name: create-vsphere-stemcell
   serial: true
@@ -87,7 +87,7 @@ jobs:
     - get: stemcell-builder
     - get: windows-stemcell-dependencies
     - get: version
-      resource: vsphere-stemcell-version
+      resource: stemcell-version
     - get: vmx-version
       resource: updated-vmx-version
       trigger: true
@@ -111,7 +111,7 @@ jobs:
       KMS_ADDRESS: {{KMS_HOST}}
     tags:
     - private-windows-worker
-  - put: vsphere-stemcell-version
+  - put: stemcell-version
     params: {bump: minor}
 
 - name: test-vsphere-stemcell
@@ -126,7 +126,7 @@ jobs:
     - get: stemcell-builder
       passed: [create-vsphere-stemcell]
     - get: version
-      resource: vsphere-stemcell-version
+      resource: stemcell-version
       passed: [create-vsphere-stemcell]
   - task: test-stemcell
     tags: [private-windows-worker]
