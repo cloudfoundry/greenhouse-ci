@@ -593,6 +593,7 @@ jobs:
         pre: build
     - task: create-stemcell
       file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+      attempts: 10
       params:
         OS_VERSION: windows2012R2
         ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
