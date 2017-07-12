@@ -47,6 +47,7 @@ groups:
   - test-azure-stemcell
 
 resources:
+# repos
 - name: ci
   type: git
   source:
@@ -62,14 +63,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
-- name: stemcells-major-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/stemcells-major-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1007.0.0
 - name: stemcell-builder-develop
   type: git
   source:
@@ -88,13 +81,14 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: {{PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY}}
-- name: major-stemcell
-  type: s3
+- name: stemcell-builder-release
+  type: github-release
   source:
-    bucket: bosh-windows-stemcells
-    regexp: stemcell-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    user: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-builder
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
+# versions
 - name: updated-vmx-version
   type: semver
   source:
@@ -103,6 +97,14 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     initial_version: "1.0.0"
+- name: stemcells-main-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/stemcells-main-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1200.0.0
 - name: vsphere-stemcell-version
   type: semver
   source:
@@ -110,7 +112,71 @@ resources:
     key: versions/vsphere-stemcell-version-edge
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1000.0.0
+    initial_version: 1200.0.0
+- name: aws-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/aws-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1200.0.0
+- name: gcp-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/gcp-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1200.0.0
+- name: azure-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/azure-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1200.0.0
+- name: gcp-2016-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/gcp-2016-stemcell-version-edge
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    initial_version: 1600.0.0
+
+# locks
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+- name: azure-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-azure
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-gcp
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
+
+# s3 buckets
+- name: major-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: stemcell-(.*).json
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: vsphere-stemcell-pre-release-candidate
   type: s3
   source:
@@ -132,21 +198,6 @@ resources:
    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: aws-lock
-  type: pool
-  source:
-    branch: master
-    pool: stemcells-aws
-    private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
-- name: aws-stemcell-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/aws-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1000.0.0
 - name: aws-stemcell-release-candidate
   type: s3
   source:
@@ -182,29 +233,6 @@ resources:
     regexp: base-gcp-image-windows2016-(.*).json
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: gcp-lock
-  type: pool
-  source:
-    branch: master
-    pool: stemcells-gcp
-    private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
-- name: gcp-stemcell-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/gcp-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1000.0.0
-- name: gcp-2016-stemcell-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/gcp-2016-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1000.0.0
 - name: gcp-2012R2-stemcell-release-candidate
   type: s3
   source:
@@ -226,21 +254,6 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: azure-lock
-  type: pool
-  source:
-    branch: master
-    pool: stemcells-azure
-    private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
-- name: azure-stemcell-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/azure-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: 1000.0.0
 - name: azure-stemcell-pre-release-candidate
   type: s3
   source:
@@ -269,12 +282,6 @@ resources:
     regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: stemcell-builder-release
-  type: github-release
-  source:
-    user: cloudfoundry-incubator
-    repository: bosh-windows-stemcell-builder
-    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
 jobs:
 - name: bump-stemcell-builder-submodules
@@ -355,12 +362,12 @@ jobs:
       passed: [test-stemcell-builder]
     - get: windows-stemcell-dependencies
     - get: version
-      resource: stemcells-major-version
+      resource: stemcells-main-version
       params:
-        bump: major
+        bump: minor
     - get: updated-vmx-version
       passed: [create-vsphere-add-updates]
-  - put: stemcells-major-version
+  - put: stemcells-main-version
     params:
       file: version/number
   - aggregate:
@@ -409,6 +416,7 @@ jobs:
     - put: base-gcp-image-win2016
       params:
         file: win2016-gcp-image/base-gcp-image-windows2016-*.json
+
 - name: create-vsphere-diff
   serial: true
   serial_groups: [vsphere]
@@ -423,7 +431,6 @@ jobs:
       tags: [vsphere-windows]
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
-
   - task: create-vmdk
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
@@ -454,7 +461,7 @@ jobs:
       tags: [vsphere-windows]
       resource: updated-vmx-version
       passed: [build-stemcells]
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [build-stemcells]
   - put: version
     resource: vsphere-stemcell-version
@@ -488,7 +495,7 @@ jobs:
     - get: version
       resource: vsphere-stemcell-version
       passed: [create-vsphere-stemcell]
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [create-vsphere-stemcell]
   - task: test-stemcell
     tags: [vsphere-windows]
@@ -524,7 +531,7 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-major-version
+      - get: stemcells-main-version
         passed: [build-stemcells]
     - put: version
       resource: aws-stemcell-version
@@ -578,7 +585,7 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-major-version
+      - get: stemcells-main-version
         passed: [build-stemcells]
     - put: version
       resource: gcp-stemcell-version
@@ -633,7 +640,7 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-major-version
+      - get: stemcells-main-version
         passed: [build-stemcells]
     - put: version
       resource: gcp-2016-stemcell-version
@@ -687,7 +694,7 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-major-version
+      - get: stemcells-main-version
         passed: [build-stemcells]
     - put: version
       resource: azure-stemcell-version
@@ -740,7 +747,7 @@ jobs:
       resource: azure-stemcell-version
       passed: [create-azure-stemcell]
       trigger: true
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [create-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
       passed: [create-azure-stemcell]
@@ -769,7 +776,7 @@ jobs:
       resource: azure-stemcell-version
       passed: [stage-azure-stemcell]
       trigger: true
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [stage-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
       passed: [stage-azure-stemcell]
@@ -789,7 +796,7 @@ jobs:
       resource: azure-stemcell-version
       passed: [publish-azure-stemcell]
       trigger: true
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [publish-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
       passed: [publish-azure-stemcell]
@@ -815,7 +822,7 @@ jobs:
       resource: azure-stemcell-version
       passed: [finalize-azure-stemcell]
       trigger: true
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [finalize-azure-stemcell]
     - get: bosh-windows-stemcell
       resource: azure-stemcell-release-candidate
@@ -851,7 +858,7 @@ jobs:
       passed: [test-azure-stemcell]
     - get: stemcell-builder
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
   - task: ensure-versions-match
     tags: [vsphere-windows]
@@ -933,7 +940,7 @@ jobs:
   - aggregate:
     - get: stemcell-builder
       passed: [promote-stemcells]
-    - get: stemcells-major-version
+    - get: stemcells-main-version
       passed: [promote-stemcells]
       trigger: true
     - get: vsphere-stemcell
@@ -946,14 +953,14 @@ jobs:
         platform: linux
         image: docker:///pivotalgreenhouse/ci
         inputs:
-        - name: stemcells-major-version
+        - name: stemcells-main-version
         outputs:
         - name: stemcell-builder-release-version
         run:
           path: bash
           args:
           - "-c"
-          - "cat stemcells-major-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"
+          - "cat stemcells-main-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"
     - task: extract-updates-txt
       tags: [vsphere-windows]
       config:
