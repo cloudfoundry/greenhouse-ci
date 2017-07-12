@@ -6,6 +6,7 @@ rsync -a concourse-windows-release/ concourse-windows-release-out
 
 pushd concourse-windows-release-out
   rm config/blobs.yml
+  touch config/blobs.yml
   cat > config/private.yml <<-EOF
 ---
 blobstore:
