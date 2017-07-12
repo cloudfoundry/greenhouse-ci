@@ -7,8 +7,6 @@ inputs:
   - name: vmx-version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
-outputs:
-  - name: bosh-windows-stemcell
 
 run:
   path: powershell
