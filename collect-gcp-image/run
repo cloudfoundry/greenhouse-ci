@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exo pipefail
+set -eo pipefail
 
 ACCOUNT_EMAIL=$(echo $ACCOUNT_JSON | jq -r .client_email)
 PROJECT_ID=$(echo $ACCOUNT_JSON | jq -r .project_id)
