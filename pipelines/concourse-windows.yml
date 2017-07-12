@@ -16,7 +16,7 @@ resources:
     user: pivotal-cf-experimental
     repository: concourse-windows-release
     pre_release: true
-    access_token: {{CONCOURSE_WINDOWS_DEPLOY_KEY}}
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 - name: concourse-github-release
   type: github-release
   source:
