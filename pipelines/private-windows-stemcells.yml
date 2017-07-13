@@ -108,7 +108,7 @@ jobs:
       OUTPUT_BUCKET: {{private_windows_stemcells_production}}
       ENABLE_RDP: true
       ENABLE_KMS: true
-      KMS_ADDRESS: {{KMS_HOST}}
+      KMS_HOST: {{KMS_HOST}}
     tags:
     - private-windows-worker
   - put: stemcell-version
@@ -137,6 +137,18 @@ jobs:
       BOSH_TARGET: {{regina_environment}}
       BOSH_CA_CERT: {{regina_ca_cert}}
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+  - task: vsphere-set-stemcell-version
+    config:
+      platform: windows
+      inputs:
+        - name: ci
+        - name: bosh-windows-stemcell
+      outputs:
+        - name: final-stemcell
+      run:
+        path: ruby
+        args:
+        - ci/set-stemcell-version/run
   - put: private-stemcell-release-candidate
     params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
