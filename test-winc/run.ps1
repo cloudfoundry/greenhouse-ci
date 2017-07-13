@@ -17,5 +17,11 @@ if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
+Set-MpPreference -DisableRealtimeMonitoring $true
+
 ginkgo.exe -p -r -race -cover -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
-Exit $LastExitCode
+$exit = $LastExitCode
+
+Set-MpPreference -DisableRealtimeMonitoring $false
+
+Exit $exit
