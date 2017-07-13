@@ -25,4 +25,4 @@ params:
   OWNER:
 
   INPUT_DIR:
-  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+  STEMCELL_DEPS_DIR:

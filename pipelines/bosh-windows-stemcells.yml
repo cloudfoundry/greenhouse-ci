@@ -449,6 +449,7 @@ jobs:
       ORGANIZATION: Pivotal
       OWNER: Pivotal
       INPUT_DIR: 'C:\diff-vmx'
+      STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   - put: vsphere-diff-release-candidate
     params:
       file: bosh-windows-stemcell/patchfile-*
