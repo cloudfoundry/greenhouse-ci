@@ -7,8 +7,8 @@ output_directory = '../bosh-windows-stemcell'
 version = File.read(File.join(version_dir, 'number')).chomp
 
 input_dir = Stemcell::Builder::validate_env('INPUT_DIR') # Concourse worker configured ahead of time
-vhd_path = Dir["#{input_dir}/*.vhd"].first
-vmx_path = Dir["#{input_dir}/*.vmx"].first
+vhd_path = Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vhd" }
+vmx_path = Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vmx" }
 
 output_vmdk_path = File.join(output_directory, 'output.vmdk')
 signature_path = File.join(output_directory, 'signature')
