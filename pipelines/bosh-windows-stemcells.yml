@@ -184,6 +184,13 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: vsphere-diff-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-private-release-candidates
+    regexp: patchfile-(.*)
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
@@ -436,9 +443,16 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
     tags: [vsphere-windows-worker]
     params:
-      PRODUCT_KEY: 123-1234
+      ADMINISTRATOR_PASSWORD: "Password123!"
+      OS_VERSION: windows2012R2
+      PRODUCT_KEY: D2N9P-3P6X9-2R39C-7RTCD-MDVJX
       ORGANIZATION: Pivotal
       OWNER: Pivotal
+      INPUT_DIR: 'C:\diff-vmx'
+  - put: vsphere-diff-release-candidate
+    params:
+      file: bosh-windows-stemcell/patchfile-*
+
 
 - name: create-vsphere-stemcell
   serial: true

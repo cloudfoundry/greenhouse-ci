@@ -24,5 +24,4 @@ params:
   ORGANIZATION:
   OWNER:
 
-  VERSION_DIR: ../version
-  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+  INPUT_DIR:

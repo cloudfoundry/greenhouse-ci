@@ -1,21 +1,42 @@
 require_relative '../../../stemcell-builder/lib/stemcell/builder'
 
-version_dir = Stemcell::Builder::validate_env_dir('VERSION_DIR')
+# Concourse inputs
+version_dir = '../version'
+output_directory = '../bosh-windows-stemcell'
+
 version = File.read(File.join(version_dir, 'number')).chomp
 
+input_dir = Stemcell::Builder::validate_env('INPUT_DIR') # Concourse worker configured ahead of time
+vhd_path = Dir["#{input_dir}/*.vhd"].first
+vmx_path = Dir["#{input_dir}/*.vmx"].first
+
+output_vmdk_path = File.join(output_directory, 'output.vmdk')
+signature_path = File.join(output_directory, 'signature')
+diff_path = File.join(output_directory, "patchfile-#{version}")
+
 vsphere = Stemcell::Builder::VSphere.new(
-  mem_size: ENV.fetch('MEM_SIZE', '4096'),
-  num_vcpus: ENV.fetch('NUM_VCPUS', '8'),
-  source_path: Stemcell::Builder::validate_env('VMX_PATH'),
+  mem_size: '4096',
+  num_vcpus: '4',
+  source_path: vmx_path,
   agent_commit: "",
   administrator_password: Stemcell::Builder::validate_env('ADMINISTRATOR_PASSWORD'),
   product_key: Stemcell::Builder::validate_env('PRODUCT_KEY'),
   owner: Stemcell::Builder::validate_env('OWNER'),
   organization: Stemcell::Builder::validate_env('ORGANIZATION'),
   os: Stemcell::Builder::validate_env('OS_VERSION'),
-  output_directory: Stemcell::Builder::validate_env('OUTPUT_DIR'),
+  output_directory: output_directory,
   packer_vars: {},
-  version: version
+  version: version,
+  skip_windows_update: true,
+  new_password: Stemcell::Builder::validate_env('ADMINISTRATOR_PASSWORD')
 )
 
 vsphere.run_packer
+
+signature_command = "gordiff signature #{vhd_path} #{signature_path}"
+puts "generating signature: #{signature_command}"
+`#{signature_command}`
+
+diff_command = "gordiff delta #{signature_path} #{output_vmdk_path} #{diff_path}"
+puts "generating diff: #{diff_command}"
+`#{diff_command}`
