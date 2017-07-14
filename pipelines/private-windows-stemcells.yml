@@ -139,17 +139,7 @@ jobs:
       BOSH_CA_CERT: {{regina_ca_cert}}
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - task: vsphere-set-stemcell-version
-    config:
-      platform: windows
-      inputs:
-        - name: ci
-        - name: bosh-windows-stemcell
-      outputs:
-        - name: final-stemcell
-      run:
-        path: ruby
-        args:
-        - ci/set-stemcell-version/run
+    file: ci/set-stemcell-version/task.yml
   - put: private-stemcell-release-candidate
     params:
       file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
