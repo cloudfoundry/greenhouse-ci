@@ -10,7 +10,6 @@ input_dir = Stemcell::Builder::validate_env('INPUT_DIR') # Concourse worker conf
 vhd_path = File.join(input_dir, Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vhd" })
 vmx_path = File.join(input_dir, Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vmx" })
 
-output_vmdk_path = File.join(output_directory, 'output.vmdk')
 signature_path = File.join(output_directory, 'signature')
 diff_path = File.join(output_directory, "patchfile-#{version}")
 
@@ -32,6 +31,7 @@ vsphere = Stemcell::Builder::VSphere.new(
 )
 
 vsphere.run_packer
+output_vmdk_path = File.join(output_directory, Dir.entries("#{output_directory}").detect { |e| File.extname(e) == ".vmdk" })
 
 signature_command = "gordiff signature #{vhd_path} #{signature_path}"
 puts "generating signature: #{signature_command}"
