@@ -1,5 +1,6 @@
 ---
 platform: windows
+tags: [vsphere-windows-worker]
 
 inputs:
   - name: ci
