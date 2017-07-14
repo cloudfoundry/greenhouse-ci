@@ -2,7 +2,7 @@ require_relative '../../../stemcell-builder/lib/stemcell/builder'
 
 # Concourse inputs
 version_dir = '../version'
-output_directory = '../bosh-windows-stemcell'
+output_directory = '../bosh-windows-stemcell/packer-output' # packer-output must not exist before packer is run!
 
 version = File.read(File.join(version_dir, 'number')).chomp
 
