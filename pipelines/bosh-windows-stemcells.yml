@@ -327,6 +327,7 @@ jobs:
       input_mapping: {stemcell-builder: stemcell-builder-develop}
     - task: test-bosh-psmodules
       file: ci/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      tags: [vsphere-windows-worker]
       input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
