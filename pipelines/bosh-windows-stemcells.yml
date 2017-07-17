@@ -372,7 +372,7 @@ jobs:
     - get: version
       resource: stemcells-main-version
       params:
-        bump: minor
+        bump: patch
     - get: updated-vmx-version
       passed: [create-vsphere-add-updates]
   - put: stemcells-main-version
@@ -876,6 +876,8 @@ jobs:
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
     - get: stemcells-main-version
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell,test-azure-stemcell]
+      params:
+        bump: minor
   - task: ensure-versions-match
     tags: [vsphere-windows]
     file: ci/match-stemcell-versions/task.yml
@@ -949,6 +951,9 @@ jobs:
       input_mapping: { sha: azure-stemcell-final }
       params:
         BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+  - put: stemcells-main-version
+    params:
+      file: version/number
 
 - name: ship-bosh-stemcell-builder
   serial: true
