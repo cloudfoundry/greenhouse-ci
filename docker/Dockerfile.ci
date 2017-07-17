@@ -21,6 +21,7 @@ RUN apt-get update -qq && \
     libc6-dev \
     lsb-release \
     make \
+    mingw-w64 \
     nano \
     pkg-config \
     python-all \
