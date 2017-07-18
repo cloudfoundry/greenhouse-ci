@@ -8,7 +8,7 @@ version = File.read(File.join(version_dir, 'number')).chomp
 
 vhd_path = Dir["../base-vhds/*.vhd"].first
 vmdk_path = Dir['../primed-vmdks/*.vmdk'].first
-vmx_path = "../bosh-windows-stemcell-builder/create-vsphere-vmdk/old-base-vmx.vmx"
+vmx_path = "../ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/old-base-vmx.vmx"
 
 signature_path = File.join(output_directory, 'signature')
 diff_path = File.join(output_directory, "patchfile-#{version}")
