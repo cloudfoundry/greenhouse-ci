@@ -185,6 +185,9 @@ jobs:
         params: {pre: rc}
       - get: ci
       - get: garden-windows-private
+    - put: version
+      params:
+        file: version/number
     - task: create-release
       file: ci/bosh-cr/task.yml
       input_mapping: { release: garden-windows-bosh-release-develop }
