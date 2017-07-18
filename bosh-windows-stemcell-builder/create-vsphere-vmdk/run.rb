@@ -6,9 +6,9 @@ output_directory = '../bosh-windows-stemcell/packer-output' # packer-output must
 
 version = File.read(File.join(version_dir, 'number')).chomp
 
-input_dir = Stemcell::Builder::validate_env('INPUT_DIR') # Concourse worker configured ahead of time
-vhd_path = File.join(input_dir, Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vhd" })
-vmx_path = File.join(input_dir, Dir.entries("#{input_dir}").detect { |e| File.extname(e) == ".vmx" })
+vhd_path = Dir["../base-vhds/*.vhd"].first
+vmdk_path = Dir['../primed-vmdks/*.vmdk'].first
+vmx_path = "../bosh-windows-stemcell-builder/create-vsphere-vmdk/old-base-vmx.vmx"
 
 signature_path = File.join(output_directory, 'signature')
 diff_path = File.join(output_directory, "patchfile-#{version}")
