@@ -6,6 +6,8 @@ inputs:
   - name: version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
+  - name: primed-vmdks
+  - name: base-vhds
 outputs:
   - name: bosh-windows-stemcell
 

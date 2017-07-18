@@ -289,6 +289,20 @@ resources:
     regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: primed-vmdks
+  type: s3
+  source:
+    bucket: bosh-windows-diffcell
+    regexp: diffcell-primed-(.*).vmdk
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: base-vhds
+  type: s3
+  source:
+    bucket: bosh-windows-diffcell
+    regexp: diffcell-(.*).vhd
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
 jobs:
 - name: bump-stemcell-builder-submodules
@@ -439,10 +453,14 @@ jobs:
       tags: [vsphere-windows]
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
+    - get: primed-vmdks
+      tags: [vsphere-windows]
+    - get: base-vhds
+      tags: [vsphere-windows]
   - task: create-vmdk
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
-    tags: [vsphere-windows-worker]
+    tags: [diffcell-windows-worker]
     params:
       ADMINISTRATOR_PASSWORD: "Password123!"
       OS_VERSION: windows2012R2
