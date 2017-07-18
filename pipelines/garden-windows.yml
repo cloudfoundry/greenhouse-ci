@@ -235,6 +235,7 @@ jobs:
         NUM_WIN_CELLS: 1
         SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
         CONSUL_MUTUAL_TLS: false
+        TEST_TASK: true
       ensure:
         task: delete-deployment
         file: ci/bosh-deld/task.yml
