@@ -58,7 +58,8 @@ push-location garden-runc-release
     --default-rootfs=$wincTestRootfs `
     --nstar-bin=$nstarPath `
     --tar-bin=$tarBin `
-    --depot $depotDir"
+    --depot $depotDir" `
+    --log-level='debug'
 
   # wait for server to start up
   # and then curl to confirm that it is
