@@ -79,8 +79,8 @@ Kill-Garden
 
 if ($ExitCode -ne 0) {
   echo "gdn.exe STDOUT"
-  Get-Content -Tail 100 garden-runc-release/gdn.out.log
+  Get-Content garden-runc-release/gdn.out.log
   echo "gdn.exe STDERR"
-  Get-Content -Tail 100 garden-runc-release/gdn.err.log
+  Get-Content garden-runc-release/gdn.err.log
   Exit $ExitCode
 }
