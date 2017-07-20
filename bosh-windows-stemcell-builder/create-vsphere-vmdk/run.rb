@@ -72,4 +72,4 @@ puts "generating diff: #{diff_command}"
 `#{diff_command}`
 
 patch_filename = File.basename diff_path
-s3_client.put(output_bucket, patch_filename, diff_path)
+s3_client.put(output_bucket, "patchfiles/#{patch_filename}", diff_path)
