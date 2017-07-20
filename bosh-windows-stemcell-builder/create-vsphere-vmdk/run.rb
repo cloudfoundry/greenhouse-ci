@@ -23,7 +23,7 @@ s3_client = S3::Client.new(
   aws_secret_access_key: aws_secret_access_key,
   aws_region: aws_region)
 
-last_file = s3_client.list(image_bucket).sort.last
+last_file = s3_client.list(image_bucket).select{|file| /.vhd$/.match(file)}.sort.last
 image_basename = File.basename(last_file, File.extname(last_file))
 
 vmdk_filename = image_basename + '.vmdk'
