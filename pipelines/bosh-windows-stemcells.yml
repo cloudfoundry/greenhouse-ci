@@ -184,13 +184,6 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: vsphere-diff-release-candidate
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells-private-release-candidates
-    regexp: patchfile-(.*)
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
@@ -456,10 +449,6 @@ jobs:
       VHD_VMDK_BUCKET: bosh-windows-diffcell
       DIFF_OUTPUT_BUCKET: bosh-windows-diffcell
       CACHE_DIR: "C:\\image-data"
-  - put: vsphere-diff-release-candidate
-    params:
-      file: bosh-windows-stemcell/packer-output/patchfile-*
-
 
 - name: create-vsphere-stemcell
   serial: true
