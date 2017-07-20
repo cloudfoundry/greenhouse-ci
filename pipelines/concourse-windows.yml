@@ -8,13 +8,13 @@ resources:
   type: git
   source:
     branch: master
-    uri: git@github.com:pivotal-cf-experimental/concourse-windows-release.git
+    uri: git@github.com:pivotal-cf-experimental/concourse-windows-worker-release.git
     private_key: {{CONCOURSE_WINDOWS_DEPLOY_KEY}}
 - name: concourse-windows-release-github-release
   type: github-release
   source:
     user: pivotal-cf-experimental
-    repository: concourse-windows-release
+    repository: concourse-windows-worker-release
     pre_release: true
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 - name: concourse-github-release
@@ -31,7 +31,7 @@ jobs:
     - get: concourse-github-release
       trigger: true
       params:
-        globs: 
+        globs:
           - concourse_windows_amd64.exe
     - get: concourse-windows-release
   - task: bump-concourse-windows-release
