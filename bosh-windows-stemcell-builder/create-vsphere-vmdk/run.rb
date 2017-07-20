@@ -15,7 +15,7 @@ aws_secret_access_key = Stemcell::Builder::validate_env('AWS_SECRET_ACCESS_KEY')
 aws_region = Stemcell::Builder::validate_env('AWS_REGION')
 
 image_bucket = Stemcell::Builder::validate_env('VHD_VMDK_BUCKET')
-# output_bucket = Stemcell::Builder::validate_env('DIFF_OUTPUT_BUCKET')
+output_bucket = Stemcell::Builder::validate_env('DIFF_OUTPUT_BUCKET')
 cache_dir = Stemcell::Builder::validate_env('CACHE_DIR')
 
 s3_client = S3::Client.new(
@@ -70,3 +70,6 @@ puts "generating signature: #{signature_command}"
 diff_command = "gordiff delta #{signature_path} #{output_vmdk_path} #{diff_path}"
 puts "generating diff: #{diff_command}"
 `#{diff_command}`
+
+patch_filename = File.basename diff_path
+s3_client.put(output_bucket, patch_filename, diff_path)
