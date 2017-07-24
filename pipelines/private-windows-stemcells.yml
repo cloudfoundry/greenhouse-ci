@@ -50,6 +50,13 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
     region_name: us-east-2
+- name: pivnet-private-stemcells-release
+  type: pivnet
+  source:
+    api_token: {{PIVNET_BOT_API_TOKEN}}
+    product_slug: {{private_product_slug}}
+    access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
+    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
 
 jobs:
 - name: create-vsphere-add-updates
@@ -113,7 +120,7 @@ jobs:
     tags:
     - private-windows-worker
   - put: stemcell-version
-    params: {bump: minor}
+    params: {bump: patch}
 
 - name: test-vsphere-stemcell
   serial: true
@@ -143,3 +150,44 @@ jobs:
   - put: private-stemcell-release-candidate
     params:
       file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+
+- name: upload-internal-stemcells
+  serial: true
+  plan:
+  - aggregate:
+    - get: private-stemcell-release-candidate
+      passed: [test-vsphere-stemcell]
+    - get: stemcell-version
+      passed: [test-vsphere-stemcell]
+  - task: pivnet-metadata
+    config:
+      inputs: [{name: private-stemcell-release-candidate}]
+      outputs: [{name: pivnet-metadata}]
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: concourse/git-resource } }
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          cat > pivnet-metadata/metadata <<EOF
+          ---
+          release:
+            version: "$(cat private-stemcell-release-candidate/version)"
+            release_type: Beta Release
+            eula_slug: "pivotal_beta_eula"
+            availability: Admins Only
+            user_group_ids: []
+            eccn: ""
+            license_exception: ""
+          product_files:
+          - file: $(ls private-stemcell-release-candidate/*.tgz)
+            upload_as: "vSphere Stemcell for Windows 2012R2 Server"
+          EOF
+  - put: pivnet-private-stemcells-release
+    params:
+      file_glob: private-stemcell-release-candidate/*.tgz
+      s3_filepath_prefix: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX}}
+      metadata_file: pivnet-metadata/metadata
+  - put: stemcell-version
+    params: {bump: minor}
