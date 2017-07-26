@@ -6,6 +6,7 @@ inputs:
   - name: version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
+  - name: sshd
 outputs:
   - name: bosh-windows-stemcell
 

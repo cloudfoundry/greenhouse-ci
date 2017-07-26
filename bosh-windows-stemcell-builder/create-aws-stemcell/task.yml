@@ -9,6 +9,7 @@ inputs:
   - name: base-amis
   - name: version
   - name: windows-stemcell-dependencies
+  - name: sshd
 
 outputs:
   - name: bosh-windows-stemcell

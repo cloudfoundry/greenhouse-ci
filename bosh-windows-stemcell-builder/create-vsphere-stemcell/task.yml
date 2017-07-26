@@ -7,6 +7,7 @@ inputs:
   - name: vmx-version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
+  - name: sshd
 
 run:
   path: powershell
