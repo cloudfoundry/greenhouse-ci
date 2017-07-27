@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -ex
+
+rm -rf stemcell-builder
+sha=`cat stemcell-builder-released-sha/stemcell-*.json | jq -r '."stemcell-builder"'`
+git clone https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder stemcell-builder
+cd stemcell-builder
+git checkout $sha
+git submodule update --init --recursive
