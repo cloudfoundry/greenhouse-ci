@@ -480,6 +480,7 @@ jobs:
       passed: [build-stemcells]
     - get: sshd
       resource: openssh-release
+      version: { tag: 'v0.0.18.0' }
 
   - put: version
     resource: vsphere-stemcell-version
@@ -553,6 +554,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - put: version
       resource: aws-stemcell-version
       params:
@@ -609,6 +611,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - put: version
       resource: gcp-stemcell-version
       params:
@@ -667,6 +670,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - put: version
       resource: gcp-2016-stemcell-version
       params:
@@ -723,6 +727,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - put: version
       resource: azure-stemcell-version
       params:
