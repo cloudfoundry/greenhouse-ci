@@ -58,6 +58,12 @@ resources:
     product_slug: {{private_product_slug}}
     access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
     secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
+- name: openssh-release
+  type: github-release
+  source:
+    user: PowerShell
+    repository: Win32-OpenSSH
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
 jobs:
 - name: create-vsphere-add-updates
@@ -96,6 +102,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder-released-sha
+      trigger: true
     - get: windows-stemcell-dependencies
     - get: version
       resource: stemcell-version
@@ -103,6 +110,10 @@ jobs:
       resource: updated-vmx-version
       trigger: true
       passed: [create-vsphere-add-updates]
+    - get: sshd
+      tag: 'v0.0.18.0'
+      resource: openssh-release
+      version: { tag: 'v0.0.18.0' }
   - task: checkout-stemcell-builder
     file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
