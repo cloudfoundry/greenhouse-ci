@@ -217,11 +217,12 @@ jobs:
     - task: build-winc-image
       file: ci/build-binary/task.yml
       input_mapping:
-        repo: winc-release-develop
+        repo: winc-master
       output_mapping:
         binary-output: winc-image-binary
       params:
-        PACKAGE: "./src/winc-image"
+        IMPORT_PATH: "code.cloudfoundry.org/winc"
+        PACKAGE: "./cmd/winc-image"
     - task: build-nstar
       file: ci/build-binary/task.yml
       input_mapping:
