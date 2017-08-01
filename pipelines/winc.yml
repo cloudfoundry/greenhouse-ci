@@ -60,11 +60,6 @@ resources:
 #   source:
 #     branch: develop
 #     uri: https://github.com/cloudfoundry-incubator/cf-networking-release.git
-- name: garden-runc-release-fork
-  type: git
-  source:
-    branch: fork-develop
-    uri: https://github.com/greenhouse-org/garden-runc-release.git
 - name: gats-fork
   type: git
   source:
@@ -190,7 +185,6 @@ jobs:
     - get: gats-fork
     - get: guardian-fork
     - get: garden-runc-release
-      resource: garden-runc-release-fork
     - get: winc-master
       passed: [winc]
       trigger: true
@@ -238,8 +232,6 @@ jobs:
       guardian: guardian-fork
   - task: run-gats
     file: ci/run-local-gats/task.yml
-    input_mapping:
-      garden-runc-release: garden-runc-release-forks
 
 - name: bump-winc-release
   serial: true
