@@ -232,6 +232,8 @@ jobs:
       guardian: guardian-fork
   - task: run-gats
     file: ci/run-local-gats/task.yml
+    input_mapping:
+      garden-runc-release: garden-runc-release-forks
 
 - name: bump-winc-release
   serial: true
