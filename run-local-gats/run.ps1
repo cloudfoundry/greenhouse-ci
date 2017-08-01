@@ -43,6 +43,8 @@ push-location garden-runc-release
 
   $tarBin = (get-command tar.exe).source
 
+  $imageRoot="C:\var\vcap\packages\winc-image\rootfs"
+
   Start-Process `
     -NoNewWindow `
     -RedirectStandardOutput gdn.out.log `
@@ -52,6 +54,7 @@ push-location garden-runc-release
     --skip-setup `
     --runtime-plugin=$wincPath `
     --image-plugin=$wincImagePath `
+    --image-plugin-extra-arg=--store=$imageRoot `
     --network-plugin=$wincNetworkPath `
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
@@ -59,6 +62,7 @@ push-location garden-runc-release
     --nstar-bin=$nstarPath `
     --tar-bin=$tarBin `
     --depot $depotDir `
+    --runc-root=$imageRoot `
     --log-level=debug"
 
   # wait for server to start up
