@@ -24,4 +24,17 @@ if ($env:IMPORT_PATH -ne "") {
 
 $BINARY=(Get-Item $env:PACKAGE).BaseName
 go.exe build -o "binary-output/$BINARY.exe" $env:PACKAGE
-Exit $LastExitCode
+if ($LastExitCode -ne 0) {
+  exit $LastExitCode
+}
+
+if ($BINARY -eq "winc-image") {
+  gcc.exe -c "repo\src\code.cloudfoundry.org\volume\quota\quota.c" -o "$env:TEMP\quota.o"
+  if ($LastExitCode -ne 0) {
+    exit $LastExitCode
+  }
+  gcc.exe -shared -o "binary-output\quota.dll" "$env:TEMP\quota.o" -lole32 -loleaut32
+  if ($LastExitCode -ne 0) {
+    exit $LastExitCode
+  }
+}
