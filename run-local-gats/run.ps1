@@ -11,8 +11,8 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;C:/var/vcap/bo
 
 go version
 
-docker pull cloudfoundry/cfwindowsfs
-$wincTestRootfs = (docker inspect cloudfoundry/cfwindowsfs | ConvertFrom-Json).GraphDriver.Data.Dir
+docker pull cloudfoundry/windows2016fs
+$wincTestRootfs = (docker inspect cloudfoundry/windows2016fs | ConvertFrom-Json).GraphDriver.Data.Dir
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"

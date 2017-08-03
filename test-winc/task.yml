@@ -15,4 +15,4 @@ run:
   - ci/test-winc/run.ps1
 
 params:
-  TEST_ROOTFS_IMAGE: "cloudfoundry/cfwindowsfs"
+  TEST_ROOTFS_IMAGE: "cloudfoundry/windows2016fs"
