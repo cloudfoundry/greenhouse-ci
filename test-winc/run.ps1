@@ -7,6 +7,8 @@ $env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;" + $env:PATH
 docker.exe pull $env:TEST_ROOTFS_IMAGE
 $env:WINC_TEST_ROOTFS = (docker.exe inspect $env:TEST_ROOTFS_IMAGE | ConvertFrom-Json).GraphDriver.Data.Dir
 
+Install-WindowsFeature -Name FS-Resource-Manager
+
 go.exe version
 
 cd $env:GOPATH/src/code.cloudfoundry.org/winc

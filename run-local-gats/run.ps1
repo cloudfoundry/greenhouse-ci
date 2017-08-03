@@ -14,6 +14,8 @@ go version
 docker pull cloudfoundry/windows2016fs
 $wincTestRootfs = (docker inspect cloudfoundry/windows2016fs | ConvertFrom-Json).GraphDriver.Data.Dir
 
+Install-WindowsFeature -Name FS-Resource-Manager
+
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
 $wincImagePath = "$PWD/winc-image-binary/winc-image.exe"
@@ -24,7 +26,6 @@ push-location garden-runc-release
   if ($LastExitCode -ne 0) {
       throw "Ginkgo installation process returned error code: $LastExitCode"
   }
-
 
   go build -o gdn.exe ./src/code.cloudfoundry.org/guardian/cmd/gdn
   if ($LastExitCode -ne 0) {
