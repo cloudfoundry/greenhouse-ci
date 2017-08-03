@@ -29,7 +29,7 @@ if ($LastExitCode -ne 0) {
 }
 
 if ($BINARY -eq "winc-image") {
-  gcc.exe -c "repo\src\code.cloudfoundry.org\volume\quota\quota.c" -o "$env:TEMP\quota.o"
+  gcc.exe -c "repo\src\code.cloudfoundry.org\winc\volume\quota\quota.c" -o "$env:TEMP\quota.o"
   if ($LastExitCode -ne 0) {
     exit $LastExitCode
   }
