@@ -18,4 +18,8 @@ if ($LASTEXITCODE -ne 0) {
   Exit 1
 }
 
-ruby -e "STDOUT.sync = true; STDERR.sync = true" -e "load ARGV.shift" ../ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/run.rb
+rake build:vsphere_diff
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Could not build vsphere diff"
+  Exit 1
+}
