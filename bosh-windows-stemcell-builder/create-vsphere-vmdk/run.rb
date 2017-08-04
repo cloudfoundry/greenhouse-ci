@@ -8,7 +8,6 @@ output_directory = '../bosh-windows-stemcell/packer-output' # packer-output must
 version = File.read(File.join(version_dir, 'number')).chomp
 
 signature_path = File.join(output_directory, 'signature')
-diff_path = File.join(output_directory, "patchfile-#{version}")
 
 aws_access_key_id = Stemcell::Builder::validate_env('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = Stemcell::Builder::validate_env('AWS_SECRET_ACCESS_KEY')
@@ -23,14 +22,20 @@ s3_client = S3::Client.new(
   aws_secret_access_key: aws_secret_access_key,
   aws_region: aws_region)
 
+# Get the most recent vhd
 last_file = s3_client.list(image_bucket).select{|file| /.vhd$/.match(file)}.sort.last
 image_basename = File.basename(last_file, File.extname(last_file))
 
+vhd_version = FileHelper.parse_vhd_version(image_basename)
+diff_path = File.join(output_directory, "patchfile-#{version}-#{vhd_version}")
+
+# Look for base vhd and converted vmdk in diffcell worker cache
 vmdk_filename = image_basename + '.vmdk'
 vhd_filename = image_basename + '.vhd'
 vmdk_location = File.join(cache_dir, vmdk_filename)
 vhd_location = File.join(cache_dir, vhd_filename)
 
+# Download files from S3 if not cached
 if !File.exist?(vmdk_location)
   s3_client.get(image_bucket, vmdk_filename, vmdk_location)
 end
@@ -38,6 +43,7 @@ if !File.exist?(vhd_location)
   s3_client.get(image_bucket, vhd_filename, vhd_location)
 end
 
+# Setup base vmx file for packer to use
 vmx_template_txt = File.read("../ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/old-base-vmx.vmx")
 new_vmx_txt = vmx_template_txt.gsub("INIT_VMDK",vmdk_location)
 File.write("config.vmx", new_vmx_txt)
