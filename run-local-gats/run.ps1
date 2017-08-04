@@ -14,7 +14,8 @@ go version
 docker pull cloudfoundry/windows2016fs
 $wincTestRootfs = (docker inspect cloudfoundry/windows2016fs | ConvertFrom-Json).GraphDriver.Data.Dir
 
-Install-WindowsFeature -Name FS-Resource-Manager
+Set-MpPreference -DisableRealtimeMonitoring $true
+Get-ContainerNetwork | Remove-ContainerNetwork -Force
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
@@ -81,6 +82,8 @@ Pop-Location
 $ExitCode="$LastExitCode"
 
 Kill-Garden
+
+Set-MpPreference -DisableRealtimeMonitoring $false
 
 if ($ExitCode -ne 0) {
   echo "gdn.exe STDOUT"
