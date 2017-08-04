@@ -437,6 +437,11 @@ jobs:
       tags: [vsphere-windows]
     - get: windows-stemcell-dependencies
       tags: [vsphere-windows]
+    - get: stemcells-main-version
+      passed: [build-stemcells]
+    - get: sshd
+      resource: openssh-release
+      version: { tag: 'v0.0.18.0' }
   - task: create-vmdk
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
