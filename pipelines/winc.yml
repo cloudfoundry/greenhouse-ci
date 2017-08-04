@@ -78,7 +78,7 @@ resources:
     client: {{PESTO_BOSH_CLIENT}}
     client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
     ca_cert: {{PESTO_BOSH_CA_CERT}}
-- name: stemcell
+- name: stemcell-gcp
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
@@ -278,7 +278,7 @@ jobs:
       acquire: true
   - aggregate:
     - get: ci
-    - get: stemcell
+    - get: stemcell-gcp
     - get: garden-runc-release
     - get: winc-release-develop
       passed: [test-nstar]
@@ -308,7 +308,7 @@ jobs:
     params:
       manifest: ci/garden-winc-manifest/manifest.yml
       stemcells:
-      - stemcell/*.tgz
+      - stemcell-gcp/*.tgz
       releases:
       - winc-tarball/*.tgz
       - garden-runc-tarball/*.tgz
