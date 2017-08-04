@@ -32,20 +32,20 @@ diff_path = File.join(output_directory, "patchfile-#{version}-#{vhd_version}")
 # Look for base vhd and converted vmdk in diffcell worker cache
 vmdk_filename = image_basename + '.vmdk'
 vhd_filename = image_basename + '.vhd'
-vmdk_location = File.join(cache_dir, vmdk_filename)
-vhd_location = File.join(cache_dir, vhd_filename)
+vmdk_path = File.join(cache_dir, vmdk_filename)
+vhd_path = File.join(cache_dir, vhd_filename)
 
 # Download files from S3 if not cached
-if !File.exist?(vmdk_location)
-  s3_client.get(image_bucket, vmdk_filename, vmdk_location)
+if !File.exist?(vmdk_path)
+  s3_client.get(image_bucket, vmdk_filename, vmdk_path)
 end
-if !File.exist?(vhd_location)
-  s3_client.get(image_bucket, vhd_filename, vhd_location)
+if !File.exist?(vhd_path)
+  s3_client.get(image_bucket, vhd_filename, vhd_path)
 end
 
 # Setup base vmx file for packer to use
 vmx_template_txt = File.read("../ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/old-base-vmx.vmx")
-new_vmx_txt = vmx_template_txt.gsub("INIT_VMDK",vmdk_location)
+new_vmx_txt = vmx_template_txt.gsub("INIT_VMDK",vmdk_path)
 File.write("config.vmx", new_vmx_txt)
 vmx_path = File.absolute_path("config.vmx").gsub("/", "\\")
 
@@ -69,7 +69,7 @@ vsphere = Stemcell::Builder::VSphere.new(
 vsphere.run_packer
 output_vmdk_path = File.join(output_directory, Dir.entries("#{output_directory}").detect { |e| File.extname(e) == ".vmdk" })
 
-signature_command = "gordiff signature #{vhd_location} #{signature_path}"
+signature_command = "gordiff signature #{vhd_path} #{signature_path}"
 puts "generating signature: #{signature_command}"
 `#{signature_command}`
 
