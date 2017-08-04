@@ -1,0 +1,22 @@
+---
+platform: windows
+
+inputs:
+  - name: ci
+  - name: version
+  - name: stemcell-builder
+  - name: windows-stemcell-dependencies
+  - name: sshd
+outputs:
+  - name: bosh-windows-stemcell
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/run.ps1
+params:
+  OS_VERSION: windows2012R2
+  OUTPUT_BUCKET: "bosh-windows-stemcells-pre-release-candidate"
