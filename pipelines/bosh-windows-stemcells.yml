@@ -459,6 +459,18 @@ jobs:
       VHD_VMDK_BUCKET: bosh-windows-diffcell
       DIFF_OUTPUT_BUCKET: bosh-windows-diffcell
       CACHE_DIR: "C:\\image-data"
+  - task: create-stemcell
+    privileged: true
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/task.yml
+    tags: [diffcell-windows-worker]
+    params:
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_REGION: us-east-1
+      VHD_VMDK_BUCKET: bosh-windows-diffcell
+      STEMCELL_OUTPUT_BUCKET: bosh-windows-diffcell
+      OUTPUT_BUCKET: "bosh-windows-stemcells-pre-release-candidate"
+      CACHE_DIR: "C:\\image-data"
 
 - name: create-vsphere-stemcell
   serial: true
@@ -486,7 +498,6 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: 'v0.0.18.0' }
-
   - put: version
     resource: vsphere-stemcell-version
     params:
