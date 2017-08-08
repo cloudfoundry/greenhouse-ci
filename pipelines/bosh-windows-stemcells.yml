@@ -440,6 +440,10 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: 'v0.0.18.0' }
+  - put: version
+    resource: vsphere-stemcell-version
+    params:
+      pre: build
   - task: create-stemcell
     privileged: true
     file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/task.yml
