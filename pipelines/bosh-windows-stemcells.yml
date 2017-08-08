@@ -6,7 +6,6 @@ groups:
   - build-stemcells
   - promote-stemcells
   - ship-bosh-stemcell-builder
-  - create-vsphere-add-updates
   - create-vsphere-stemcell
   - test-vsphere-stemcell
   - create-aws-stemcell
@@ -26,7 +25,6 @@ groups:
   - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
-  - create-vsphere-add-updates
   - create-vsphere-stemcell
   - test-vsphere-stemcell
 - name: aws
@@ -92,14 +90,6 @@ resources:
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 
 # versions
-- name: updated-vmx-version
-  type: semver
-  source:
-    bucket: bosh-windows-stemcells
-    key: versions/updated-vmx-version
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-    initial_version: "1.0.0"
 - name: stemcells-main-version
   type: semver
   source:
@@ -345,8 +335,6 @@ jobs:
       resource: stemcells-main-version
       params:
         bump: patch
-    - get: updated-vmx-version
-      passed: [create-vsphere-add-updates]
   - put: stemcells-main-version
     params:
       file: version/number
