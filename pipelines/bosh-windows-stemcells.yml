@@ -333,30 +333,6 @@ jobs:
   - put: stemcell-builder
     params: { repository: merged-repo/to-repo }
 
-- name: create-vsphere-add-updates
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-    - get: windows-stemcell-dependencies
-    - get: vmx-version
-      resource: updated-vmx-version
-  - task: add-updates
-    privileged: true
-    input_mapping: { version: vmx-version }
-    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
-    tags: [vsphere-windows-worker]
-    params:
-      OS_VERSION: windows2012R2
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-      AWS_REGION: us-east-1
-  - put: updated-vmx-version
-    params: {bump: major}
-
 - name: build-stemcells
   serial: true
   plan:
