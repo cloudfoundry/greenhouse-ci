@@ -8,7 +8,7 @@ if ($LASTEXITCODE -ne 0) {
   Exit 1
 }
 
-rake build:vsphere_from_diff
+rake build:vsphere_diff
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not build vsphere stemcell from diff"
   Exit 1

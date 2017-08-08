@@ -8,7 +8,6 @@ groups:
   - ship-bosh-stemcell-builder
   - create-vsphere-add-updates
   - create-vsphere-stemcell
-  - create-vsphere-diff
   - test-vsphere-stemcell
   - create-aws-stemcell
   - create-gcp-stemcell
@@ -29,7 +28,6 @@ groups:
   jobs:
   - create-vsphere-add-updates
   - create-vsphere-stemcell
-  - create-vsphere-diff
   - test-vsphere-stemcell
 - name: aws
   jobs:
@@ -423,7 +421,7 @@ jobs:
       params:
         file: win2016-gcp-image/base-gcp-image-windows2016-*.json
 
-- name: create-vsphere-diff
+- name: create-vsphere-stemcell
   serial: true
   serial_groups: [vsphere]
   plan:
@@ -442,9 +440,9 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: 'v0.0.18.0' }
-  - task: create-vmdk
+  - task: create-stemcell
     privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-vmdk/task.yml
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/task.yml
     tags: [diffcell-windows-worker]
     params:
       ADMINISTRATOR_PASSWORD: "Password123!"
@@ -458,62 +456,8 @@ jobs:
       AWS_REGION: us-east-1
       VHD_VMDK_BUCKET: bosh-windows-diffcell
       DIFF_OUTPUT_BUCKET: bosh-windows-diffcell
+      STEMCELL_OUTPUT_BUCKET: "bosh-windows-stemcells-pre-release-candidate"
       CACHE_DIR: "C:\\image-data"
-  - task: create-stemcell
-    privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/task.yml
-    tags: [diffcell-windows-worker]
-    params:
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-      AWS_REGION: us-east-1
-      VHD_VMDK_BUCKET: bosh-windows-diffcell
-      STEMCELL_OUTPUT_BUCKET: bosh-windows-diffcell
-      OUTPUT_BUCKET: "bosh-windows-stemcells-pre-release-candidate"
-      CACHE_DIR: "C:\\image-data"
-
-- name: create-vsphere-stemcell
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - aggregate:
-    - get: ci
-      tags: [vsphere-windows]
-    - get: stemcell-builder
-      tags: [vsphere-windows]
-      passed: [build-stemcells]
-    - get: windows-stemcell-dependencies
-      tags: [vsphere-windows]
-    - get: version
-      tags: [vsphere-windows]
-      resource: vsphere-stemcell-version
-      passed: [build-stemcells]
-      trigger: true
-    - get: vmx-version
-      tags: [vsphere-windows]
-      resource: updated-vmx-version
-      passed: [build-stemcells]
-    - get: stemcells-main-version
-      passed: [build-stemcells]
-    - get: sshd
-      resource: openssh-release
-      version: { tag: 'v0.0.18.0' }
-  - put: version
-    resource: vsphere-stemcell-version
-    params:
-      pre: build
-  - task: create-stemcell
-    privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/task.yml
-    tags: [vsphere-windows-worker]
-    params:
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      NEW_PASSWORD: "Password123!"
-      ORGANIZATION: Pivotal
-      OWNER: Pivotal
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-      AWS_REGION: us-east-1
 
 - name: test-vsphere-stemcell
   serial: true
