@@ -36,6 +36,8 @@ instance_groups:
         runtime_plugin: "/var/vcap/packages/winc/winc.exe"
         network_plugin: "/var/vcap/packages/winc-network/winc-network.exe"
         nstar_bin: "/var/vcap/packages/nstar/nstar.exe"
+        default_container_rootfs: "/var/vcap/packages/windows2016fs/rootfs"
+        log_level: "debug"
     release: garden-runc
   networks:
   - name: default
