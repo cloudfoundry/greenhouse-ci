@@ -396,6 +396,7 @@ jobs:
       tags: [vsphere-windows]
       passed: [build-stemcells]
       resource: vsphere-stemcell-version
+      trigger: true
     - get: stemcell-builder
       passed: [build-stemcells]
       tags: [vsphere-windows]
