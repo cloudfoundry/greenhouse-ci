@@ -4,6 +4,10 @@ require 'yaml'
 require 'fileutils'
 require 'digest'
 
+def new_stemcell_name(old_stemcell_path, final_version)
+  File.basename(old_stemcell_path).gsub(/\d+\.\d+\.\d+(-build\.\d+)?/, final_version)
+end
+
 Dir.chdir File.join(File.dirname(__FILE__), "..", "..")
 
 stemcell = Dir.glob("bosh-windows-stemcell/*.tgz")
@@ -23,7 +27,3 @@ end
 
 sha1_sum = Digest::SHA1.file("final-stemcell/#{stemcell_name}").hexdigest
 File.open("final-stemcell/#{stemcell_name}.sha", "w") { |f| f.write sha1_sum }
-
-def new_stemcell_name(old_stemcell_path, final_version)
-  File.basename(old_stemcell_path).gsub(/\d+\.\d+\.\d+(-build\.\d+)?/, final_version)
-end
