@@ -490,6 +490,19 @@ jobs:
       resource: aws-stemcell-version
       params:
         pre: build
+    - task: create-packer-ci-key
+      config:
+        platform: linux
+        image: docker:///pivotalgreenhouse/ci
+        outputs:
+        - name: packer-ci-private-key
+        run:
+          path: bash
+          args:
+          - "-c"
+          - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
+        params:
+          PACKER_CI: {{PACKER_CI_PRIVATE_KEY}}
     - task: create-stemcell
       file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
       params:
