@@ -10,6 +10,7 @@ inputs:
   - name: version
   - name: windows-stemcell-dependencies
   - name: sshd
+  - name: packer-ci-private-key
 
 outputs:
   - name: bosh-windows-stemcell
