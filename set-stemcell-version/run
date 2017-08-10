@@ -10,11 +10,13 @@ stemcell = Dir.glob("bosh-windows-stemcell/*.tgz")
 FileUtils.mkdir_p("output-stemcell")
 `tar xzvf #{stemcell[0]} -C output-stemcell`
 
+final_version = File.read("version/number").match(/\d+\.\d+/)[0]
+
 stemcell_mf = YAML.load_file("output-stemcell/stemcell.MF")
 stemcell_mf["version"] = final_version
 File.open("output-stemcell/stemcell.MF", "w") {|f| f.write stemcell_mf.to_yaml }
 
-stemcell_name = new_stemcell_name(stemcell[0])
+stemcell_name = new_stemcell_name(stemcell[0], final_version)
 Dir.chdir "output-stemcell" do
   `tar czvf ../final-stemcell/#{stemcell_name} *`
 end
@@ -22,7 +24,6 @@ end
 sha1_sum = Digest::SHA1.file("final-stemcell/#{stemcell_name}").hexdigest
 File.open("final-stemcell/#{stemcell_name}.sha", "w") { |f| f.write sha1_sum }
 
-def new_stemcell_name(old_stemcell_path)
-  final_version = File.read("version/number").match(/\d+\.\d+/)[0]
+def new_stemcell_name(old_stemcell_path, final_version)
   File.basename(old_stemcell_path).gsub(/\d+\.\d+\.\d+(-build\.\d+)?/, final_version)
 end
