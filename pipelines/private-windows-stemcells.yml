@@ -1,4 +1,11 @@
 ---
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
 resources:
 - name: ci
   type: git
@@ -56,8 +63,8 @@ resources:
   source:
     api_token: {{PIVNET_BOT_API_TOKEN}}
     product_slug: {{private_product_slug}}
-    access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY}}
-    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY}}
+    access_key_id: {{PIVNET_STEMCELL_WINDOWS_ACCESS_KEY_PRIVATE}}
+    secret_access_key: {{PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY_PRIVATE}}
 - name: openssh-release
   type: github-release
   source:
@@ -205,7 +212,7 @@ jobs:
   - put: pivnet-private-stemcells-release
     params:
       file_glob: private-stemcell-release-candidate/*.tgz
-      s3_filepath_prefix: {{PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX}}
+      s3_filepath_prefix: {{PIVNET_STEMCELL_WINDOWS_PRIVATE_FILEPATH_PREFIX}}
       metadata_file: pivnet-metadata/metadata
   - put: stemcell-version
     params: {bump: minor}
