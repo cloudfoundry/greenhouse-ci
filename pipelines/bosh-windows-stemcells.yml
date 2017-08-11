@@ -148,21 +148,21 @@ resources:
     branch: master
     pool: stemcells-aws
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
     pool: stemcells-azure
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
     branch: master
     pool: stemcells-gcp
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
-    uri: git@github.com:greenhouse-ci/locks
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
 - name: major-stemcell
