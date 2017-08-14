@@ -357,6 +357,12 @@ jobs:
     on_success:
       task: delete-deployment
       file: ci/bosh-deld/task.yml
+      params:
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+        BOSH_DEPLOYMENT: garden-winc
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
   ensure:
     put: pesto-lock-pool
     params:
@@ -434,7 +440,7 @@ jobs:
         BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
         BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
         BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_DEPLOYMENT: garden-winc
+        BOSH_DEPLOYMENT: cf
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
   ensure:
     put: pesto-lock-pool
