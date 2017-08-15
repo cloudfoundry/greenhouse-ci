@@ -508,18 +508,26 @@ jobs:
           - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
         params:
           PACKER_CI: {{PACKER_CI_PRIVATE_KEY}}
-    - task: create-stemcell
-      file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
-      params:
-        OS_VERSION: windows2012R2
-        AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-        AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-      ensure:
-        task: delete-orphan-vms
-        file: ci/delete-vms/task.yml
+
+    - aggregate:
+      - task: create-stemcell-A
+        attempts: 5
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
-          AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          OS_VERSION: windows2012R2
+          REGION: us-east-1
+          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+      - task: create-stemcell-B
+        attempts: 5
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2012R2
+          REGION: us-east-2
+          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+    - task: aggregate-the-amis
+      file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
@@ -528,14 +536,20 @@ jobs:
         BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
         BOSH_TARGET: {{BOSH_CONCOURSE_DIRECTOR_IP}}
         BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
-        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_PATH: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
       params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        file: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     ensure:
-      put: aws-lock
-      params:
-        release: aws-lock
+      aggregate:
+        - put: aws-lock
+          params:
+            release: aws-lock
+        - task: delete-orphan-vms
+          file: ci/delete-vms/task.yml
+          params:
+            AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
 
 - name: create-gcp-stemcell
   serial: true
