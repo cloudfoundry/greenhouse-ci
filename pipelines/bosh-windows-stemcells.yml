@@ -659,10 +659,12 @@ jobs:
           REGION: us-east-2
           AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-    - get: aws-regional-stemcells
-      resource: aws-regional-stemcells
     - task: aggregate-the-amis
       file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
+      params:
+          REGION: us-east-1
+          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5

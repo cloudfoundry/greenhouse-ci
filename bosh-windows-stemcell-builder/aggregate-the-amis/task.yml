@@ -6,7 +6,6 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
   - name: ci
   - name: stemcell-builder
-  - name: aws-regional-stemcells
 
 outputs:
   - name: bosh-windows-stemcell-final
@@ -15,4 +14,7 @@ run:
   path: ci/bosh-windows-stemcell-builder/aggregate-the-amis/run
 
 params:
-  - AMIS_PATH: "../bosh-windows-stemcell"
+  BUCKET_NAME: aws-regional-stemcells
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:
+  REGION:
