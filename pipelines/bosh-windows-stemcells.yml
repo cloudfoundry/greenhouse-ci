@@ -596,12 +596,6 @@ jobs:
     params:
       acquire: true
   - do:
-    - task: cleanup-aws-regional-stemcells
-      params:
-        REGION: us-east-1
-        AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-        AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-      file: ci/cleanup-aws-regional-stemcells/task.yml
     - aggregate:
       - get: ci
       - get: stemcell-builder
@@ -618,13 +612,13 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - task: cleanup-aws-regional-stemcells
       params:
         REGION: us-east-1
         AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
         AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
       file: ci/cleanup-aws-regional-stemcells/task.yml
-        version: { tag: 'v0.0.18.0' }
     - put: version
       resource: aws-stemcell-version
       params:
