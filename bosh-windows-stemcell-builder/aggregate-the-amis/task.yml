@@ -9,7 +9,7 @@ inputs:
   - name: bosh-windows-stemcell
 
 outputs:
-  - name: bosh-windows-stemcell
+  - name: bosh-windows-stemcell-final
 
 run:
   path: ci/bosh-windows-stemcell-builder/aggregate-the-amis/run

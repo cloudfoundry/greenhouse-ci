@@ -5,5 +5,5 @@ set -ex
 cd stemcell-builder
 bundle install
 rake package:aggregate_aws_amis
-mv bosh-windows-stemcell/*.tgz ../bosh-windows-stemcell
+mv bosh-windows-stemcell/*.tgz ../bosh-windows-stemcell-final
 
