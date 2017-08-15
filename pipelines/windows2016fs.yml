@@ -1,0 +1,56 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: dockerfile
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
+- name: git-setup
+  type: github-release
+  source:
+    user: git-for-windows
+    repository: git
+- name: tar
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: tar-(.*).exe
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+- name: version
+  type: semver
+  source:
+    access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
+    bucket: windows2016fs
+    initial_version: 0.0.0
+    key: version
+    region_name: us-east-1
+
+jobs:
+- name: build-and-push
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: dockerfile
+      trigger: true
+    - get: git-setup
+      trigger: true
+      params:
+        globs: [Git-*-64-bit.exe]
+    - get: tar
+      trigger: true
+    - put: version
+      params: {bump: patch}
+  - task: build-and-push
+    file: ci/docker-build-and-push/task.yml
+    params:
+      DOCKERFILE: dockerfile/src/Dockerfile
+      IMAGE_NAME: cloudfoundry/windows2016fs
+      DOCKER_USERNAME: {{DOCKER_USERNAME}}
+      DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
