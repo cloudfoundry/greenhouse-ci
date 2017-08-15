@@ -29,3 +29,6 @@ params:
   VERSION_DIR: ../version
   BASE_AMIS_DIR: ../base-amis
 
+  OUTPUT_BUCKET_NAME: aws-regional-stemcells
+  OUTPUT_BUCKET_REGION: us-east-1
+
