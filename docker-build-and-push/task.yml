@@ -4,6 +4,7 @@ platform: windows
 inputs:
 - name: ci
 - name: version
+- name: dockerfile
 - name: git-setup
 - name: tar
 
