@@ -9,10 +9,11 @@ RUN powershell.exe -Command \
     Web-ASP, \
     Web-ASP-Net45
 
-RUN powershell.exe -Command Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.13.2.windows.1/Git-2.13.2-64-bit.exe -UseBasicParsing -OutFile C:\\Windows\\git-setup.exe
-RUN C:\\Windows\\git-setup.exe /SILENT /NORESTART
+COPY Git-*-64-bit.exe /Windows/git-setup.exe
+RUN C:\Windows\git-setup.exe /SILENT /NORESTART
 RUN del /F C:\Windows\git-setup.exe
+
+COPY tar-*.exe /Windows/tar.exe
 
 RUN cmd.exe /C net users /ADD vcap /passwordreq:no /expires:never && runas /user:vcap whoami
 RUN cmd.exe /C net accounts /maxpwage:UNLIMITED
-RUN powershell.exe -Command Invoke-WebRequest -Uri https://s3.amazonaws.com/bosh-windows-dependencies/tar-1490035387.exe -UseBasicParsing -OutFile C:\\Windows\\tar.exe
