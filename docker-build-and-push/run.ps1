@@ -15,7 +15,6 @@ $env:PATH = "C:/Program Files/Docker;" + $env:PATH
 restart-service docker
 
 $version=(cat version/number)
-echo $version
 
 mkdir buildDir
 cp $env:DOCKERFILE buildDir\Dockerfile
@@ -31,6 +30,6 @@ Run-Docker "images", "-a"
 
 Run-Docker "login", "-u", "$env:DOCKER_USERNAME", "-p", "$env:DOCKER_PASSWORD"
 
-Run-Docker "push", "$env:IMAGE_NAME"
+Run-Docker "push", "${env:IMAGE_NAME}:latest"
 
 Run-Docker "push", "${env:IMAGE_NAME}:$version"
