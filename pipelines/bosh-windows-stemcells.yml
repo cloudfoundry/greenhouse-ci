@@ -618,7 +618,7 @@ jobs:
         REGION: us-east-1
         AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
         AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
-      file: ci/cleanup-aws-regional-stemcells/task.yml
+      file: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/task.yml
     - put: version
       resource: aws-stemcell-version
       params:

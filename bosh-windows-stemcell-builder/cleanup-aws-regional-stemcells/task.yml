@@ -8,7 +8,7 @@ inputs:
   - name: ci
 
 run:
-  path: ci/cleanup-aws-regional-stemcells/run
+  path: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/run
 
 params:
   BUCKET_NAME: aws-regional-stemcells
