@@ -12,6 +12,7 @@ groups:
   - create-vsphere-stemcell-from-diff
   - test-vsphere-stemcell-from-vmx
   - test-vsphere-stemcell-from-diff
+  - build-aws-regional-amis
   - create-aws-stemcell
   - create-gcp-stemcell
   - create-gcp-2016-stemcell
@@ -37,6 +38,7 @@ groups:
   - test-vsphere-stemcell-from-diff
 - name: aws
   jobs:
+  - build-aws-regional-amis
   - create-aws-stemcell
 - name: gcp
   jobs:
