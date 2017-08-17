@@ -1018,8 +1018,6 @@ jobs:
     - get: version
       resource: stemcells-main-version
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
-      params:
-        bump: minor
   - task: ensure-versions-match
     tags: [vsphere-windows]
     config:
@@ -1086,9 +1084,6 @@ jobs:
       input_mapping: { sha: gcp-stemcell-final }
       params:
         BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
-  - put: stemcells-main-version
-    params:
-      file: version/number
 
 - name: promote-azure
   serial: true
@@ -1137,6 +1132,9 @@ jobs:
     input_mapping: { sha: azure-stemcell-final }
     params:
       BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+  - put: stemcells-main-version
+    params:
+      bump: minor
 
 - name: ship-bosh-stemcell-builder
   serial: true
