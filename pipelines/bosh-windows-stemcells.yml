@@ -697,6 +697,7 @@ jobs:
           AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
     - task: test-stemcell
+      input_mapping: { bosh-windows-stemcell: bosh-windows-stemcell-final }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
       params:
@@ -704,10 +705,10 @@ jobs:
         BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
         BOSH_TARGET: {{BOSH_CONCOURSE_DIRECTOR_IP}}
         BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
-        STEMCELL_PATH: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
       params:
-        file: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     ensure:
       aggregate:
         - put: aws-lock
