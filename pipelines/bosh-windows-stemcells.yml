@@ -589,7 +589,7 @@ jobs:
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
-- name: create-aws-stemcell
+- name: build-aws-regional-amis
   serial: true
   plan:
   - put: aws-lock
@@ -599,7 +599,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [build-stemcells]
+        # passed: [build-stemcells]
       - get: base-amis
         resource: base-amis-win2012r2
         passed: [build-stemcells]
@@ -616,8 +616,8 @@ jobs:
     - task: cleanup-aws-regional-stemcells
       params:
         REGION: us-east-1
-        AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-        AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+        AWS_SECRET_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+        AWS_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       file: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/task.yml
     - put: version
       resource: aws-stemcell-version
@@ -638,7 +638,7 @@ jobs:
           PACKER_CI: {{PACKER_CI_PRIVATE_KEY}}
     - aggregate:
       - task: create-stemcell-A
-        attempts: 5
+        attempts: 1
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
@@ -646,13 +646,48 @@ jobs:
           AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
       - task: create-stemcell-B
-        attempts: 5
+        attempts: 1
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: us-east-2
           AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
           AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+    ensure:
+      aggregate:
+        - put: aws-lock
+          params:
+            release: aws-lock
+        - task: delete-orphan-vms
+          file: ci/delete-vms/task.yml
+          params:
+            AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+
+- name: create-aws-stemcell
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build-aws-regional-amis]
+      - get: base-amis
+        resource: base-amis-win2012r2
+        passed: [build-aws-regional-amis]
+      - get: version
+        resource: aws-stemcell-version
+        passed: [build-aws-regional-amis]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-main-version
+        passed: [build-aws-regional-amis]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: 'v0.0.18.0' }
     - task: aggregate-the-amis
       file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
       params:
@@ -676,11 +711,6 @@ jobs:
         - put: aws-lock
           params:
             release: aws-lock
-        - task: delete-orphan-vms
-          file: ci/delete-vms/task.yml
-          params:
-            AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-            AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
 
 - name: create-gcp-stemcell
   serial: true
