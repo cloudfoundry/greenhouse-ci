@@ -4,9 +4,10 @@ platform: windows
 inputs:
 - name: ci
 - name: version
-- name: dockerfile
+- name: repo
 - name: git-setup
 - name: tar
+- name: urlacl
 
 run:
   path: powershell

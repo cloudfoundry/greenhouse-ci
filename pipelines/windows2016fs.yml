@@ -4,7 +4,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: dockerfile
+- name: windows2016fs-release
   type: git
   source:
     branch: master
@@ -37,7 +37,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: dockerfile
+    - get: windows2016fs-release
       trigger: true
     - get: git-setup
       trigger: true
@@ -45,12 +45,23 @@ jobs:
         globs: [Git-*-64-bit.exe]
     - get: tar
       trigger: true
+    - get: version
     - put: version
       params: {bump: patch}
+  - task: build-urlacl
+    file: ci/build-binary/task.yml
+    input_mapping:
+      repo: windows2016fs-release
+    output_mapping:
+      binary-output: urlacl
+    params:
+      PACKAGE: "./src/urlacl"
   - task: build-and-push
     file: ci/docker-build-and-push/task.yml
+    input_mapping:
+      repo: windows2016fs-release
     params:
-      DOCKERFILE: dockerfile/src/Dockerfile
+      DOCKERFILE: repo/src/Dockerfile
       IMAGE_NAME: cloudfoundry/windows2016fs
       DOCKER_USERNAME: {{DOCKER_USERNAME}}
       DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
