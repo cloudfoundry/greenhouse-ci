@@ -1001,7 +1001,6 @@ jobs:
     - get: version
       resource: azure-stemcell-version
       passed: [create-azure-stemcell]
-      trigger: true
     - get: stemcells-main-version
       passed: [create-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
