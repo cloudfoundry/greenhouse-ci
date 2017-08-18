@@ -48,14 +48,6 @@ jobs:
     - get: version
     - put: version
       params: {bump: patch}
-  - task: build-urlacl
-    file: ci/build-binary/task.yml
-    input_mapping:
-      repo: windows2016fs-release
-    output_mapping:
-      binary-output: urlacl
-    params:
-      PACKAGE: "./src/urlacl"
   - task: build-and-push
     tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
