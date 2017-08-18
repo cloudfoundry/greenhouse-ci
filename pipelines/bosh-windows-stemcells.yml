@@ -804,7 +804,7 @@ jobs:
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
       params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        file: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     ensure:
       aggregate:
         - put: aws-lock

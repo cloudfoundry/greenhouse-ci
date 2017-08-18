@@ -7,8 +7,6 @@ inputs:
   - name: stemcell-builder
   - name: bosh-windows-stemcell
 
-outputs: name: bosh-windows-stemcell
-
 run:
   path: ci/bosh-windows-stemcell-builder/bwats/run
 
