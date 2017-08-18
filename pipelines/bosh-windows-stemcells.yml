@@ -21,6 +21,7 @@ groups:
   - publish-azure-stemcell
   - finalize-azure-stemcell
   - test-azure-stemcell
+  - promote-boshio
 - name: main
   jobs:
   - bump-stemcell-builder-submodules
@@ -28,6 +29,7 @@ groups:
   - build-stemcells
   - promote-azure
   - promote-aws-gcp-vsphere
+  - promote-boshio
   - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
@@ -1166,7 +1168,37 @@ jobs:
       tags: [vsphere-windows]
       params:
         file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+
+- name: promote-boshio
+  serial: true
+  plan:
   - aggregate:
+    - get: ci
+    - get: vsphere-stemcell-release-candidate
+      tags: [vsphere-windows]
+      passed: [test-vsphere-stemcell-from-diff]
+    - get: gcp-stemcell-release-candidate
+      passed: [create-gcp-stemcell]
+      resource: gcp-2012R2-stemcell-release-candidate
+    - get: azure-stemcell-release-candidate
+      passed: [test-azure-stemcell]
+    - get: aws-stemcell-release-candidate
+      passed: [promote-aws-gcp-vsphere]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote-aws-gcp-vsphere]
+    - get: stemcell-builder
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
+    - get: version
+      resource: stemcells-main-version
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
+  - aggregate:
+    - task: azure-post-boshio-stemcell-sha
+      tags: [vsphere-windows]
+      file: ci/post-boshio-stemcell-sha/task.yml
+      input_mapping: { sha: azure-stemcell-final }
+      params:
+        BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
     - task: aws-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
@@ -1179,6 +1211,9 @@ jobs:
       input_mapping: { sha: gcp-stemcell-final }
       params:
         BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+  - put: stemcells-main-version
+    params:
+      bump: minor
 
 - name: promote-azure
   serial: true
@@ -1221,15 +1256,6 @@ jobs:
     tags: [vsphere-windows]
     params:
       file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-  - task: azure-post-boshio-stemcell-sha
-    tags: [vsphere-windows]
-    file: ci/post-boshio-stemcell-sha/task.yml
-    input_mapping: { sha: azure-stemcell-final }
-    params:
-      BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
-  - put: stemcells-main-version
-    params:
-      bump: minor
 
 - name: ship-bosh-stemcell-builder
   serial: true
