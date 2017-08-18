@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;" + $env:PATH
+$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;" + $env:PATH
 
 go.exe version
 

@@ -2,7 +2,7 @@
 trap { $host.SetShouldExit(1) }
 
 $env:GOPATH = $PWD
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;" + $env:PATH
+$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/Program Files/Docker;" + $env:PATH
 
 docker.exe pull $env:TEST_ROOTFS_IMAGE
 $env:WINC_TEST_ROOTFS = (docker.exe inspect $env:TEST_ROOTFS_IMAGE | ConvertFrom-Json).GraphDriver.Data.Dir

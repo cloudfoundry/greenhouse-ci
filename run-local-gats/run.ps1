@@ -7,7 +7,7 @@ function Kill-Garden
 }
 
 $env:GOPATH = "$PWD/garden-runc-release"
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;C:/var/vcap/bosh/bin;" + $env:PATH
+$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/Program Files/Docker;C:/var/vcap/bosh/bin;" + $env:PATH
 
 go version
 
