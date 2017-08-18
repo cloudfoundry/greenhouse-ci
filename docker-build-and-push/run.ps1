@@ -20,7 +20,6 @@ mkdir buildDir
 cp $env:DOCKERFILE buildDir\Dockerfile
 cp git-setup\Git-*-64-bit.exe buildDir\
 cp tar\tar-*.exe buildDir\
-cp urlacl\urlacl.exe buildDir\
 cd buildDir
 
 Run-Docker "--version"
