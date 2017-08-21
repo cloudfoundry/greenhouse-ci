@@ -882,7 +882,6 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [build-stemcells]
       - get: base-gcp-image
         resource: base-gcp-image-win2016
         passed: [build-stemcells]
