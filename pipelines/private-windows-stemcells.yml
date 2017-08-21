@@ -100,7 +100,7 @@ jobs:
       INPUT_BUCKET: {{private_windows_stemcells_vmx}}
       OUTPUT_BUCKET: {{private_windows_stemcells_vmx}}
   - put: updated-vmx-version
-    params: {bump: minor}
+    params: {bump: major}
 
 - name: create-vsphere-stemcell
   serial: true
