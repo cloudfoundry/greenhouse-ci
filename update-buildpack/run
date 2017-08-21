@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eu
+
+pushd buildpack
+  BUNDLE_GEMFILE=cf.Gemfile bundle
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager --cached
+  buildpackFile=$(ls $BUILDPACK_NAME*.zip)
+
+  cf target $CF_API -u $CF_ADMIN_USER -p $CF_ADMIN_PASSWORD
+  cf update-buildpack $BUILDPACK_NAME -p $buildpackFile
+popd
+
