@@ -1283,20 +1283,6 @@ jobs:
           args:
           - "-c"
           - "cat stemcells-main-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"
-    - task: extract-updates-txt
-      tags: [vsphere-windows]
-      config:
-        platform: linux
-        image: docker:///pivotalgreenhouse/ci
-        inputs:
-        - name: vsphere-stemcell
-        outputs:
-        - name: updates-txt
-        run:
-          path: bash
-          args:
-          - "-c"
-          - "tar xzvf vsphere-stemcell/*.tgz updates.txt && cp updates.txt updates-txt/updates.txt"
     - task: build-psmodules-zip
       config:
         platform: linux
@@ -1343,6 +1329,5 @@ jobs:
       tag: stemcell-builder-release-version/version
       commitish: stemcell-builder-commit/sha
       globs:
-      - updates-txt/updates.txt
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
