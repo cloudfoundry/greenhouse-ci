@@ -125,7 +125,7 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
     privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell/task.yml
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
     params:
       ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
       NEW_PASSWORD: {{STEMCELL_PASSWORD}}
