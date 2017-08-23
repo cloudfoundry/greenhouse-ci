@@ -467,7 +467,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
-      passed: [pesto-gats, pesto-wats]
+      passed: [pesto-gats]
     - get: winc-release-master
     - get: version
       params: {bump: minor}
