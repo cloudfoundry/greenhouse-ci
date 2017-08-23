@@ -141,6 +141,11 @@ resources:
         bucket: cff-greenhouse-pesto
         file_name: cf/creds.yml
         json_key: {{PESTO_SERVICE_ACCOUNT_JSON}}
+- name: hwc-buildpack
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/hwc-buildpack.git
 jobs:
 - name: winc
   serial: true
@@ -386,6 +391,7 @@ jobs:
       trigger: true
     - get: gcp-windows-stemcell
     - get: garden-windows-private
+    - get: hwc-buildpack
   - task: get-cf-vars
     file: ci/get-gcs-file/task.yml
     output_mapping: { output: cf-vars }
@@ -420,6 +426,14 @@ jobs:
       cleanup: true
     get_params:
       skip_export: true
+  - task: upload-cached-hwc-buildpack
+    file: ci/update-buildpack/task.yml
+    input_mapping: { buildpack: hwc-buildpack }
+    params:
+      CF_ADMIN_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
+      CF_ADMIN_USER: admin
+      CF_API: api.pesto.cf-app.com
+      BUILDPACK_NAME: hwc_buildpack
   - task: run-wats
     file: ci/run-wats/task.yml
     input_mapping:
