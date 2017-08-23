@@ -506,20 +506,3 @@ jobs:
     - put: winc-release-develop-mergedback
       params:
         repository: merged-repo/to-repo
-groups:
-- name: winc
-  jobs:
-  - winc
-  - local-gats
-  - bump-winc-release
-- name: winc-release
-  jobs:
-  - test-nstar
-  - pesto-gats
-  - pesto-wats
-  - shipit
-  - merge-master-into-develop
-# - name: wincni
-#   jobs:
-#   - wincni
-#   - wincni-smoke
