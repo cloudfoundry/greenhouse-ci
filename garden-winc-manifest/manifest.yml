@@ -28,6 +28,10 @@ instance_groups:
   jobs:
   - name: winc
     release: winc
+  - name: winc-image
+    release: winc
+  - name: winc-network
+    release: winc
   - name: garden-windows
     properties:
       garden:
