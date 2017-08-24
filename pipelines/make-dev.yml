@@ -9,7 +9,7 @@
 # repos
 - type: replace
   path: /resources/name=stemcell-builder/source/branch
-  value: develop
+  value: ((DEV_BRANCH))
 
 # versions
 - type: replace
