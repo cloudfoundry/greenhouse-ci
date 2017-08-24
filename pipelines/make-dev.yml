@@ -91,12 +91,20 @@
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
   value: bosh-windows-stemcells-pre-release-candidate-dev
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/passed
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
 
 # remove unnecessary jobs
 - type: remove
   path: /jobs/name=bump-stemcell-builder-submodules
 - type: remove
   path: /jobs/name=test-stemcell-builder
+- type: remove
+  path: /jobs/name=build-stemcells
 - type: remove
   path: /jobs/name=promote-azure
 - type: remove
