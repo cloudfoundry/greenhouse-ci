@@ -61,12 +61,6 @@ resources:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
-- name: winc-release-develop-mergedback
-  type: git
-  source:
-    branch: develop
-    uri: git@github.com:cloudfoundry-incubator/winc-release.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 - name: garden-runc-release
   type: git
   source:
@@ -468,29 +462,27 @@ jobs:
     - get: ci
     - get: winc-release-develop
       passed: [pesto-gats]
-    - get: winc-release-master
     - get: version
       params: {bump: minor}
-  - task: merge-develop-to-master
-    input_mapping: { from-repo: winc-release-develop, to-repo: winc-release-master }
-    file: ci/merge-repo/task.yml
-    params: { FROM_BRANCH: develop }
-  - put: version
-    params: {file: version/number}
+    - put: version
+      params: {file: version/number}
   - task: finalize-release
     file: ci/finalize-release/task.yml
-    input_mapping: { release: winc-release-master }
+    input_mapping: { release: winc-release-develop }
     params:
       RELEASE_NAME: winc
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-  - put: winc-release-master
+  - put: winc-release-develop
     params:
       repository: finalized-release/release
       tag: version/number
       tag_prefix: v
-  - task: generate-release
-    input_mapping: { release: winc-release-master }
+  - put: winc-release-master
+    params:
+      repository: finalized-release/release
+  - task: generate-github-release
+    input_mapping: { release: finalized-repo }
     file: ci/generate-github-release/task.yml
   - put: winc-release-github-release
     params:
@@ -499,24 +491,3 @@ jobs:
       tag: generated-release/version
       globs:
       - finalized-release/winc-*.tgz
-- name: merge-master-into-develop
-  plan:
-    - aggregate:
-      - get: ci
-      - get: from-repo
-        resource: winc-release-master
-        trigger: true
-        passed: [shipit]
-        params:
-          submodules: none
-      - get: to-repo
-        resource: winc-release-develop
-        params:
-          submodules: none
-    - task: merge-master-into-develop
-      file: ci/merge-repo/task.yml
-      params:
-        FROM_BRANCH: master
-    - put: winc-release-develop-mergedback
-      params:
-        repository: merged-repo/to-repo
