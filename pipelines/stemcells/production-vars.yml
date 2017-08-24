@@ -5,7 +5,7 @@
 
 # bump vsphere-stemcell-version
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/-
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/-
   value:
     put: version
     resource: vsphere-stemcell-version
@@ -14,14 +14,14 @@
 
 # use production diffcell worker
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/take=create-stemcell/tags
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/tags
   value: [diffcell-windows-worker]
 
 # use production s3 buckets
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/take=create-stemcell/params/DIFF_OUTPUT_BUCKET
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/DIFF_OUTPUT_BUCKET
   value: bosh-windows-diffcell
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/take=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
   value: bosh-windows-stemcells-pre-release-candidate
 
