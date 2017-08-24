@@ -40,3 +40,4 @@ pushd release
 popd
 
 cp -a release finalized-release/
+rsync -a release/ finalized-repo

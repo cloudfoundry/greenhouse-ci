@@ -10,6 +10,7 @@ inputs:
 
 outputs:
   - name: finalized-release
+  - name: finalized-repo
 
 run:
   path: ci/finalize-release/run
