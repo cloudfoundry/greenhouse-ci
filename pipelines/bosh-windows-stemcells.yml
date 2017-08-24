@@ -76,31 +76,31 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
 - name: stemcell-builder
   type: git
   source:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY}}
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
 - name: windows-stemcell-dependencies
   type: git
   source:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
-    private_key: {{PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY}}
+    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
 - name: stemcell-builder-release
   type: github-release
   source:
     user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
-    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 - name: openssh-release
   type: github-release
   source:
     user: PowerShell
     repository: Win32-OpenSSH
-    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # versions
 - name: updated-vmx-version
@@ -108,56 +108,56 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     key: versions/updated-vmx-version
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "1.0.0"
 - name: stemcells-main-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/stemcells-main-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: vsphere-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/vsphere-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: aws-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/aws-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: gcp-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/gcp-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: azure-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/azure-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: gcp-2016-stemcell-version
   type: semver
   source:
     bucket: bosh-windows-stemcells
     key: versions/gcp-2016-stemcell-version-edge
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1600.0.0
 
 # locks
@@ -166,21 +166,21 @@ resources:
   source:
     branch: master
     pool: stemcells-aws
-    private_key: {{BOSH-WINDOWS-LOCKS-CI_KEY}}
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
     pool: stemcells-azure
-    private_key: {{BOSH-WINDOWS-LOCKS-CI_KEY}}
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
     branch: master
     pool: stemcells-gcp
-    private_key: {{BOSH-WINDOWS-LOCKS-CI_KEY}}
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
@@ -189,123 +189,123 @@ resources:
   source:
     bucket: bosh-windows-stemcells
     regexp: stemcell-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-pre-release-candidate
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate-from-vmx
   type: s3
   source:
     bucket: stemcells-pre-release-candidate-from-vmx
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-private-release-candidates
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final
   type: s3
   source:
    bucket: bosh-windows-stemcells-private
    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-   access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-   secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+   access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+   secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-amis-win2012r2
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: base-amis-windows2012R2-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2012r2
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: base-gcp-image-windows2012R2-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2016
   type: s3
   source:
     bucket: bosh-windows-stemcells
     regexp: base-gcp-image-windows2016-(.*).json
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2012R2-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2016-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-pre-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-pre-release-candidate
     regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-base-vhd-uri
   type: s3
   source:
     bucket: bosh-windows-stemcells-pre-release-candidate
     regexp: bosh-stemcell-(.*)-azure-vhd-uri.txt
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-release-candidate
   type: s3
   source:
     bucket: bosh-windows-stemcells-release-candidates
     regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
-    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 jobs:
 - name: bump-stemcell-builder-submodules
@@ -371,8 +371,8 @@ jobs:
     params:
       OS_VERSION: windows2012R2
       ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
   - put: updated-vmx-version
     params: {bump: major}
@@ -416,8 +416,8 @@ jobs:
       NEW_PASSWORD: "Password123!"
       ORGANIZATION: Pivotal
       OWNER: Pivotal
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
 
 - name: test-vsphere-stemcell-from-vmx
@@ -443,10 +443,10 @@ jobs:
     attempts: 5
     params:
       VM_TYPE: large
-      BOSH_CLIENT_SECRET: {{regina_client_secret}}
-      BOSH_CLIENT: {{regina_client}}
-      BOSH_TARGET: {{regina_environment}}
-      BOSH_CA_CERT: {{regina_ca_cert}}
+      BOSH_CLIENT_SECRET: ((regina_client_secret))
+      BOSH_CLIENT: ((regina_client))
+      BOSH_TARGET: ((regina_environment))
+      BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: vsphere-stemcell-pre-release-candidate-from-vmx
     params:
@@ -490,20 +490,20 @@ jobs:
       file: ci/collect-base-amis/task.yml
       output_mapping: { base-amis: win2012r2-amis }
       params:
-        AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY}}
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
         BASE_AMI: windows2012R2
     - task: collect-win2012r2-gcp-image
       file: ci/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2012r2-gcp-image }
       params:
-        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         BASE_OS: windows2012R2
     - task: collect-win2016-gcp-image
       file: ci/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2016-gcp-image }
       params:
-        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         BASE_OS: windows2016
   - aggregate:
     - put: base-amis-win2012r2
@@ -553,8 +553,8 @@ jobs:
       ORGANIZATION: Pivotal
       OWNER: Pivotal
       STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
-      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
       VHD_VMDK_BUCKET: bosh-windows-diffcell
       DIFF_OUTPUT_BUCKET: bosh-windows-diffcell
@@ -584,10 +584,10 @@ jobs:
     attempts: 5
     params:
       VM_TYPE: large
-      BOSH_CLIENT_SECRET: {{regina_client_secret}}
-      BOSH_CLIENT: {{regina_client}}
-      BOSH_TARGET: {{regina_environment}}
-      BOSH_CA_CERT: {{regina_ca_cert}}
+      BOSH_CLIENT_SECRET: ((regina_client_secret))
+      BOSH_CLIENT: ((regina_client))
+      BOSH_TARGET: ((regina_environment))
+      BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: vsphere-stemcell-release-candidate
     params:
@@ -620,8 +620,8 @@ jobs:
     - task: cleanup-aws-regional-stemcells
       params:
         REGION: us-east-1
-        AWS_SECRET_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-        AWS_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       file: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/task.yml
     - put: version
       resource: aws-stemcell-version
@@ -639,7 +639,7 @@ jobs:
           - "-c"
           - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
         params:
-          PACKER_CI: {{PACKER_CI_PRIVATE_KEY}}
+          PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
     - aggregate:
       - task: create-stemcell-us-east-1
         attempts: 3
@@ -647,112 +647,112 @@ jobs:
         params:
           OS_VERSION: windows2012R2
           REGION: us-east-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-east-2
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: us-east-2
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-west-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: us-west-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-west-2
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: us-west-2
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ca-central-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ca-central-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-south-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ap-south-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-northeast-2
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ap-northeast-2
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-southeast-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ap-southeast-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-southeast-2
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ap-southeast-2
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-northeast-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: ap-northeast-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-central-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: eu-central-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-west-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: eu-west-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-west-2
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: eu-west-2
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-sa-east-1
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
           OS_VERSION: windows2012R2
           REGION: sa-east-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     ensure:
       aggregate:
         - put: aws-lock
@@ -761,8 +761,8 @@ jobs:
         - task: delete-orphan-vms
           file: ci/delete-vms/task.yml
           params:
-            AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-            AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+            AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+            AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 
 - name: create-aws-stemcell
   serial: true
@@ -792,17 +792,17 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
       params:
           REGION: us-east-1
-          AWS_ACCESS_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID}}
-          AWS_SECRET_KEY: {{BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY}}
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     - task: test-stemcell
       input_mapping: { bosh-windows-stemcell: bosh-windows-stemcell-final }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
       params:
-        BOSH_CLIENT_SECRET: {{BOSH_CONCOURSE_BOSH_PASSWORD}}
-        BOSH_CLIENT: {{BOSH_CONCOURSE_BOSH_USER}}
-        BOSH_TARGET: {{BOSH_CONCOURSE_DIRECTOR_IP}}
-        BOSH_CA_CERT: {{BOSH_CONCOURSE_BOSH_TARGET_CERT}}
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: aws-stemcell-release-candidate
       params:
@@ -846,21 +846,21 @@ jobs:
       attempts: 10
       params:
         OS_VERSION: windows2012R2
-        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
-          ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+          ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
         IAAS: gcp
-        ACCOUNT_JSON: {{CF-GREENHOUSE-GOOSE_ACCOUNT_JSON}}
-        BOSH_CLIENT_SECRET: {{goose_client_secret}}
-        BOSH_CLIENT: {{goose_client}}
-        BOSH_TARGET: {{goose_environment}}
-        BOSH_CA_CERT: {{goose_ca_cert}}
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_TARGET: ((goose_environment))
+        BOSH_CA_CERT: ((goose_ca_cert))
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
         NETWORK: private
         VM_EXTENSIONS: "50GB_ephemeral_disk"
@@ -904,21 +904,21 @@ jobs:
       attempts: 10
       params:
         OS_VERSION: windows2016
-        ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
-          ACCOUNT_JSON: {{CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON}}
+          ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
         IAAS: gcp
-        ACCOUNT_JSON: {{CF-GREENHOUSE-GOOSE_ACCOUNT_JSON}}
-        BOSH_CLIENT_SECRET: {{goose_client_secret}}
-        BOSH_CLIENT: {{goose_client}}
-        BOSH_TARGET: {{goose_environment}}
-        BOSH_CA_CERT: {{goose_ca_cert}}
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_TARGET: ((goose_environment))
+        BOSH_CA_CERT: ((goose_ca_cert))
         STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016
         NETWORK: private
@@ -960,27 +960,27 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
         OS_VERSION: windows2012R2
-        CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
-        CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
-        TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
-        SUBSCRIPTION_ID: {{KOALA_AZURE_SUBSCRIPTION_ID}}
-        OBJECT_ID: {{KOALA_AZURE_OBJECT_ID}}
-        RESOURCE_GROUP_NAME: {{KOALA_AZURE_RESOURCE_GROUP}}
-        STORAGE_ACCOUNT: {{KOALA_AZURE_STORAGE_ACCOUNT}}
+        CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+        CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+        TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+        SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
+        OBJECT_ID: ((KOALA_AZURE_OBJECT_ID))
+        RESOURCE_GROUP_NAME: ((KOALA_AZURE_RESOURCE_GROUP))
+        STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
         LOCATION: 'East US'
         VM_SIZE: Standard_DS2_v2
         PUBLISHER: 'pivotal'
         OFFER: 'bosh-windows-server'
         SKU: '2012r2'
-        ADMIN_PASSWORD: {{AZURE_STEMCELL_ADMIN_PASSWORD}}
+        ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
-          CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
-          CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
-          TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
-          SUBSCRIPTION_ID: {{KOALA_AZURE_SUBSCRIPTION_ID}}
+          CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+          CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+          TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+          SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
     - put: azure-stemcell-pre-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
@@ -1012,12 +1012,12 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/stage-azure-stemcell/task.yml
     params:
       SKU: '2012r2'
-      API_KEY: {{AZURE_PUBLISHER_API_KEY}}
-      AZURE_STORAGE_ACCOUNT: {{KOALA_AZURE_STORAGE_ACCOUNT}}
-      AZURE_STORAGE_ACCESS_KEY: {{KOALA_AZURE_STORAGE_ACCESS_KEY}}
-      AZURE_TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
-      AZURE_CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
-      AZURE_CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
+      API_KEY: ((AZURE_PUBLISHER_API_KEY))
+      AZURE_STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
+      AZURE_STORAGE_ACCESS_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
+      AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+      AZURE_CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
       CONTAINER_NAME: 'system'
 
 - name: publish-azure-stemcell
@@ -1038,7 +1038,7 @@ jobs:
   - task: publish-stemcell
     file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
     params:
-      API_KEY: {{AZURE_PUBLISHER_API_KEY}}
+      API_KEY: ((AZURE_PUBLISHER_API_KEY))
 
 - name: finalize-azure-stemcell
   serial: true
@@ -1059,9 +1059,9 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/finalize-azure-stemcell/task.yml
     params:
       SKU: '2012r2'
-      AZURE_TENANT_ID: {{KOALA_AZURE_TENANT_ID}}
-      AZURE_CLIENT_ID: {{KOALA_AZURE_CLIENT_ID}}
-      AZURE_CLIENT_SECRET: {{KOALA_AZURE_CLIENT_SECRET}}
+      AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+      AZURE_CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
   - put: azure-stemcell-release-candidate
     params:
       file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
@@ -1087,10 +1087,10 @@ jobs:
     params:
       IAAS: azure
       ACCOUNT_JSON:
-      BOSH_CA_CERT: {{DINGO_BOSH_TARGET_CERT}}
-      BOSH_CLIENT: {{DINGO_BOSH_CLIENT_ID}}
-      BOSH_CLIENT_SECRET: {{DINGO_BOSH_CLIENT_SECRET}}
-      BOSH_TARGET: {{DINGO_BOSH_DIRECTOR_IP}}
+      BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
       STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
       AZ: z1
       VM_TYPE: default
@@ -1197,19 +1197,19 @@ jobs:
       file: ci/post-boshio-stemcell-sha/task.yml
       input_mapping: { sha: azure-stemcell-final }
       params:
-        BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
     - task: aws-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
       input_mapping: { sha: aws-stemcell-final }
       params:
-        BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
     - task: gcp-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
       input_mapping: { sha: gcp-stemcell-final }
       params:
-        BOSHIO_TOKEN: {{BOSHIO_TOKEN}}
+        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
   - put: stemcells-main-version
     params:
       bump: minor

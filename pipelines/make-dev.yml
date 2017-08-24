@@ -1,0 +1,133 @@
+# GROUPS
+
+# remove unnecessary groups
+- type: remove
+  path: /groups
+
+# RESOURCES
+
+# repos
+- type: replace
+  path: /resources/name=stemcell-builder/source/branch
+  value: develop
+
+# versions
+- type: replace
+  path: /resources/name=vsphere-stemcell-version/source/bucket
+  value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=stemcells-main-version/source/bucket
+  value: bosh-windows-stemcells-dev
+
+# remove unnecessary resources
+- type: remove
+  path: /resources/name=bosh-agent
+- type: remove
+  path: /resources/name=bwats
+- type: remove
+  path: /resources/name=stemcell-builder-develop
+- type: remove
+  path: /resources/name=stemcell-builder-release
+- type: remove
+  path: /resources/name=updated-vmx-version
+- type: remove
+  path: /resources/name=aws-stemcell-version
+- type: remove
+  path: /resources/name=gcp-stemcell-version
+- type: remove
+  path: /resources/name=azure-stemcell-version
+- type: remove
+  path: /resources/name=gcp-2016-stemcell-version
+- type: remove
+  path: /resources/name=aws-lock
+- type: remove
+  path: /resources/name=azure-lock
+- type: remove
+  path: /resources/name=gcp-lock
+- type: remove
+  path: /resources/name=major-stemcell
+- type: remove
+  path: /resources/name=vsphere-stemcell-pre-release-candidate
+- type: remove
+  path: /resources/name=vsphere-stemcell-pre-release-candidate-from-vmx
+- type: remove
+  path: /resources/name=vsphere-stemcell-release-candidate
+- type: remove
+  path: /resources/name=vsphere-stemcell-final
+- type: remove
+  path: /resources/name=aws-stemcell-release-candidate
+- type: remove
+  path: /resources/name=aws-stemcell-final
+- type: remove
+  path: /resources/name=base-amis-win2012r2
+- type: remove
+  path: /resources/name=base-gcp-image-win2012r2
+- type: remove
+  path: /resources/name=base-gcp-image-win2016
+- type: remove
+  path: /resources/name=gcp-2012R2-stemcell-release-candidate
+- type: remove
+  path: /resources/name=gcp-2016-stemcell-release-candidate
+- type: remove
+  path: /resources/name=gcp-stemcell-final
+- type: remove
+  path: /resources/name=azure-stemcell-pre-release-candidate
+- type: remove
+  path: /resources/name=azure-base-vhd-uri
+- type: remove
+  path: /resources/name=azure-stemcell-release-candidate
+- type: remove
+  path: /resources/name=azure-stemcell-final
+
+# JOBS
+
+# configure vSphere for dev
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/VHD_VMDK_BUCKET
+  value: bosh-windows-diffcell-dev
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/DIFF_OUTPUT_BUCKET
+  value: bosh-windows-diffcell-dev
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
+  value: bosh-windows-stemcells-pre-release-candidate-dev
+
+# remove unnecessary jobs
+- type: remove
+  path: /jobs/name=bump-stemcell-builder-submodules
+- type: remove
+  path: /jobs/name=test-stemcell-builder
+- type: remove
+  path: /jobs/name=promote-azure
+- type: remove
+  path: /jobs/name=promote-aws-gcp-vsphere
+- type: remove
+  path: /jobs/name=ship-bosh-stemcell-builder
+- type: remove
+  path: /jobs/name=create-vsphere-add-updates
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-vmx
+- type: remove
+  path: /jobs/name=test-vsphere-stemcell-from-vmx
+- type: remove
+  path: /jobs/name=test-vsphere-stemcell-from-diff
+- type: remove
+  path: /jobs/name=build-aws-regional-amis
+- type: remove
+  path: /jobs/name=create-aws-stemcell
+- type: remove
+  path: /jobs/name=create-gcp-stemcell
+- type: remove
+  path: /jobs/name=create-gcp-2016-stemcell
+- type: remove
+  path: /jobs/name=create-azure-stemcell
+- type: remove
+  path: /jobs/name=stage-azure-stemcell
+- type: remove
+  path: /jobs/name=publish-azure-stemcell
+- type: remove
+  path: /jobs/name=finalize-azure-stemcell
+- type: remove
+  path: /jobs/name=test-azure-stemcell
+- type: remove
+  path: /jobs/name=promote-boshio
