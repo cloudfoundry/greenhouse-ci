@@ -3,7 +3,10 @@
 set -e
 
 stemcell_filename=$(cd final-stemcell && ls *.tgz)
+echo "stemcell_filename: ${stemcell_filename}"
+
 checksum=$(shasum -a 1 final-stemcell/*.tgz | awk '{print $1}')
+echo "checksum: ${checksum}"
 
 curl -X POST \
     --fail \
