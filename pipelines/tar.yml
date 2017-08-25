@@ -10,7 +10,20 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/greenhouse-org/bsdtar.git
+    uri: git@github.com:cloudfoundry/bsdtar.git
+    private_key: {{CLOUDFOUNDRY_BSDTAR_DEPLOY_KEY}}
+- name: libarchive
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/libarchive/libarchive.git
+    tag_filter: v*
+- name: zlib
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/madler/zlib.git
+    tag_filter: v*
 - name: bosh-agent
   type: git
   source:
@@ -42,6 +55,39 @@ resources:
 resource_types: []
 
 jobs:
+- name: bump-submodules
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: bsdtar
+    - get: libarchive
+      trigger: true
+    - get: zlib
+      trigger: true
+  - task: bump-libarchive
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "libarchive"
+    input_mapping:
+      source-repo: bsdtar
+      module-repo: libarchive
+    output_mapping:
+      bumped-repo: bumped-libarchive
+  - task: bump-zlib
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "zlib"
+    input_mapping:
+      source-repo: bumped-libarchive
+      module-repo: zlib
+    output_mapping:
+      bumped-repo: bumped-zlib
+  - put: bsdtar
+    params:
+      repository: bumped-zlib
+      rebase: true
+
 - name: build-tar
   serial: true
   plan:
