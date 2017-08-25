@@ -1188,9 +1188,6 @@ jobs:
       passed: [promote-aws-gcp-vsphere]
     - get: stemcell-builder
       passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
-    - get: version
-      resource: stemcells-main-version
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
   - aggregate:
     - task: azure-post-boshio-stemcell-sha
       tags: [vsphere-windows]
