@@ -95,7 +95,6 @@ jobs:
     - get: ci
     - get: bsdtar
       trigger: true
-    - get: s3-bucket
   - task: build-tar
     file: ci/build-tar/task.yml
   - put: s3-bucket
