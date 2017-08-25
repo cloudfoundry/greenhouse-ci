@@ -24,28 +24,6 @@ resources:
     branch: master
     uri: https://github.com/madler/zlib.git
     tag_filter: v*
-- name: bosh-agent
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-agent
-- name: bosh-agent-fork
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:greenhouse-org/bosh-agent.git
-    private_key: {{GREENHOUSEORG_BOSH_AGENT_DEPLOY_KEY}}
-- name: windows_app_lifecycle
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/windows_app_lifecycle
-- name: windows_app_lifecycle_fork
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:greenhouse-org/windows_app_lifecycle.git
-    private_key: {{GREENHOUSEORG_WINDOWS_APP_LIFECYCLE_DEPLOY_KEY}}
 - name: ci
   type: git
   source:
@@ -105,28 +83,9 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: windows_app_lifecycle
-    - get: windows_app_lifecycle_fork
     - get: s3-bucket
       trigger: true
       passed: [build-tar]
-    - get: ci
-  - task: update-tar
-    file: ci/update-tar/task.yml
-    params:
-      TAR_PATHS: Builder/Resources/bsdtar.exe Builder.Tests/Resources/bsdtar.exe bin/bsdtar.exe
-    input_mapping:
-      repo: windows_app_lifecycle
-  - task: commit
-    file: ci/commit/task.yml
-    params:
-      MESSAGE: "Update bsdtar.exe"
-    input_mapping:
-      source_repo: updated_repo
-      destination_repo: windows_app_lifecycle_fork
-  - put: windows_app_lifecycle_fork
-    params:
-      repository: destination_repo_with_commit
   - task: create-tracker-task
     params:
       TOKEN: {{TRACKER_GITBOT_TOKEN}}
@@ -139,34 +98,15 @@ jobs:
         args:
         - -c
         - |
-          curl -f -X POST -H "X-TrackerToken: $TOKEN" -H "Content-Type: application/json" -d '{"name":"New Build of Tar available!", "description": "A new build of tar.exe is available at https://github.com/greenhouse-org/windows_app_lifecycle. A PR should be made to windows_app_lifecycle official repo."}' "https://www.pivotaltracker.com/services/v5/projects/$PROJECT_ID/stories"
+          curl -f -X POST -H "X-TrackerToken: $TOKEN" -H "Content-Type: application/json" -d '{"name":"New Build of Tar available!", "description": "A new build of tar.exe is available at https://greenhouse.ci.cf-app.com/teams/main/pipelines/tar. An update should be made to https://github.com/cloudfoundry/windows_app_lifecycle."}' "https://www.pivotaltracker.com/services/v5/projects/$PROJECT_ID/stories"
 
 - name: bosh-agent-update-tar
   serial: true
   plan:
   - aggregate:
-    - get: bosh-agent
-    - get: bosh-agent-fork
     - get: s3-bucket
       trigger: true
       passed: [build-tar]
-    - get: ci
-  - task: update-tar
-    file: ci/update-tar/task.yml
-    params:
-      TAR_PATHS: integration/windows/fixtures/tar.exe
-    input_mapping:
-      repo: bosh-agent
-  - task: commit
-    file: ci/commit/task.yml
-    params:
-      MESSAGE: "Update tar.exe"
-    input_mapping:
-      source_repo: updated_repo
-      destination_repo: bosh-agent-fork
-  - put: bosh-agent-fork
-    params:
-      repository: destination_repo_with_commit
   - task: create-tracker-task
     params:
       TOKEN: {{TRACKER_GITBOT_TOKEN}}
@@ -179,4 +119,4 @@ jobs:
         args:
         - -c
         - |
-          curl -f -X POST -H "X-TrackerToken: $TOKEN" -H "Content-Type: application/json" -d '{"name":"New Build of Tar available!", "description": "A new build of tar.exe is available at https://github.com/greenhouse-org/bosh-agent. A PR should be made to the official bosh-agent repo."}' "https://www.pivotaltracker.com/services/v5/projects/$PROJECT_ID/stories"
+          curl -f -X POST -H "X-TrackerToken: $TOKEN" -H "Content-Type: application/json" -d '{"name":"New Build of Tar available!", "description": "A new build of tar.exe is available at https://greenhouse.ci.cf-app.com/teams/main/pipelines/tar. An update should be made to https://github.com/cloudfoundry/bosh-agent."}' "https://www.pivotaltracker.com/services/v5/projects/$PROJECT_ID/stories"
