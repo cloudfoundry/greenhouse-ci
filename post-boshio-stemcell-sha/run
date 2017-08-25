@@ -2,8 +2,8 @@
 
 set -e
 
-stemcell_filename=$(basename sha/*.sha .sha)
-checksum=$(cat sha/*.sha)
+stemcell_filename=$(cd final-stemcell && ls *.tgz)
+checksum=$(shasum -a 1 final-stemcell/*.tgz | awk '{print $1}')
 
 curl -X POST \
     --fail \

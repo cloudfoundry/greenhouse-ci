@@ -1192,19 +1192,19 @@ jobs:
     - task: azure-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { sha: azure-stemcell-final }
+      input_mapping: { final-stemcell: azure-stemcell-release-candidate }
       params:
         BOSHIO_TOKEN: ((BOSHIO_TOKEN))
     - task: aws-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { sha: aws-stemcell-final }
+      input_mapping: { final-stemcell: aws-stemcell-release-candidate }
       params:
         BOSHIO_TOKEN: ((BOSHIO_TOKEN))
     - task: gcp-post-boshio-stemcell-sha
       tags: [vsphere-windows]
       file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { sha: gcp-stemcell-final }
+      input_mapping: { final-stemcell: gcp-stemcell-release-candidate }
       params:
         BOSHIO_TOKEN: ((BOSHIO_TOKEN))
   - put: stemcells-main-version
