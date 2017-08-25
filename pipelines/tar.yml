@@ -130,7 +130,7 @@ jobs:
   - task: create-tracker-task
     params:
       TOKEN: {{TRACKER_GITBOT_TOKEN}}
-      PROJECT_ID: {{BOSH_WINDOWS_PROJECT_ID}}
+      PROJECT_ID: {{GARDEN_WINDOWS_PROJECT_ID}}
     config:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
