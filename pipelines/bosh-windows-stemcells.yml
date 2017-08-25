@@ -195,7 +195,7 @@ resources:
   type: s3
   source:
     bucket: bosh-windows-stemcells-pre-release-candidate
-    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    regexp: bosh-stemcell-(.*)-diff-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate-from-vmx
@@ -588,10 +588,10 @@ jobs:
       BOSH_CLIENT: ((regina_client))
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
   - put: vsphere-stemcell-release-candidate
     params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
 
 - name: build-aws-regional-amis
   serial: true
