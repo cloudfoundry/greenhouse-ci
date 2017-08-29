@@ -461,7 +461,7 @@ jobs:
       passed: [test-stemcell-builder]
     - get: windows-stemcell-dependencies
     - get: updated-vmx-version
-      passed: [create-vsphere-add-updates]    
+      passed: [create-vsphere-add-updates]
     - get: version
       resource: stemcells-main-version
       params:
@@ -628,9 +628,10 @@ jobs:
       params:
         pre: build
     - task: create-packer-ci-key
+      privileged: true
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/ci
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
         outputs:
         - name: packer-ci-private-key
         run:
@@ -1266,7 +1267,7 @@ jobs:
     - task: shorten-stemcell-version
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/ci
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
         inputs:
         - name: stemcells-main-version
         outputs:
@@ -1279,7 +1280,7 @@ jobs:
     - task: build-psmodules-zip
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/ci
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
         inputs:
         - name: stemcell-builder
         outputs:
@@ -1292,7 +1293,7 @@ jobs:
     - task: build-agent-zip
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/ci
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
         inputs:
         - name: stemcell-builder
         outputs:
@@ -1305,7 +1306,7 @@ jobs:
     - task: get-stemcell-builder-sha
       config:
         platform: linux
-        image: docker:///pivotalgreenhouse/ci
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
         inputs:
         - name: stemcell-builder
         outputs:
