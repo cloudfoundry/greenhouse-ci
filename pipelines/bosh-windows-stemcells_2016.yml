@@ -1,0 +1,422 @@
+groups:
+- name: all
+  jobs:
+  - build-stemcells
+  - promote-stemcells-2016
+  - create-vsphere-add-updates-2016-insider
+  - create-vsphere-stemcell-from-vmx-2016-insider
+  - test-vsphere-stemcell-from-vmx-2016-insider
+  - create-gcp-stemcell-2016
+- name: main
+  jobs:
+  - build-stemcells
+  - promote-stemcells-2016
+- name: vsphere
+  jobs:
+  - create-vsphere-add-updates-2016-insider
+  - create-vsphere-stemcell-from-vmx-2016-insider
+  - test-vsphere-stemcell-from-vmx-2016-insider
+- name: gcp
+  jobs:
+  - create-gcp-stemcell-2016
+
+resources:
+# repos
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bosh-agent
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-agent.git
+- name: bwats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
+- name: stemcell-builder
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+- name: windows-stemcell-dependencies
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
+    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
+- name: stemcell-builder-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-builder
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+- name: openssh-release
+  type: github-release
+  source:
+    user: PowerShell
+    repository: Win32-OpenSSH
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
+# versions
+- name: stemcells-main-version-2016
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/stemcells-main-version-2016
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1600.0.0
+- name: updated-vmx-version-2016-insider
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/updated-vmx-version-2016-insider
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: "1.0.0"
+- name: vsphere-stemcell-version-2016-insider
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/vsphere-stemcell-version-2016-insider
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1600.0.0
+# TODO (CEV): rename to gcp-stemcell-version-2016
+- name: gcp-2016-stemcell-version
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/gcp-2016-stemcell-version-edge
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1600.0.0
+
+# locks
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-gcp
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
+# s3 buckets
+- name: major-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: 2016-stemcell-(.*).json # Be careful not to match 2012's regex: stemcell-(.*).json
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+  type: s3
+  source:
+    bucket: vsphere-stemcell-vmx-2016-insider
+    regexp: pre-release-candidate/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-release-candidate-vmx-2016-insider
+  type: s3
+  source:
+    bucket: vsphere-stemcell-vmx-2016-insider
+    regexp: release-candidate/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-final-vmx-2016-insider
+  type: s3
+  source:
+   bucket: bosh-windows-stemcells-private
+   regexp: windows2016-insider/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+   access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+   secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: base-gcp-image-win2016
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-gcp-image-windows2016-(.*).json
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-2016-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-stemcell-final-2016
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-production
+    region_name: us-east-2
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+jobs:
+- name: create-vsphere-add-updates-2016-insider
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+    - get: windows-stemcell-dependencies
+    - get: vmx-version
+      resource: updated-vmx-version-2016-insider
+  - task: add-updates
+    privileged: true
+    input_mapping: { version: vmx-version }
+    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+    tags: [vsphere-windows-worker]
+    params:
+      OS_VERSION: windows2016
+      ADMINISTRATOR_PASSWORD: "Password123!"
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      AWS_REGION: us-east-1
+      INPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
+      OUTPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
+      VMX_CACHE_DIR: "C:\\vmx-data-2016"
+  - put: updated-vmx-version-2016-insider
+    params: {bump: major}
+
+- name: create-vsphere-stemcell-from-vmx-2016-insider
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere-windows]
+    - get: stemcell-builder
+      tags: [vsphere-windows]
+      passed: [build-stemcells]
+    - get: windows-stemcell-dependencies
+      tags: [vsphere-windows]
+    - get: version
+      tags: [vsphere-windows]
+      resource: vsphere-stemcell-version-2016-insider
+      passed: [build-stemcells]
+      trigger: true
+    - get: vmx-version
+      tags: [vsphere-windows]
+      resource: updated-vmx-version-2016-insider
+      passed: [build-stemcells]
+    - get: stemcells-main-version-2016
+      passed: [build-stemcells]
+    - get: sshd
+      resource: openssh-release
+      version: { tag: 'v0.0.18.0' } # TODO: Parameterize this!!!
+  - put: version
+    resource: vsphere-stemcell-version-2016-insider
+    params:
+      pre: build
+  - task: create-stemcell
+    privileged: true
+    # WARN: May need to make a new task
+    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+    tags: [vsphere-windows-worker]
+    params:
+      OS_VERSION: windows2016
+      ADMINISTRATOR_PASSWORD: "Password123!"
+      NEW_PASSWORD: "Password123!"
+      ORGANIZATION: Pivotal
+      OWNER: Pivotal
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      AWS_REGION: us-east-1
+      INPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
+      OUTPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
+      VMX_CACHE_DIR: "C:\\vmx-data-2016"
+
+- name: test-vsphere-stemcell-from-vmx-2016-insider
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - aggregate:
+    - get: ci
+    - get: bosh-windows-stemcell
+      tags: [vsphere-windows]
+      resource: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+      trigger: true
+    - get: stemcell-builder
+      passed: [create-vsphere-stemcell-from-vmx-2016-insider]
+    - get: version
+      resource: vsphere-stemcell-version-2016-insider
+      passed: [create-vsphere-stemcell-from-vmx-2016-insider]
+    - get: stemcells-main-version-2016
+      passed: [create-vsphere-stemcell-from-vmx-2016-insider]
+  - task: test-stemcell
+    tags: [vsphere-windows]
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
+    params:
+      VM_TYPE: large # WARN: This is Cloud Config specific!!!
+      BOSH_CLIENT_SECRET: ((regina_client_secret))
+      BOSH_CLIENT: ((regina_client))
+      BOSH_TARGET: ((regina_environment))
+      BOSH_CA_CERT: ((regina_ca_cert))
+      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+  - put: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+    params:
+      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+
+- name: create-gcp-stemcell-2016
+  serial: true
+  plan:
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+      - get: base-gcp-image
+        resource: base-gcp-image-win2016
+        passed: [build-stemcells]
+      - get: version
+        resource: gcp-2016-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-main-version-2016
+        passed: [build-stemcells]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: 'v0.0.18.0' } # TODO: Parameterize this!!!
+    - put: version
+      resource: gcp-2016-stemcell-version
+      params:
+        pre: build
+    - task: create-stemcell
+      file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+      attempts: 10
+      params:
+        OS_VERSION: windows2016
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ensure:
+        task: delete-orphan-vms
+        file: ci/delete-vms/task.yml
+        params:
+          ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+    - task: test-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        IAAS: gcp
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_TARGET: ((goose_environment))
+        BOSH_CA_CERT: ((goose_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: private
+        VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
+    - put: gcp-2016-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+
+- name: promote-stemcells-2016
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: vsphere-stemcell-release-candidate-vmx-2016-insider
+      tags: [vsphere-windows]
+      passed: [test-vsphere-stemcell-from-vmx-2016-insider]
+    - get: gcp-stemcell-release-candidate
+      passed: [create-gcp-stemcell-2016]
+      resource: gcp-2016-stemcell-release-candidate
+    - get: stemcell-builder
+      passed: [create-gcp-stemcell-2016,test-vsphere-stemcell-from-vmx-2016-insider]
+    - get: version
+      resource: stemcells-main-version-2016
+      passed: [create-gcp-stemcell-2016,test-vsphere-stemcell-from-vmx-2016-insider]
+  # Transfer GBs of data just so we can grab the version from the file name....
+  - task: ensure-versions-match
+    tags: [vsphere-windows]
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: ci
+        - name: vsphere-stemcell-release-candidate-vmx-2016-insider
+        - name: gcp-stemcell-release-candidate
+      run:
+        path: ci/match-stemcell-versions/run
+  - aggregate:
+    - task: vsphere-set-stemcell-filename-version
+      tags: [vsphere-windows]
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
+      output_mapping: { final-stemcell: vsphere-stemcell-final-vmx-2016-insider }
+      file: ci/set-stemcell-version/task.yml
+    - task: gcp-set-stemcell-filename-version
+      tags: [vsphere-windows]
+      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+      output_mapping: { final-stemcell: gcp-stemcell-final }
+      file: ci/set-stemcell-version/task.yml
+  - task: create-major-stemcell
+    tags: [vsphere-windows]
+    file: ci/create-major-stemcell/task.yml
+    input_mapping: { final-stemcell: gcp-stemcell-final } # Feed this thing a stemcell so it can parse the version
+  - aggregate:
+    - put: major-stemcell-s3
+      resource: major-stemcell
+      tags: [vsphere-windows]
+      params:
+        file: stemcell-info/2016-stemcell-*.json
+    - put: vsphere-stemcell-final-s3
+      resource: vsphere-stemcell-final-vmx-2016-insider
+      tags: [vsphere-windows]
+      params:
+        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+    - put: gcp-stemcell-final-s3
+      resource: gcp-stemcell-final
+      tags: [vsphere-windows]
+      params:
+        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+
+- name: build-stemcells
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [test-stemcell-builder]
+    - get: windows-stemcell-dependencies
+    - get: updated-vmx-version-2016-insider
+      passed: [create-vsphere-add-updates-2016-insider]
+    - get: version
+      resource: stemcells-main-version-2016
+      params:
+        bump: patch
+  - put: stemcells-main-version-2016
+    params:
+      file: version/number
+  - aggregate:
+    - put: vsphere-stemcell-version-2016-insider
+      params:
+        file: version/number
+    - put: gcp-2016-stemcell-version
+      params:
+        file: version/number
+  - aggregate:
+    - task: collect-win2016-gcp-image
+      file: ci/collect-gcp-image/task.yml
+      output_mapping: { base-gcp-image: win2016-gcp-image }
+      params:
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+        BASE_OS: windows2016
+  - aggregate:
+    - put: base-gcp-image-win2016
+      params:
+        file: win2016-gcp-image/base-gcp-image-windows2016-*.json
