@@ -643,6 +643,7 @@ jobs:
           PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
     - aggregate:
       - task: create-stemcell-us-east-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -651,6 +652,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-east-2
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -659,6 +661,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-west-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -667,6 +670,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-us-west-2
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -675,6 +679,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ca-central-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -683,6 +688,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-south-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -691,6 +697,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-northeast-2
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -699,6 +706,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-southeast-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -707,6 +715,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-southeast-2
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -715,6 +724,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-ap-northeast-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -723,6 +733,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-central-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -731,6 +742,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-west-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -739,6 +751,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-eu-west-2
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
@@ -747,6 +760,7 @@ jobs:
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       - task: create-stemcell-sa-east-1
+        timeout: 1h
         attempts: 3
         file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
         params:
