@@ -402,7 +402,7 @@ jobs:
       passed: [build-stemcells]
     - get: sshd
       resource: openssh-release
-      version: { tag: 'v0.0.18.0' }
+      version: { tag: 'v0.0.19.0' }
   - put: version
     resource: vsphere-stemcell-version
     params:
@@ -537,7 +537,7 @@ jobs:
       passed: [build-stemcells]
     - get: sshd
       resource: openssh-release
-      version: { tag: 'v0.0.18.0' }
+      version: { tag: 'v0.0.19.0' }
   - put: version
     resource: vsphere-stemcell-version
     params:
@@ -616,7 +616,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' }
+        version: { tag: 'v0.0.19.0' }
     - task: cleanup-aws-regional-stemcells
       params:
         REGION: us-east-1
@@ -802,7 +802,7 @@ jobs:
         passed: [build-aws-regional-amis]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' }
+        version: { tag: 'v0.0.19.0' }
     - task: aggregate-the-amis
       file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
       params:
@@ -851,7 +851,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' }
+        version: { tag: 'v0.0.19.0' }
     - put: version
       resource: gcp-stemcell-version
       params:
@@ -909,7 +909,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' }
+        version: { tag: 'v0.0.19.0' }
     - put: version
       resource: gcp-2016-stemcell-version
       params:
@@ -966,7 +966,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' }
+        version: { tag: 'v0.0.19.0' }
     - put: version
       resource: azure-stemcell-version
       params:
