@@ -51,6 +51,8 @@
 - type: remove
   path: /resources/name=vsphere-stemcell-release-candidate
 - type: remove
+  path: /resources/name=vsphere-stemcell-release-candidate-diff
+- type: remove
   path: /resources/name=vsphere-stemcell-final
 - type: remove
   path: /resources/name=aws-stemcell-release-candidate

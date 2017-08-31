@@ -202,6 +202,13 @@ resources:
     regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-release-candidate-diff
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-private-release-candidates-diff
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final
   type: s3
   source:
@@ -424,7 +431,7 @@ jobs:
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: vsphere-stemcell-pre-release-candidate-from-vmx
+  - put: vsphere-stemcell-release-candidate
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
@@ -553,7 +560,7 @@ jobs:
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: vsphere-stemcell-release-candidate
+  - put: vsphere-stemcell-release-candidate-diff
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
 
@@ -1023,17 +1030,17 @@ jobs:
     - get: ci
     - get: vsphere-stemcell-release-candidate
       tags: [vsphere-windows]
-      passed: [test-vsphere-stemcell-from-diff]
+      passed: [test-vsphere-stemcell-from-vmx]
     - get: aws-stemcell-release-candidate
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
       resource: gcp-2012R2-stemcell-release-candidate
     - get: stemcell-builder
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
     - get: version
       resource: stemcells-main-version
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
   - task: ensure-versions-match
     tags: [vsphere-windows]
     config:
@@ -1103,7 +1110,7 @@ jobs:
       resource: stemcells-main-version
       passed: [promote-aws-gcp-vsphere]
     - get: stemcell-builder
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-diff]
+      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
   - aggregate:
     - task: azure-post-boshio-stemcell-sha
       tags: [vsphere-windows]
@@ -1134,7 +1141,7 @@ jobs:
     - get: ci
     - get: vsphere-stemcell-release-candidate
       tags: [vsphere-windows]
-      passed: [test-vsphere-stemcell-from-diff]
+      passed: [test-vsphere-stemcell-from-vmx]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
       resource: gcp-2012R2-stemcell-release-candidate

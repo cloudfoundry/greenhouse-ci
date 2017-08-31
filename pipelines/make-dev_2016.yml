@@ -13,10 +13,16 @@
 
 # versions
 - type: replace
-  path: /resources/name=vsphere-stemcell-version/source/bucket
+  path: /resources/name=stemcells-main-version-2016/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
-  path: /resources/name=stemcells-main-version/source/bucket
+  path: /resources/name=updated-vmx-version-2016-insider/source/bucket
+  value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=vsphere-stemcell-version-2016-insider/source/bucket
+  value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=gcp-2016-stemcell-version/source/bucket
   value: bosh-windows-stemcells-dev
 
 # remove unnecessary resources

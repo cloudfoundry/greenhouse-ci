@@ -27,16 +27,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: bosh-agent
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-agent.git
-- name: bwats
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 - name: stemcell-builder
   type: git
   source:
@@ -49,12 +39,6 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
-- name: stemcell-builder-release
-  type: github-release
-  source:
-    user: cloudfoundry-incubator
-    repository: bosh-windows-stemcell-builder
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 - name: openssh-release
   type: github-release
   source:
@@ -262,7 +246,7 @@ jobs:
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
-  - put: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+  - put: vsphere-stemcell-release-candidate-vmx-2016-insider
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
@@ -362,12 +346,12 @@ jobs:
     - task: gcp-set-stemcell-filename-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
-      output_mapping: { final-stemcell: gcp-stemcell-final }
+      output_mapping: { final-stemcell: gcp-stemcell-final-2016 }
       file: ci/set-stemcell-version/task.yml
   - task: create-major-stemcell
     tags: [vsphere-windows]
     file: ci/create-major-stemcell/task.yml
-    input_mapping: { final-stemcell: gcp-stemcell-final } # Feed this thing a stemcell so it can parse the version
+    input_mapping: { final-stemcell: gcp-stemcell-final-2016 } # Feed this thing a stemcell so it can parse the version
   - aggregate:
     - put: major-stemcell-s3
       resource: major-stemcell
@@ -380,7 +364,7 @@ jobs:
       params:
         file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
     - put: gcp-stemcell-final-s3
-      resource: gcp-stemcell-final
+      resource: gcp-stemcell-final-2016
       tags: [vsphere-windows]
       params:
         file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
@@ -391,7 +375,6 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [test-stemcell-builder]
     - get: windows-stemcell-dependencies
     - get: updated-vmx-version-2016-insider
       passed: [create-vsphere-add-updates-2016-insider]
