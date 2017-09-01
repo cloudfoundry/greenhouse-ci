@@ -172,6 +172,20 @@ resources:
     pool: stemcells-gcp
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-worker-lock
+  type: pool
+  source:
+    branch: master
+    pool: vsphere-worker-lock
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-director-lock
+  type: pool
+  source:
+    branch: master
+    pool: vsphere-director-lock
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
 - name: major-stemcell
@@ -338,102 +352,123 @@ jobs:
 
 - name: create-vsphere-add-updates
   serial: true
-  serial_groups: [vsphere]
   plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-    - get: windows-stemcell-dependencies
-    - get: vmx-version
-      resource: updated-vmx-version
-  - task: add-updates
-    privileged: true
-    input_mapping: { version: vmx-version }
-    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
-    tags: [vsphere-windows-worker]
+  - put: vsphere-worker-lock
     params:
-      OS_VERSION: windows2012R2
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      AWS_REGION: us-east-1
-  - put: updated-vmx-version
-    params: {bump: major}
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+      - get: windows-stemcell-dependencies
+      - get: vmx-version
+        resource: updated-vmx-version
+    - task: add-updates
+      privileged: true
+      input_mapping: { version: vmx-version }
+      file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+      tags: [vsphere-windows-worker]
+      params:
+        OS_VERSION: windows2012R2
+        ADMINISTRATOR_PASSWORD: "Password123!"
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_REGION: us-east-1
+    - put: updated-vmx-version
+      params: {bump: major}
+    ensure:
+      put: vsphere-worker-lock
+      params:
+        release: vsphere-worker-lock
 
 - name: create-vsphere-stemcell-from-vmx
   serial: true
-  serial_groups: [vsphere]
   plan:
-  - aggregate:
-    - get: ci
-      tags: [vsphere-windows]
-    - get: stemcell-builder
-      tags: [vsphere-windows]
-      passed: [build-stemcells]
-    - get: windows-stemcell-dependencies
-      tags: [vsphere-windows]
-    - get: version
-      tags: [vsphere-windows]
+  - put: vsphere-worker-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+        tags: [vsphere-windows]
+      - get: stemcell-builder
+        tags: [vsphere-windows]
+        passed: [build-stemcells]
+      - get: windows-stemcell-dependencies
+        tags: [vsphere-windows]
+      - get: version
+        tags: [vsphere-windows]
+        resource: vsphere-stemcell-version
+        passed: [build-stemcells]
+        trigger: true
+      - get: vmx-version
+        tags: [vsphere-windows]
+        resource: updated-vmx-version
+        passed: [build-stemcells]
+      - get: stemcells-main-version
+        passed: [build-stemcells]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: 'v0.0.19.0' }
+    - put: version
       resource: vsphere-stemcell-version
-      passed: [build-stemcells]
-      trigger: true
-    - get: vmx-version
-      tags: [vsphere-windows]
-      resource: updated-vmx-version
-      passed: [build-stemcells]
-    - get: stemcells-main-version
-      passed: [build-stemcells]
-    - get: sshd
-      resource: openssh-release
-      version: { tag: 'v0.0.19.0' }
-  - put: version
-    resource: vsphere-stemcell-version
-    params:
-      pre: build
-  - task: create-stemcell
-    privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
-    tags: [vsphere-windows-worker]
-    params:
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      NEW_PASSWORD: "Password123!"
-      ORGANIZATION: Pivotal
-      OWNER: Pivotal
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      AWS_REGION: us-east-1
+      params:
+        pre: build
+    - task: create-stemcell
+      privileged: true
+      file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+      tags: [vsphere-windows-worker]
+      params:
+        ADMINISTRATOR_PASSWORD: "Password123!"
+        NEW_PASSWORD: "Password123!"
+        ORGANIZATION: Pivotal
+        OWNER: Pivotal
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_REGION: us-east-1
+    ensure:
+      put: vsphere-worker-lock
+      params:
+        release: vsphere-worker-lock
 
 - name: test-vsphere-stemcell-from-vmx
   serial: true
-  serial_groups: [vsphere]
   plan:
-  - aggregate:
-    - get: ci
-    - get: bosh-windows-stemcell
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: bosh-windows-stemcell
+        tags: [vsphere-windows]
+        resource: vsphere-stemcell-pre-release-candidate-from-vmx
+        trigger: true
+      - get: stemcell-builder
+        passed: [create-vsphere-stemcell-from-vmx]
+      - get: version
+        resource: vsphere-stemcell-version
+        passed: [create-vsphere-stemcell-from-vmx]
+      - get: stemcells-main-version
+        passed: [create-vsphere-stemcell-from-vmx]
+    - task: test-stemcell
       tags: [vsphere-windows]
-      resource: vsphere-stemcell-pre-release-candidate-from-vmx
-      trigger: true
-    - get: stemcell-builder
-      passed: [create-vsphere-stemcell-from-vmx]
-    - get: version
-      resource: vsphere-stemcell-version
-      passed: [create-vsphere-stemcell-from-vmx]
-    - get: stemcells-main-version
-      passed: [create-vsphere-stemcell-from-vmx]
-  - task: test-stemcell
-    tags: [vsphere-windows]
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
-    params:
-      VM_TYPE: large
-      BOSH_CLIENT_SECRET: ((regina_client_secret))
-      BOSH_CLIENT: ((regina_client))
-      BOSH_TARGET: ((regina_environment))
-      BOSH_CA_CERT: ((regina_ca_cert))
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: vsphere-stemcell-release-candidate
-    params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        VM_TYPE: large
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+    - put: vsphere-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
 
 - name: build-stemcells
   serial: true
@@ -489,7 +524,6 @@ jobs:
 
 - name: create-vsphere-stemcell-from-diff
   serial: true
-  serial_groups: [vsphere]
   plan:
   - aggregate:
     - get: ci
@@ -534,35 +568,42 @@ jobs:
 
 - name: test-vsphere-stemcell-from-diff
   serial: true
-  serial_groups: [vsphere]
   plan:
-  - aggregate:
-    - get: ci
-    - get: bosh-windows-stemcell
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: bosh-windows-stemcell
+        tags: [vsphere-windows]
+        resource: vsphere-stemcell-pre-release-candidate
+        trigger: true
+      - get: stemcell-builder
+        passed: [create-vsphere-stemcell-from-diff]
+      - get: version
+        resource: vsphere-stemcell-version
+        passed: [create-vsphere-stemcell-from-diff]
+      - get: stemcells-main-version
+        passed: [create-vsphere-stemcell-from-diff]
+    - task: test-stemcell
       tags: [vsphere-windows]
-      resource: vsphere-stemcell-pre-release-candidate
-      trigger: true
-    - get: stemcell-builder
-      passed: [create-vsphere-stemcell-from-diff]
-    - get: version
-      resource: vsphere-stemcell-version
-      passed: [create-vsphere-stemcell-from-diff]
-    - get: stemcells-main-version
-      passed: [create-vsphere-stemcell-from-diff]
-  - task: test-stemcell
-    tags: [vsphere-windows]
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
-    params:
-      VM_TYPE: large
-      BOSH_CLIENT_SECRET: ((regina_client_secret))
-      BOSH_CLIENT: ((regina_client))
-      BOSH_TARGET: ((regina_environment))
-      BOSH_CA_CERT: ((regina_ca_cert))
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: vsphere-stemcell-release-candidate-diff
-    params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        VM_TYPE: large
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
+    - put: vsphere-stemcell-release-candidate-diff
+      params:
+        file: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
 
 - name: build-aws-regional-amis
   serial: true
