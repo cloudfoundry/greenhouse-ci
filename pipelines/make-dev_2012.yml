@@ -43,6 +43,10 @@
 - type: remove
   path: /resources/name=gcp-lock
 - type: remove
+  path: /resources/name=vsphere-director-lock
+- type: remove
+  path: /resources/name=vsphere-worker-lock
+- type: remove
   path: /resources/name=major-stemcell
 - type: remove
   path: /resources/name=vsphere-stemcell-pre-release-candidate
