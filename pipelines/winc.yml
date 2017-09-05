@@ -451,8 +451,8 @@ jobs:
       passed: [pesto-gats]
     - get: version
       params: {bump: minor}
-    - put: version
-      params: {file: version/number}
+  - put: version
+    params: {file: version/number}
   - task: finalize-release
     file: ci/finalize-release/task.yml
     input_mapping: { release: winc-release-develop }
