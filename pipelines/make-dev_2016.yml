@@ -4,6 +4,8 @@
 - type: remove
   path: /groups
 
+
+
 # RESOURCES
 
 # repos
@@ -41,38 +43,32 @@
   path: /resources/name=gcp-2016-stemcell-release-candidate
 - type: remove
   path: /resources/name=gcp-stemcell-final-2016
+- type: remove
+  path: /resources/name=gcp-lock
+- type: remove
+  path: /resources/name=gcp-2016-stemcell-version
 
 # JOBS
 
-# configure vSphere for dev
-
-
-
-
-
+# configure create-vsphere-add-updates-2016-insider for dev
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/tags
-  value: [diffcell-windows-worker-dev]
+  path: /jobs/name=create-vsphere-add-updates-2016-insider/plan/task=add-updates/tags
+  value: [vsphere-windows-worker-dev]
+
+# configure create-vsphere-stemcell-from-vmx-2016-insider
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/VHD_VMDK_BUCKET
-  value: bosh-windows-diffcell-dev
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/DIFF_OUTPUT_BUCKET
-  value: bosh-windows-diffcell-dev
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
-  value: bosh-windows-stemcells-pre-release-candidate-dev
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/tags
+  value: [vsphere-windows-worker-dev]
 - type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/passed
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=version/passed
 - type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=stemcell-builder/passed
 - type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=stemcells-main-version-2016/passed
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=vmx-version/passed
 
 # remove unnecessary jobs
-
-- type: remove
-  path: /jobs/name=create-vsphere-add-updates-2016-insider
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-vmx-2016-insider
 - type: remove
