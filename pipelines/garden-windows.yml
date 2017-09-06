@@ -215,7 +215,7 @@ jobs:
         - cf-deployment/operations/bypass-cc-bridge.yml
         - cf-deployment/operations/scale-to-one-az.yml
         - garden-windows-private/operations-common/latest-garden-windows.yml
-        - garden-windows-private/operations-common/latest-windows-stemcell.yml
+        - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
         vars_files:
         - cf-vars/vars.yml
         cleanup: true
