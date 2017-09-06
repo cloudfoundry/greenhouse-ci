@@ -527,17 +527,13 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-      tags: [vsphere-windows]
     - get: version
-      tags: [vsphere-windows]
       passed: [build-stemcells]
       resource: vsphere-stemcell-version
       trigger: true
     - get: stemcell-builder
       passed: [build-stemcells]
-      tags: [vsphere-windows]
     - get: windows-stemcell-dependencies
-      tags: [vsphere-windows]
     - get: stemcells-main-version
       passed: [build-stemcells]
     - get: sshd

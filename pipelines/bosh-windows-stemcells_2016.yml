@@ -3,7 +3,6 @@ groups:
   jobs:
   - build-stemcells
   - promote-stemcells-2016
-  - create-vsphere-add-updates-2016-insider
   - create-vsphere-stemcell-from-vmx-2016-insider
   - test-vsphere-stemcell-from-vmx-2016-insider
   - create-gcp-stemcell-2016
@@ -13,7 +12,6 @@ groups:
   - promote-stemcells-2016
 - name: vsphere
   jobs:
-  - create-vsphere-add-updates-2016-insider
   - create-vsphere-stemcell-from-vmx-2016-insider
   - test-vsphere-stemcell-from-vmx-2016-insider
 - name: gcp
@@ -101,15 +99,15 @@ resources:
 - name: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
   type: s3
   source:
-    bucket: vsphere-stemcell-vmx-2016-insider
-    regexp: pre-release-candidate/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    bucket: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate-vmx-2016-insider
   type: s3
   source:
-    bucket: vsphere-stemcell-vmx-2016-insider
-    regexp: release-candidate/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    bucket: vsphere-stemcell-release-candidate-vmx-2016-insider
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final-vmx-2016-insider
@@ -143,59 +141,27 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 jobs:
-- name: create-vsphere-add-updates-2016-insider
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-    - get: windows-stemcell-dependencies
-    - get: vmx-version
-      resource: updated-vmx-version-2016-insider
-  - task: add-updates
-    privileged: true
-    input_mapping: { version: vmx-version }
-    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
-    tags: [vsphere-windows-worker]
-    params:
-      OS_VERSION: windows2016
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      AWS_REGION: us-east-1
-      INPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
-      OUTPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
-      VMX_CACHE_DIR: "C:\\vmx-data-2016"
-  - put: updated-vmx-version-2016-insider
-    params: {bump: major}
-
 - name: create-vsphere-stemcell-from-vmx-2016-insider
   serial: true
   serial_groups: [vsphere]
   plan:
   - aggregate:
     - get: ci
-      tags: [vsphere-windows]
     - get: stemcell-builder
-      tags: [vsphere-windows]
       passed: [build-stemcells]
     - get: windows-stemcell-dependencies
-      tags: [vsphere-windows]
     - get: version
-      tags: [vsphere-windows]
       resource: vsphere-stemcell-version-2016-insider
       passed: [build-stemcells]
       trigger: true
     - get: vmx-version
-      tags: [vsphere-windows]
       resource: updated-vmx-version-2016-insider
       passed: [build-stemcells]
     - get: stemcells-main-version-2016
       passed: [build-stemcells]
     - get: sshd
       resource: openssh-release
-      version: { tag: 'v0.0.18.0' } # TODO: Parameterize this!!!
+      version: { tag: 'v0.0.19.0' } # TODO: Parameterize this!!!
   - put: version
     resource: vsphere-stemcell-version-2016-insider
     params:
@@ -215,8 +181,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
       INPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
-      OUTPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider
+      OUTPUT_BUCKET: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
       VMX_CACHE_DIR: "C:\\vmx-data-2016"
+      SKIP_WINDOWS_UPDATE: true
 
 - name: test-vsphere-stemcell-from-vmx-2016-insider
   serial: true
@@ -377,7 +344,6 @@ jobs:
     - get: stemcell-builder
     - get: windows-stemcell-dependencies
     - get: updated-vmx-version-2016-insider
-      passed: [create-vsphere-add-updates-2016-insider]
     - get: version
       resource: stemcells-main-version-2016
       params:

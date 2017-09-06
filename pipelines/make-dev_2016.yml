@@ -50,15 +50,16 @@
 
 # JOBS
 
-# configure create-vsphere-add-updates-2016-insider for dev
-- type: replace
-  path: /jobs/name=create-vsphere-add-updates-2016-insider/plan/task=add-updates/tags
-  value: [vsphere-windows-worker-dev]
-
 # configure create-vsphere-stemcell-from-vmx-2016-insider
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/params/INPUT_BUCKET
+  value: bosh-windows-stemcell-vmx-2016-insider-dev
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/params/OUTPUT_BUCKET
+  value: vsphere-stemcell-pre-release-candidate-vmx-2016-insider-dev
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=version/passed
 - type: remove

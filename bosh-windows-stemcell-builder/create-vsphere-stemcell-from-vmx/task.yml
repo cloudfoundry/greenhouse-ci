@@ -36,7 +36,7 @@ params:
   VERSION_DIR: ../version
   VMX_VERSION_DIR: ../vmx-version
   STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
-
+  SKIP_WINDOWS_UPDATE: false
   ENABLE_RDP:
   ENABLE_KMS:
   KMS_ADDRESS:
