@@ -372,7 +372,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
-      passed: [test-nstar]
+      passed: [pesto-gats]
       trigger: true
     - get: wats
       trigger: true
@@ -448,7 +448,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
-      passed: [pesto-gats]
+      passed: [pesto-wats]
     - get: version
       params: {bump: minor}
   - put: version
