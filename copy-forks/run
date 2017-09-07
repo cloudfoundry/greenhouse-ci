@@ -2,10 +2,6 @@
 
 set -eu
 
-rm -rf garden-runc-release/src/code.cloudfoundry.org/guardian
-echo "Copying guardian fork...."
-cp -r guardian garden-runc-release/src/code.cloudfoundry.org/guardian
-
 rm -rf garden-runc-release/src/code.cloudfoundry.org/garden-integration-tests
 echo "Copying GATS fork...."
 cp -r garden-integration-tests garden-runc-release/src/code.cloudfoundry.org/garden-integration-tests
