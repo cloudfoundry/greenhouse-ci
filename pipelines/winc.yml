@@ -76,11 +76,6 @@ resources:
   source:
     branch: fork-master
     uri: https://github.com/greenhouse-org/garden-integration-tests.git
-- name: guardian-fork
-  type: git
-  source:
-    branch: fork-master
-    uri: https://github.com/greenhouse-org/guardian.git
 - name: pesto-garden-winc-deployment
   type: bosh-deployment
   source:
@@ -208,7 +203,6 @@ jobs:
     - get: every-2hrs
       trigger: true
     - get: gats-fork
-    - get: guardian-fork
     - get: garden-runc-release
     - get: winc-master
       passed: [winc]
@@ -254,7 +248,6 @@ jobs:
     file: ci/copy-forks/task.yml
     input_mapping:
       garden-integration-tests: gats-fork
-      guardian: guardian-fork
   - task: run-gats
     file: ci/run-local-gats/task.yml
     input_mapping:
