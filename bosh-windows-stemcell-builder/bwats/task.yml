@@ -19,7 +19,7 @@ params:
   BOSH_IP:
   BOSH_UUID:
   STEMCELL_PATH:
-  STEMCELL_OS: windows2012R2
+  STEMCELL_OS:
   AZ: z1
   VM_TYPE: large
   VM_EXTENSIONS: ""

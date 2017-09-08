@@ -213,6 +213,7 @@ jobs:
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+      STEMCELL_OS: windows2016
   - put: vsphere-stemcell-release-candidate-vmx-2016-insider
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
