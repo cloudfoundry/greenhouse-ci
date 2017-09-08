@@ -161,7 +161,7 @@ jobs:
       passed: [build-stemcells]
     - get: sshd
       resource: openssh-release
-      version: { tag: 'v0.0.19.0' } # TODO: Parameterize this!!!
+      version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: vsphere-stemcell-version-2016-insider
     params:
@@ -239,7 +239,7 @@ jobs:
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
-        version: { tag: 'v0.0.18.0' } # TODO: Parameterize this!!!
+        version: { tag: ((OPEN_SSH_VERSION)) }
     - put: version
       resource: gcp-2016-stemcell-version
       params:
