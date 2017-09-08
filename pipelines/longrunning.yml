@@ -1,0 +1,74 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: cf-deployment
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    tag_filter: v*
+- name: vsphere-windows2012R2-stemcell
+  type: s3
+  source:
+   bucket: bosh-windows-stemcells-private
+   regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+   access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+   secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: mulgore-cf-deployment
+  type: bosh-deployment
+  source:
+    deployment: cf
+    client: {{MULGORE_BOSH_CLIENT}}
+    client_secret: {{MULGORE_BOSH_CLIENT_SECRET}}
+    ca_cert: {{MULGORE_BOSH_CA_CERT}}
+    target: {{MULGORE_BOSH_ENVIRONMENT}}
+    vars_store:
+      provider: gcs
+      config:
+        bucket: mulgore
+        file_name: cf/creds.yml
+        json_key: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
+
+jobs:
+- name: mulgore-deploy-cf
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: cf-deployment
+      trigger: true
+      tags: [vsphere]
+    - get: vsphere-windows2012R2-stemcell
+      tags: [vsphere]
+  - aggregate:
+    - task: get-linux-stemcell
+      file: ci/get-vsphere-linux-stemcell/task.yml
+      output_mapping: { stemcell: vsphere-linux-stemcell }
+      tags: [vsphere]
+    - task: get-cf-vars
+      file: ci/get-gcs-file/task.yml
+      output_mapping: { output: cf-vars }
+      params:
+        BUCKET: mulgore
+        FILE_NAME: cf/vars.yml
+        SERVICE_ACCOUNT_KEY: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
+  - put: mulgore-cf-deployment
+    params:
+      manifest: cf-deployment/cf-deployment.yml
+      stemcells:
+      - vsphere-linux-stemcell/*.tgz
+      - vsphere-windows2012R2-stemcell/*.tgz
+      ops_files:
+      - cf-deployment/operations/bypass-cc-bridge.yml
+      - cf-deployment/operations/scale-to-one-az.yml
+      - cf-deployment/operations/windows-cell.yml
+      vars_files:
+      - cf-vars/vars.yml
+      cleanup: true
+    get_params:
+      skip_export: true
+    tags: [vsphere]
