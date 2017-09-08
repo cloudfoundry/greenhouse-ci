@@ -37,6 +37,12 @@ resources:
         bucket: mulgore
         file_name: cf/creds.yml
         json_key: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
+- name: garden-windows-private
+  type: git
+  source:
+    branch: master
+    private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
+    uri: git@github.com:pivotal-cf/garden-windows-private
 
 jobs:
 - name: mulgore-deploy-cf
@@ -49,6 +55,8 @@ jobs:
       trigger: true
       tags: [vsphere]
     - get: vsphere-windows2012R2-stemcell
+      tags: [vsphere]
+    - get: garden-windows-private
       tags: [vsphere]
   - aggregate:
     - task: get-linux-stemcell
@@ -73,6 +81,7 @@ jobs:
       - cf-deployment/operations/bypass-cc-bridge.yml
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
+      - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
