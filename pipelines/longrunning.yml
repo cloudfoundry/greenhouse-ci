@@ -56,6 +56,7 @@ jobs:
         BUCKET: mulgore
         FILE_NAME: cf/vars.yml
         SERVICE_ACCOUNT_KEY: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
+      tags: [vsphere]
   - put: mulgore-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
