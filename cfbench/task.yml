@@ -8,18 +8,20 @@ platform: linux
 
 inputs:
 - name: ci
+- name: app
 - name: cfbench
   path: src/github.com/teddyking/cfbench
 
 params:
   CF_API:
+  CF_STACK:
   CF_USERNAME:
   CF_PASSWORD:
-  CF_STACK:
   CF_ORG:
   CF_SPACE:
-  DATADOG_API_KEY:
-  DATADOG_APPLICATION_KEY:
+  APP_DIR:
+  # DATADOG_API_KEY:
+  # DATADOG_APPLICATION_KEY:
 
 run:
   path: ci/cfbench/run
