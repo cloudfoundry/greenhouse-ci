@@ -43,10 +43,26 @@ resources:
     branch: master
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:pivotal-cf/garden-windows-private
+- name: cfbench
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/teddyking/cfbench.git
+- name: wats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/wats.git
+- name: every-20mins
+  type: time
+  source:
+    interval: 20m
 
 jobs:
 - name: mulgore-deploy-cf
   serial: true
+  serial_groups:
+  - cfbench-windows2012R2
   plan:
   - aggregate:
     - get: ci
@@ -87,4 +103,32 @@ jobs:
       cleanup: true
     get_params:
       skip_export: true
+    tags: [vsphere]
+
+- name: mulgore-cfbench-windows2012R2
+  serial: true
+  serial_groups:
+  - cfbench-windows2012R2
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: cfbench
+      tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
+    - get: every-20mins
+      trigger: true
+      tags: [vsphere]
+  - task: cfbench
+    file: ci/cfbench/task.yml
+    input_mapping: {app: wats}
+    params:
+      CF_API: api.mulgore.cf-app.com
+      CF_STACK: windows2012R2
+      CF_USERNAME: admin
+      CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
+      CF_ORG: cfbench
+      CF_SPACE: windows2012R2
+      APP_DIR: app/assets/nora/NoraPublished
     tags: [vsphere]
