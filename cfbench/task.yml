@@ -20,8 +20,8 @@ params:
   CF_ORG:
   CF_SPACE:
   APP_DIR:
-  # DATADOG_API_KEY:
-  # DATADOG_APPLICATION_KEY:
+  DATADOG_API_KEY:
+  DATADOG_APPLICATION_KEY:
 
 run:
   path: ci/cfbench/run
