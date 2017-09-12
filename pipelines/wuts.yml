@@ -1,0 +1,66 @@
+resources:
+- name: windows-utilities-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+- name: windows-utilities-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: gcp-2012R2-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: mustang
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
+jobs:
+- name: run-wuts
+  serial: true
+  plan:
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+      - get: windows-utilities-tests
+      - get: bosh-windows-stemcell
+        resource: gcp-2012R2-stemcell-release-candidate
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      params:
+        BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_CLIENT: ((mustang_client))
+        BOSH_TARGET: ((mustang_environment))
+        BOSH_CA_CERT: ((mustang_ca_cert))
+        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((mustang_gw_private_key))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2012R2
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+
+

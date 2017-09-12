@@ -1,0 +1,26 @@
+---
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: windows-utilities-release
+  - name: windows-utilities-tests
+  - name: bosh-windows-stemcell
+
+run:
+  path: ci/run-wuts/run
+
+params:
+  BOSH_CLIENT_SECRET:
+  BOSH_CLIENT:
+  BOSH_TARGET:
+  BOSH_CA_CERT:
+  BOSH_GW_USER:
+  BOSH_GW_PRIVATE_KEY:
+  STEMCELL_PATH:
+  STEMCELL_OS:
+  NETWORK:
+  VM_TYPE:
+  AZ:
+  VM_EXTENSIONS:

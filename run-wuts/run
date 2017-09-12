@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+echo "Make the bosh release for windows utilities"
+pushd windows-utilities-release
+  bosh cr --tarball=release.tgz
+popd
+
+pushd windows-utilities-tests
+  echo "Write config.json"
+  export CONFIG_JSON=config.json
+  cat > $CONFIG_JSON <<- EOL
+  {
+    "bosh": {
+      "ca_cert": "$BOSH_CA_CERT",
+      "client": "$BOSH_CLIENT",
+      "client_secret": "$BOSH_CLIENT_SECRET",
+      "target": "$BOSH_TARGET",
+      "gw_user": "$BOSH_GW_USER",
+      "gw_private_key": "$BOSH_GW_PRIVATE_KEY"
+    },
+    "stemcell_path": "../$STEMCELL_PATH",
+    "windows_utilities_path": "../windows-utilities-release/release.tgz",
+    "stemcell_os": "$STEMCELL_OS",
+    "az": "$AZ",
+    "vm_type": "$VM_TYPE",
+    "vm_extensions": "$VM_EXTENSIONS",
+    "network": "$NETWORK"
+  }
+  EOL
+
+  echo "Set GOPATH"
+  export GOPATH=$(pwd)
+
+  echo "Build ginkgo"
+  ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
+  go build -o ginkgo $ginkgo_dir
+
+  echo "Run ginkgo"
+  ginkgo
+popd
+
