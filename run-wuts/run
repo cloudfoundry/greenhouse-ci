@@ -23,8 +23,8 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
       "gw_user": "$BOSH_GW_USER",
       "gw_private_key": "$BOSH_GW_PRIVATE_KEY"
     },
-    "stemcell_path": "../$STEMCELL_PATH",
-    "windows_utilities_path": "../windows-utilities-release/release.tgz",
+    "stemcell_path": "$GOPATH/$STEMCELL_PATH",
+    "windows_utilities_path": "$GOPATH/windows-utilities-release/release.tgz",
     "stemcell_os": "$STEMCELL_OS",
     "az": "$AZ",
     "vm_type": "$VM_TYPE",
