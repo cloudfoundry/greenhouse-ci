@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 echo "Make the bosh release for windows utilities"
 pushd windows-utilities-release
   bosh cr --tarball=release.tgz
@@ -26,7 +28,7 @@ pushd windows-utilities-tests
     "vm_extensions": "$VM_EXTENSIONS",
     "network": "$NETWORK"
   }
-  EOL
+EOL
 
   echo "Set GOPATH"
   export GOPATH=$(pwd)
