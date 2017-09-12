@@ -30,11 +30,14 @@ pushd windows-utilities-tests
   }
 EOL
 
-  echo "Set GOPATH"
+  echo "Set GOPATH to $pwd"
   export GOPATH=$(pwd)
 
+  mkdir src
+  mv vendor src/vendor
+
   echo "Build ginkgo"
-  ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
+  ginkgo_dir='./src/vendor/github.com/onsi/ginkgo/ginkgo'
   go build -o ginkgo $ginkgo_dir
 
   echo "Run ginkgo"
