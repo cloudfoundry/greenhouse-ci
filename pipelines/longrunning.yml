@@ -46,8 +46,8 @@ resources:
 - name: cfbench
   type: git
   source:
-    branch: master
-    uri: https://github.com/teddyking/cfbench.git
+    branch: bypass-stager
+    uri: https://github.com/greenhouse-org/cfbench.git
 - name: wats
   type: git
   source:
@@ -130,5 +130,8 @@ jobs:
       CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
       CF_ORG: cfbench
       CF_SPACE: windows2012R2
+      CF_TAG: windows2012R2
       APP_DIR: app/assets/nora/NoraPublished
+      DATADOG_API_KEY: {{DATADOG_API_KEY}}
+      DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
     tags: [vsphere]
