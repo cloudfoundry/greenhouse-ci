@@ -547,6 +547,7 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
+    - get: stembuild
   - put: version
     resource: vsphere-stemcell-version
     params:

@@ -1,6 +1,12 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+Write-Host "Copying stembuild (${PWD}\stembuild\stembuild_windows_amd64.exe) to: ${PWD}\bin\stembuild.exe"
+mkdir "${PWD}\bin"
+mv "${PWD}\stembuild\stembuild_windows_amd64.exe" "${PWD}\bin\stembuild.exe"
+
+$env:PATH="${PWD}\bin;$env:PATH"
+
 cd "stemcell-builder"
 bundle install
 if ($LASTEXITCODE -ne 0) {
