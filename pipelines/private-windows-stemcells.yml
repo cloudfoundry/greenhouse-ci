@@ -71,6 +71,13 @@ resources:
     user: PowerShell
     repository: Win32-OpenSSH
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+- name: stembuild
+  type: github-release
+  source:
+    owner: pivotal-cf-experimental
+    repository: stembuild
+    pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 jobs:
 - name: create-vsphere-add-updates
@@ -118,9 +125,9 @@ jobs:
       trigger: true
       passed: [create-vsphere-add-updates]
     - get: sshd
-      tag: 'v0.0.18.0'
       resource: openssh-release
-      version: { tag: 'v0.0.18.0' }
+      version: { tag: ((OPEN_SSH_VERSION)) }
+    - get: stembuild
   - task: checkout-stemcell-builder
     file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
