@@ -99,6 +99,12 @@ resources:
     user: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+- name: stembuild
+  type: github-release
+  source:
+    owner: pivotal-cf-experimental
+    repository: stembuild
+    pre_release: true
 
 # versions
 - name: updated-vmx-version
@@ -410,6 +416,7 @@ jobs:
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
+      - get: stembuild
     - put: version
       resource: vsphere-stemcell-version
       params:

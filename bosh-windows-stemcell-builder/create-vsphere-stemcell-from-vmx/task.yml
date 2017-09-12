@@ -8,6 +8,7 @@ inputs:
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
   - name: sshd
+  - name: stembuild
 
 run:
   path: powershell
