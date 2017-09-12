@@ -2,12 +2,15 @@
 
 set -ex
 
+echo "Set GOPATH to $(pwd)"
+export GOPATH=$(pwd)
+
 echo "Make the bosh release for windows utilities"
 pushd windows-utilities-release
   bosh cr --tarball=release.tgz
 popd
 
-pushd windows-utilities-tests
+pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
   cat > $CONFIG_JSON <<- EOL
@@ -30,14 +33,8 @@ pushd windows-utilities-tests
   }
 EOL
 
-  echo "Set GOPATH to $pwd"
-  export GOPATH=$(pwd)
-
-  mkdir src
-  mv vendor src/vendor
-
   echo "Build ginkgo"
-  ginkgo_dir='./src/vendor/github.com/onsi/ginkgo/ginkgo'
+  ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
   go build -o ginkgo $ginkgo_dir
 
   echo "Run ginkgo"

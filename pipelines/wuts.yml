@@ -40,7 +40,8 @@ jobs:
     - aggregate:
       - get: ci
       - get: windows-utilities-release
-      - get: windows-utilities-tests
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: gcp-2012R2-stemcell-release-candidate
     - task: run-wuts
