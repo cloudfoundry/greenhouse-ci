@@ -1,13 +1,11 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$ScriptPath = $MyInvocation.MyCommand.Path
-$DirName = Split-Path $ScriptPath
+Write-Host "Copying stembuild (${PWD}\stembuild\stembuild_windows_amd64.exe) to: ${PWD}\bin\stembuild.exe"
+mkdir "${PWD}\bin"
+mv "${PWD}\stembuild\stembuild_windows_amd64.exe" "${PWD}\bin\stembuild.exe"
 
-mkdir "$DirName\bin"
-mv "$DirName\stembuild\stembuild_windows_amd64.exe" "$DirName\bin\stembuild.exe"
-
-$env:PATH="$DirName\bin;$env:PATH"
+$env:PATH="${PWD}\bin;$env:PATH"
 
 cd "stemcell-builder"
 bundle install
