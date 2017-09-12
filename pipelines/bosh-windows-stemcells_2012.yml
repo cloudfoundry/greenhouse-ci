@@ -105,6 +105,7 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # versions
 - name: updated-vmx-version

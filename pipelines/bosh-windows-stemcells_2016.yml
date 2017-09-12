@@ -49,6 +49,7 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # versions
 - name: stemcells-main-version-2016
