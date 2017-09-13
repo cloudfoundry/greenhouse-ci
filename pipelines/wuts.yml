@@ -40,10 +40,13 @@ jobs:
     - aggregate:
       - get: ci
       - get: windows-utilities-release
+        trigger: true
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
+        trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-2012R2-stemcell-release-candidate
+        trigger: true
     - task: run-wuts
       file: ci/run-wuts/task.yml
       params:
