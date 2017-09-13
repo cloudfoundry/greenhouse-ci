@@ -38,6 +38,6 @@ EOL
   go build -o ginkgo $ginkgo_dir
 
   echo "Run ginkgo"
-  ./ginkgo
+  ./ginkgo -v
 popd
 
