@@ -143,7 +143,7 @@ resources:
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    regexp: gcp-2016/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -338,12 +338,15 @@ jobs:
       resource: vsphere-stemcell-final-vmx-2016-insider
       tags: [vsphere-windows]
       params:
-        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        file: vsphere-stemcell-final-vmx-2016-insider/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final-2016
       tags: [vsphere-windows]
       params:
-        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: gcp-stemcell-final-2016/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+  - put: stemcells-main-version-2016
+    params:
+      bump: minor
 
 - name: build-stemcells
   serial: true
