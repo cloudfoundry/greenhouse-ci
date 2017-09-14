@@ -177,6 +177,7 @@ jobs:
       BOSH_TARGET: {{regina_environment}}
       BOSH_CA_CERT: {{regina_ca_cert}}
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      STEMCELL_OS: windows2012R2
   - task: vsphere-set-stemcell-version
     file: ci/set-stemcell-version/task.yml
   - put: private-stemcell-release-candidate
