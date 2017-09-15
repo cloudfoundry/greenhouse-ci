@@ -24,6 +24,6 @@ params:
   AWS_REGION:
   VHD_VMDK_BUCKET:
   STEMCELL_OUTPUT_BUCKET:
-  OUTPUT_BUCKET:
+  OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
   CACHE_DIR:
   VERSION_DIR: ../version
