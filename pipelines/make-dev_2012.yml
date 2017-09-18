@@ -16,6 +16,9 @@
   path: /resources/name=vsphere-stemcell-version/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
+  path: /resources/name=vsphere-stemcell-version/source/key
+  value: ((VSPHERE_STEMCELL_VERSION_S3_KEY))
+- type: replace
   path: /resources/name=stemcells-main-version/source/bucket
   value: bosh-windows-stemcells-dev
 
