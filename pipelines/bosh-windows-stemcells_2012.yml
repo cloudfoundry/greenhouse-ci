@@ -1105,6 +1105,67 @@ jobs:
       run:
         path: ci/match-stemcell-versions/run
   - aggregate:
+    - put: aws-lock
+      params:
+        acquire: true
+    - put: gcp-lock
+      params:
+        acquire: true
+    - put: vsphere-director-lock
+      params:
+        acquire: true
+  - aggregate:
+    - task: test-aws-stemcell
+      input_mapping: { bosh-windows-stemcell: aws-stemcell-release-candidate }
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2012R2
+      ensure:
+        put: aws-lock
+        params:
+          release: aws-lock
+    - task: test-gcp-stemcell
+      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        IAAS: gcp
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_TARGET: ((goose_environment))
+        BOSH_CA_CERT: ((goose_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        NETWORK: private
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+        STEMCELL_OS: windows2012R2
+      ensure:
+        put: gcp-lock
+        params:
+          release: gcp-lock
+    - task: test-vsphere-stemcell
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+      tags: [vsphere-windows]
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        VM_TYPE: large
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2012R2
+      ensure:
+        put: vsphere-director-lock
+        params:
+          release: vsphere-director-lock
+  - aggregate:
     - task: vsphere-set-stemcell-filename-version
       tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
