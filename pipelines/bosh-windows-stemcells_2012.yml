@@ -1264,6 +1264,8 @@ jobs:
     - get: version
       resource: stemcells-main-version
       passed: [promote-aws-gcp-vsphere]
+    - get: stemcell-builder
+      passed: [promote-aws-gcp-vsphere]
   - task: ensure-versions-match
     tags: [vsphere-windows]
     config:
@@ -1277,6 +1279,28 @@ jobs:
         - name: azure-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
+  - put: azure-lock
+    params:
+      acquire: true
+  - task: test-azure-stemcell
+    input_mapping: { bosh-windows-stemcell: azure-stemcell-release-candidate }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    params:
+      IAAS: azure
+      ACCOUNT_JSON:
+      BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
+      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+      AZ: z1
+      VM_TYPE: default
+      NETWORK: default
+      STEMCELL_OS: windows2012R2
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
   - task: azure-set-stemcell-filename-version
     tags: [vsphere-windows]
     input_mapping: { bosh-windows-stemcell: azure-stemcell-release-candidate }
