@@ -16,9 +16,7 @@ groups:
   - create-aws-stemcell
   - create-gcp-stemcell
   - create-azure-stemcell
-  - stage-azure-stemcell
-  - publish-azure-stemcell
-  - finalize-azure-stemcell
+  - print-azure-publishing-instructions
   - test-azure-stemcell
   - promote-boshio
 - name: main
@@ -47,9 +45,7 @@ groups:
 - name: azure
   jobs:
   - create-azure-stemcell
-  - stage-azure-stemcell
-  - publish-azure-stemcell
-  - finalize-azure-stemcell
+  - print-azure-publishing-instructions
   - test-azure-stemcell
 
 resources:
@@ -969,13 +965,13 @@ jobs:
       params:
         release: azure-lock
 
-- name: stage-azure-stemcell
+- name: print-azure-publishing-instructions
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [create-azure-stemcell]
+      # passed: [create-azure-stemcell]
     - get: version
       resource: azure-stemcell-version
       passed: [create-azure-stemcell]
@@ -985,11 +981,10 @@ jobs:
       passed: [create-azure-stemcell]
     - get: azure-base-vhd-uri
       passed: [create-azure-stemcell]
-  - task: stage-stemcell
-    file: ci/bosh-windows-stemcell-builder/stage-azure-stemcell/task.yml
+  - task: print-azure-publishing-instructions
+    file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
       SKU: '2012r2'
-      API_KEY: ((AZURE_PUBLISHER_API_KEY))
       AZURE_STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
       AZURE_STORAGE_ACCESS_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
       AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
@@ -997,68 +992,21 @@ jobs:
       AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
       CONTAINER_NAME: 'system'
 
-- name: publish-azure-stemcell
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [stage-azure-stemcell]
-    - get: version
-      resource: azure-stemcell-version
-      passed: [stage-azure-stemcell]
-      trigger: true
-    - get: stemcells-main-version
-      passed: [stage-azure-stemcell]
-    - get: azure-stemcell-pre-release-candidate
-      passed: [stage-azure-stemcell]
-  - task: publish-stemcell
-    file: ci/bosh-windows-stemcell-builder/publish-azure-stemcell/task.yml
-    params:
-      API_KEY: ((AZURE_PUBLISHER_API_KEY))
-
-- name: finalize-azure-stemcell
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [publish-azure-stemcell]
-    - get: version
-      resource: azure-stemcell-version
-      passed: [publish-azure-stemcell]
-      trigger: true
-    - get: stemcells-main-version
-      passed: [publish-azure-stemcell]
-    - get: azure-stemcell-pre-release-candidate
-      passed: [publish-azure-stemcell]
-  - task: finalize-stemcell
-    file: ci/bosh-windows-stemcell-builder/finalize-azure-stemcell/task.yml
-    params:
-      SKU: '2012r2'
-      AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
-      AZURE_CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
-      AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
-  - put: azure-stemcell-release-candidate
-    params:
-      file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-
 - name: test-azure-stemcell
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [finalize-azure-stemcell]
+      passed: [print-azure-publishing-instructions]
     - get: version
       resource: azure-stemcell-version
-      passed: [finalize-azure-stemcell]
-      trigger: true
+      passed: [print-azure-publishing-instructions]
     - get: stemcells-main-version
-      passed: [finalize-azure-stemcell]
+      passed: [print-azure-publishing-instructions]
     - get: bosh-windows-stemcell
-      resource: azure-stemcell-release-candidate
-      passed: [finalize-azure-stemcell]
+      resource: azure-stemcell-pre-release-candidate
+      passed: [create-azure-stemcell]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     params:
@@ -1073,6 +1021,10 @@ jobs:
       VM_TYPE: default
       NETWORK: default
       STEMCELL_OS: windows2012R2
+  - put: azure-stemcell-release-candidate
+    params:
+      file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+
 
 - name: promote-aws-gcp-vsphere
   serial: true
