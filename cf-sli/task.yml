@@ -1,0 +1,30 @@
+---
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+
+platform: linux
+
+inputs:
+- name: ci
+- name: app
+- name: cf-sli
+  path: src/github.com/pivotal-cloudops/cf-sli
+
+params:
+  CF_API:
+  CF_DOMAIN:
+  CF_STACK:
+  CF_USERNAME:
+  CF_PASSWORD:
+  CF_ORG:
+  CF_SPACE:
+  CF_BUILDPACK:
+  CF_TAG:
+  APP_DIR:
+  DATADOG_API_KEY:
+  DATADOG_APPLICATION_KEY:
+
+run:
+  path: ci/cf-sli/run
