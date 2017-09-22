@@ -40,7 +40,7 @@ resources:
 - name: garden-windows-private
   type: git
   source:
-    branch: master
+    branch: use-windows-alias
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:pivotal-cf/garden-windows-private
 - name: cfbench
