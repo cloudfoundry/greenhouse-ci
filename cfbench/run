@@ -33,7 +33,7 @@ else
   curl -X POST -H "Content-type: application/json" \
     -d "{ \"series\" :
            [{\"metric\": \"cfbench.failed\",
-            \"points\": [],
+            \"points\": [[$(date +%s), $pushExitStatus]],
             \"type\": \"gauge\",
             \"tags\": [\"$CF_TAG\"]
           }]
