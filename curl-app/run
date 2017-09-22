@@ -5,10 +5,16 @@ curlExitStatus=$?
 
 set -e
 
+appStillUp=0
+
+if [[ $curlExitStatus == "0" ]]; then
+  appStillUp=1
+fi
+
 curl -X POST -H "Content-type: application/json" \
   -d "{ \"series\" :
 	 [{\"metric\": \"longrunning.curlapp\",
-	  \"points\": [[$(date +%s), $curlExitStatus]],
+	  \"points\": [[$(date +%s), $appStillUp]],
 	  \"type\": \"gauge\",
 	  \"tags\": [\"$CF_TAG\"]
 	}]
