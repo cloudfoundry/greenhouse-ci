@@ -1,0 +1,17 @@
+#!/bin/bash
+
+curl -f $CF_APP_URL
+curlExitStatus=$?
+
+set -e
+
+curl -X POST -H "Content-type: application/json" \
+  -d "{ \"series\" :
+	 [{\"metric\": \"longrunning.curlapp\",
+	  \"points\": [[$(date +%s), $curlExitStatus]],
+	  \"type\": \"gauge\",
+	  \"tags\": [\"$CF_TAG\"]
+	}]
+      }" \
+"https://app.datadoghq.com/api/v1/series?api_key=${DATADOG_API_KEY}&application_key=$DATADOG_APPLICATION_KEY"
+
