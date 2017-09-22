@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+cf api "$CF_API" --skip-ssl-validation
+cf login -u "$CF_USERNAME" -p "$CF_PASSWORD" -s "$CF_SPACE" -o "$CF_ORG" --skip-ssl-validation
+cf push -p $APP_DIR -s $CF_STACK "longrunning-$CF_STACK"
+
