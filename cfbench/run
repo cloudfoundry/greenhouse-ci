@@ -15,10 +15,28 @@ cf login -u "$CF_USERNAME" -p "$CF_PASSWORD" -s "$CF_SPACE" -o "$CF_ORG" --skip-
 export CF_AUTH_TOKEN=$(cf oauth-token)
 DOPPLER_ADDRESS=$(cf curl /v2/info | jq '.doppler_logging_endpoint' -r)
 
+set +e
+
 cfbench \
   -stack $CF_STACK \
   -app-dir $APP_DIR \
   -doppler-address "$DOPPLER_ADDRESS" -json > metrics.json
 
-curl -X POST -H 'Content-Type: application/json' -d @metrics.json \
+pushExitStatus=$?
+
+set -e
+
+if [[ $pushExitStatus == "0" ]]; then
+  curl -X POST -H 'Content-Type: application/json' -d @metrics.json \
    "https://app.datadoghq.com/api/v1/series?api_key=$DATADOG_API_KEY&application_key=$DATADOG_APPLICATION_KEY"
+else
+  curl -X POST -H "Content-type: application/json" \
+    -d "{ \"series\" :
+           [{\"metric\": \"cfbench.failed\",
+            \"points\": [],
+            \"type\": \"gauge\",
+            \"tags\": [\"$CF_TAG\"]
+          }]
+        }" \
+  "https://app.datadoghq.com/api/v1/series?api_key=${DATADOG_API_KEY}&application_key=$DATADOG_APPLICATION_KEY"
+fi
