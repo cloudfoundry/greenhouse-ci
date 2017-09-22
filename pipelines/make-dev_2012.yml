@@ -22,6 +22,16 @@
   path: /resources/name=stemcells-main-version/source/bucket
   value: bosh-windows-stemcells-dev
 
+# s3
+- type: replace
+  path: /resources/name=vsphere-stemcell-pre-release-candidate/source/bucket
+  value: bosh-windows-stemcells-pre-release-candidate-dev
+- type: replace
+  path: /resources/name=vsphere-stemcell-release-candidate-diff/source/bucket
+  value: bosh-windows-stemcells-private-release-candidates-diff-dev
+
+# locks
+
 # remove unnecessary resources
 - type: remove
   path: /resources/name=bosh-agent
@@ -46,19 +56,13 @@
 - type: remove
   path: /resources/name=gcp-lock
 - type: remove
-  path: /resources/name=vsphere-director-lock
-- type: remove
   path: /resources/name=vsphere-worker-lock
 - type: remove
   path: /resources/name=major-stemcell
 - type: remove
-  path: /resources/name=vsphere-stemcell-pre-release-candidate
-- type: remove
   path: /resources/name=vsphere-stemcell-pre-release-candidate-from-vmx
 - type: remove
   path: /resources/name=vsphere-stemcell-release-candidate
-- type: remove
-  path: /resources/name=vsphere-stemcell-release-candidate-diff
 - type: remove
   path: /resources/name=vsphere-stemcell-final
 - type: remove
@@ -84,7 +88,7 @@
 
 # JOBS
 
-# configure vSphere for dev
+# configure create-vsphere-stemcell-from-diff for dev
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
@@ -103,6 +107,12 @@
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
+
+# configure test-vsphere-stemcell-from-diff for dev
+- type: remove
+  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/1/do/0/aggregate/get=bosh-windows-stemcell/tags
+- type: remove
+  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/1/do/task=test-stemcell/tags
 
 # remove unnecessary jobs
 - type: remove
@@ -124,8 +134,6 @@
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-vmx
 - type: remove
-  path: /jobs/name=test-vsphere-stemcell-from-diff
-- type: remove
   path: /jobs/name=build-aws-regional-amis
 - type: remove
   path: /jobs/name=create-aws-stemcell
@@ -134,11 +142,7 @@
 - type: remove
   path: /jobs/name=create-azure-stemcell
 - type: remove
-  path: /jobs/name=stage-azure-stemcell
-- type: remove
-  path: /jobs/name=publish-azure-stemcell
-- type: remove
-  path: /jobs/name=finalize-azure-stemcell
+  path: /jobs/name=print-azure-publishing-instructions
 - type: remove
   path: /jobs/name=test-azure-stemcell
 - type: remove
