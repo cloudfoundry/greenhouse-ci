@@ -13,7 +13,7 @@ fi
 
 curl -X POST -H "Content-type: application/json" \
   -d "{ \"series\" :
-	 [{\"metric\": \"longrunning.curlapp\",
+	 [{\"metric\": \"longrunning.apprunning\",
 	  \"points\": [[$(date +%s), $appStillUp]],
 	  \"type\": \"gauge\",
 	  \"tags\": [\"$CF_TAG\"]
