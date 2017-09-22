@@ -57,12 +57,17 @@ resources:
   type: time
   source:
     interval: 20m
+- name: every-1min
+  type: time
+  source:
+    interval: 1m
 
 jobs:
 - name: mulgore-deploy-cf
   serial: true
   serial_groups:
   - cfbench-windows2012R2
+  - longrunning-windows2012R2
   plan:
   - aggregate:
     - get: ci
@@ -132,6 +137,49 @@ jobs:
       CF_SPACE: windows2012R2
       CF_TAG: windows2012R2
       APP_DIR: app/assets/nora/NoraPublished
+      DATADOG_API_KEY: {{DATADOG_API_KEY}}
+      DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
+    tags: [vsphere]
+
+- name: mulgore-push-longrunning-app-windows2012R2
+  serial: true
+  serial_groups:
+  - longrunning-windows2012R2
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
+  - task: push-app
+    file: ci/push-app/task.yml
+    input_mapping: {app: wats}
+    params:
+      CF_API: api.mulgore.cf-app.com
+      CF_STACK: windows2012R2
+      CF_USERNAME: admin
+      CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
+      CF_ORG: longrunning
+      CF_SPACE: windows2012R2
+      APP_DIR: app/assets/nora/NoraPublished
+    tags: [vsphere]
+
+- name: mulgore-curl-longrunning-app-windows2012R2
+  serial: true
+  serial_groups:
+  - longrunning-windows2012R2
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: every-1min
+      trigger: true
+      tags: [vsphere]
+  - task: curl-app
+    file: ci/curl-app/task.yml
+    params:
+      CF_APP_URL: longrunning-windows2012R2.mulgore.cf-app.com
+      CF_TAG: windows2012R2
       DATADOG_API_KEY: {{DATADOG_API_KEY}}
       DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
     tags: [vsphere]
