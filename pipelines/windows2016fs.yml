@@ -4,10 +4,10 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: windows2016fs-release
+- name: windows2016fs-develop
   type: git
   source:
-    branch: master
+    branch: develop
     uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
 - name: git-setup
   type: github-release
@@ -37,7 +37,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: windows2016fs-release
+    - get: windows2016fs-develop
       trigger: true
     - get: git-setup
       trigger: true
@@ -52,9 +52,37 @@ jobs:
     tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
     input_mapping:
-      repo: windows2016fs-release
+      repo: windows2016fs-develop
     params:
       DOCKERFILE: repo/src/Dockerfile
       IMAGE_NAME: cloudfoundry/windows2016fs
       DOCKER_USERNAME: {{DOCKER_USERNAME}}
       DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
+
+- name: hydrate-tests-windows
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      trigger: true
+  - task: run-ginkgo-exe
+    file: ci/run-ginkgo-exe/task.yml
+    input_mapping:
+      repo: windows2016fs-develop
+    params:
+      TEST_PATH: src/hydrate
+
+- name: hydrate-tests-linux
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      trigger: true
+  - task: run-ginkgo
+    file: ci/run-ginkgo/task.yml
+    input_mapping:
+      repo: windows2016fs-develop
+    params:
+      TEST_PATH: src/hydrate
