@@ -998,29 +998,29 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [print-azure-publishing-instructions]
-    - get: version
-      resource: azure-stemcell-version
-      passed: [print-azure-publishing-instructions]
+      passed: [create-azure-stemcell]
+    - get: azure-stemcell-version
+      passed: [create-azure-stemcell]
     - get: stemcells-main-version
-      passed: [print-azure-publishing-instructions]
+      passed: [create-azure-stemcell]
     - get: bosh-windows-stemcell
       resource: azure-stemcell-pre-release-candidate
       passed: [create-azure-stemcell]
+    - get: azure-base-vhd-uri
+      passed: [create-azure-stemcell]
   - task: test-stemcell
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
     params:
-      IAAS: azure
-      ACCOUNT_JSON:
-      BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+      BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
       AZ: z1
       VM_TYPE: default
       NETWORK: default
       STEMCELL_OS: windows2012R2
+      WORKING_DIR: 'F:/'
+      AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
   - put: azure-stemcell-release-candidate
     params:
       file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz

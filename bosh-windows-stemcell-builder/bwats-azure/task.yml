@@ -1,0 +1,26 @@
+---
+platform: windows
+
+inputs:
+  - name: ci
+  - name: stemcell-builder
+  - name: bosh-windows-stemcell
+  - name: azure-base-vhd-uri
+  - name: azure-stemcell-version
+
+run:
+  path: ci/bosh-windows-stemcell-builder/bwats-azure/run.ps1
+
+params:
+  BOSH_CA_CERT:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_IP:
+  BOSH_UUID:
+  STEMCELL_OS:
+  AZ: z1
+  VM_TYPE: large
+  VM_EXTENSIONS: ""
+  NETWORK: default
+  WORKING_DIR: 'F:/'
+  AZURE_SOURCE_KEY:
