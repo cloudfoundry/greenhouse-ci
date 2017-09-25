@@ -128,6 +128,7 @@ jobs:
     - get: mulgore-cf-deployment
       trigger: true
       passed: [mulgore-deploy-cf]
+      tags: [vsphere]
   - task: cfbench
     file: ci/cfbench/task.yml
     input_mapping: {app: wats}
@@ -157,6 +158,7 @@ jobs:
     - get: mulgore-cf-deployment
       trigger: true
       passed: [mulgore-deploy-cf]
+      tags: [vsphere]
   - task: push-app
     file: ci/push-app/task.yml
     input_mapping: {app: wats}
@@ -184,6 +186,7 @@ jobs:
     - get: mulgore-cf-deployment
       trigger: true
       passed: [mulgore-push-longrunning-app-windows2012R2]
+      tags: [vsphere]
   - task: curl-app
     file: ci/curl-app/task.yml
     params:
