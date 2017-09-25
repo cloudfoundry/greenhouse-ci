@@ -1010,6 +1010,7 @@ jobs:
       passed: [create-azure-stemcell]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
+    tags: [azure-windows-worker]
     params:
       BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
