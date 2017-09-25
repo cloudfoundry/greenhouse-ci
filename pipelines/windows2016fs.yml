@@ -9,6 +9,12 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
+- name: windows2016fs-dockerfile
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
+    paths: [ src/Dockerfile ]
 - name: git-setup
   type: github-release
   source:
@@ -37,7 +43,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: windows2016fs-develop
+    - get: windows2016fs-dockerfile
       trigger: true
     - get: git-setup
       trigger: true
@@ -52,7 +58,7 @@ jobs:
     tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
     input_mapping:
-      repo: windows2016fs-develop
+      repo: windows2016fs-dockerfile
     params:
       DOCKERFILE: repo/src/Dockerfile
       IMAGE_NAME: cloudfoundry/windows2016fs
