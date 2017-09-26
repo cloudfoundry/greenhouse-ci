@@ -22,15 +22,23 @@ foreach ($key in $RequiredEnvVars) {
     }
 }
 
-$VersionFile=(Resolve-Path .\azure-stemcell-version\*.txt).Path
+$VersionFile=(Resolve-Path "${PWD}\azure-stemcell-version\version*)".Path
 if (($VersionFile | Measure-Object).Count -ne 1) {
-    Write-Error "Too many files in 'azure-stemcell-version' directory: ${VersionFile}"
+    if (($VersionFile | Measure-Object).Count -eq 0) {
+        Write-Error "No files in 'azure-stemcell-version' directory: ${VersionFile}"
+    } else {
+        Write-Error "Too many files in 'azure-stemcell-version' directory: ${VersionFile}"
+    }
     Exit 1
 }
 
-$VhdFile=(Resolve-Path .\azure-base-vhd-uri\*.txt).Path
+$VhdFile=(Resolve-Path "${PWD}\azure-base-vhd-uri\*vhd-uri.txt").Path
 if (($VhdFile | Measure-Object).Count -ne 1) {
-    Write-Error "Too many files in 'azure-base-vhd-uri' directory: ${VhdFile}"
+    if (($VhdFile | Measure-Object).Count -eq 0) {
+        Write-Error "No files in 'azure-base-vhd-uri' directory: ${VhdFile}"
+    } else {
+        Write-Error "Too many files in 'azure-base-vhd-uri' directory: ${VhdFile}"
+    }
     Exit 1
 }
 
