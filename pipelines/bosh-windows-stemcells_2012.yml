@@ -436,7 +436,7 @@ jobs:
         release: vsphere-worker-lock
 
 - name: test-vsphere-stemcell-from-vmx
-  serial-groups: ["vsphere-director"]
+  serial_groups: ["vsphere-director"]
   serial: true
   plan:
   - put: vsphere-director-lock
@@ -570,7 +570,7 @@ jobs:
       CACHE_DIR: "C:\\image-data"
 
 - name: test-vsphere-stemcell-from-diff
-  serial-groups: ["vsphere-director"]
+  serial_groups: ["vsphere-director"]
   serial: true
   plan:
   - put: vsphere-director-lock
@@ -1030,7 +1030,7 @@ jobs:
 
 
 - name: promote-aws-gcp-vsphere
-  serial-groups: ["vsphere-director"]
+  serial_groups: ["vsphere-director"]
   serial: true
   plan:
   - aggregate:
