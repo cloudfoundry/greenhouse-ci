@@ -4,5 +4,4 @@ set -eu
 
 ./windows2016fs-release/scripts/hydrate
 
-rm -rf hydrated-release
-mv windows2016fs-release hydrated-release
+cp -r ./windows2016fs-release/. hydrated-release/

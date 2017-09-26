@@ -3,5 +3,4 @@ trap { $host.SetShouldExit(1) }
 
 ./windows2016fs-release/scripts/hydrate.ps1
 
-rm -recurse -force hydrated-release
-mv windows2016fs-release hydrated-release
+Get-ChildItem -Force windows2016fs-release\* | Move-Item -Destination hydrated-release
