@@ -1017,7 +1017,7 @@ jobs:
       BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
       BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
+      BOSH_TARGET: '10.0.0.6'
       AZ: z1
       VM_TYPE: default
       NETWORK: default
@@ -1027,7 +1027,6 @@ jobs:
   - put: azure-stemcell-release-candidate
     params:
       file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-
 
 - name: promote-aws-gcp-vsphere
   serial_groups: ["vsphere-director"]
