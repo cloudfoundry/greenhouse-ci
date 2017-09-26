@@ -9,7 +9,12 @@ inputs:
   - name: azure-stemcell-version
 
 run:
-  path: ci/bosh-windows-stemcell-builder/bwats-azure/run.ps1
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/bosh-windows-stemcell-builder/bwats-azure/run.ps1
 
 params:
   BOSH_CA_CERT:
