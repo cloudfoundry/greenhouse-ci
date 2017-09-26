@@ -5,7 +5,7 @@ $RequiredEnvVars=@(
     'BOSH_CA_CERT',
     'BOSH_CLIENT',
     'BOSH_CLIENT_SECRET',
-    'BOSH_IP',
+    'BOSH_TARGET',
     'BOSH_UUID',
     'STEMCELL_OS',
     'AZ',
