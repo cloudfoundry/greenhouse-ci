@@ -1,6 +1,8 @@
 $ErrorActionPreference = "Stop"
 
 # Test these early so that we don't waste time making the stemcell
+# ignoring: VM_EXTENSIONS
+#
 $RequiredEnvVars=@(
     'BOSH_CA_CERT',
     'BOSH_CLIENT',
@@ -9,7 +11,6 @@ $RequiredEnvVars=@(
     'STEMCELL_OS',
     'AZ',
     'VM_TYPE',
-    'VM_EXTENSIONS',
     'NETWORK',
     'WORKING_DIR',
     'AZURE_SOURCE_KEY'
