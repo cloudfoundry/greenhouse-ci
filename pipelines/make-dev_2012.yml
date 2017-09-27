@@ -21,6 +21,9 @@
 - type: replace
   path: /resources/name=stemcells-main-version/source/bucket
   value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=gcp-stemcell-version/source/bucket
+  value: bosh-windows-stemcells-dev
 
 # s3
 - type: replace
@@ -29,6 +32,9 @@
 - type: replace
   path: /resources/name=vsphere-stemcell-release-candidate-diff/source/bucket
   value: bosh-windows-stemcells-private-release-candidates-diff-dev
+- type: replace
+  path: /resources/name=base-gcp-image-win2012r2/source/bucket
+  value: bosh-windows-stemcells-dev
 
 # locks
 
@@ -45,8 +51,6 @@
   path: /resources/name=updated-vmx-version
 - type: remove
   path: /resources/name=aws-stemcell-version
-- type: remove
-  path: /resources/name=gcp-stemcell-version
 - type: remove
   path: /resources/name=azure-stemcell-version
 - type: remove
@@ -71,8 +75,6 @@
   path: /resources/name=aws-stemcell-final
 - type: remove
   path: /resources/name=base-amis-win2012r2
-- type: remove
-  path: /resources/name=base-gcp-image-win2012r2
 - type: remove
   path: /resources/name=gcp-2012R2-stemcell-release-candidate
 - type: remove
@@ -108,6 +110,39 @@
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
 
+# configure gcp for dev
+- type: replace
+  path: /jobs/name=create-gcp-stemcell
+  value:
+    name: create-gcp-stemcell
+    plan:
+    - do:
+      - aggregate:
+        - get: ci
+        - get: stemcell-builder
+        - get: base-gcp-image
+          resource: base-gcp-image-win2012r2
+        - get: version
+          resource: gcp-stemcell-version
+        - get: windows-stemcell-dependencies
+        - get: stemcells-main-version
+        - get: sshd
+          resource: openssh-release
+          version: { tag: ((OPEN_SSH_VERSION)) }
+      - task: create-stemcell
+        file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+        attempts: 10
+        params:
+          OS_VERSION: windows2012R2
+          ACCOUNT_JSON: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ensure:
+        task: delete-orphan-vms
+        file: ci/delete-vms/task.yml
+        params:
+          ACCOUNT_JSON: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+
+
+
 # configure test-vsphere-stemcell-from-diff for dev
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-diff/plan/1/do/0/aggregate/get=bosh-windows-stemcell/tags
@@ -137,8 +172,6 @@
   path: /jobs/name=build-aws-regional-amis
 - type: remove
   path: /jobs/name=create-aws-stemcell
-- type: remove
-  path: /jobs/name=create-gcp-stemcell
 - type: remove
   path: /jobs/name=create-azure-stemcell
 - type: remove
