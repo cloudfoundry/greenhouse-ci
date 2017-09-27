@@ -7,4 +7,14 @@ cp -r source_repo/* destination_repo_with_commit
 git config --global user.email "pivotal-netgarden-eng@pivotal.io"
 git config --global user.name "Greenhouse CI"
 git -C destination_repo_with_commit add -A .
+
+set +e
+git diff --quiet --exit-code
+if [[ $? == "0" ]]; then
+  echo "No diff, nothing to commit"
+  exit 0
+fi
+set -e
+
 git -C destination_repo_with_commit commit -m "$MESSAGE"
+
