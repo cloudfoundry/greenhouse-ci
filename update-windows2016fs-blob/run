@@ -4,7 +4,6 @@ set -eu
 
 VERSION=$(cat version/version)
 PREVIOUS_VERSION=$(cat windows2016fs-release/IMAGE_TAG)
-export GOPATH="$PWD/windows2016fs-release"
 
 if [[ "$VERSION" == "$PREVIOUS_VERSION" ]]; then
   echo "No blob to update"
