@@ -74,6 +74,8 @@ $env:STEMCELL_PATH=$StemcellPath
 
 $env:IAAS='azure'
 
+$env:BWATS_BOSH_TIMEOUT='3h' # Massive timeout
+
 # Run BWATs
 
 Push-Location "$PWD\stemcell-builder"
