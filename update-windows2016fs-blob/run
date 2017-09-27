@@ -4,18 +4,18 @@ set -eu
 
 VERSION=$(cat version/version)
 
-OLD_BLOB=$(bosh --json blobs | jq -r .Tables[0].Rows[].path | grep windows2016fs)
+pushd windows2016fs-release
+  OLD_BLOB=$(bosh --json blobs | jq -r .Tables[0].Rows[].path | grep windows2016fs)
 
-if [[ $OLD_BLOB == "windows2016fs/windows2016fs-$VERSION.tgz" ]]; then
-  echo "No blob to update"
-else
-  pushd windows2016fs-release
-    bosh remove-blob $OLD_BLOB
-    bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
-  popd
-fi
+  if [[ $OLD_BLOB == "windows2016fs/windows2016fs-$VERSION.tgz" ]]; then
+    echo "No blob to update"
+  else
+      bosh remove-blob $OLD_BLOB
+      bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
+  fi
 
-# So copying the repo is faster
-rm -rf blobs/windows2016fs/*
+  # So copying the repo is faster
+  rm -rf blobs/windows2016fs/*
+popd
 
 cp -r ./windows2016fs-release/. windows2016fs-release-updated-blob/
