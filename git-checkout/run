@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+
+pushd repo
+  git checkout .
+  git submodule foreach --recursive git checkout .
+popd
+
+cp -r repo/. cleaned-repo
