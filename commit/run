@@ -9,7 +9,7 @@ git config --global user.name "Greenhouse CI"
 git -C destination_repo_with_commit add -A .
 
 set +e
-git diff --quiet --exit-code
+git -C destination_repo_with_commit diff --quiet --exit-code
 if [[ $? == "0" ]]; then
   echo "No diff, nothing to commit"
   exit 0
