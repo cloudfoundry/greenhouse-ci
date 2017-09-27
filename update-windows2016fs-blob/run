@@ -13,9 +13,6 @@ pushd windows2016fs-release
       bosh remove-blob $OLD_BLOB
       bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
   fi
-
-  # So copying the repo is faster
-  rm -rf blobs/windows2016fs/*
 popd
 
 cp -r ./windows2016fs-release/. windows2016fs-release-updated-blob/
