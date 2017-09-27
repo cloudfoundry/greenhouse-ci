@@ -2,9 +2,6 @@
 
 set -eu
 
-VERSION=$(cat version/version)
-printf $VERSION > windows2016fs-release/IMAGE_TAG
-
 ./windows2016fs-release/scripts/hydrate
 
 cp -r ./windows2016fs-release/. hydrated-release/
