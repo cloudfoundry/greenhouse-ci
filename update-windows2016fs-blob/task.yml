@@ -9,7 +9,7 @@ inputs:
 - name: version
 
 run:
-  path: ci/update-windows2016fs-version-and-blob/run
+  path: ci/update-windows2016fs-blob/run
 
 outputs:
-- name: windows2016fs-release-updated
+- name: windows2016fs-release-updated-blob

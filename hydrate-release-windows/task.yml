@@ -4,6 +4,7 @@ platform: windows
 inputs:
 - name: ci
 - name: windows2016fs-release
+- name: version
 
 run:
   path: powershell
