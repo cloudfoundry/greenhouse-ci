@@ -8,7 +8,14 @@ resources:
   type: git
   source:
     branch: develop
-    uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
+# - name: windows2016fs-master
+#   type: git
+#   source:
+#     branch: master
+#     uri: git@github.com/cloudfoundry-incubator/windows2016fs-release.git
+#     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
 - name: windows2016fs-dockerfile
   type: git
   source:
@@ -65,7 +72,7 @@ jobs:
       DOCKER_USERNAME: {{DOCKER_USERNAME}}
       DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
 
-- name: hydrate-tests-windows
+- name: test-hydrate-windows
   serial: true
   plan:
   - aggregate:
@@ -79,7 +86,7 @@ jobs:
     params:
       TEST_PATH: src/hydrate
 
-- name: hydrate-tests-linux
+- name: test-hydrate-linux
   serial: true
   plan:
   - aggregate:
@@ -92,3 +99,73 @@ jobs:
       repo: windows2016fs-develop
     params:
       TEST_PATH: src/hydrate
+
+- name: update-blob
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      trigger: true
+      passed:
+      - test-hydrate-linux
+      - test-hydrate-windows
+    - get: version
+      trigger: true
+      passed: [build-and-push]
+  - task: update-blob
+    file: ci/update-windows2016fs-blob/task.yml
+    input_mapping: { windows2016fs-release: windows2016fs-develop }
+  - task: commit-changes
+    file: ci/commit/task.yml
+    input_mapping:
+      source_repo: windows2016fs-release-updated-blob
+      destination_repo: windows2016fs-release-updated-blob
+    output_mapping:
+      destination_repo_with_commit: windows2016fs-release-updated-commit
+    params:
+      MESSAGE: "Updated image blob and version"
+  - put: windows2016fs-develop
+    params:
+      repository: windows2016fs-release-updated-commit
+      rebase: false
+
+- name: test-create-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      trigger: true
+      passed:
+      - update-blob
+  - aggregate:
+    - do:
+      - task: hydrate-release-windows
+        file: ci/hydrate-release-windows/task.yml
+        input_mapping: { windows2016fs-release: windows2016fs-develop }
+        output_mapping: { hydrated-release: hydrated-release-windows }
+      - task: git-checkout
+        file: ci/git-checkout/task.yml
+        input_mapping: { repo: hydrated-release-windows }
+      - task: create-release
+        file: ci/bosh-cr/task.yml
+        input_mapping: { release: cleaned-repo }
+    - do:
+      - task: hydrate-release-linux
+        file: ci/hydrate-release-linux/task.yml
+        input_mapping: { windows2016fs-release: windows2016fs-develop }
+      - task: create-release
+        file: ci/bosh-cr/task.yml
+        input_mapping: { release: hydrated-release }
+
+# - name: merge-to-master
+#   plan:
+#   - aggregate:
+#     - get: ci
+#     - get: windows2016fs-develop
+#       trigger: true
+#       passed: [update-blob]
+#     - get: version
+#       passed: [update-blob]
+#   - task: merge
