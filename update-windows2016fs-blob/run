@@ -3,16 +3,20 @@
 set -eu
 
 VERSION=$(cat version/version)
+PREVIOUS_VERSION=$(cat windows2016fs-release/IMAGE_TAG)
+export GOPATH="$PWD/windows2016fs-release"
 
-pushd windows2016fs-release
-  OLD_BLOB=$(bosh --json blobs | jq -r .Tables[0].Rows[].path | grep windows2016fs)
+if [[ "$VERSION" == "$PREVIOUS_VERSION" ]]; then
+  echo "No blob to update"
+else
+  pushd windows2016fs-release
+    printf $VERSION > IMAGE_TAG
 
-  if [[ $OLD_BLOB == "windows2016fs/windows2016fs-$VERSION.tgz" ]]; then
-    echo "No blob to update"
-  else
-      bosh remove-blob $OLD_BLOB
-      bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
-  fi
-popd
+    ./scripts/hydrate
+
+    bosh remove-blob "windows2016fs/windows2016fs-$PREVIOUS_VERSION.tgz"
+    bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
+  popd
+fi
 
 cp -r ./windows2016fs-release/. windows2016fs-release-updated-blob/
