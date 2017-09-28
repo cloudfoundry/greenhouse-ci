@@ -44,6 +44,15 @@ resources:
     initial_version: 0.0.0
     key: version
     region_name: us-east-1
+- name: release-version
+  type: semver
+  source:
+    access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
+    bucket: windows2016fs
+    initial_version: 0.0.0
+    key: release-version
+    region_name: us-east-1
 
 jobs:
 - name: build-and-push
@@ -164,9 +173,10 @@ jobs:
   - aggregate:
     - get: ci
     - get: windows2016fs-develop
-      trigger: true
       passed: [test-create-release]
     - get: windows2016fs-master
+    - put: release-version
+      params: {bump: patch}
   - task: merge-develop-to-master
     file: ci/merge-repo/task.yml
     input_mapping:
@@ -177,3 +187,4 @@ jobs:
   - put: windows2016fs-master
     params:
       repository: merged-repo/to-repo
+      tag: release-version/version
