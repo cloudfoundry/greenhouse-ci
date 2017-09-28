@@ -31,7 +31,7 @@ $RequiredExes=@(
     'tar.exe'
 )
 foreach ($exe in $RequiredExes) {
-    Get-Command -CommandType Application -Name $exe
+    Get-Command -CommandType Application -Name $exe > $null
 }
 
 $VersionFile=(Resolve-Path "${PWD}\azure-stemcell-version\version*").Path
