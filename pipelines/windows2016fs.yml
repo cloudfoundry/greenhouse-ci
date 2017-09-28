@@ -10,12 +10,12 @@ resources:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
-# - name: windows2016fs-master
-#   type: git
-#   source:
-#     branch: master
-#     uri: git@github.com/cloudfoundry-incubator/windows2016fs-release.git
-#     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
+- name: windows2016fs-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
 - name: windows2016fs-dockerfile
   type: git
   source:
@@ -138,8 +138,7 @@ jobs:
     - get: ci
     - get: windows2016fs-develop
       trigger: true
-      passed:
-      - update-blob
+      passed: [update-blob]
   - aggregate:
     - do:
       - task: hydrate-release-windows
@@ -160,13 +159,21 @@ jobs:
         file: ci/bosh-cr/task.yml
         input_mapping: { release: hydrated-release }
 
-# - name: merge-to-master
-#   plan:
-#   - aggregate:
-#     - get: ci
-#     - get: windows2016fs-develop
-#       trigger: true
-#       passed: [update-blob]
-#     - get: version
-#       passed: [update-blob]
-#   - task: merge
+- name: merge-to-master
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      trigger: true
+      passed: [test-create-release]
+    - get: windows2016fs-master
+  - task: merge-develop-to-master
+    file: ci/merge-repo/task.yml
+    input_mapping:
+      from-repo: windows2016fs-develop
+      to-repo: windows2016fs-master
+    params:
+      FROM_BRANCH: develop
+  - put: windows2016fs-master
+    params:
+      repository: merged-repo/to-repo
