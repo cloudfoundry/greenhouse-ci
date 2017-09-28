@@ -2,12 +2,13 @@
 
 set -eu
 
-pushd buildpack
+pushd buildpack >/dev/null
+  export GOPATH=$PWD
   (cd src/*/vendor/github.com/cloudfoundry/libbuildpack/packager/buildpack-packager && go install)
   ./.bin/buildpack-packager --cached
   buildpackFile=$(ls $BUILDPACK_NAME*.zip)
 
   cf login --skip-ssl-validation -a $CF_API -u $CF_ADMIN_USER -p $CF_ADMIN_PASSWORD
   cf update-buildpack $BUILDPACK_NAME -p $buildpackFile
-popd
+popd >/dev/null
 
