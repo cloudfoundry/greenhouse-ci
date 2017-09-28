@@ -53,6 +53,11 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/wats.git
+- name: hwc-buildpack
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/hwc-buildpack.git
 - name: every-20mins
   type: time
   source:
@@ -78,6 +83,8 @@ jobs:
     - get: vsphere-windows2012R2-stemcell
       tags: [vsphere]
     - get: garden-windows-private
+      tags: [vsphere]
+    - get: hwc-buildpack
       tags: [vsphere]
   - aggregate:
     - task: get-linux-stemcell
@@ -108,6 +115,16 @@ jobs:
       cleanup: true
     get_params:
       skip_export: true
+    tags: [vsphere]
+  - task: upload-cached-hwc-buildpack
+    file: ci/update-buildpack/task.yml
+    input_mapping:
+      buildpack: hwc-buildpack
+    params:
+      BUILDPACK_NAME: hwc_buildpack
+      CF_API: api.mulgore.cf-app.com
+      CF_ADMIN_USER: admin
+      CF_ADMIN_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
     tags: [vsphere]
 
 - name: mulgore-cfbench-windows2012R2
