@@ -27,6 +27,7 @@ resources:
   source:
     user: git-for-windows
     repository: git
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
 - name: tar
   type: s3
   source:
