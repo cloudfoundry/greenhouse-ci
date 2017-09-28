@@ -24,7 +24,7 @@ EOF
   git add -A .
   git commit -m "Bump concourse worker to $version"
 
-  bosh create-release --final --name concourse-windows-worker --version $version --tarball ../concourse-windows-tarball/release.tgz
+  bosh create-release --final --name concourse-windows-worker --version $version --tarball ../concourse-windows-tarball/concourse-windows-worker-${version}.tgz
   git add -A .
   git commit -m "Create $version release"
 popd

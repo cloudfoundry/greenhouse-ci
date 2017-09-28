@@ -50,5 +50,4 @@ jobs:
       tag: concourse-github-release/version
       body: body/body.txt
       globs:
-        - concourse-windows-tarball/release.tgz
-
+        - concourse-windows-tarball/concourse-windows-worker-*.tgz
