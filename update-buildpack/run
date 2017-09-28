@@ -9,7 +9,8 @@ pushd buildpack >/dev/null
   ./.bin/buildpack-packager --cached
   buildpackFile=$(ls $BUILDPACK_NAME*.zip)
 
-  cf login --skip-ssl-validation -a $CF_API -u $CF_ADMIN_USER -p $CF_ADMIN_PASSWORD
+  cf api $CF_API --skip-ssl-validation
+  cf auth $CF_ADMIN_USER $CF_ADMIN_PASSWORD
   cf update-buildpack $BUILDPACK_NAME -p $buildpackFile
 popd >/dev/null
 
