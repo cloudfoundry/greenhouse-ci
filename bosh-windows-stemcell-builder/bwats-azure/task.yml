@@ -3,6 +3,7 @@ platform: windows
 
 inputs:
   - name: ci
+  - name: azstemcell
   - name: stemcell-builder
   - name: bosh-windows-stemcell
   - name: azure-base-vhd-uri

@@ -102,6 +102,11 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+- name: azstemcell
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 
 # versions
 - name: updated-vmx-version
@@ -999,6 +1004,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
+    - get: azstemcell
     - get: stemcell-builder
       passed: [create-azure-stemcell]
     - get: azure-stemcell-version
