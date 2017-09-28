@@ -4,6 +4,7 @@ set -eu
 
 pushd buildpack >/dev/null
   export GOPATH=$PWD
+  export GOBIN=$PWD/.bin
   (cd src/*/vendor/github.com/cloudfoundry/libbuildpack/packager/buildpack-packager && go install)
   ./.bin/buildpack-packager --cached
   buildpackFile=$(ls $BUILDPACK_NAME*.zip)
