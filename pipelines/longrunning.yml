@@ -106,7 +106,6 @@ jobs:
       - vsphere-linux-stemcell/*.tgz
       - vsphere-windows2012R2-stemcell/*.tgz
       ops_files:
-      - cf-deployment/operations/bypass-cc-bridge.yml
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
       - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
