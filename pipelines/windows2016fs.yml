@@ -82,7 +82,7 @@ jobs:
       DOCKER_USERNAME: {{DOCKER_USERNAME}}
       DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
 
-- name: test-hydrate-windows
+- name: test-oci-image-windows
   serial: true
   plan:
   - aggregate:
@@ -94,9 +94,9 @@ jobs:
     input_mapping:
       repo: windows2016fs-develop
     params:
-      TEST_PATH: src/hydrate
+      TEST_PATH: src/oci-image
 
-- name: test-hydrate-linux
+- name: test-oci-image-linux
   serial: true
   plan:
   - aggregate:
@@ -108,7 +108,8 @@ jobs:
     input_mapping:
       repo: windows2016fs-develop
     params:
-      TEST_PATH: src/hydrate
+      TEST_PATH: src/oci-image
+      IGNORE_PACKAGES: "cmd/extract,oci-image/image,oci-image/layer"
 
 - name: update-blob
   serial: true
@@ -118,8 +119,8 @@ jobs:
     - get: windows2016fs-develop
       trigger: true
       passed:
-      - test-hydrate-linux
-      - test-hydrate-windows
+      - test-oci-image-linux
+      - test-oci-image-windows
     - get: version
       trigger: true
       passed: [build-and-push]
