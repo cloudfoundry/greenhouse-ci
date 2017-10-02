@@ -13,3 +13,4 @@ run:
 params:
   GOPATH: "repo"
   TEST_PATH: "repo"
+  IGNORE_PACKAGES:
