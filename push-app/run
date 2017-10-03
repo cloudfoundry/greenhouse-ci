@@ -4,7 +4,7 @@ set -e
 
 START_COMMAND=""
 if [ ! -z "$APP_START_COMMAND" ]; then
-  START_COMMAND="-c $START_COMMAND"
+  START_COMMAND="-c $APP_START_COMMAND"
 fi
 
 cf api "$CF_API" --skip-ssl-validation
