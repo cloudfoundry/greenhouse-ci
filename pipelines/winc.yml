@@ -38,6 +38,12 @@ resources:
     branch: master
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:pivotal-cf/garden-windows-private
+- name: windows2016fs-release
+  type: git
+  source:
+    branch: master
+    private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-release
 # - name: wincni-develop
 #   type: git
 #   source:
@@ -76,14 +82,6 @@ resources:
   source:
     branch: fork-master
     uri: https://github.com/greenhouse-org/garden-integration-tests.git
-- name: pesto-garden-winc-deployment
-  type: bosh-deployment
-  source:
-    deployment: garden-winc
-    target: {{PESTO_BOSH_ENVIRONMENT}}
-    client: {{PESTO_BOSH_CLIENT}}
-    client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
-    ca_cert: {{PESTO_BOSH_CA_CERT}}
 - name: gcp-windows-stemcell
   type: s3
   source:
@@ -142,6 +140,7 @@ jobs:
     - get: winc-develop
       trigger: true
     - get: winc-master
+    - get: windows2016fs-release
   - task: test
     input_mapping: { winc: winc-develop }
     file: ci/test-winc/task.yml
@@ -208,6 +207,7 @@ jobs:
       passed: [winc]
       trigger: true
     - get: winc-release-develop
+    - get: windows2016fs-release
   - aggregate:
     - task: build-winc
       file: ci/build-binary/task.yml
@@ -288,65 +288,6 @@ jobs:
     params:
       TEST_PATH: "src/nstar"
 
-- name: pesto-gats
-  serial: true
-  plan:
-  - put: pesto-lock-pool
-    params:
-      acquire: true
-  - aggregate:
-    - get: ci
-    - get: gcp-windows-stemcell
-    - get: garden-runc-release
-    - get: winc-release-develop
-      passed: [test-nstar]
-      trigger: true
-    - get: garden-integration-tests
-      resource: gats-fork
-  - task: create-winc-release
-    file: ci/bosh-cr/task.yml
-    input_mapping:
-      release: winc-release-develop
-    output_mapping:
-      release-tarball: winc-tarball
-  - task: open-garden-port
-    file: ci/open-garden-port/task.yml
-  - task: create-garden-runc-release
-    file: ci/bosh-cr/task.yml
-    input_mapping:
-      release: garden-runc-release-open-port
-    output_mapping:
-      release-tarball: garden-runc-tarball
-  - put: pesto-garden-winc-deployment
-    params:
-      manifest: ci/garden-winc-manifest/manifest.yml
-      stemcells:
-      - gcp-windows-stemcell/*.tgz
-      releases:
-      - winc-tarball/*.tgz
-      - garden-runc-tarball/*.tgz
-      cleanup: true
-  - task: run-gats
-    file: ci/run-remote-gats/task.yml
-    input_mapping:
-    params:
-      GARDEN_ADDRESS: 35.185.94.204
-      GARDEN_PORT: 7777
-    on_success:
-      task: delete-deployment
-      file: ci/bosh-deld/task.yml
-      params:
-        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_DEPLOYMENT: garden-winc
-        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-  ensure:
-    put: pesto-lock-pool
-    params:
-      release: pesto-lock-pool
-
-
 - name: pesto-wats
   serial: true
   plan:
@@ -356,7 +297,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
-      passed: [pesto-gats]
+      passed: [test-nstar]
       trigger: true
     - get: wats
       trigger: true
