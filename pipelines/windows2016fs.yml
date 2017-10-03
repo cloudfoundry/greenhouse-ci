@@ -162,6 +162,8 @@ jobs:
       - task: create-release
         file: ci/bosh-cr/task.yml
         input_mapping: { release: cleaned-repo }
+        params:
+          SKIP_TARBALL: "true"
     - do:
       - task: hydrate-release-linux
         file: ci/hydrate-release-linux/task.yml
@@ -169,6 +171,8 @@ jobs:
       - task: create-release
         file: ci/bosh-cr/task.yml
         input_mapping: { release: hydrated-release }
+        params:
+          SKIP_TARBALL: "true"
 
 - name: merge-to-master
   plan:
