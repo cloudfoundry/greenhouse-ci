@@ -16,3 +16,4 @@ run:
 params:
   GOPATH: "repo"
   TEST_PATH: "repo"
+  NODES: 4
