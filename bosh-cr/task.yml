@@ -12,3 +12,5 @@ outputs:
 run:
   path: ci/bosh-cr/run
 
+params:
+  SKIP_TARBALL: "false"
