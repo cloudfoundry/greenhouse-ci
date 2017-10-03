@@ -95,6 +95,7 @@ jobs:
       repo: windows2016fs-develop
     params:
       TEST_PATH: src/oci-image
+      NODES: 2
 
 - name: test-oci-image-linux
   serial: true
