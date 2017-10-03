@@ -7,4 +7,5 @@ pushd repo
   git submodule foreach --recursive git checkout .
 popd
 
-cp -r repo/. cleaned-repo
+shopt -s dotglob
+mv repo/* cleaned-repo
