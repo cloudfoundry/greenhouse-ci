@@ -5,6 +5,7 @@ inputs:
 - name: ci
 - name: winc
   path: src/code.cloudfoundry.org/winc
+- name: windows2016fs-release
 
 run:
   path: powershell
@@ -13,6 +14,3 @@ run:
   - "Bypass"
   - "-File"
   - ci/test-winc/run.ps1
-
-params:
-  TEST_ROOTFS_IMAGE: "cloudfoundry/windows2016fs"

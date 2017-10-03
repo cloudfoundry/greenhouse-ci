@@ -1,16 +1,23 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:GOPATH = $PWD
-$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/mingw64/mingw64/bin;C:/Program Files/Docker;" + $env:PATH
+$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/mingw64/mingw64/bin;" + $env:PATH
 
-docker.exe pull $env:TEST_ROOTFS_IMAGE
-$env:WINC_TEST_ROOTFS = (docker.exe inspect $env:TEST_ROOTFS_IMAGE | ConvertFrom-Json).GraphDriver.Data.Dir
+go.exe version
+
+push-location windows2016fs-release
+    powershell ./scripts/hydrate
+    $env:GOPATH = $PWD
+    go build -o extract.exe oci-image/cmd/extract
+    $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
+    $topLayer = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+pop-location
+
+$env:WINC_TEST_ROOTFS=$topLayer
+$env:GOPATH = $PWD
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 Get-ContainerNetwork | Remove-ContainerNetwork -Force
-
-go.exe version
 
 cd $env:GOPATH/src/code.cloudfoundry.org/winc
 
