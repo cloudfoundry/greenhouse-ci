@@ -19,6 +19,7 @@ params:
   CF_SPACE:
   APP_DIR:
   APP_START_COMMAND:
+  APP_BUILDPACK:
 
 run:
   path: ci/push-app/run

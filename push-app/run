@@ -2,12 +2,15 @@
 
 set -e
 
-START_COMMAND=""
 if [ ! -z "$APP_START_COMMAND" ]; then
-  START_COMMAND="-c $APP_START_COMMAND"
+  APP_START_COMMAND="-c $APP_START_COMMAND"
+fi
+
+if [ ! -z "$APP_BUILDPACK" ]; then
+  APP_BUILDPACK="-b $APP_BUILDPACK"
 fi
 
 cf api "$CF_API" --skip-ssl-validation
 cf login -u "$CF_USERNAME" -p "$CF_PASSWORD" -s "$CF_SPACE" -o "$CF_ORG" --skip-ssl-validation
-cf push -p $APP_DIR -s $CF_STACK $START_COMMAND "longrunning-$CF_STACK"
+cf push -p $APP_DIR -s $CF_STACK $APP_START_COMMAND $APP_BUILDPACK "longrunning-$CF_STACK"
 
