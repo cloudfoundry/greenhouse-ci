@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/mingw64/mingw64/bin;" + $env:PATH
+$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/mingw64/mingw64/bin;" + $env:PATH
 
 go.exe version
 
@@ -15,6 +15,7 @@ pop-location
 
 $env:WINC_TEST_ROOTFS=$topLayer
 $env:GOPATH = $PWD
+$env:PATH="$env:GOPATH\bin" +$env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 Get-ContainerNetwork | Remove-ContainerNetwork -Force
