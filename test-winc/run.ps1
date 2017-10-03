@@ -15,7 +15,7 @@ pop-location
 
 $env:WINC_TEST_ROOTFS=$topLayer
 $env:GOPATH = $PWD
-$env:PATH="$env:GOPATH\bin" +$env:PATH
+$env:PATH="$env:GOPATH\bin;" +$env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 Get-ContainerNetwork | Remove-ContainerNetwork -Force
