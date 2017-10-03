@@ -17,9 +17,19 @@ DOPPLER_ADDRESS=$(cf curl /v2/info | jq '.doppler_logging_endpoint' -r)
 
 set +e
 
+if [ ! -z "$APP_START_COMMAND" ]; then
+  APP_START_COMMAND="-startCommand $APP_START_COMMAND"
+fi
+
+if [ ! -z "$APP_BUILDPACK" ]; then
+  APP_BUILDPACK="-buildpack $APP_BUILDPACK"
+fi
+
 cfbench \
   -stack $CF_STACK \
   -app-dir $APP_DIR \
+  $APP_BUILDPACK \
+  $APP_START_COMMAND \
   -doppler-address "$DOPPLER_ADDRESS" -json > metrics.json
 
 pushExitStatus=$?
