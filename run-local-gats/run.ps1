@@ -6,13 +6,20 @@ function Kill-Garden
   Get-Process | foreach { if ($_.name -eq "gdn") { kill -Force $_.Id } }
 }
 
-$env:GOPATH = "$PWD/garden-runc-release"
-$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;C:/Program Files/Docker;C:/var/vcap/bosh/bin;" + $env:PATH
+$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/bosh/bin;" + $env:PATH
 
 go version
 
-docker pull cloudfoundry/windows2016fs
-$wincTestRootfs = (docker inspect cloudfoundry/windows2016fs | ConvertFrom-Json).GraphDriver.Data.Dir
+push-location windows2016fs-release
+    powershell ./scripts/hydrate
+    $env:GOPATH = $PWD
+    go build -o extract.exe oci-image/cmd/extract
+    $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
+    $wincTestRootfs = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+pop-location
+
+$env:GOPATH = "$PWD/garden-runc-release"
+$env:PATH= "$env:GOPATH/bin;" + $env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 Get-ContainerNetwork | Remove-ContainerNetwork -Force

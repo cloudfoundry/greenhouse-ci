@@ -8,6 +8,7 @@ inputs:
 - name: winc-image-binary
 - name: nstar-binary
 - name: garden-runc-release
+- name: windows2016fs-release
 
 run:
   path: powershell
