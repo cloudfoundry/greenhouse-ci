@@ -1,9 +1,12 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-./windows2016fs-release/scripts/create-release.ps1
-
 push-location windows2016fs-release
+  git config core.filemode false
+  git submodule foreach --recursive git config core.filemode false
+
+  ./scripts/create-release.ps1
+
   $expected_version=(cat VERSION)
   $created_version=(bosh int "dev_releases/windows2016fs/windows2016fs-$expected_version.yml" --path "/version")
   $uncommitted_changes=(bosh int "dev_releases/windows2016fs/windows2016fs-$expected_version.yml" --path "/uncommitted_changes")
