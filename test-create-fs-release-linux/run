@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -eu
+
+./windows2016fs-release/scripts/create-release
+
+pushd windows2016fs-release
+  expected_version=$(cat VERSION)
+  created_version=$(bosh int "dev_releases/windows2016fs/windows2016fs-$expected_version.yml" --path /version)
+  uncommitted_changes=$(bosh int "dev_releases/windows2016fs/windows2016fs-$expected_version.yml" --path /uncommitted_changes)
+popd
+
+if [[ "$expected_version" != "$created_version" ]]; then
+  echo "**ERROR** expected version: $expected_version, got: $created_version"
+  exit 1
+fi
+
+if [[ "$uncommitted_changes" != "false" ]]; then
+  echo "**ERROR** found uncommited changes"
+  exit 1
+fi

@@ -11,7 +11,4 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/hydrate-release-windows/run.ps1
-
-outputs:
-- name: hydrated-release
+  - ci/test-create-fs-release-windows/run.ps1

@@ -8,7 +8,5 @@ inputs:
 - name: windows2016fs-release
 
 run:
-  path: ci/hydrate-release-linux/run
+  path: ci/test-create-fs-release-linux/run
 
-outputs:
-- name: hydrated-release

@@ -11,11 +11,14 @@ else
   pushd windows2016fs-release
     printf $VERSION > IMAGE_TAG
 
-    ./scripts/hydrate
+    export GOPATH=$PWD
+    mkdir -p blobs/windows2016fs
+    go run src/oci-image/cmd/hydrate/main.go -image cloudfoundry/windows2016fs -outputDir blobs/windows2016fs -tag $VERSION
 
     bosh remove-blob "windows2016fs/windows2016fs-$PREVIOUS_VERSION.tgz"
     bosh add-blob "blobs/windows2016fs/windows2016fs-$VERSION.tgz" "windows2016fs/windows2016fs-$VERSION.tgz"
   popd
 fi
 
+rm "blobs/windows2016fs/windows2016fs-$VERSION.tgz"
 cp -r ./windows2016fs-release/. windows2016fs-release-updated-blob/

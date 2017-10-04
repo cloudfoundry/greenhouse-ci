@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -eu
-
-./windows2016fs-release/scripts/hydrate
-
-cp -r ./windows2016fs-release/. hydrated-release/
