@@ -11,8 +11,12 @@ $env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/bosh/bin;" +
 go version
 
 push-location windows2016fs-release
-    powershell ./scripts/hydrate
     $env:GOPATH = $PWD
+
+    $image_tag = (cat IMAGE_TAG)
+    mkdir -Force "blobs/windows2016fs"
+    go run src/oci-image/cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir "blobs/windows2016fs" -tag $image_tag
+
     go build -o extract.exe oci-image/cmd/extract
     $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
     $wincTestRootfs = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
