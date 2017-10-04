@@ -87,6 +87,8 @@
   path: /resources/name=azure-stemcell-release-candidate
 - type: remove
   path: /resources/name=azure-stemcell-final
+- type: remove
+  path: /resources/name=azstemcell
 
 # JOBS
 
