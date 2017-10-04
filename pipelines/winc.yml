@@ -305,22 +305,33 @@ jobs:
       trigger: true
     - get: gcp-windows-stemcell
     - get: garden-windows-private
-  - task: get-cf-vars
-    file: ci/get-gcs-file/task.yml
-    output_mapping: { output: cf-vars }
-    params:
-      BUCKET: cff-greenhouse-pesto
-      FILE_NAME: cf/vars.yml
-      SERVICE_ACCOUNT_KEY: {{PESTO_SERVICE_ACCOUNT_JSON}}
-  - task: get-linux-stemcell
-    file: ci/get-gcp-linux-stemcell/task.yml
-    output_mapping: { stemcell: gcp-linux-stemcell }
-  - task: create-winc-release
-    file: ci/bosh-cr/task.yml
-    input_mapping:
-      release: winc-release-develop
-    output_mapping:
-      release-tarball: winc-tarball
+    - get: windows2016fs-release
+  - aggregate:
+    - task: get-cf-vars
+      file: ci/get-gcs-file/task.yml
+      output_mapping: { output: cf-vars }
+      params:
+        BUCKET: cff-greenhouse-pesto
+        FILE_NAME: cf/vars.yml
+        SERVICE_ACCOUNT_KEY: {{PESTO_SERVICE_ACCOUNT_JSON}}
+    - task: get-linux-stemcell
+      file: ci/get-gcp-linux-stemcell/task.yml
+      output_mapping: { stemcell: gcp-linux-stemcell }
+    - task: create-winc-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: winc-release-develop
+      output_mapping:
+        release-tarball: winc-tarball
+    - do:
+      - task: hydrate-release-linux
+        file: ci/hydrate-release-linux/task.yml
+      - task: create-release
+        file: ci/bosh-cr/task.yml
+        input_mapping:
+          release: hydrated-release
+        output_mapping:
+          release-tarball: windows2016fs-release-tarball
   - put: pesto-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
@@ -329,9 +340,12 @@ jobs:
       - gcp-windows-stemcell/*.tgz
       releases:
       - winc-tarball/*.tgz
+      - windows2016fs-release-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
+      - garden-windows-private/operations-common/windows2016-prs.yml
+      - garden-windows-private/operations-common/latest-winc.yml
       - garden-windows-private/operations-common/scale-down-windows2016.yml
       vars_files:
       - cf-vars/vars.yml
@@ -350,6 +364,7 @@ jobs:
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
       CONSUL_MUTUAL_TLS: false
       TEST_TASK: true
+      SKIP_SSH: true
       STACK: windows2016
     on_success:
       task: delete-deployment
