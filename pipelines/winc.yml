@@ -330,7 +330,6 @@ jobs:
       releases:
       - winc-tarball/*.tgz
       ops_files:
-      - cf-deployment/operations/tcp-routing-gcp.yml
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
       - garden-windows-private/operations-common/scale-down-windows2016.yml

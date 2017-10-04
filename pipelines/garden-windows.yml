@@ -210,7 +210,6 @@ jobs:
         releases:
         - release-tarball/*.tgz
         ops_files:
-        - cf-deployment/operations/tcp-routing-gcp.yml
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
         - garden-windows-private/operations-common/latest-garden-windows.yml
