@@ -10,6 +10,8 @@ resources:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
+    ignore_paths:
+    - VERSION
 - name: windows2016fs-master
   type: git
   source:
@@ -118,10 +120,6 @@ jobs:
   - aggregate:
     - get: ci
     - get: windows2016fs-develop
-      trigger: true
-      passed:
-      - test-oci-image-linux
-      - test-oci-image-windows
     - get: version
       trigger: true
       passed: [build-and-push]
@@ -142,55 +140,51 @@ jobs:
       repository: windows2016fs-release-updated-commit
       rebase: false
 
-- name: test-create-release
+- name: test-create-release-windows
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: windows2016fs-develop
       trigger: true
-      passed: [update-blob]
-  - aggregate:
-    - do:
-      - task: hydrate-release-windows
-        file: ci/hydrate-release-windows/task.yml
-        input_mapping: { windows2016fs-release: windows2016fs-develop }
-        output_mapping: { hydrated-release: hydrated-release-windows }
-      - task: git-checkout
-        file: ci/git-checkout/task.yml
-        input_mapping: { repo: hydrated-release-windows }
-      - task: create-release
-        file: ci/bosh-cr/task.yml
-        input_mapping: { release: cleaned-repo }
-        params:
-          SKIP_TARBALL: "true"
-    - do:
-      - task: hydrate-release-linux
-        file: ci/hydrate-release-linux/task.yml
-        input_mapping: { windows2016fs-release: windows2016fs-develop }
-      - task: create-release
-        file: ci/bosh-cr/task.yml
-        input_mapping: { release: hydrated-release }
-        params:
-          SKIP_TARBALL: "true"
+      passed: [test-oci-image-linux, test-oci-image-windows]
+  - task: test-create-fs-release-windows
+    file: ci/test-create-fs-release-windows/task.yml
+    input_mapping: { windows2016fs-release: windows2016fs-develop }
 
-- name: merge-to-master
+- name: test-create-release-linux
+  serial: true
   plan:
   - aggregate:
     - get: ci
     - get: windows2016fs-develop
-      passed: [test-create-release]
+      trigger: true
+      passed: [test-oci-image-linux, test-oci-image-windows]
+  - task: test-create-fs-release-linux
+    file: ci/test-create-fs-release-linux/task.yml
+    input_mapping: { windows2016fs-release: windows2016fs-develop }
+
+- name: ship-it
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-develop
+      passed: [test-create-release-windows, test-create-release-linux]
     - get: windows2016fs-master
     - put: release-version
       params: {bump: patch}
-  - task: merge-develop-to-master
-    file: ci/merge-repo/task.yml
+  - task: update-version
+    file: ci/update-version/task.yml
     input_mapping:
-      from-repo: windows2016fs-develop
-      to-repo: windows2016fs-master
+      repo: windows2016fs-develop
+      version: release-version
+    output_mapping: { updated_repo: windows2016fs-develop-version }
     params:
-      FROM_BRANCH: develop
+      VERSION_FILE: VERSION
+  - put: windows2016fs-develop
+    params:
+      repository: windows2016fs-develop-version
+      tag: release-version/version
   - put: windows2016fs-master
     params:
-      repository: merged-repo/to-repo
-      tag: release-version/version
+      repository: windows2016fs-develop-version
