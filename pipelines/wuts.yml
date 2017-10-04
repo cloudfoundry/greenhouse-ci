@@ -1,4 +1,5 @@
 resources:
+# repos
 - name: windows-utilities-tests
   type: git
   source:
@@ -14,6 +15,8 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
+# s3
 - name: gcp-2012R2-stemcell-release-candidate
   type: s3
   source:
@@ -21,6 +24,15 @@ resources:
     regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-private-release-candidates
+    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+# locks
 - name: gcp-lock
   type: pool
   source:
@@ -28,9 +40,16 @@ resources:
     pool: mustang
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-director-lock
+  type: pool
+  source:
+    branch: master
+    pool: vsphere-director-lock
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 jobs:
-- name: run-wuts
+- name: run-wuts-gcp
   serial: true
   plan:
   - put: gcp-lock
@@ -66,5 +85,41 @@ jobs:
       put: gcp-lock
       params:
         release: gcp-lock
+- name: run-wuts-vsphere
+  serial: true
+  plan:
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: vsphere-stemcell-release-candidate
+        trigger: true
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      params:
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_GW_USER: ((regina_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((regina_gw_private_key))
+        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2012R2
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
 
 
