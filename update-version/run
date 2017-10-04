@@ -6,6 +6,11 @@ NEW_VERSION=$(cat version/version)
 
 pushd repo
 	echo -n $NEW_VERSION > $VERSION_FILE
+
+	git config --global user.email "pivotal-netgarden-eng@pivotal.io"
+	git config --global user.name "Greenhouse CI"
+	git add $VERSION_FILE
+	git commit -m "Bumped version to $NEW_VERSION"
 popd
 
 cp -r repo/. updated_repo
