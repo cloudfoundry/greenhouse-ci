@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+
+pushd windows2016fs-release
+  ./scripts/create-release
+
+  bosh upload-release
+popd
+
