@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eu
+
+NEW_VERSION=$(cat version/version)
+
+pushd repo
+	echo -n $NEW_VERSION > $VERSION_FILE
+popd
+
+cp -r repo/. updated_repo
+
