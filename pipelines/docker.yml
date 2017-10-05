@@ -1,0 +1,26 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    paths: [ docker/Dockerfile.ci ]
+
+- name: ci-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
+
+jobs:
+- name: build-and-push
+  serial: true
+  plan:
+  - get: ci
+    trigger: true
+  - put: ci-image
+    params:
+      build: ci/docker
+      dockerfile: ci/docker/Dockerfile.ci
+      tag_as_latest: true

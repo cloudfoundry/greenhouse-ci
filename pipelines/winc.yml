@@ -141,9 +141,17 @@ jobs:
       trigger: true
     - get: winc-master
     - get: windows2016fs-release
-  - task: test
-    input_mapping: { winc: winc-develop }
-    file: ci/test-winc/task.yml
+  - aggregate:
+    - task: test
+      input_mapping: { winc: winc-develop }
+      file: ci/test-winc/task.yml
+    - task: test-insider
+      input_mapping: { winc: winc-develop }
+      file: ci/test-winc/task.yml
+      params:
+        INSIDER_PREVIEW: true
+        TEST_CONTAINER_IMAGE_TAG: "insider-10.0.16278.1000"
+      tags: [windows2016-insider-16278]
   - task: merge-develop-to-master
     input_mapping: { from-repo: winc-develop, to-repo: winc-master }
     file: ci/merge-repo/task.yml
