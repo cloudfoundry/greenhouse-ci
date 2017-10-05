@@ -210,7 +210,6 @@ jobs:
   - aggregate:
     - get: ci
     - get: bosh-windows-stemcell
-      tags: [vsphere-windows]
       resource: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
       trigger: true
     - get: stemcell-builder
@@ -221,7 +220,6 @@ jobs:
     - get: stemcells-main-version-2016
       passed: [create-vsphere-stemcell-from-vmx-2016-insider]
   - task: test-stemcell
-    tags: [vsphere-windows]
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
@@ -305,7 +303,6 @@ jobs:
   - aggregate:
     - get: ci
     - get: vsphere-stemcell-release-candidate-vmx-2016-insider
-      tags: [vsphere-windows]
       passed: [test-vsphere-stemcell-from-vmx-2016-insider]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell-2016]
@@ -317,7 +314,6 @@ jobs:
       passed: [create-gcp-stemcell-2016,test-vsphere-stemcell-from-vmx-2016-insider]
   # Transfer GBs of data just so we can grab the version from the file name....
   - task: ensure-versions-match
-    tags: [vsphere-windows]
     config:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
@@ -337,7 +333,6 @@ jobs:
   - aggregate:
     - task: test-vsphere-stemcell
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
-      tags: [vsphere-windows]
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
       params:
@@ -372,33 +367,27 @@ jobs:
           release: gcp-lock
   - aggregate:
     - task: vsphere-set-stemcell-filename-version
-      tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
       output_mapping: { final-stemcell: vsphere-stemcell-final-vmx-2016-insider }
       file: ci/set-stemcell-version/task.yml
     - task: gcp-set-stemcell-filename-version
-      tags: [vsphere-windows]
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final-2016 }
       file: ci/set-stemcell-version/task.yml
   - task: create-major-stemcell
-    tags: [vsphere-windows]
     file: ci/create-major-stemcell/task.yml
     input_mapping: { final-stemcell: gcp-stemcell-final-2016 } # Feed this thing a stemcell so it can parse the version
   - aggregate:
     - put: major-stemcell-s3
       resource: major-stemcell
-      tags: [vsphere-windows]
       params:
         file: stemcell-info/2016-stemcell-*.json
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final-vmx-2016-insider
-      tags: [vsphere-windows]
       params:
         file: vsphere-stemcell-final-vmx-2016-insider/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final-2016
-      tags: [vsphere-windows]
       params:
         file: gcp-stemcell-final-2016/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
   - put: stemcells-main-version-2016
