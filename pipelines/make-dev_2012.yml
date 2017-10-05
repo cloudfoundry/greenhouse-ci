@@ -95,7 +95,7 @@
 # configure create-vsphere-stemcell-from-diff for dev
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/tags
-  value: [vsphere-windows-worker-dev]
+  value: [diffcell-windows-worker-dev]
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/VHD_VMDK_BUCKET
   value: bosh-windows-diffcell-dev
