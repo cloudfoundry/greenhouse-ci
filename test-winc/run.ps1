@@ -14,10 +14,20 @@ push-location windows2016fs-release
     }
     mkdir -Force "blobs/windows2016fs"
     go run src/oci-image/cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir "blobs/windows2016fs" -tag $image_tag
+    if ($LastExitCode -ne 0) {
+        throw "Downloading image returned error code: $LastExitCode"
+    }
 
     go build -o extract.exe oci-image/cmd/extract
+    if ($LastExitCode -ne 0) {
+        throw "Building extractor returned error code: $LastExitCode"
+    }
+
     $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
     $topLayer = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+    if ($LastExitCode -ne 0) {
+        throw "Running extractor returned error code: $LastExitCode"
+    }
 pop-location
 
 $env:WINC_TEST_ROOTFS=$topLayer
@@ -25,7 +35,10 @@ $env:GOPATH = $PWD
 $env:PATH="$env:GOPATH\bin;" +$env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
-Get-ContainerNetwork | Remove-ContainerNetwork -Force
+
+if ($env:INSIDER_PREVIEW -eq "") {
+    Get-ContainerNetwork | Remove-ContainerNetwork -Force
+}
 
 cd $env:GOPATH/src/code.cloudfoundry.org/winc
 
