@@ -17,3 +17,4 @@ run:
 
 params:
   INSIDER_PREVIEW:
+  TEST_CONTAINER_IMAGE_TAG:

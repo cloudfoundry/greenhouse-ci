@@ -8,7 +8,10 @@ go.exe version
 push-location windows2016fs-release
     $env:GOPATH = $PWD
 
-    $image_tag = (cat IMAGE_TAG)
+    $image_tag = $env:TEST_CONTAINER_IMAGE_TAG
+    if ($image_tag -eq "") {
+        $image_tag = (cat IMAGE_TAG)
+    }
     mkdir -Force "blobs/windows2016fs"
     go run src/oci-image/cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir "blobs/windows2016fs" -tag $image_tag
 
