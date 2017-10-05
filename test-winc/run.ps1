@@ -9,7 +9,7 @@ push-location windows2016fs-release
     $env:GOPATH = $PWD
 
     $image_tag = $env:TEST_CONTAINER_IMAGE_TAG
-    if ($image_tag.Trim() -eq "") {
+    if ($image_tag -eq $null -or $image_tag -eq "") {
         $image_tag = (cat IMAGE_TAG)
     }
     mkdir -Force "blobs/windows2016fs"
