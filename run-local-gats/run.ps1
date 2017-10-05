@@ -16,10 +16,19 @@ push-location windows2016fs-release
     $image_tag = (cat IMAGE_TAG)
     mkdir -Force "blobs/windows2016fs"
     go run src/oci-image/cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir "blobs/windows2016fs" -tag $image_tag
+    if ($LastExitCode -ne 0) {
+        throw "Download image process returned error code: $LastExitCode"
+    }
 
     go build -o extract.exe oci-image/cmd/extract
+    if ($LastExitCode -ne 0) {
+        throw "Build extract process returned error code: $LastExitCode"
+    }
     $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
     $wincTestRootfs = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+    if ($LastExitCode -ne 0) {
+        throw "Extract process returned error code: $LastExitCode"
+    }
 pop-location
 
 $env:GOPATH = "$PWD/garden-runc-release"
