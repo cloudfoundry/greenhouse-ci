@@ -16,6 +16,16 @@ resources:
     branch: master
     uri: https://github.com/cloudfoundry/cf-deployment.git
     tag_filter: v*
+- name: winc-release-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/winc-release.git
+- name: windows2016fs-release-insider
+  type: git
+  source:
+    branch: insider-10.0.16278.1000
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
 - name: vsphere-windows2012R2-stemcell
   type: s3
   source:
@@ -85,6 +95,12 @@ jobs:
       tags: [vsphere]
     - get: garden-windows-private
       tags: [vsphere]
+    - get: winc-release-develop
+      trigger: true
+      tags: [vsphere]
+    - get: windows2016fs-release-insider
+      trigger: true
+      tags: [vsphere]
   - aggregate:
     - task: get-linux-stemcell
       file: ci/get-vsphere-linux-stemcell/task.yml
@@ -98,6 +114,22 @@ jobs:
         FILE_NAME: cf/vars.yml
         SERVICE_ACCOUNT_KEY: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
       tags: [vsphere]
+    - task: create-winc-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: winc-release-develop
+      output_mapping:
+        release-tarball: winc-tarball
+      tags: [vsphere]
+    - task: upload-windows2016fs-release
+      file: ci/upload-windows2016fs-release/task.yml
+      input_mapping: { windows2016fs-release: windows2016fs-release-insider }
+      params:
+        BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
+      tags: [vsphere]
   - put: mulgore-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
@@ -105,12 +137,17 @@ jobs:
       - vsphere-linux-stemcell/*.tgz
       - vsphere-windows2012R2-stemcell/*.tgz
       - vsphere-windows2016-stemcell/*.tgz
+      releases:
+      - winc-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
       - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
+      - garden-windows-private/operations-common/windows2016-prs.yml
+      - garden-windows-private/operations-common/windows2016-insider-preview.yml
       - garden-windows-private/operations-common/latest-windows2016-stemcell.yml
+      - garden-windows-private/operations-common/latest-winc.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
