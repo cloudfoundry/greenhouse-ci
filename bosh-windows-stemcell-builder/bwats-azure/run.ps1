@@ -68,7 +68,7 @@ $LocalBin="${PWD}\bin"
 New-Item -ItemType directory -Path $LocalBin
 $newpath = $LocalBin
 $newpath += ":"
-$newpath += $env:Path
+$newpath += $env:PATH
 
 $env:PATH = $newpath
 
