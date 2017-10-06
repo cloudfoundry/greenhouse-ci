@@ -1017,7 +1017,7 @@ jobs:
       passed: [create-azure-stemcell]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
-    tags: [azure-windows-worker]
+    tags: [azure-linux-worker]
     params:
       BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
@@ -1027,7 +1027,7 @@ jobs:
       VM_TYPE: default
       NETWORK: default
       STEMCELL_OS: windows2012R2
-      WORKING_DIR: 'F:/'
+      WORKING_DIR: '/'
       AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
   - put: azure-stemcell-release-candidate
     params:
