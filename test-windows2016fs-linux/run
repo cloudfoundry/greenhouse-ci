@@ -1,0 +1,10 @@
+﻿#!/usr/bin/env bash
+
+set -eu
+
+export GOPATH=$PWD
+export PATH="$PATH:$GOPATH/bin"
+
+go get github.com/onsi/ginkgo/ginkgo
+
+ginkgo -p -r -race -cover -keepGoing -randomizeSuites -skipPackage "$IGNORE_PACKAGES" src/code.cloudfoundry.org/windows2016fs
