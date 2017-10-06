@@ -66,7 +66,11 @@ if (-Not (Test-Path $TempDir)) {
 
 $LocalBin="${PWD}\bin"
 New-Item -ItemType directory -Path $LocalBin
-$env:Path="$LocalBin:$env:Path"
+$newpath = $LocalBin
+$newpath += ":"
+$newpath += $env:Path
+
+$env:Path=newpath
 
 if (-Not (Test-Path "$PWD\azstemcell")) {
     Write-Error "Missing azstemcell repository"
