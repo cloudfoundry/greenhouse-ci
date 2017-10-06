@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 # DO NOT USE THE trap { exit 1 } pattern as it swallows errors
 
 # Validate Environment and Locate Resource Files
@@ -26,9 +26,9 @@ foreach ($key in $RequiredEnvVars) {
 
 # TODO: Get pigz and go from pipeline (tar.exe is required by Concourse so not worth it).
 $RequiredExes=@(
-    'go.exe',
-    'pigz.exe',
-    'tar.exe'
+    'go',
+    'pigz',
+    'tar'
 )
 foreach ($exe in $RequiredExes) {
     Get-Command -CommandType Application -Name $exe > $null
@@ -75,7 +75,7 @@ try {
         -temp $TempDir
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "azcell.exe: non-zero exit code ${LASTEXITCODE}"
+        Write-Error "azcell: non-zero exit code ${LASTEXITCODE}"
     }
 
     # Setup env vars for BWATs
