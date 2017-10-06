@@ -69,3 +69,8 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 755 "$GOPATH/bin"
 
 RUN echo "source /usr/local/rvm/scripts/rvm" >> ~/.bashrc
+
+#install azstemcell
+RUN apt install git -y
+RUN git clone https://github.com/pivotal-cf-experimental/azstemcell
+RUN cd azstemcell && go build && mv azstemcell /usr/bin
