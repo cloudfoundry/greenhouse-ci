@@ -62,6 +62,25 @@ if (-Not (Test-Path $TempDir)) {
     New-Item -ItemType Directory -Path $TempDir
 }
 
+# Build azstemcell
+
+$LocalBin="${PWD}\bin"
+New-Item -ItemType directory -Path $LocalBin
+$env:Path="$LocalBin:$env:Path"
+
+if (-Not (Test-Path "$PWD\azstemcell")) {
+    Write-Error "Missing azstemcell repository"
+}
+
+$MainPath=(Get-ChildItem -Recurse -Path "$PWD\azstemcell" | where { $_.Name -eq 'main.go' })
+if ($MainPath -eq $null) {
+    Write-Error "Failed to find 'main.go' in $PWD\azstemcell"
+}
+go build -o "$LocalBin\azstemcell" $MainPath.FullName
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "go: failed to build azstemcell ${LASTEXITCODE}"
+}
+
 # Create Stemcell
 
 # Use finally block to ensure we remove the stemcell
