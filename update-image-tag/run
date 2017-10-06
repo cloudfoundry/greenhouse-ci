@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cp image-version/version windows2016fs/IMAGE_TAG
