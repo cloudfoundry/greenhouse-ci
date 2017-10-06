@@ -70,7 +70,7 @@ $newpath = $LocalBin
 $newpath += ":"
 $newpath += $env:Path
 
-$env:Path=newpath
+$env:PATH = $newpath
 
 if (-Not (Test-Path "$PWD\azstemcell")) {
     Write-Error "Missing azstemcell repository"
