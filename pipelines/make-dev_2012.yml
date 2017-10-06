@@ -146,10 +146,7 @@
 
 
 # configure test-vsphere-stemcell-from-diff for dev
-- type: remove
-  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/1/do/0/aggregate/get=bosh-windows-stemcell/tags
-- type: remove
-  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/1/do/task=test-stemcell/tags
+# no changes required
 
 # remove unnecessary jobs
 - type: remove
