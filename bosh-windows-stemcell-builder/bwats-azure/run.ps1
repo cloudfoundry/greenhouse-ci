@@ -80,7 +80,7 @@ $MainPath=(Get-ChildItem -Recurse -Path "$PWD\azstemcell" | where { $_.Name -eq 
 if ($MainPath -eq $null) {
     Write-Error "Failed to find 'main.go' in $PWD\azstemcell"
 }
-go build -o /usr/bin/azstemcell" $MainPath.FullName
+go build -o "/usr/bin/azstemcell" $MainPath.FullName
 if ($LASTEXITCODE -ne 0) {
     Write-Error "go: failed to build azstemcell ${LASTEXITCODE}"
 }
@@ -119,15 +119,15 @@ try {
     Push-Location "$PWD\stemcell-builder"
         bundle install --without test
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'bundle install --without test'"
+            Write-Error "Running command: 'bundle install --without test' "
         }
         rake package:bwats
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'rake package:bwats'"
+            Write-Error "Running command: 'rake package:bwats' "
         }
         rake run:bwats['azure']
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: rake run:bwats['azure']"
+            Write-Error "Running command: 'rake run:bwats['azure']' "
         }
     Pop-Location
 
