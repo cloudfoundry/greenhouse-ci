@@ -127,7 +127,7 @@ try {
         }
         rake run:bwats['azure']
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'rake run:bwats['azure']'"
+            Write-Error "Running command: rake run:bwats['azure']"
         }
     Pop-Location
 
