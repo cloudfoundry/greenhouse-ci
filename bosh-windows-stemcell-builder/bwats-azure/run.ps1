@@ -80,7 +80,7 @@ $MainPath=(Get-ChildItem -Recurse -Path "$PWD\azstemcell" | where { $_.Name -eq 
 if ($MainPath -eq $null) {
     Write-Error "Failed to find 'main.go' in $PWD\azstemcell"
 }
-go build -o "$LocalBin\azstemcell" $MainPath.FullName
+go build -o /usr/bin/azstemcell" $MainPath.FullName
 if ($LASTEXITCODE -ne 0) {
     Write-Error "go: failed to build azstemcell ${LASTEXITCODE}"
 }
