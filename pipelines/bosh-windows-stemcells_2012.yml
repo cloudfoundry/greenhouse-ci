@@ -1010,7 +1010,7 @@ jobs:
       passed: [create-azure-stemcell]
     - get: stemcells-main-version
       passed: [create-azure-stemcell]
-    - get: azure-stemcell-pre-release-candidate
+    - get: bosh-windows-stemcell
       resource: azure-stemcell-pre-release-candidate
       passed: [create-azure-stemcell]
     - get: azure-base-vhd-uri
@@ -1031,7 +1031,7 @@ jobs:
       AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
   - put: azure-stemcell-release-candidate
     params:
-      file: azure-stemcell-pre-release-candidate/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
 
 - name: promote-aws-gcp-vsphere
   serial_groups: ["vsphere-director"]
