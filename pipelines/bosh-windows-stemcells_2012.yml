@@ -1010,7 +1010,7 @@ jobs:
       passed: [create-azure-stemcell]
     - get: stemcells-main-version
       passed: [create-azure-stemcell]
-    - get: bosh-windows-stemcell
+    - get: azure-stemcell-pre-release-candidate
       resource: azure-stemcell-pre-release-candidate
       passed: [create-azure-stemcell]
     - get: azure-base-vhd-uri
