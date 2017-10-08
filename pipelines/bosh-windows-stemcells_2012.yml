@@ -977,16 +977,16 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      # passed: [create-azure-stemcell]
+      passed: [test-azure-stemcell]
     - get: version
       resource: azure-stemcell-version
-      passed: [create-azure-stemcell]
+      passed: [test-azure-stemcell]
     - get: stemcells-main-version
-      passed: [create-azure-stemcell]
+      passed: [test-azure-stemcell]
     - get: azure-stemcell-pre-release-candidate
-      passed: [create-azure-stemcell]
+      passed: [test-azure-stemcell]
     - get: azure-base-vhd-uri
-      passed: [create-azure-stemcell]
+      passed: [test-azure-stemcell]
   - task: print-azure-publishing-instructions
     file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
