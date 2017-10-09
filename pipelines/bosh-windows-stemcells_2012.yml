@@ -1252,7 +1252,7 @@ jobs:
     - get: vsphere-stemcell-release-candidate
       passed: [test-vsphere-stemcell-from-vmx]
     - get: gcp-stemcell-release-candidate
-      passed: [create-gcp-stemcell]
+      passed: [test-gcp-stemcell]
       resource: gcp-2012R2-tested
     - get: azure-stemcell-release-candidate
       passed: [test-azure-stemcell]
