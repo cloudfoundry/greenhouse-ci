@@ -38,6 +38,9 @@
 - type: replace
   path: /resources/name=gcp-2012R2-untested/source/bucket
   value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=gcp-2012R2-tested/source/bucket
+  value: bosh-windows-stemcells-dev
 
 # locks
 
@@ -61,8 +64,6 @@
 - type: remove
   path: /resources/name=azure-lock
 - type: remove
-  path: /resources/name=gcp-director-lock
-- type: remove
   path: /resources/name=vsphere-worker-lock
 - type: remove
   path: /resources/name=major-stemcell
@@ -78,8 +79,6 @@
   path: /resources/name=aws-stemcell-final
 - type: remove
   path: /resources/name=base-amis-win2012r2
-- type: remove
-  path: /resources/name=gcp-2012R2-tested
 - type: remove
   path: /resources/name=gcp-stemcell-final
 - type: remove
@@ -161,6 +160,49 @@
         put: gcp-lock
         params:
           release: gcp-lock
+- type: replace
+  path: /jobs/name=test-gcp-stemcell
+  value:
+    name: test-gcp-stemcell
+    serial: true
+    plan:
+    - put: gcp-director-lock
+      params:
+        acquire: true
+    - do:
+      - aggregate:
+        - get: bosh-windows-stemcell
+          resource: gcp-2012R2-untested
+          passed: [create-gcp-stemcell]
+        - get: ci
+        - get: stemcell-builder
+          passed: [create-gcp-stemcell]
+        - get: version
+          resource: gcp-stemcell-version
+          passed: [create-gcp-stemcell]
+        - get: windows-stemcell-dependencies
+        - get: stemcells-main-version
+          passed: [create-gcp-stemcell]
+      - task: test-stemcell
+        file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+        params:
+          IAAS: gcp
+          ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+          BOSH_CLIENT_SECRET: ((goose_client_secret))
+          BOSH_CLIENT: ((goose_client))
+          BOSH_TARGET: ((goose_environment))
+          BOSH_CA_CERT: ((goose_ca_cert))
+          STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+          NETWORK: private
+          VM_EXTENSIONS: "50GB_ephemeral_disk"
+          STEMCELL_OS: windows2012R2
+      - put: gcp-2012R2-tested
+        params:
+          file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      ensure:
+        put: gcp-director-lock
+        params:
+          release: gcp-director-lock
 
 # configure test-vsphere-stemcell-from-diff for dev
 # no changes required
@@ -184,8 +226,6 @@
   path: /jobs/name=create-vsphere-stemcell-from-vmx
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-vmx
-- type: remove
-  path: /jobs/name=test-gcp-stemcell
 - type: remove
   path: /jobs/name=build-aws-regional-amis
 - type: remove
