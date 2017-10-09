@@ -211,6 +211,7 @@ jobs:
     - get: ci
     - get: bosh-windows-stemcell
       resource: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+      tags: [vsphere-linux-worker]
       trigger: true
     - get: stemcell-builder
       passed: [create-vsphere-stemcell-from-vmx-2016-insider]
@@ -222,6 +223,7 @@ jobs:
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
+    tags: [vsphere-linux-worker]
     params:
       VM_TYPE: large # WARN: This is Cloud Config specific!!!
       BOSH_CLIENT_SECRET: ((regina_client_secret))
