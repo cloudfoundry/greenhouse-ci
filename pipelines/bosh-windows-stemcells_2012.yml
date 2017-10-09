@@ -15,6 +15,7 @@ groups:
   - build-aws-regional-amis
   - create-aws-stemcell
   - create-gcp-stemcell
+  - test-gcp-stemcell
   - create-azure-stemcell
   - print-azure-publishing-instructions
   - test-azure-stemcell
@@ -180,6 +181,13 @@ resources:
     pool: stemcells-gcp
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: gcp-director-lock
+  type: pool
+  source:
+    branch: master
+    pool: gcp-director-lock
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-worker-lock
   type: pool
   source:
@@ -267,11 +275,18 @@ resources:
     regexp: base-gcp-image-windows2012R2-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: gcp-2012R2-stemcell-release-candidate
+- name: gcp-2012R2-untested
   type: s3
   source:
-    bucket: bosh-windows-stemcells-release-candidates
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/gcp/untested/light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-2012R2-tested
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2012R2/gcp/tested/light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-stemcell-final
@@ -889,6 +904,41 @@ jobs:
         file: ci/delete-vms/task.yml
         params:
           ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+    - task: publish-stemcell
+      file: ci/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
+      attempts: 1
+      params:
+        OS_VERSION: windows2012R2
+        ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+    - put: gcp-2012R2-untested
+      params:
+        file: untested-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+
+- name: test-gcp-stemcell
+  serial: true
+  plan:
+  - put: gcp-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: bosh-windows-stemcell
+        resource: gcp-2012R2-untested
+        passed: [create-gcp-stemcell]
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-gcp-stemcell]
+      - get: version
+        resource: gcp-stemcell-version
+        passed: [create-gcp-stemcell]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-main-version
+        passed: [create-gcp-stemcell]
     - task: test-stemcell
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
@@ -902,13 +952,13 @@ jobs:
         NETWORK: private
         VM_EXTENSIONS: "50GB_ephemeral_disk"
         STEMCELL_OS: windows2012R2
-    - put: gcp-2012R2-stemcell-release-candidate
+    - put: gcp-2012R2-tested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
     ensure:
-      put: gcp-lock
+      put: gcp-director-lock
       params:
-        release: gcp-lock
+        release: gcp-director-lock
 
 - name: create-azure-stemcell
   serial: true
@@ -1044,13 +1094,13 @@ jobs:
     - get: aws-stemcell-release-candidate
       passed: [create-aws-stemcell]
     - get: gcp-stemcell-release-candidate
-      passed: [create-gcp-stemcell]
-      resource: gcp-2012R2-stemcell-release-candidate
+      passed: [test-gcp-stemcell]
+      resource: gcp-2012R2-tested
     - get: stemcell-builder
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
+      passed: [test-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
     - get: version
       resource: stemcells-main-version
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
+      passed: [test-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -1203,7 +1253,7 @@ jobs:
       passed: [test-vsphere-stemcell-from-vmx]
     - get: gcp-stemcell-release-candidate
       passed: [create-gcp-stemcell]
-      resource: gcp-2012R2-stemcell-release-candidate
+      resource: gcp-2012R2-tested
     - get: azure-stemcell-release-candidate
       passed: [test-azure-stemcell]
     - get: aws-stemcell-release-candidate

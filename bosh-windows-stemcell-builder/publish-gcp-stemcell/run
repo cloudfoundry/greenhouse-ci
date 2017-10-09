@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cd stemcell-builder
+bundle install
+rake publish:gcp
+cd ..
+
+mv bosh-windows-stemcell/*.tgz untested-stemcell
