@@ -43,6 +43,7 @@ groups:
 - name: gcp
   jobs:
   - create-gcp-stemcell
+  - test-gcp-stemcell
 - name: azure
   jobs:
   - create-azure-stemcell
