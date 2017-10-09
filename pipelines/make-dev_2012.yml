@@ -35,6 +35,9 @@
 - type: replace
   path: /resources/name=base-gcp-image-win2012r2/source/bucket
   value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=gcp-2012R2-untested/source/bucket
+  value: bosh-windows-stemcells-dev
 
 # locks
 
@@ -58,7 +61,7 @@
 - type: remove
   path: /resources/name=azure-lock
 - type: remove
-  path: /resources/name=gcp-lock
+  path: /resources/name=gcp-director-lock
 - type: remove
   path: /resources/name=vsphere-worker-lock
 - type: remove
@@ -76,7 +79,7 @@
 - type: remove
   path: /resources/name=base-amis-win2012r2
 - type: remove
-  path: /resources/name=gcp-2012R2-stemcell-release-candidate
+  path: /resources/name=gcp-2012R2-tested
 - type: remove
   path: /resources/name=gcp-stemcell-final
 - type: remove
@@ -112,12 +115,17 @@
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
 
+
 # configure gcp for dev
 - type: replace
   path: /jobs/name=create-gcp-stemcell
   value:
     name: create-gcp-stemcell
+    serial: true
     plan:
+    - put: gcp-lock
+      params:
+        acquire: true
     - do:
       - aggregate:
         - get: ci
@@ -131,19 +139,28 @@
         - get: sshd
           resource: openssh-release
           version: { tag: ((OPEN_SSH_VERSION)) }
+      - put: version
+        resource: gcp-stemcell-version
+        params:
+          pre: build
       - task: create-stemcell
         file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
         attempts: 10
         params:
           OS_VERSION: windows2012R2
           ACCOUNT_JSON: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
-      ensure:
-        task: delete-orphan-vms
-        file: ci/delete-vms/task.yml
+        ensure:
+          task: delete-orphan-vms
+          file: ci/delete-vms/task.yml
+          params:
+            ACCOUNT_JSON: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      - put: gcp-2012R2-untested
         params:
-          ACCOUNT_JSON: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
-
-
+          file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      ensure:
+        put: gcp-lock
+        params:
+          release: gcp-lock
 
 # configure test-vsphere-stemcell-from-diff for dev
 # no changes required
@@ -167,6 +184,8 @@
   path: /jobs/name=create-vsphere-stemcell-from-vmx
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-vmx
+- type: remove
+  path: /jobs/name=test-gcp-stemcell
 - type: remove
   path: /jobs/name=build-aws-regional-amis
 - type: remove
