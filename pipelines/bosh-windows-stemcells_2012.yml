@@ -1065,6 +1065,10 @@ jobs:
       passed: [create-azure-stemcell]
     - get: azure-base-vhd-uri
       passed: [create-azure-stemcell]
+    - get: version
+      resource: azure-stemcell-version
+      passed: [create-azure-stemcell]
+      trigger: true
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
     tags: [azure-linux-worker]
