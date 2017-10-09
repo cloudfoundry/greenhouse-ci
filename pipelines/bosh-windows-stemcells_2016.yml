@@ -302,6 +302,10 @@ jobs:
     - put: gcp-2016-untested
       params:
         file: untested-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
 
 - name: test-gcp
   serial: true
