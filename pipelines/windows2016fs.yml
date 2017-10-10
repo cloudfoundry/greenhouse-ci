@@ -1,29 +1,56 @@
+resource_types:
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
 resources:
 - name: ci
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: windows2016fs-develop
+- name: windows2016fs-release-develop
   type: git
   source:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_OFFLINE_DEPLOY_KEY}}
     ignore_paths:
     - VERSION
-- name: windows2016fs-master
+- name: windows2016fs-release-master
   type: git
   source:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
-- name: windows2016fs-dockerfile
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_OFFLINE_DEPLOY_KEY}}
+- name: windows2016fs-online-release-develop
   type: git
   source:
     branch: develop
-    uri: https://github.com/cloudfoundry-incubator/windows2016fs-release.git
-    paths: [ src/Dockerfile ]
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_ONLINE_DEPLOY_KEY}}
+    ignore_paths:
+    - VERSION
+- name: windows2016fs-online-release-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_ONLINE_DEPLOY_KEY}}
+- name: windows2016fs
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
+    ignore_paths: [ Dockerfile ]
+- name: windows2016fs-dockerfile
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs.git
+    paths: [ Dockerfile ]
 - name: git-setup
   type: github-release
   source:
@@ -37,31 +64,288 @@ resources:
     regexp: tar-(.*).exe
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
-- name: version
+- name: image-version
+  type: semver
+  source:
+    access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
+    bucket: windows2016fs
+    initial_version: 0.0.19
+    key: image-version
+    region_name: us-east-1
+- name: windows2016fs-release-version
   type: semver
   source:
     access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
     bucket: windows2016fs
     initial_version: 0.0.0
-    key: version
+    key: windows2016fs-release-version
     region_name: us-east-1
-- name: release-version
+- name: windows2016fs-online-release-version
   type: semver
   source:
     access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
     bucket: windows2016fs
     initial_version: 0.0.0
-    key: release-version
+    key: windows2016fs-online-release-version
     region_name: us-east-1
+- name: gcp-windows-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+- name: pesto-windows2016fs-online-deployment
+  type: bosh-deployment
+  source:
+    deployment: windows2016fs-online-test
+    target: {{PESTO_BOSH_ENVIRONMENT}}
+    client: {{PESTO_BOSH_CLIENT}}
+    client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
+    ca_cert: {{PESTO_BOSH_CA_CERT}}
+- name: windows2016fs-release-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: windows2016fs-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+- name: windows2016fs-online-release-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: windows2016fs-online-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+- name: pesto-lock-pool
+  type: pool
+  source:
+    branch: master
+    pool: pesto
+    private_key: {{GREENHOUSE-CI_SSH_KEY}}
+    uri: git@github.com:greenhouse-ci/locks
 
 jobs:
+- name: test-windows2016fs-windows
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs
+      trigger: true
+  - task: run-ginkgo-exe
+    file: ci/test-windows2016fs-windows/task.yml
+    params:
+      NODES: 2
+
+- name: test-windows2016fs-linux
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs
+      trigger: true
+  - task: run-ginkgo
+    file: ci/test-windows2016fs-linux/task.yml
+    params:
+      IGNORE_PACKAGES: "cmd/extract,windows2016fs/image,windows2016fs/layer"
+
+- name: bump-windows2016fs-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-release-develop
+    - get: windows2016fs
+      passed:
+      - test-windows2016fs-windows
+      - test-windows2016fs-linux
+      trigger: true
+  - task: bump-windows2016fs-release
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "src/code.cloudfoundry.org/windows2016fs"
+    input_mapping:
+      source-repo: windows2016fs-release-develop
+      module-repo: windows2016fs
+  - put: windows2016fs-release-develop
+    params:
+      repository: bumped-repo
+      rebase: true
+
+- name: bump-windows2016fs-online-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-online-release-develop
+    - get: windows2016fs
+      passed:
+      - test-windows2016fs-windows
+      - test-windows2016fs-linux
+      trigger: true
+  - task: bump-windows2016fs-online-release
+    file: ci/bump-submodule/task.yml
+    params:
+      SUBMODULE: "src/code.cloudfoundry.org/windows2016fs"
+    input_mapping:
+      source-repo: windows2016fs-online-release-develop
+      module-repo: windows2016fs
+  - put: windows2016fs-online-release-develop
+    params:
+      repository: bumped-repo
+      rebase: true
+
+- name: test-create-release-windows
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-release-develop
+      trigger: true
+  - aggregate:
+    - task: test-create-fs-release-windows
+      file: ci/test-create-fs-release-windows/task.yml
+      input_mapping: { windows2016fs-release: windows2016fs-release-develop }
+    - task: run-ginkgo-exe
+      file: ci/run-ginkgo-exe/task.yml
+      input_mapping: { repo: windows2016fs-release-develop}
+      params:
+        TEST_PATH: src/create
+
+- name: test-create-release-linux
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-release-develop
+      trigger: true
+  - aggregate:
+    - task: test-create-fs-release-linux
+      file: ci/test-create-fs-release-linux/task.yml
+      input_mapping: { windows2016fs-release: windows2016fs-release-develop }
+    - task: run-ginkgo
+      file: ci/run-ginkgo/task.yml
+      input_mapping: { repo: windows2016fs-release-develop}
+      params:
+        TEST_PATH: src/create
+
+- name: pesto-online-release
+  serial: true
+  plan:
+  - put: pesto-lock-pool
+    params:
+      acquire: true
+  - aggregate:
+      - get: ci
+      - get: windows2016fs-online-release-develop
+        trigger: true
+      - get: gcp-windows-stemcell
+  - task: create-windows2016fs-online-release
+    file: ci/bosh-cr/task.yml
+    input_mapping:
+      release: windows2016fs-online-release-develop
+    output_mapping:
+      release-tarball: windows2016fs-online-tarball
+  - put: pesto-windows2016fs-online-deployment
+    params:
+      manifest: ci/windows2016fs-online-manifest/manifest.yml
+      stemcells:
+      - gcp-windows-stemcell/*.tgz
+      releases:
+      - windows2016fs-online-tarball/*.tgz
+      cleanup: true
+    on_success:
+      task: delete-deployment
+      file: ci/bosh-deld/task.yml
+      params:
+        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
+        BOSH_DEPLOYMENT: windows2016fs-online-test
+        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
+  ensure:
+    put: pesto-lock-pool
+    params:
+      release: pesto-lock-pool
+
+- name: ship-it-offline
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-release-develop
+      passed: [test-create-release-windows, test-create-release-linux]
+    - get: windows2016fs-release-master
+    - put: windows2016fs-release-version
+      params: {bump: patch}
+  - task: update-version
+    file: ci/update-version/task.yml
+    input_mapping:
+      repo: windows2016fs-release-develop
+      version: windows2016fs-release-version
+    params:
+      VERSION_FILE: VERSION
+  - put: windows2016fs-release-develop
+    params:
+      repository: updated_repo
+      tag: windows2016fs-release-version/version
+      tag_prefix: v
+  - put: windows2016fs-release-master
+    params:
+      repository: updated_repo
+  - task: generate-github-release
+    input_mapping: { release: updated_repo }
+    file: ci/generate-github-release/task.yml
+  - put: windows2016fs-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+
+- name: ship-it-online
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-online-release-develop
+      passed: [pesto-online-release]
+    - get: windows2016fs-online-release-master
+    - put: windows2016fs-online-release-version
+      params: {bump: patch}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping: { release: windows2016fs-online-release-develop }
+    params:
+      RELEASE_NAME: windows2016fs
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+  - put: windows2016fs-online-release-develop
+    params:
+      repository: finalized-release/release
+      tag: windows2016fs-online-release-version/number
+      tag_prefix: v
+  - put: windows2016fs-online-release-master
+    params:
+      repository: finalized-release/release
+  - task: generate-github-release
+    input_mapping: { release: finalized-repo }
+    file: ci/generate-github-release/task.yml
+  - put: windows2016fs-online-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/windows2016fs-*.tgz
+
 - name: build-and-push
   serial: true
   plan:
   - aggregate:
     - get: ci
+    - get: windows2016fs
     - get: windows2016fs-dockerfile
       trigger: true
     - get: git-setup
@@ -70,62 +354,50 @@ jobs:
         globs: [Git-*-64-bit.exe]
     - get: tar
       trigger: true
-    - get: version
-    - put: version
+    - get: image-version
+    - put: image-version
       params: {bump: patch}
   - task: build-and-push
     tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
     input_mapping:
-      repo: windows2016fs-dockerfile
+      repo: windows2016fs
+      version: image-version
     params:
-      DOCKERFILE: repo/src/Dockerfile
+      DOCKERFILE: repo/Dockerfile
       IMAGE_NAME: cloudfoundry/windows2016fs
       DOCKER_USERNAME: {{DOCKER_USERNAME}}
       DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
-
-- name: test-oci-image-windows
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-develop
-      trigger: true
-  - task: run-ginkgo-exe
-    file: ci/run-ginkgo-exe/task.yml
+  - task: update-image-tag
+    file: ci/update-image-tag/task.yml
+  - task: commit-changes
+    file: ci/commit/task.yml
     input_mapping:
-      repo: windows2016fs-develop
+      source_repo: windows2016fs
+      destination_repo: windows2016fs
+    output_mapping:
+      destination_repo_with_commit: windows2016fs-commit
     params:
-      TEST_PATH: src/oci-image
-      NODES: 2
-
-- name: test-oci-image-linux
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-develop
-      trigger: true
-  - task: run-ginkgo
-    file: ci/run-ginkgo/task.yml
-    input_mapping:
-      repo: windows2016fs-develop
+      MESSAGE: "Updated image tag"
+  - put: windows2016fs
     params:
-      TEST_PATH: src/oci-image
-      IGNORE_PACKAGES: "cmd/extract,oci-image/image,oci-image/layer"
+      repository: windows2016fs-commit
+      rebase: false
 
 - name: update-blob
   serial: true
   plan:
   - aggregate:
     - get: ci
-    - get: windows2016fs-develop
-    - get: version
+    - get: windows2016fs-release-develop
+    - get: image-version
       trigger: true
       passed: [build-and-push]
   - task: update-blob
     file: ci/update-windows2016fs-blob/task.yml
-    input_mapping: { windows2016fs-release: windows2016fs-develop }
+    input_mapping:
+      windows2016fs-release: windows2016fs-release-develop
+      version: image-version
   - task: commit-changes
     file: ci/commit/task.yml
     input_mapping:
@@ -134,57 +406,8 @@ jobs:
     output_mapping:
       destination_repo_with_commit: windows2016fs-release-updated-commit
     params:
-      MESSAGE: "Updated image blob and version"
-  - put: windows2016fs-develop
+      MESSAGE: "Updated image blob"
+  - put: windows2016fs-release-develop
     params:
       repository: windows2016fs-release-updated-commit
       rebase: false
-
-- name: test-create-release-windows
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-develop
-      trigger: true
-      passed: [test-oci-image-linux, test-oci-image-windows]
-  - task: test-create-fs-release-windows
-    file: ci/test-create-fs-release-windows/task.yml
-    input_mapping: { windows2016fs-release: windows2016fs-develop }
-
-- name: test-create-release-linux
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-develop
-      trigger: true
-      passed: [test-oci-image-linux, test-oci-image-windows]
-  - task: test-create-fs-release-linux
-    file: ci/test-create-fs-release-linux/task.yml
-    input_mapping: { windows2016fs-release: windows2016fs-develop }
-
-- name: ship-it
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-develop
-      passed: [test-create-release-windows, test-create-release-linux]
-    - get: windows2016fs-master
-    - put: release-version
-      params: {bump: patch}
-  - task: update-version
-    file: ci/update-version/task.yml
-    input_mapping:
-      repo: windows2016fs-develop
-      version: release-version
-    output_mapping: { updated_repo: windows2016fs-develop-version }
-    params:
-      VERSION_FILE: VERSION
-  - put: windows2016fs-develop
-    params:
-      repository: windows2016fs-develop-version
-      tag: release-version/version
-  - put: windows2016fs-master
-    params:
-      repository: windows2016fs-develop-version
