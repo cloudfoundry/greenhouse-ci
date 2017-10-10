@@ -3,7 +3,8 @@ trap { $host.SetShouldExit(1) }
 
 $env:GOPATH=(Resolve-Path $env:GOPATH).Path
 
-$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;" + $env:PATH
+# get tar on the path
+$env:PATH="$env:PATH;C:\var\vcap\bosh\bin"
 
 go get github.com/onsi/ginkgo/ginkgo
 
