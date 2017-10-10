@@ -6,6 +6,7 @@ groups:
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
   - create-gcp
+  - create-aws
   - test-gcp
 - name: main
   jobs:
@@ -19,6 +20,9 @@ groups:
   jobs:
   - create-gcp
   - test-gcp
+- name: aws
+  jobs:
+  - create-aws
 
 resources:
 # repos
@@ -86,8 +90,23 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1600.0.0
+- name: aws-build-number
+  type: semver
+  source:
+    bucket: bosh-windows-stemcells
+    key: versions/aws-2016-stemcell-version-edge
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1600.0.0
 
 # locks
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
@@ -139,6 +158,13 @@ resources:
    regexp: windows2016-insider/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: base-amis-win2012r2
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells
+    regexp: base-amis-windows2016-(.*).json
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2016
   type: s3
   source:
@@ -349,6 +375,191 @@ jobs:
       params:
         release: gcp-director-lock
 
+- name: create-aws
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+      - get: base-amis
+        resource: base-amis-win2012r2
+        passed: [build]
+      - get: version
+        resource: aws-build-number
+        passed: [build]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [build]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
+    - task: cleanup-aws-regional-stemcells
+      params:
+        REGION: us-east-1
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      file: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/task.yml
+    - put: version
+      resource: aws-build-number
+      params:
+        pre: build
+    - task: create-packer-ci-key
+      privileged: true
+      config:
+        platform: linux
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+        outputs:
+        - name: packer-ci-private-key
+        run:
+          path: bash
+          args:
+          - "-c"
+          - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
+        params:
+          PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
+    - aggregate:
+      - task: create-stemcell-us-east-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: us-east-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-us-east-2
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: us-east-2
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-us-west-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: us-west-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-us-west-2
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: us-west-2
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ca-central-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ca-central-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ap-south-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ap-south-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ap-northeast-2
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ap-northeast-2
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ap-southeast-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ap-southeast-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ap-southeast-2
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ap-southeast-2
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-ap-northeast-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: ap-northeast-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-eu-central-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: eu-central-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-eu-west-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: eu-west-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-eu-west-2
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: eu-west-2
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - task: create-stemcell-sa-east-1
+        timeout: 1h30m
+        attempts: 3
+        file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+        params:
+          OS_VERSION: windows2016
+          REGION: sa-east-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    ensure:
+      aggregate:
+        - put: aws-lock
+          params:
+            release: aws-lock
+        - task: delete-orphan-vms
+          file: ci/delete-vms/task.yml
+          params:
+            AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+            AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+
 - name: promote
   serial: true
   plan:
@@ -465,10 +676,20 @@ jobs:
     - put: vsphere-from-vmx-build-number
       params:
         file: version/number
+    - put: aws-build-number
+      params:
+        file: version/number
     - put: gcp-build-number
       params:
         file: version/number
   - aggregate:
+    - task: collect-win2016-amis
+      file: ci/collect-base-amis/task.yml
+      output_mapping: { base-amis: win2016-amis }
+      params:
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
+        BASE_AMI: windows2016
     - task: collect-win2016-gcp-image
       file: ci/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2016-gcp-image }
@@ -476,6 +697,10 @@ jobs:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         BASE_OS: windows2016
   - aggregate:
+    - put: base-amis-win2012r2
+      params:
+        file: win2016-amis/base-amis-windows2016-*.json
     - put: base-gcp-image-win2016
       params:
         file: win2016-gcp-image/base-gcp-image-windows2016-*.json
+
