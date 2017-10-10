@@ -15,16 +15,16 @@
 
 # versions
 - type: replace
-  path: /resources/name=stemcells-main-version-2016/source/bucket
+  path: /resources/name=main-version/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
-  path: /resources/name=updated-vmx-version-2016-insider/source/bucket
+  path: /resources/name=updated-vmx-version/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
-  path: /resources/name=vsphere-stemcell-version-2016-insider/source/bucket
+  path: /resources/name=vsphere-from-vmx-build-number/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
-  path: /resources/name=gcp-2016-stemcell-version/source/bucket
+  path: /resources/name=gcp-build-number/source/bucket
   value: bosh-windows-stemcells-dev
 
 # remove unnecessary resources
@@ -40,43 +40,76 @@
 - type: remove
   path: /resources/name=base-gcp-image-win2016
 - type: remove
-  path: /resources/name=gcp-2016-stemcell-release-candidate
+  path: /resources/name=gcp-2016-untested
+- type: remove
+  path: /resources/name=gcp-2016-tested
 - type: remove
   path: /resources/name=gcp-stemcell-final-2016
 - type: remove
   path: /resources/name=gcp-lock
 - type: remove
-  path: /resources/name=gcp-2016-stemcell-version
-- type: remove
   path: /resources/name=vsphere-director-lock
+- type: remove
+  path: /resources/name=gcp-build-number
+- type: remove
+  path: /resources/name=gcp-director-lock
 # JOBS
 
 # configure create-vsphere-stemcell-from-vmx-2016-insider
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/tags
-  value: [vsphere-windows-worker-dev]
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/params/INPUT_BUCKET
-  value: bosh-windows-stemcell-vmx-2016-insider-dev
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/task=create-stemcell/params/OUTPUT_BUCKET
-  value: vsphere-stemcell-pre-release-candidate-vmx-2016-insider-dev
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=version/passed
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=stemcell-builder/passed
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=stemcells-main-version-2016/passed
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-vmx-2016-insider/plan/0/aggregate/get=vmx-version/passed
+  path: /jobs/name=create-vsphere-from-vmx
+  value:
+    name: create-vsphere-from-vmx
+    serial: true
+    serial_groups: [vsphere]
+    plan:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+      - get: windows-stemcell-dependencies
+      - get: version
+        resource: vsphere-from-vmx-build-number
+        trigger: true
+      - get: vmx-version
+        resource: updated-vmx-version
+      - get: main-version
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
+      - get: stembuild
+    - put: version
+      resource: vsphere-from-vmx-build-number
+      params:
+        pre: build
+    - task: create-stemcell
+      privileged: true
+      # WARN: May need to make a new task
+      file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+      tags: [vsphere-windows-worker-dev]
+      params:
+        OS_VERSION: windows2016
+        ADMINISTRATOR_PASSWORD: "Password123!"
+        NEW_PASSWORD: "Password123!"
+        ORGANIZATION: Pivotal
+        OWNER: Pivotal
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_REGION: us-east-1
+        INPUT_BUCKET: bosh-windows-stemcell-vmx-2016-insider-dev
+        OUTPUT_BUCKET: vsphere-stemcell-pre-release-candidate-vmx-2016-insider-dev
+        VMX_CACHE_DIR: "C:\\vmx-data-2016"
+        SKIP_WINDOWS_UPDATE: true
+
 
 # remove unnecessary jobs
 - type: remove
-  path: /jobs/name=test-vsphere-stemcell-from-vmx-2016-insider
+  path: /jobs/name=test-vsphere-from-vmx
 - type: remove
-  path: /jobs/name=create-gcp-stemcell-2016
+  path: /jobs/name=create-gcp
 - type: remove
-  path: /jobs/name=promote-stemcells-2016
+  path: /jobs/name=test-gcp
 - type: remove
-  path: /jobs/name=build-stemcells
+  path: /jobs/name=promote
+- type: remove
+  path: /jobs/name=build
 
