@@ -12,9 +12,3 @@ outputs:
 
 run:
   path: ci/bosh-windows-stemcell-builder/aggregate-the-amis/run
-
-params:
-  BUCKET_NAME: aws-regional-stemcells
-  AWS_ACCESS_KEY:
-  AWS_SECRET_KEY:
-  REGION:

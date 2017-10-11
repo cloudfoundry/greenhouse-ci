@@ -10,9 +10,3 @@ inputs:
 
 run:
   path: ci/bosh-windows-stemcell-builder/cleanup-aws-regional-stemcells/run
-
-params:
-  BUCKET_NAME: aws-regional-stemcells
-  AWS_ACCESS_KEY:
-  AWS_SECRET_KEY:
-  REGION:
