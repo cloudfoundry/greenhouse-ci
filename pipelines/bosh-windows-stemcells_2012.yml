@@ -1036,7 +1036,7 @@ jobs:
       passed: [test-azure-stemcell]
     - get: stemcells-main-version
       passed: [test-azure-stemcell]
-    - get: azure-stemcell-pre-release-candidate
+    - get: azure-stemcell-release-candidate
       passed: [test-azure-stemcell]
     - get: azure-base-vhd-uri
       passed: [test-azure-stemcell]
@@ -1229,8 +1229,6 @@ jobs:
     - get: version
       resource: stemcells-main-version
       passed: [promote-aws-gcp-vsphere]
-    - get: stemcell-builder
-      passed: [create-gcp-stemcell,create-aws-stemcell,test-vsphere-stemcell-from-vmx]
   - aggregate:
     - task: azure-post-boshio-stemcell-sha
       file: ci/post-boshio-stemcell-sha/task.yml
@@ -1262,7 +1260,7 @@ jobs:
       passed: [test-gcp-stemcell]
       resource: gcp-2012R2-tested
     - get: azure-stemcell-release-candidate
-      passed: [test-azure-stemcell]
+      passed: [print-azure-publishing-instructions]
     - get: aws-stemcell-release-candidate
       passed: [promote-aws-gcp-vsphere]
     - get: version
