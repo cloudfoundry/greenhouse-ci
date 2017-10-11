@@ -8,5 +8,8 @@ inputs:
   - name: windows2016fs
   - name: image-version
 
+outputs:
+  - name: windows2016fs-updated
+
 run:
   path: ci/update-image-tag/run

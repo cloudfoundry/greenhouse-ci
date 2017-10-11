@@ -3,3 +3,4 @@
 set -ex
 
 cp image-version/version windows2016fs/IMAGE_TAG
+cp -r windows2016fs/. windows2016fs-updated
