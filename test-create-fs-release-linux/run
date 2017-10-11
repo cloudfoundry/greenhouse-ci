@@ -2,6 +2,8 @@
 
 set -eu
 
+export DEV_ENV="true"
+
 ./windows2016fs-release/scripts/create-release
 
 pushd windows2016fs-release
