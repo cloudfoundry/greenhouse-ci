@@ -15,4 +15,7 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/test-create-fs-release-windows/run.ps1
+  - ci/create-fs-release-windows/run.ps1
+
+params:
+  DEV_ENV:

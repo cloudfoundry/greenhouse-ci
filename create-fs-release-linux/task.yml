@@ -12,5 +12,7 @@ outputs:
 - name: create-binary-linux
 
 run:
-  path: ci/test-create-fs-release-linux/run
+  path: ci/create-fs-release-linux/run
 
+params:
+  DEV_ENV:

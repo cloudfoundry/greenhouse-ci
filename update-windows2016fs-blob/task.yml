@@ -6,7 +6,6 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
 - name: ci
 - name: windows2016fs-release
-- name: version
 
 run:
   path: ci/update-windows2016fs-blob/run
