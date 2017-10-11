@@ -44,6 +44,12 @@ resources:
     branch: master
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release
+- name: windows2016fs
+  type: git
+  source:
+    branch: master
+    private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs
 # - name: wincni-develop
 #   type: git
 #   source:
@@ -149,7 +155,7 @@ jobs:
     - get: winc-develop
       trigger: true
     - get: winc-master
-    - get: windows2016fs-release
+    - get: windows2016fs
   - aggregate:
     - task: test
       input_mapping: { winc: winc-develop }
@@ -224,7 +230,7 @@ jobs:
       passed: [winc]
       trigger: true
     - get: winc-release-develop
-    - get: windows2016fs-release
+    - get: windows2016fs
   - aggregate:
     - task: build-winc
       file: ci/build-binary/task.yml
