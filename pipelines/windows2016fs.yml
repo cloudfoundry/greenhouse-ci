@@ -79,7 +79,7 @@ resources:
     access_key_id: {{BOSH_WINDOWS_S3_ADMIN_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_S3_ADMIN_SECRET_ACCESS_KEY}}
     bucket: windows2016fs
-    initial_version: 0.0.0
+    initial_version: 0.0.6
     key: windows2016fs-release-version
     region_name: us-east-1
 - name: windows2016fs-online-release-version
