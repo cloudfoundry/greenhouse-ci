@@ -5,28 +5,24 @@ $env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/min
 
 go.exe version
 
-push-location windows2016fs-release
-    $env:GOPATH = $PWD
-
-    $image_tag = $env:TEST_CONTAINER_IMAGE_TAG
-    if ($image_tag -eq $null -or $image_tag -eq "") {
-        $image_tag = (cat IMAGE_TAG)
-    }
-    mkdir -Force "blobs/windows2016fs"
-    go run src/oci-image/cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir "blobs/windows2016fs" -tag $image_tag
+$env:GOPATH = $PWD
+push-location src/code.cloudfoundry.org/windows2016fs
+    $image_tag = (cat "IMAGE_TAG")
+    $output_dir = "temp/windows2016fs"
+    mkdir -Force $output_dir
+    go run ./cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir $output_dir -tag $image_tag
     if ($LastExitCode -ne 0) {
-        throw "Downloading image returned error code: $LastExitCode"
+        throw "Download image process returned error code: $LastExitCode"
     }
 
-    go build -o extract.exe oci-image/cmd/extract
+    go build -o extract.exe ./cmd/extract
     if ($LastExitCode -ne 0) {
-        throw "Building extractor returned error code: $LastExitCode"
+        throw "Build extract process returned error code: $LastExitCode"
     }
-
-    $rootfsTgz = (get-item .\blobs\windows2016fs\windows2016fs-*.tgz).FullName
-    $topLayer = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+    $rootfsTgz = (get-item "$output_dir\windows2016fs-*.tgz").FullName
+    $wincTestRootfs = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
     if ($LastExitCode -ne 0) {
-        throw "Running extractor returned error code: $LastExitCode"
+        throw "Extract process returned error code: $LastExitCode"
     }
 pop-location
 

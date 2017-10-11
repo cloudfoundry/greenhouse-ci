@@ -8,7 +8,8 @@ inputs:
 - name: winc-image-binary
 - name: nstar-binary
 - name: garden-runc-release
-- name: windows2016fs-release
+- name: windows2016fs
+  path: src/code.cloudfoundry.org/windows2016fs
 
 run:
   path: powershell
