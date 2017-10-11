@@ -3,7 +3,7 @@
 set -eu
 
 submodule_version=$(cat windows2016fs-release/src/code.cloudfoundry.org/windows2016fs/IMAGE_TAG)
-blob_version=$(grep  windows2016fs windows2016f-release/config/blobs.yml |  grep -o '[0-9]\+.[0-9]\+.[0-9]\+')
+blob_version=$(grep  windows2016fs windows2016fs-release/config/blobs.yml |  grep -o '[0-9]\+.[0-9]\+.[0-9]\+')
 
 if [[ "$submodule_version" == "$blob_version" ]]; then
   echo "No blob to update"
