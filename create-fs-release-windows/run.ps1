@@ -17,7 +17,7 @@ push-location windows2016fs-release
   }
 
   if ($env:DEV_ENV -eq $null -or $env:DEV_ENV -eq "") {
-    echo $pre_version > VERSION
+    set-content -file VERSION -value $pre_version -NoNewLine
     git config --global user.email "pivotal-netgarden-eng@pivotal.io"
     if ($LastExitCode -ne 0) {
       exit $LastExitCode
