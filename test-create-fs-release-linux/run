@@ -19,3 +19,6 @@ if [[ "$uncommitted_changes" != "false" ]]; then
   echo "**ERROR** found uncommited changes"
   exit 1
 fi
+
+pre_version=$(cat version/version)
+cp windows2016fs-release/bin/create "create-binary-linux/create-$pre_version-linux-amd64"

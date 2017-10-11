@@ -24,3 +24,6 @@ if ($uncommitted_changes -ne "false") {
   echo "**ERROR** found uncommited changes"
   exit 1
 }
+
+$pre_version=(cat version/version)
+cp windows2016fs-release/bin/create.exe "create-binary-windows/create-$pre_version-windows-amd64.exe"
