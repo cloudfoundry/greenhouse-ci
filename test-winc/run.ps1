@@ -20,13 +20,12 @@ push-location src/code.cloudfoundry.org/windows2016fs
         throw "Build extract process returned error code: $LastExitCode"
     }
     $rootfsTgz = (get-item "$output_dir\windows2016fs-*.tgz").FullName
-    $wincTestRootfs = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
+    $env:WINC_TEST_ROOTFS = (.\extract.exe $rootfsTgz "c:\ProgramData\windows2016fs\layers")
     if ($LastExitCode -ne 0) {
         throw "Extract process returned error code: $LastExitCode"
     }
 pop-location
 
-$env:WINC_TEST_ROOTFS=$topLayer
 $env:GOPATH = $PWD
 $env:PATH="$env:GOPATH\bin;" +$env:PATH
 
