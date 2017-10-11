@@ -18,6 +18,14 @@ push-location windows2016fs-release
 
   if ($env:DEV_ENV -eq $null -or $env:DEV_ENV -eq "") {
      echo $pre_version > VERSION
+     git add VERSION
+     if ($LastExitCode -ne 0) {
+       exit $LastExitCode
+     }
+     git commit -m "WIP - test"
+     if ($LastExitCode -ne 0) {
+       exit $LastExitCode
+     }
   }
 
   ./scripts/create-release.ps1

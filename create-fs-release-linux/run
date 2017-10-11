@@ -4,11 +4,15 @@ set -e
 
 pre_version=$(cat version/version)
 
-if [[ -n "$DEV_ENV" ]]; then
-  echo -n "$pre_version" > windows2016fs-release/VERSION
-fi
+pushd windows2016fs-release
+  if [[ -n "$DEV_ENV" ]]; then
+      echo -n "$pre_version" > VERSION
+      git add VERSION
+      git commit -m "WIP - test"
+  fi
 
-./windows2016fs-release/scripts/create-release
+  ./scripts/create-release
+popd
 
 if [[ -z "$DEV_ENV" ]]; then
   cp windows2016fs-release/bin/create "create-binary-linux/create-$pre_version-linux-amd64"
