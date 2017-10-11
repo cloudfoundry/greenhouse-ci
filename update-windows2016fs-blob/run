@@ -2,8 +2,8 @@
 
 set -eu
 
-submodule_version=$(cat src/windows2016fs/IMAGE_TAG)
-blob_version=$(grep  windows2016fs config/blobs.yml |  grep -o '[0-9]\+.[0-9]\+.[0-9]\+')
+submodule_version=$(cat windows2016f-release/src/windows2016fs/IMAGE_TAG)
+blob_version=$(grep  windows2016fs windows2016f-release/config/blobs.yml |  grep -o '[0-9]\+.[0-9]\+.[0-9]\+')
 
 if [[ "$submodule_version" == "$blob_version" ]]; then
   echo "No blob to update"
