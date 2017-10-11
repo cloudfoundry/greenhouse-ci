@@ -5,39 +5,43 @@ resource_types:
     repository: cloudfoundry/bosh-deployment-resource
 
 resources:
+
+# Git
+
 - name: ci
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
 - name: windows2016fs-release-develop
   type: git
   source:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_OFFLINE_DEPLOY_KEY}}
-    ignore_paths:
-    - VERSION
+
 - name: windows2016fs-release-master
   type: git
   source:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_OFFLINE_DEPLOY_KEY}}
+
 - name: windows2016fs-online-release-develop
   type: git
   source:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_ONLINE_DEPLOY_KEY}}
-    ignore_paths:
-    - VERSION
+
 - name: windows2016fs-online-release-master
   type: git
   source:
     branch: master
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_ONLINE_DEPLOY_KEY}}
+
 - name: windows2016fs
   type: git
   source:
@@ -45,18 +49,41 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/windows2016fs.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINDOWS2016FS_DEPLOY_KEY}}
     ignore_paths: [ Dockerfile ]
+
 - name: windows2016fs-dockerfile
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/windows2016fs.git
     paths: [ Dockerfile ]
+
+# GitHub Release
+
 - name: git-setup
   type: github-release
   source:
     user: git-for-windows
     repository: git
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
+- name: windows2016fs-release-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: windows2016fs-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
+- name: windows2016fs-online-release-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: windows2016fs-online-release
+    drafts: true
+    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
+# S3
+
 - name: tar
   type: s3
   source:
@@ -64,6 +91,31 @@ resources:
     regexp: tar-(.*).exe
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
+- name: gcp-windows-stemcell
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-release-candidates
+    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+
+- name: create-windows-rcs
+  type: s3
+  source:
+    bucket: windows2016fs
+    regexp: rc-binaries/create-(.*)-windows-amd64.exe
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
+- name: create-linux-rcs
+  type: s3
+  source:
+    bucket: windows2016fs
+    regexp: rc-binaries/create-(.*)-linux-amd64
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
+# Semver
+
 - name: image-version
   type: semver
   source:
@@ -73,6 +125,7 @@ resources:
     initial_version: 0.0.19
     key: image-version
     region_name: us-east-1
+
 - name: windows2016fs-release-version
   type: semver
   source:
@@ -82,6 +135,7 @@ resources:
     initial_version: 0.0.6
     key: windows2016fs-release-version
     region_name: us-east-1
+
 - name: windows2016fs-online-release-version
   type: semver
   source:
@@ -91,11 +145,9 @@ resources:
     initial_version: 0.0.0
     key: windows2016fs-online-release-version
     region_name: us-east-1
-- name: gcp-windows-stemcell
-  type: s3
-  source:
-    bucket: bosh-windows-stemcells-release-candidates
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+
+# BOSH Deployment
+
 - name: pesto-windows2016fs-online-deployment
   type: bosh-deployment
   source:
@@ -104,20 +156,9 @@ resources:
     client: {{PESTO_BOSH_CLIENT}}
     client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
     ca_cert: {{PESTO_BOSH_CA_CERT}}
-- name: windows2016fs-release-github-release
-  type: github-release
-  source:
-    user: cloudfoundry-incubator
-    repository: windows2016fs-release
-    drafts: true
-    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
-- name: windows2016fs-online-release-github-release
-  type: github-release
-  source:
-    user: cloudfoundry-incubator
-    repository: windows2016fs-online-release
-    drafts: true
-    access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
+
+# Lock Pool
+
 - name: pesto-lock-pool
   type: pool
   source:
@@ -125,6 +166,27 @@ resources:
     pool: pesto
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
+
+groups:
+- name: windows2016fs
+  jobs:
+    - test-windows2016fs-windows
+    - test-windows2016fs-linux
+    - bump-windows2016fs-release
+    - bump-windows2016fs-online-release
+    - build-and-push
+    - update-blob
+- name: windows2016fs-release
+  jobs:
+    - bump-version-rc
+    - test-create-release-windows
+    - test-create-release-linux
+    - ship-it-offline
+    - bump-patch-version
+- name: windows2016fs-online-release
+  jobs:
+    - pesto-online-release
+    - ship-it-online
 
 jobs:
 - name: test-windows2016fs-windows
@@ -197,6 +259,14 @@ jobs:
       repository: bumped-repo
       rebase: true
 
+- name: bump-version-rc
+  serial: true
+  plan:
+  - get: windows2016fs-release-develop
+    trigger: true
+  - put: windows2016fs-release-version
+    params: {pre: rc}
+
 - name: test-create-release-windows
   serial: true
   plan:
@@ -204,15 +274,22 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
+    - get: windows2016fs-release-version
+      passed: [ bump-version-rc ]
   - aggregate:
     - task: test-create-fs-release-windows
       file: ci/test-create-fs-release-windows/task.yml
-      input_mapping: { windows2016fs-release: windows2016fs-release-develop }
+      input_mapping:
+        version: windows2016fs-release-version
+        windows2016fs-release: windows2016fs-release-develop
     - task: run-ginkgo-exe
       file: ci/run-ginkgo-exe/task.yml
       input_mapping: { repo: windows2016fs-release-develop}
       params:
         TEST_PATH: src/create
+  - put: create-windows-rcs
+    params:
+      file: create-binary-windows/create-*-windows-amd64.exe
 
 - name: test-create-release-linux
   serial: true
@@ -221,15 +298,23 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
+    - get: windows2016fs-release-version
+      passed: [ bump-version-rc ]
   - aggregate:
     - task: test-create-fs-release-linux
       file: ci/test-create-fs-release-linux/task.yml
-      input_mapping: { windows2016fs-release: windows2016fs-release-develop }
+      input_mapping:
+        version: windows2016fs-release-version
+        windows2016fs-release: windows2016fs-release-develop
     - task: run-ginkgo
       file: ci/run-ginkgo/task.yml
       input_mapping: { repo: windows2016fs-release-develop}
       params:
         TEST_PATH: src/create
+  - put: create-linux-rcs
+    params:
+      file: create-binary-linux/create-*-linux-amd64
+
 
 - name: pesto-online-release
   serial: true
@@ -278,8 +363,9 @@ jobs:
     - get: windows2016fs-release-develop
       passed: [test-create-release-windows, test-create-release-linux]
     - get: windows2016fs-release-master
-    - put: windows2016fs-release-version
-      params: {bump: patch}
+    - get: windows2016fs-release-version
+      passed: [test-create-release-windows, test-create-release-linux]
+      params: {bump: final}
   - task: update-version
     file: ci/update-version/task.yml
     input_mapping:
@@ -296,13 +382,31 @@ jobs:
     params:
       repository: updated_repo
   - task: generate-github-release
-    input_mapping: { release: updated_repo }
+    input_mapping:
+      release: updated_repo
+      version: windows2016fs-release-version
     file: ci/generate-github-release/task.yml
   - put: windows2016fs-release-github-release
     params:
       commitish: generated-release/commitish
       name: generated-release/name
       tag: generated-release/version
+  - put: windows2016fs-release-version
+    params:
+      file: windows2016fs-release-version/version
+
+- name: bump-patch-version
+  serial: true
+  plan:
+  - get: windows2016fs-release-version
+    trigger: true
+    passed: [ship-it-offline]
+    params:
+      bump: patch
+      pre: rc
+  - put: windows2016fs-release-version
+    params:
+      file: windows2016fs-release-version/version
 
 - name: ship-it-online
   serial: true
@@ -330,7 +434,9 @@ jobs:
     params:
       repository: finalized-release/release
   - task: generate-github-release
-    input_mapping: { release: finalized-repo }
+    input_mapping:
+      release: finalized-repo
+      version: windows2016fs-online-release-version
     file: ci/generate-github-release/task.yml
   - put: windows2016fs-online-release-github-release
     params:
@@ -373,10 +479,9 @@ jobs:
   - task: commit-changes
     file: ci/commit/task.yml
     input_mapping:
-      source_repo: windows2016fs
-      destination_repo: windows2016fs
+      repo: windows2016fs-updated
     output_mapping:
-      destination_repo_with_commit: windows2016fs-commit
+      repo_with_commit: windows2016fs-commit
     params:
       MESSAGE: "Updated image tag"
   - put: windows2016fs
@@ -401,10 +506,9 @@ jobs:
   - task: commit-changes
     file: ci/commit/task.yml
     input_mapping:
-      source_repo: windows2016fs-release-updated-blob
-      destination_repo: windows2016fs-release-updated-blob
+      repo: windows2016fs-release-updated-blob
     output_mapping:
-      destination_repo_with_commit: windows2016fs-release-updated-commit
+      repo_with_commit: windows2016fs-release-updated-commit
     params:
       MESSAGE: "Updated image blob"
   - put: windows2016fs-release-develop
