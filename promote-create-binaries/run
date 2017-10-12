@@ -7,5 +7,5 @@ RELEASE_VERSION=$(cat version/version)
 win_rc=$(ls create-windows-rcs/create-*-windows-amd64.exe)
 linux_rc=$(ls create-linux-rcs/create-*-linux-amd64)
 
-cp "$winc_rc" "promoted-binaries/create-$RELEASE_VERSION-windows-amd64.exe"
+cp "$win_rc" "promoted-binaries/create-$RELEASE_VERSION-windows-amd64.exe"
 cp "$linux_rc" "promoted-binaries/create-$RELEASE_VERSION-linux-amd64"
