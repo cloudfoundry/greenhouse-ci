@@ -34,7 +34,7 @@ $env:PATH="$env:GOPATH\bin;" +$env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-if ($env:INSIDER_PREVIEW -eq "") {
+if ($env:INSIDER_PREVIEW -eq $null -or $env:INSIDER_PREVIEW -eq "") {
     Get-ContainerNetwork | Remove-ContainerNetwork -Force
 }
 
