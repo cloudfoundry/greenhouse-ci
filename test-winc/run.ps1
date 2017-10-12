@@ -36,6 +36,10 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 
 if ($env:INSIDER_PREVIEW -eq $null -or $env:INSIDER_PREVIEW -eq "") {
     Get-ContainerNetwork | Remove-ContainerNetwork -Force
+} else {
+  $config = '{"name": "winc-nat", "insider_preview": true}'
+  set-content -path "$env:TEMP\interface.json" -value $config
+  go run src/code.cloudfoundry.org/winc/cmd/winc-network --action delete --configFile "$env:TEMP/interface.json"
 }
 
 cd $env:GOPATH/src/code.cloudfoundry.org/winc
