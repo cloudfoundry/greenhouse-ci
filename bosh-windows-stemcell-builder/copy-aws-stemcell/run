@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cd stemcell-builder
+bundle install
+rake package:agent
+rake package:psmodules
+rake build:aws_ami
+
+mv bosh-windows-stemcell/*.tgz ../bosh-windows-stemcell
+mv bosh-windows-stemcell/*.sha ../sha
