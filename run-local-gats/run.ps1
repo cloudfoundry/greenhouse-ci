@@ -39,6 +39,12 @@ Get-ContainerNetwork | Remove-ContainerNetwork -Force
 
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
+
+$config = '{"mtu": 0, "network_name": "winc-nat", "subnet_range": "172.30.0.0/22", "gateway_address": "172.30.0.1", "insider_preview": false}'
+set-content -path "$env:TEMP/interface.json" -value $config
+
+& $wincNetworkPath --action create --configFile "$env:TEMP/interface.json"
+
 $wincImagePath = "$PWD/winc-image-binary/winc-image.exe"
 $nstarPath = "$PWD/nstar-binary/nstar.exe"
 
@@ -102,6 +108,7 @@ Pop-Location
 $ExitCode="$LastExitCode"
 
 Kill-Garden
+& $wincNetworkPath --action delete --configFile "$env:TEMP/interface.json"
 
 Set-MpPreference -DisableRealtimeMonitoring $false
 
