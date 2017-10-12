@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#==============================================================================
+# this is taken from: https://github.com/dpb587-pivotal/bosh-hub/blob/2da70613a62ece8384cfcd94f259aa5b0e1f5492/docs/publishing-stemcells.md
+#==============================================================================
+
+set -e
+
+function meta4-the-stemcell {
+  iaas=$1
+  candidate_build_number=$2
+  metalink=$3
+  stemcell_path=`ls ${iaas}/*.tgz`
+  stemcell=`basename $stemcell_path`
+
+  # import the stemcell tarball (this automatically calculates checksums)
+  meta4 import-file --metalink="$metalink" \
+    --version="$candidate_build_number" \
+    $stemcell_path
+
+  # define where the stemcell can be downloaded
+  meta4 file-set-url --metalink="$metalink" --file=$stemcell \
+    https://bosh-windows-stemcells-production.s3.amazonaws.com/${stemcell}
+}
+
+metalink=boshio-output/published/$OS_NAME-$OS_VERSION/$version/stemcells.meta4
+version=`cut -d'.' -f1-2 version/number`
+cp -r boshio-input/. boshio-output
+# create an empty metalink file for us to add the files
+mkdir -p "$( dirname "$metalink" )"
+meta4 create --metalink="$metalink"
+
+meta4-the-stemcell aws $version $metalink
+meta4-the-stemcell gcp $version $metalink
+meta4-the-stemcell azure $version $metalink
+
+cd boshio-output
+git add .
+git config --global user.email "ci@localhost"
+git config --global user.name "CI Bot"
+git commit -m "publish: $OS_NAME-$OS_VERSION/$version"

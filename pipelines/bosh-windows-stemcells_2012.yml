@@ -85,6 +85,19 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
+- name: azstemcell
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
+- name: boshio
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:bosh-io/stemcells-windows-index.git
+    private_key: ((BOSH_WINDOWS_BOSHIO_DEPLOY_KEY))
+
+# github releases
 - name: stemcell-builder-release
   type: github-release
   source:
@@ -104,11 +117,6 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-- name: azstemcell
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 
 # versions
 - name: updated-vmx-version
@@ -1220,31 +1228,29 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: gcp-stemcell-final
+    - get: gcp
       passed: [promote-aws-gcp-vsphere]
-    - get: azure-stemcell-final
+      resource: gcp-stemcell-final
+    - get: azure
       passed: [promote-azure]
-    - get: aws-stemcell-final
+      resource: azure-stemcell-final
+    - get: aws
+      resource: aws-stemcell-final
       passed: [promote-aws-gcp-vsphere]
     - get: version
-      resource: stemcells-main-version
       passed: [promote-aws-gcp-vsphere]
+      resource: stemcells-main-version
+    - get: boshio-input
+      resource: boshio
   - aggregate:
-    - task: azure-post-boshio-stemcell-sha
-      file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { final-stemcell: azure-stemcell-final }
+    - task: commit-meta4-file
+      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       params:
-        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
-    - task: aws-post-boshio-stemcell-sha
-      file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { final-stemcell: aws-stemcell-final }
-      params:
-        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
-    - task: gcp-post-boshio-stemcell-sha
-      file: ci/post-boshio-stemcell-sha/task.yml
-      input_mapping: { final-stemcell: gcp-stemcell-final }
-      params:
-        BOSHIO_TOKEN: ((BOSHIO_TOKEN))
+        OS_NAME: windows
+        OS_VERSION: 2012R2
+  - put: boshio-output
+    params: {repository: boshio}
+    rebase: true
   - put: stemcells-main-version
     params:
       bump: minor
