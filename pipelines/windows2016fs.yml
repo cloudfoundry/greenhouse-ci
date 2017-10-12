@@ -102,7 +102,7 @@ resources:
   type: s3
   source:
     bucket: windows2016fs
-    regexp: rc-binaries/create-(.*)-windows-amd64.exe
+    regexp: create-binaries/create-(.*)-windows-amd64.exe
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
@@ -110,7 +110,7 @@ resources:
   type: s3
   source:
     bucket: windows2016fs
-    regexp: rc-binaries/create-(.*)-linux-amd64
+    regexp: create-binaries/create-(.*)-linux-amd64
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
@@ -175,7 +175,6 @@ groups:
     - bump-windows2016fs-release
     - bump-windows2016fs-online-release
     - build-and-push
-    - update-blob
 - name: windows2016fs-release
   jobs:
     - bump-version-rc
@@ -231,10 +230,22 @@ jobs:
     input_mapping:
       source-repo: windows2016fs-release-develop
       module-repo: windows2016fs
+  - task: update-blob
+    file: ci/update-windows2016fs-blob/task.yml
+    input_mapping:
+      windows2016fs-release: bumped-repo
+  - task: commit-changes
+    file: ci/commit/task.yml
+    input_mapping:
+      repo: windows2016fs-release-updated-blob
+    output_mapping:
+      repo_with_commit: windows2016fs-release-updated-commit
+    params:
+      MESSAGE: "Updated image blob"
   - put: windows2016fs-release-develop
     params:
-      repository: bumped-repo
-      rebase: true
+      repository: windows2016fs-release-updated-commit
+      rebase: false
 
 - name: bump-windows2016fs-online-release
   serial: true
@@ -274,14 +285,17 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
+      passed: [ bump-version-rc ]
     - get: windows2016fs-release-version
       passed: [ bump-version-rc ]
   - aggregate:
-    - task: test-create-fs-release-windows
-      file: ci/test-create-fs-release-windows/task.yml
+    - task: create-dev-release
+      file: ci/create-fs-release-windows/task.yml
       input_mapping:
         version: windows2016fs-release-version
         windows2016fs-release: windows2016fs-release-develop
+      params:
+        DEV_ENV: true
     - task: run-ginkgo-exe
       file: ci/run-ginkgo-exe/task.yml
       input_mapping: { repo: windows2016fs-release-develop}
@@ -290,6 +304,11 @@ jobs:
   - put: create-windows-rcs
     params:
       file: create-binary-windows/create-*-windows-amd64.exe
+  - task: create-release
+    file: ci/create-fs-release-windows/task.yml
+    input_mapping:
+      version: windows2016fs-release-version
+      windows2016fs-release: windows2016fs-release-develop
 
 - name: test-create-release-linux
   serial: true
@@ -298,14 +317,17 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
+      passed: [ bump-version-rc ]
     - get: windows2016fs-release-version
       passed: [ bump-version-rc ]
   - aggregate:
-    - task: test-create-fs-release-linux
-      file: ci/test-create-fs-release-linux/task.yml
+    - task: create-dev-release
+      file: ci/create-fs-release-linux/task.yml
       input_mapping:
         version: windows2016fs-release-version
         windows2016fs-release: windows2016fs-release-develop
+      params:
+        DEV_ENV: true
     - task: run-ginkgo
       file: ci/run-ginkgo/task.yml
       input_mapping: { repo: windows2016fs-release-develop}
@@ -314,6 +336,11 @@ jobs:
   - put: create-linux-rcs
     params:
       file: create-binary-linux/create-*-linux-amd64
+  - task: create-release
+    file: ci/create-fs-release-linux/task.yml
+    input_mapping:
+      version: windows2016fs-release-version
+      windows2016fs-release: windows2016fs-release-develop
 
 
 - name: pesto-online-release
@@ -366,6 +393,20 @@ jobs:
     - get: windows2016fs-release-version
       passed: [test-create-release-windows, test-create-release-linux]
       params: {bump: final}
+    - get: create-linux-rcs
+      passed: [test-create-release-linux]
+    - get: create-windows-rcs
+      passed: [test-create-release-windows]
+  - task: promote-create-binaries
+    file: ci/promote-create-binaries/task.yml
+    input_mapping:
+      version: windows2016fs-release-version
+  - put: create-windows-rcs
+    params:
+      file: promoted-binaries/create-*-windows-amd64.exe
+  - put: create-linux-rcs
+    params:
+      file: promoted-binaries/create-*-linux-amd64
   - task: update-version
     file: ci/update-version/task.yml
     input_mapping:
@@ -420,7 +461,9 @@ jobs:
       params: {bump: patch}
   - task: finalize-release
     file: ci/finalize-release/task.yml
-    input_mapping: { release: windows2016fs-online-release-develop }
+    input_mapping:
+      release: windows2016fs-online-release-develop
+      version: windows2016fs-online-release-version
     params:
       RELEASE_NAME: windows2016fs
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
@@ -489,29 +532,3 @@ jobs:
       repository: windows2016fs-commit
       rebase: false
 
-- name: update-blob
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-release-develop
-    - get: image-version
-      trigger: true
-      passed: [build-and-push]
-  - task: update-blob
-    file: ci/update-windows2016fs-blob/task.yml
-    input_mapping:
-      windows2016fs-release: windows2016fs-release-develop
-      version: image-version
-  - task: commit-changes
-    file: ci/commit/task.yml
-    input_mapping:
-      repo: windows2016fs-release-updated-blob
-    output_mapping:
-      repo_with_commit: windows2016fs-release-updated-commit
-    params:
-      MESSAGE: "Updated image blob"
-  - put: windows2016fs-release-develop
-    params:
-      repository: windows2016fs-release-updated-commit
-      rebase: false
