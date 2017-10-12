@@ -385,7 +385,7 @@ jobs:
       SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
       CONSUL_MUTUAL_TLS: false
       TEST_TASK: true
-      SKIP_SSH: true
+      SKIP_SSH: false
       STACK: windows2016
     on_success:
       task: delete-deployment
