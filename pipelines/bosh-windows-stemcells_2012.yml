@@ -1248,9 +1248,10 @@ jobs:
       params:
         OS_NAME: windows
         OS_VERSION: 2012R2
-  - put: boshio-output
-    params: {repository: boshio}
-    rebase: true
+  - put: boshio
+    params:
+      repository: boshio-output
+      rebase: true
   - put: stemcells-main-version
     params:
       bump: minor
