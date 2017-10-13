@@ -158,6 +158,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: bosh-windows-stemcell
+      tags: [vsphere-linux-worker]
       resource: private-stemcell-pre-release-candidate
       trigger: true
     - get: stemcell-builder-released-sha
@@ -166,8 +167,10 @@ jobs:
       resource: stemcell-version
       passed: [create-vsphere-stemcell]
   - task: checkout-stemcell-builder
+    tags: [vsphere-linux-worker]
     file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: test-stemcell
+    tags: [vsphere-linux-worker]
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
