@@ -560,6 +560,57 @@ jobs:
             AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
             AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 
+- name: test-aws
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-aws]
+      - get: base-amis
+        resource: base-amis-win2016<Plug>
+        passed: [create-aws]
+      - get: version
+        resource: aws-stemcell-version
+        passed: [create-aws]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: stemcells-main-version
+        passed: [create-aws]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
+    - task: aggregate-the-amis
+      file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
+      params:
+          BUCKET_NAME: aws-regional-stemcells-2016
+          REGION: us-east-1
+          AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    - task: test-stemcell
+      input_mapping: { bosh-windows-stemcell: bosh-windows-stemcell-final }
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2016
+    - put: aws-stemcell-release-candidate
+      params:
+        file: bosh-windows-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    ensure:
+      aggregate:
+        - put: aws-lock
+          params:
+            release: aws-lock
+
 - name: promote
   serial: true
   plan:
