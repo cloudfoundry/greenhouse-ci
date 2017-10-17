@@ -445,7 +445,7 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
       params:
         OS_VERSION: windows2016
-        REGION: us-east-1
+        REGION: us-east-2
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         OUTPUT_BUCKET_NAME: aws-regional-stemcells-2016
@@ -499,7 +499,8 @@ jobs:
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         OUTPUT_BUCKET_NAME: aws-regional-stemcells-2016
-        REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1" # All regions except us-east-1; us-east-1 is built with packer
+        PACKER_REGION: us-east-2
+        REGIONS: "us-east-1,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
     - task: aggregate-the-amis
       file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
       params:
