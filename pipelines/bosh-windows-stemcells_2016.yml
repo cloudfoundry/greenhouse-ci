@@ -507,6 +507,7 @@ jobs:
         REGION: us-east-1
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        REGION: us-east-1
         PACKER_REGION: us-east-2
     - task: test-stemcell
       input_mapping: { bosh-windows-stemcell: bosh-windows-stemcell-final }
