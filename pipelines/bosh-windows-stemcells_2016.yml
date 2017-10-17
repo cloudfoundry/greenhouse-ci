@@ -253,7 +253,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
       INPUT_BUCKET: all-bosh-windows/2016/untested/vsphere/internal/inputs
-      OUTPUT_BUCKET: all-bosh-windows/2016/untested/vsphere/internal/inputs
+      OUTPUT_BUCKET: all-bosh-windows/2016/untested/vsphere/internal
       VMX_CACHE_DIR: "C:\\vmx-data-2016"
       SKIP_WINDOWS_UPDATE: true
 
