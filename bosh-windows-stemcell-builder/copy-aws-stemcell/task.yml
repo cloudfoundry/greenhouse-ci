@@ -8,6 +8,7 @@ inputs:
   - name: stemcell-builder
   - name: version
   - name: amis
+  - name: aws-2016-regional
 
 outputs:
   - name: bosh-windows-stemcell
