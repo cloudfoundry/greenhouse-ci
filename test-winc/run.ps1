@@ -34,13 +34,9 @@ $env:PATH="$env:GOPATH\bin;" +$env:PATH
 
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-if ($env:INSIDER_PREVIEW -eq $null -or $env:INSIDER_PREVIEW -eq "") {
-    Get-ContainerNetwork | Remove-ContainerNetwork -Force
-} else {
-  $config = '{"name": "winc-nat", "insider_preview": true}'
-  set-content -path "$env:TEMP\interface.json" -value $config
-  go run src/code.cloudfoundry.org/winc/cmd/winc-network/main.go --action delete --configFile "$env:TEMP/interface.json"
-}
+$config = '{"name": "winc-nat"}'
+set-content -path "$env:TEMP\interface.json" -value $config
+go run src/code.cloudfoundry.org/winc/cmd/winc-network/main.go --action delete --configFile "$env:TEMP/interface.json"
 
 cd $env:GOPATH/src/code.cloudfoundry.org/winc
 

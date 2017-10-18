@@ -17,5 +17,4 @@ run:
   - ci/test-winc/run.ps1
 
 params:
-  INSIDER_PREVIEW:
   TEST_CONTAINER_IMAGE_TAG:
