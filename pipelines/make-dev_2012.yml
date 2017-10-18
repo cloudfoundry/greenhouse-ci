@@ -8,7 +8,7 @@
 
 # repos
 - type: replace
-  path: /resources/name=ci/source/branch
+  path: /resources/name=stemcell-builder/source/branch
   value: ((DEV_BRANCH))
 
 # versions
@@ -74,6 +74,12 @@
 - type: remove
   path: /resources/name=vsphere-stemcell-final
 - type: remove
+  path: /resources/name=azure-stemcell-final
+- type: remove
+  path: /resources/name=aws-stemcell-final
+- type: remove
+  path: /resources/name=gcp-stemcell-final
+- type: remove
   path: /resources/name=aws-stemcell-release-candidate
 - type: remove
   path: /resources/name=base-amis-win2012r2
@@ -85,6 +91,8 @@
   path: /resources/name=azure-stemcell-release-candidate
 - type: remove
   path: /resources/name=azstemcell
+- type: remove
+  path: /resources/name=boshio
 
 # JOBS
 
@@ -230,35 +238,38 @@
   path: /jobs/name=print-azure-publishing-instructions
 - type: remove
   path: /jobs/name=test-azure-stemcell
+- type: remove
+  path: /jobs/name=promote-boshio
+
 
 # add bosh.io promote job
-- type: replace
-  path: /jobs/name=promote-boshio
-  value:
-    name: promote-boshio
-    serial: true
-    plan:
-    - aggregate:
-      - get: ci
-      - get: gcp
-        resource: gcp-stemcell-final
-      - get: azure
-        resource: azure-stemcell-final
-      - get: aws
-        resource: aws-stemcell-final
-      - get: version
-        resource: stemcells-main-version
-      - get: boshio-input
-        resource: boshio
-    - aggregate:
-      - task: commit-meta4-file
-        file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-        params:
-          OS_NAME: windows
-          OS_VERSION: 2012R2
-    # - put: boshio-output
-    #   params: {repository: boshio}
-    #   rebase: true
-    - put: stemcells-main-version
-      params:
-        bump: minor
+# - type: replace
+#   path: /jobs/name=promote-boshio
+#   value:
+#     name: promote-boshio
+#     serial: true
+#     plan:
+#     - aggregate:
+#       - get: ci
+#       - get: gcp
+#         resource: gcp-stemcell-final
+#       - get: azure
+#         resource: azure-stemcell-final
+#       - get: aws
+#         resource: aws-stemcell-final
+#       - get: version
+#         resource: stemcells-main-version
+#       - get: boshio-input
+#         resource: boshio
+#     - aggregate:
+#       - task: commit-meta4-file
+#         file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+#         params:
+#           OS_NAME: windows
+#           OS_VERSION: 2012R2
+#     # - put: boshio-output
+#     #   params: {repository: boshio}
+#     #   rebase: true
+#     - put: stemcells-main-version
+#       params:
+#         bump: minor
