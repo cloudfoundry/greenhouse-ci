@@ -1253,9 +1253,6 @@ jobs:
     params:
       repository: boshio-output
       rebase: true
-  - put: stemcells-main-version
-    params:
-      bump: minor
 
 - name: promote-azure
   serial: true
@@ -1392,3 +1389,6 @@ jobs:
       globs:
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
+  - put: stemcells-main-version
+    params:
+      bump: minor
