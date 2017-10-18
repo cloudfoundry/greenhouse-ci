@@ -34,9 +34,6 @@ pop-location
 $env:GOPATH = "$PWD/garden-runc-release"
 $env:PATH= "$env:GOPATH/bin;" + $env:PATH
 
-Set-MpPreference -DisableRealtimeMonitoring $true
-Get-ContainerNetwork | Remove-ContainerNetwork -Force
-
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
 
