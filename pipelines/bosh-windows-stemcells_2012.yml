@@ -854,6 +854,7 @@ jobs:
       params:
           BUCKET_NAME: aws-regional-stemcells
           REGION: us-east-1
+          PACKER_REGION: us-east-1 # for forwards compatibility with 2016 changes
           AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
           AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     - task: test-stemcell
