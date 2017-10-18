@@ -176,6 +176,7 @@
         - get: bosh-windows-stemcell
           resource: gcp-2012R2-untested
           passed: [create-gcp-stemcell]
+          trigger: true
         - get: ci
         - get: stemcell-builder
           passed: [create-gcp-stemcell]
