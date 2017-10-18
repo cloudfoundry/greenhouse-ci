@@ -7,6 +7,7 @@ groups:
   - test-vsphere-from-vmx
   - create-gcp
   - create-aws
+  - copy-regions-aws
   - test-aws
   - test-gcp
 - name: main
@@ -24,6 +25,7 @@ groups:
 - name: aws
   jobs:
   - create-aws
+  - copy-regions-aws
   - test-aws
 
 resources:
@@ -185,7 +187,21 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/tested/aws/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+    regexp: 2016/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: aws-2016-untested
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2016/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: aws-2016-regional
+  type: s3
+  source:
+    bucket: aws-regional-stemcells-2016
+    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-2.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2016-untested
@@ -394,9 +410,6 @@ jobs:
 - name: create-aws
   serial: true
   plan:
-  - put: aws-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
       - get: ci
@@ -439,7 +452,7 @@ jobs:
           - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
         params:
           PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
-    - task: create-stemcell-us-east-1
+    - task: create-stemcell
       timeout: 1h30m
       attempts: 3
       file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
@@ -453,24 +466,18 @@ jobs:
       params:
         file: amis/packer-output-ami-*.txt
     ensure:
-      aggregate:
-        - put: aws-lock
-          params:
-            release: aws-lock
-        - task: delete-orphan-vms
-          file: ci/delete-vms/task.yml
-          params:
-            AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-            AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
+      params:
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 
-- name: test-aws
+- name: copy-regions-aws
   serial: true
   plan:
-  - put: aws-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
+      - get: aws-2016-regional
       - get: ci
       - get: stemcell-builder
         passed: [create-aws]
@@ -481,12 +488,8 @@ jobs:
         resource: aws-build-number
         passed: [create-aws]
         trigger: true
-      - get: windows-stemcell-dependencies
       - get: main-version
         passed: [create-aws]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
       - get: amis
         resource: packer-output-ami
         passed: [create-aws]
@@ -500,17 +503,34 @@ jobs:
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         OUTPUT_BUCKET_NAME: aws-regional-stemcells-2016
         REGIONS: "us-east-1,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
-    - task: aggregate-the-amis
-      file: ci/bosh-windows-stemcell-builder/aggregate-the-amis/task.yml
+    - put: aws-2016-untested
       params:
-        BUCKET_NAME: aws-regional-stemcells-2016
-        REGION: us-east-1
-        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-        REGION: us-east-1
-        PACKER_REGION: us-east-2
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+
+- name: test-aws
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: bosh-windows-stemcell
+        resource: aws-2016-untested
+        passed: [copy-regions-aws]
+      - get: ci
+      - get: stemcell-builder
+        passed: [copy-regions-aws]
+      - get: base-amis
+        resource: base-amis-win2016
+        passed: [copy-regions-aws]
+      - get: version
+        resource: aws-build-number
+        passed: [copy-regions-aws]
+        trigger: true
+      - get: main-version
+        passed: [copy-regions-aws]
     - task: test-stemcell
-      input_mapping: { bosh-windows-stemcell: bosh-windows-stemcell-final }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
       params:
