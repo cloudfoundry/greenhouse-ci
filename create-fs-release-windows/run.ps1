@@ -5,6 +5,7 @@ trap { $host.SetShouldExit(1) }
 $env:PATH="$env:PATH;C:\var\vcap\bosh\bin"
 
 $pre_version=(cat version/version)
+$sha=(cat sha/create-*-windows-amd64.exe.sha256)
 
 push-location windows2016fs-release
   git config core.filemode false
@@ -18,6 +19,8 @@ push-location windows2016fs-release
 
   if ($env:DEV_ENV -eq $null -or $env:DEV_ENV -eq "") {
     set-content -path VERSION -value $pre_version -NoNewLine
+    set-content -path CREATE_BIN_SHA_WINDOWS -value $sha
+
     git config --global user.email "pivotal-netgarden-eng@pivotal.io"
     if ($LastExitCode -ne 0) {
       exit $LastExitCode
@@ -26,7 +29,7 @@ push-location windows2016fs-release
     if ($LastExitCode -ne 0) {
       exit $LastExitCode
     }
-    git add VERSION
+    git add VERSION CREATE_BIN_SHA_WINDOWS
     if ($LastExitCode -ne 0) {
       exit $LastExitCode
     }
@@ -41,7 +44,3 @@ push-location windows2016fs-release
     exit $LastExitCode
   }
 pop-location
-
-if ($env:DEV_ENV -ne $null -and $env:DEV_ENV -ne "") {
-  cp windows2016fs-release/bin/create.exe "create-binary-windows/create-$pre_version-windows-amd64.exe"
-}

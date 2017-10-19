@@ -3,19 +3,18 @@
 set -e
 
 pre_version=$(cat version/version)
+sha=$(cat sha/create-*-linux-amd64.sha256)
 
 pushd windows2016fs-release
   if [[ -z "$DEV_ENV" ]]; then
-      echo -n "$pre_version" > VERSION
-      git config --global user.email "pivotal-netgarden-eng@pivotal.io"
-      git config --global user.name "Greenhouse CI"
-      git add VERSION
-      git commit -m "WIP - test"
+    echo -n "$pre_version" > VERSION
+    echo -n "$sha" > CREATE_BIN_SHA_LINUX
+
+    git config --global user.email "pivotal-netgarden-eng@pivotal.io"
+    git config --global user.name "Greenhouse CI"
+    git add VERSION CREATE_BIN_SHA_LINUX
+    git commit -m "WIP - test"
   fi
 
   ./scripts/create-release
 popd
-
-if [[ -n "$DEV_ENV" ]]; then
-  cp windows2016fs-release/bin/create "create-binary-linux/create-$pre_version-linux-amd64"
-fi

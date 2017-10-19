@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+go version
+
+VERSION=$(cat version/version)
+
+export GOPATH="$PWD/windows2016fs-release"
+
+go build -o "output/create-$VERSION-linux-amd64" create
+
+sha=$(sha256sum "output/create-$VERSION-linux-amd64" | awk '{ print $1 }')
+printf $sha > "output/create-$VERSION-linux-amd64.sha256"
+
+GOOS=windows go build -o "output/create-$VERSION-windows-amd64.exe" create
+
+sha=$(sha256sum "output/create-$VERSION-windows-amd64.exe" | awk '{ print $1 }')
+printf $sha > "output/create-$VERSION-windows-amd64.exe.sha256"

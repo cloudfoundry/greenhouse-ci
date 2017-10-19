@@ -7,10 +7,9 @@ inputs:
 - name: ci
 - name: windows2016fs-release
 - name: version
-- name: sha
+
+outputs:
+- name: output
 
 run:
-  path: ci/create-fs-release-linux/run
-
-params:
-  DEV_ENV:
+  path: ci/build-create-release-binaries/run
