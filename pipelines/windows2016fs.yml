@@ -106,11 +106,27 @@ resources:
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
+- name: create-windows-sha
+  type: s3
+  source:
+    bucket: windows2016fs
+    regexp: create-binaries/create-(.*)-windows-amd64.exe.sha256
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
 - name: create-linux-rcs
   type: s3
   source:
     bucket: windows2016fs
     regexp: create-binaries/create-(.*)-linux-amd64
+    access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+    secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+
+- name: create-linux-sha
+  type: s3
+  source:
+    bucket: windows2016fs
+    regexp: create-binaries/create-(.*)-linux-amd64.sha256
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
 
@@ -177,7 +193,7 @@ groups:
     - build-and-push
 - name: windows2016fs-release
   jobs:
-    - bump-version-rc
+    - build-create-release
     - test-create-release-windows
     - test-create-release-linux
     - ship-it-offline
@@ -270,13 +286,33 @@ jobs:
       repository: bumped-repo
       rebase: true
 
-- name: bump-version-rc
+- name: build-create-release
   serial: true
   plan:
-  - get: windows2016fs-release-develop
-    trigger: true
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-release-develop
+      trigger: true
   - put: windows2016fs-release-version
     params: {pre: rc}
+  - task: build-create-release-binaries
+    file: ci/build-create-release-binaries/task.yml
+    input_mapping:
+      version: windows2016fs-release-version
+      windows2016fs-release: windows2016fs-release-develop
+  - aggregate:
+    - put: create-windows-rcs
+      params:
+        file: output/create-*-windows-amd64.exe
+    - put: create-windows-sha
+      params:
+        file: output/create-*-windows-amd64.exe.sha256
+    - put: create-linux-rcs
+      params:
+        file: output/create-*-linux-amd64
+    - put: create-linux-sha
+      params:
+        file: output/create-*-linux-amd64.sha256
 
 - name: test-create-release-windows
   serial: true
@@ -285,14 +321,19 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
-      passed: [ bump-version-rc ]
+      passed: [ build-create-release ]
     - get: windows2016fs-release-version
-      passed: [ bump-version-rc ]
+      passed: [ build-create-release ]
+    - get: create-windows-sha
+      passed: [ build-create-release ]
+    - get: create-windows-rcs
+      passed: [ build-create-release ]
   - aggregate:
     - task: create-dev-release
       file: ci/create-fs-release-windows/task.yml
       input_mapping:
         version: windows2016fs-release-version
+        sha: create-windows-sha
         windows2016fs-release: windows2016fs-release-develop
       params:
         DEV_ENV: true
@@ -301,14 +342,12 @@ jobs:
       input_mapping: { repo: windows2016fs-release-develop}
       params:
         TEST_PATH: src/create
-  - put: create-windows-rcs
-    params:
-      file: create-binary-windows/create-*-windows-amd64.exe
-  - task: create-release
-    file: ci/create-fs-release-windows/task.yml
-    input_mapping:
-      version: windows2016fs-release-version
-      windows2016fs-release: windows2016fs-release-develop
+    - task: create-release
+      file: ci/create-fs-release-windows/task.yml
+      input_mapping:
+        version: windows2016fs-release-version
+        sha: create-windows-sha
+        windows2016fs-release: windows2016fs-release-develop
 
 - name: test-create-release-linux
   serial: true
@@ -317,14 +356,19 @@ jobs:
     - get: ci
     - get: windows2016fs-release-develop
       trigger: true
-      passed: [ bump-version-rc ]
+      passed: [ build-create-release ]
     - get: windows2016fs-release-version
-      passed: [ bump-version-rc ]
+      passed: [ build-create-release ]
+    - get: create-linux-sha
+      passed: [ build-create-release ]
+    - get: create-linux-rcs
+      passed: [ build-create-release ]
   - aggregate:
     - task: create-dev-release
       file: ci/create-fs-release-linux/task.yml
       input_mapping:
         version: windows2016fs-release-version
+        sha: create-linux-sha
         windows2016fs-release: windows2016fs-release-develop
       params:
         DEV_ENV: true
@@ -333,14 +377,12 @@ jobs:
       input_mapping: { repo: windows2016fs-release-develop}
       params:
         TEST_PATH: src/create
-  - put: create-linux-rcs
-    params:
-      file: create-binary-linux/create-*-linux-amd64
-  - task: create-release
-    file: ci/create-fs-release-linux/task.yml
-    input_mapping:
-      version: windows2016fs-release-version
-      windows2016fs-release: windows2016fs-release-develop
+    - task: create-release
+      file: ci/create-fs-release-linux/task.yml
+      input_mapping:
+        version: windows2016fs-release-version
+        sha: create-linux-sha
+        windows2016fs-release: windows2016fs-release-develop
 
 
 - name: pesto-online-release
@@ -395,7 +437,11 @@ jobs:
       params: {bump: final}
     - get: create-linux-rcs
       passed: [test-create-release-linux]
+    - get: create-linux-sha
+      passed: [test-create-release-linux]
     - get: create-windows-rcs
+      passed: [test-create-release-windows]
+    - get: create-windows-sha
       passed: [test-create-release-windows]
   - task: promote-create-binaries
     file: ci/promote-create-binaries/task.yml
@@ -407,24 +453,22 @@ jobs:
   - put: create-linux-rcs
     params:
       file: promoted-binaries/create-*-linux-amd64
-  - task: update-version
-    file: ci/update-version/task.yml
+  - task: update-version-and-shas
+    file: ci/update-fs-release-version/task.yml
     input_mapping:
-      repo: windows2016fs-release-develop
+      windows2016fs-release: windows2016fs-release-develop
       version: windows2016fs-release-version
-    params:
-      VERSION_FILE: VERSION
   - put: windows2016fs-release-develop
     params:
-      repository: updated_repo
+      repository: windows2016fs-release-updated-version
       tag: windows2016fs-release-version/version
       tag_prefix: v
   - put: windows2016fs-release-master
     params:
-      repository: updated_repo
+      repository: windows2016fs-release-updated-version
   - task: generate-github-release
     input_mapping:
-      release: updated_repo
+      release: windows2016fs-release-updated-version
       version: windows2016fs-release-version
     file: ci/generate-github-release/task.yml
   - put: windows2016fs-release-github-release
