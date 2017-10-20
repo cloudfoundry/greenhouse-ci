@@ -78,6 +78,7 @@ push-location garden-runc-release
     "server `
     --skip-setup `
     --runtime-plugin=$wincPath `
+    --runtime-plugin-extra-arg=--image-store=$imageRoot `
     --image-plugin=$wincImagePath `
     --image-plugin-extra-arg=--store=$imageRoot `
     --network-plugin=$wincNetworkPath `
@@ -87,7 +88,6 @@ push-location garden-runc-release
     --nstar-bin=$nstarPath `
     --tar-bin=$tarBin `
     --depot $depotDir `
-    --runc-root=$imageRoot `
     --log-level=debug"
 
   # wait for server to start up
