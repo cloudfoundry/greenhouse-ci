@@ -29,7 +29,13 @@ pushd release
 
     echo "----- Update master and develop branches on origin"
     git add -A
-    git commit -m "Create final release ${FINAL_RELEASE_VERSION}"
+
+    commit_message="Create final release ${FINAL_RELEASE_VERSION}"
+    if [[ -n "${CI_SKIP:-}" ]]; then
+      commit_message="$commit_message\n\n[ci skip]"
+    fi
+
+    git commit -m "$commit_message"
 
     echo "----- DEBUG: show the commit we just created"
     git --no-pager show HEAD

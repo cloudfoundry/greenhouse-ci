@@ -512,6 +512,7 @@ jobs:
       RELEASE_NAME: windows2016fs
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      CI_SKIP: true
   - put: windows2016fs-online-release-develop
     params:
       repository: finalized-release/release
