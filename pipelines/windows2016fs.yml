@@ -57,6 +57,14 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/windows2016fs.git
     paths: [ Dockerfile ]
 
+# Docker Image
+
+- name: windowsservercore
+  type: docker-image
+  source:
+    repository: microsoft/windowsservercore
+    tag: 1709
+
 # GitHub Release
 
 - name: git-setup
@@ -540,6 +548,12 @@ jobs:
   - aggregate:
     - get: ci
     - get: windows2016fs
+    - get: windowsservercore
+      trigger: true
+      params:
+        save: false
+        rootfs: false
+        skip_download: true
     - get: windows2016fs-dockerfile
       trigger: true
     - get: git-setup
@@ -549,13 +563,12 @@ jobs:
     - get: tar
       trigger: true
     - get: image-version
-    - put: image-version
       params: {bump: patch}
   - task: build-and-push
     tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
     input_mapping:
-      repo: windows2016fs
+      repo: windows2016fs-dockerfile
       version: image-version
     params:
       DOCKERFILE: repo/Dockerfile
@@ -575,5 +588,7 @@ jobs:
   - put: windows2016fs
     params:
       repository: windows2016fs-commit
-      rebase: false
+      rebase: true
+  - put: image-version
+    params: {file: image-version/version}
 
