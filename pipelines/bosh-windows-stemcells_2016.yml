@@ -10,6 +10,8 @@ groups:
   - copy-regions-aws
   - test-aws
   - test-gcp
+  - create-azure
+  - test-azure
 - name: main
   jobs:
   - build
@@ -27,6 +29,10 @@ groups:
   - create-aws
   - copy-regions-aws
   - test-aws
+- name: azure
+  jobs:
+  - create-azure
+  - test-azure
 
 resources:
 # repos
@@ -60,6 +66,11 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+- name: azstemcell
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 
 # versions
 - name: main-version
@@ -102,6 +113,14 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1600.0.0
+- name: azure-build-number
+  type: semver
+  source:
+    bucket: all-bosh-windows
+    key: 2016/versions/azure
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1600.0.0
 
 # locks
 - name: aws-lock
@@ -116,6 +135,13 @@ resources:
   source:
     branch: master
     pool: stemcells-gcp
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: azure-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-azure
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
@@ -224,6 +250,27 @@ resources:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: gcp-2016/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-base-vhd-uri
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2016/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-untested
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2016/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-tested
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2016/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -549,6 +596,134 @@ jobs:
           params:
             release: aws-lock
 
+- name: create-azure
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build]
+      - get: version
+        resource: azure-build-number
+        passed: [build]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [build]
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
+    - put: version
+      resource: azure-build-number
+      params:
+        pre: build
+    - task: create-stemcell
+      file: ci/bosh-windows-stemcell-builder/create-azure/task.yml
+      params:
+        OS_VERSION: windows2016
+        CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+        CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+        TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+        SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
+        OBJECT_ID: ((KOALA_AZURE_OBJECT_ID))
+        RESOURCE_GROUP_NAME: ((KOALA_AZURE_RESOURCE_GROUP))
+        STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
+        LOCATION: 'East US'
+        VM_SIZE: Standard_DS2_v2
+        PUBLISHER: 'pivotal'
+        OFFER: 'bosh-windows-server'
+        SKU: '2016'
+        ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
+      ensure:
+        task: delete-orphan-vms
+        file: ci/delete-vms/task.yml
+        params:
+          CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+          CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+          TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+          SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
+    - put: azure-untested
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+    - put: azure-base-vhd-uri
+      params:
+        file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
+
+- name: test-azure
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: azstemcell
+    - get: stemcell-builder
+      passed: [create-azure]
+    - get: azure-stemcell-version
+      resource: azure-build-number # TODO: can we consolidate with the other fetching of azure-build-number in this job?
+      passed: [create-azure]
+    - get: main-version
+      passed: [create-azure]
+    - get: bosh-windows-stemcell
+      resource: azure-untested
+      passed: [create-azure]
+    - get: azure-base-vhd-uri
+      passed: [create-azure]
+    - get: version
+      resource: azure-build-number
+      passed: [create-azure]
+      trigger: true
+  - task: test-stemcell
+    file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
+    tags: [azure-linux-worker]
+    params:
+      BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: '10.0.0.6'
+      AZ: z1
+      VM_TYPE: default
+      NETWORK: default
+      STEMCELL_OS: windows2016
+      WORKING_DIR: '/'
+      AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
+  - put: azure-tested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+
+- name: print-azure-publishing-instructions
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [test-azure]
+    - get: version
+      resource: azure-build-number
+      passed: [test-azure]
+    - get: main-version
+      passed: [test-azure]
+    - get: azure-tested
+      passed: [test-azure]
+    - get: azure-base-vhd-uri
+      passed: [test-azure]
+  - task: print-azure-publishing-instructions
+    file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
+    params:
+      SKU: '2016'
+      AZURE_STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
+      AZURE_STORAGE_ACCESS_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
+      AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
+      AZURE_CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+      CONTAINER_NAME: 'system'
+
 - name: promote
   serial: true
   plan:
@@ -669,6 +844,9 @@ jobs:
       params:
         file: version/number
     - put: gcp-build-number
+      params:
+        file: version/number
+    - put: azure-build-number
       params:
         file: version/number
   - aggregate:
