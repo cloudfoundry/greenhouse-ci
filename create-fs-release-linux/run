@@ -16,5 +16,5 @@ pushd windows2016fs-release
     git commit -m "WIP - test"
   fi
 
-  ./scripts/create-release
+  ./scripts/create-release --tarball ./new-dir/release.tgz
 popd

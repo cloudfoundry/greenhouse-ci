@@ -39,7 +39,7 @@ push-location windows2016fs-release
     }
   }
 
-  ./scripts/create-release.ps1
+  ./scripts/create-release.ps1 -tarball ./new-dir/release.tgz
   if ($LastExitCode -ne 0) {
     exit $LastExitCode
   }
