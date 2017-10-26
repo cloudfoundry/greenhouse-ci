@@ -1259,14 +1259,13 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: vsphere-stemcell-release-candidate
-      passed: [test-vsphere-stemcell-from-vmx]
-    - get: gcp-stemcell-release-candidate
-      passed: [test-gcp-stemcell]
-      resource: gcp-2012R2-tested
+    - get: vsphere-stemcell-final
+      passed: [promote-aws-gcp-vsphere]
+    - get: gcp-stemcell-final
+      passed: [promote-aws-gcp-vsphere]
     - get: azure-stemcell-release-candidate
       passed: [print-azure-publishing-instructions]
-    - get: aws-stemcell-release-candidate
+    - get: aws-stemcell-final
       passed: [promote-aws-gcp-vsphere]
     - get: version
       resource: stemcells-main-version
@@ -1279,9 +1278,9 @@ jobs:
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
         - name: ci
-        - name: vsphere-stemcell-release-candidate
-        - name: aws-stemcell-release-candidate
-        - name: gcp-stemcell-release-candidate
+        - name: vsphere-stemcell-final
+        - name: aws-stemcell-final
+        - name: gcp-stemcell-final
         - name: azure-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
