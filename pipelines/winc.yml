@@ -137,8 +137,6 @@ resources:
     client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
     ca_cert: {{PESTO_BOSH_CA_CERT}}
     target: {{PESTO_BOSH_ENVIRONMENT}}
-    jumpbox_url: {{PESTO_BOSH_JUMPBOX_URL}}
-    jumpbox_ssh_key: {{PESTO_BOSH_JUMPBOX_SSH_KEY}}
     vars_store:
       provider: gcs
       config:
