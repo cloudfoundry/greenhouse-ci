@@ -3,7 +3,7 @@
 require 'yaml'
 require 'fileutils'
 
-stemcells = Dir.glob("*-release-candidate/*.tgz")
+stemcells = Dir.glob("*-{release-candidate,final}/*.tgz")
 versions = stemcells.collect do |tarball|
   File.basename(tarball.scan(/\d+\.\d+/)[0])
 end
