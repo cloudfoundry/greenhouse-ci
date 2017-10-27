@@ -164,6 +164,7 @@ jobs:
   serial: true
   serial_groups:
   - cfbench-windows2016
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
@@ -199,6 +200,7 @@ jobs:
   serial: true
   serial_groups:
   - longrunning-windows2016
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
@@ -250,6 +252,7 @@ jobs:
   serial: true
   serial_groups:
   - cfbench-windows2012R2
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
@@ -285,6 +288,7 @@ jobs:
   serial: true
   serial_groups:
   - longrunning-windows2012R2
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
@@ -336,6 +340,7 @@ jobs:
   serial: true
   serial_groups:
   - cfbench-cflinuxfs2
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
@@ -371,6 +376,7 @@ jobs:
   serial: true
   serial_groups:
   - longrunning-cflinuxfs2
+  - serial-app-push
   plan:
   - aggregate:
     - get: ci
