@@ -153,6 +153,7 @@ jobs:
       - garden-windows-private/operations-common/windows2016-insider-preview.yml
       - garden-windows-private/operations-common/latest-winc.yml
       - garden-windows-private/operations-common/downgrade-garden-runc.yml
+      - garden-windows-private/operations-common/enable-bosh-ssh-windows.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
