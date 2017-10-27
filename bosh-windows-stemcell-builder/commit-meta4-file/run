@@ -22,8 +22,8 @@ function meta4-the-stemcell {
     https://bosh-windows-stemcells-production.s3.amazonaws.com/${stemcell}
 }
 
-metalink=boshio-output/published/$OS_NAME-$OS_VERSION/$version/stemcells.meta4
 version=`cut -d'.' -f1-2 version/number`
+metalink=boshio-output/published/$OS_NAME-$OS_VERSION/$version/stemcells.meta4
 cp -r boshio-input/. boshio-output
 # create an empty metalink file for us to add the files
 mkdir -p "$( dirname "$metalink" )"
