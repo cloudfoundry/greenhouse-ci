@@ -78,8 +78,10 @@ jobs:
 - name: mulgore-deploy-cf
   serial: true
   serial_groups:
+  - cfbench-windows2016
   - cfbench-windows2012R2
   - cfbench-cflinuxfs2
+  - longrunning-windows2016
   - longrunning-windows2012R2
   - longrunning-cflinuxfs2
   plan:
@@ -142,17 +144,106 @@ jobs:
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
-      - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
+      - cf-deployment/operations/use-latest-windows-stemcell.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
+      - cf-deployment/operations/experimental/use-latest-windows2016-stemcell.yml
+      - cf-deployment/operations/experimental/use-bosh-dns.yml
+      - cf-deployment/operations/experimental/use-bosh-dns-for-containers.yml
       - garden-windows-private/operations-common/windows2016-prs.yml
       - garden-windows-private/operations-common/windows2016-insider-preview.yml
-      - garden-windows-private/operations-common/latest-windows2016-stemcell.yml
       - garden-windows-private/operations-common/latest-winc.yml
+      - garden-windows-private/operations-common/downgrade-garden-runc.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
     get_params:
       skip_export: true
+    tags: [vsphere]
+
+- name: mulgore-cfbench-windows2016
+  serial: true
+  serial_groups:
+  - cfbench-windows2016
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: cfbench
+      tags: [vsphere]
+    - get: every-20mins
+      trigger: true
+      tags: [vsphere]
+    - get: mulgore-cf-deployment
+      trigger: true
+      passed: [mulgore-deploy-cf]
+      tags: [vsphere]
+  - task: cfbench
+    file: ci/cfbench/task.yml
+    input_mapping: {app: ci}
+    params:
+      CF_API: api.mulgore.cf-app.com
+      CF_STACK: windows2016
+      CF_USERNAME: admin
+      CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
+      CF_ORG: cfbench
+      CF_SPACE: windows2016
+      CF_TAG: windows2016
+      APP_DIR: app/test-webapp
+      APP_BUILDPACK: binary_buildpack
+      APP_START_COMMAND: ./webapp.exe
+      DATADOG_API_KEY: {{DATADOG_API_KEY}}
+      DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
+    tags: [vsphere]
+
+- name: mulgore-push-longrunning-app-windows2016
+  serial: true
+  serial_groups:
+  - longrunning-windows2016
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: mulgore-cf-deployment
+      trigger: true
+      passed: [mulgore-deploy-cf]
+      tags: [vsphere]
+  - task: push-app
+    file: ci/push-app/task.yml
+    input_mapping: {app: ci}
+    params:
+      CF_API: api.mulgore.cf-app.com
+      CF_STACK: windows2016
+      CF_USERNAME: admin
+      CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
+      CF_ORG: longrunning
+      CF_SPACE: windows2016
+      APP_DIR: app/test-webapp
+      APP_START_COMMAND: ./webapp.exe
+      APP_BUILDPACK: binary_buildpack
+    tags: [vsphere]
+
+- name: mulgore-curl-longrunning-app-windows2016
+  serial: true
+  serial_groups:
+  - longrunning-windows2016
+  plan:
+  - aggregate:
+    - get: ci
+      tags: [vsphere]
+    - get: every-1min
+      trigger: true
+      tags: [vsphere]
+    - get: mulgore-cf-deployment
+      trigger: true
+      passed: [mulgore-push-longrunning-app-windows2016]
+      tags: [vsphere]
+  - task: curl-app
+    file: ci/curl-app/task.yml
+    params:
+      CF_APP_URL: longrunning-windows2016.mulgore.cf-app.com
+      CF_TAG: windows2016
+      DATADOG_API_KEY: {{DATADOG_API_KEY}}
+      DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
     tags: [vsphere]
 
 - name: mulgore-cfbench-windows2012R2
