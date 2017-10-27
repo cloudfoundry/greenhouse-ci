@@ -77,15 +77,15 @@ resources:
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/main
+    key: ((BASE_FOLDER_NAME))/versions/main
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1600.0.0
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: updated-vmx-version
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/vsphere-updated-vmx
+    key: ((BASE_FOLDER_NAME))/versions/vsphere-updated-vmx
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "1.0.0"
@@ -93,34 +93,34 @@ resources:
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/vsphere
+    key: ((BASE_FOLDER_NAME))/versions/vsphere
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1600.0.0
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: gcp-build-number
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/gcp
+    key: ((BASE_FOLDER_NAME))/versions/gcp
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1600.0.0
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: aws-build-number
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/aws
+    key: ((BASE_FOLDER_NAME))/versions/aws
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1600.0.0
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: azure-build-number
   type: semver
   source:
     bucket: all-bosh-windows
-    key: 2016/versions/azure
+    key: ((BASE_FOLDER_NAME))/versions/azure
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1600.0.0
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # locks
 - name: aws-lock
@@ -164,21 +164,21 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/metadata/2016-stemcell-(.*).json # Be careful not to match 2012's regex: stemcell-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/metadata/2016-stemcell-(.*).json # Be careful not to match 2012's regex: stemcell-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate-vmx-2016-insider
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final-vmx-2016-insider
@@ -192,35 +192,35 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/aws/inputs/base-amis-windows2016-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-windows2016-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2016
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/gcp/inputs/base-gcp-image-windows2016-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/inputs/base-gcp-image-windows2016-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: packer-output-ami
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/aws/inputs/packer-output-ami-(.*).txt
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/packer-output-ami-(.*).txt
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-2016-tested
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-2016-untested
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-2016-regional
@@ -234,43 +234,43 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2016-tested
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-stemcell-final-2016
   type: s3
   source:
-    bucket: bosh-windows-stemcells-production
+    bucket: ((GCP_FINAL_STEMCELL_BUCKET))
     region_name: us-east-2
-    regexp: gcp-2016/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    regexp: gcp-((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-base-vhd-uri
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
+    regexp: ((BASE_FOLDER_NAME))/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-untested
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-tested
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2016/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -315,8 +315,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
-      INPUT_BUCKET: all-bosh-windows/2016/untested/vsphere/internal/inputs
-      OUTPUT_BUCKET: all-bosh-windows/2016/untested/vsphere/internal
+      INPUT_BUCKET: all-bosh-windows/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
+      OUTPUT_BUCKET: all-bosh-windows/((BASE_FOLDER_NAME))/untested/vsphere/internal
       VMX_CACHE_DIR: "C:\\vmx-data-2016"
       SKIP_WINDOWS_UPDATE: true
 
@@ -816,7 +816,7 @@ jobs:
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final-2016
       params:
-        file: gcp-stemcell-final-2016/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: gcp-stemcell-final-((BASE_FOLDER_NAME))/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
   - put: main-version
     params:
       bump: minor
@@ -856,13 +856,13 @@ jobs:
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
-        BASE_AMI: windows2016
+        BASE_AMI: ((BASE_IMAGE_OS))
     - task: collect-win2016-gcp-image
       file: ci/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2016-gcp-image }
       params:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
-        BASE_OS: windows2016
+        BASE_OS: ((BASE_IMAGE_OS))
   - aggregate:
     - put: base-amis-win2016
       params:

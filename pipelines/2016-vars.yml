@@ -1,0 +1,5 @@
+---
+BASE_FOLDER_NAME: '2016'
+STEMCELL_INITIAL_VERSION: '1600.0.0'
+BASE_IMAGE_OS: 'windows2016'
+GCP_FINAL_STEMCELL_BUCKET: 'bosh-windows-stemcells-production'
