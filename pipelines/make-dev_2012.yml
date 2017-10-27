@@ -244,8 +244,8 @@
           AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
           AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
           AWS_REGION: us-east-1
-          INPUT_BUCKET: "bosh-windows-stemcell-vmx"
-          OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx"
+          INPUT_BUCKET: "bosh-windows-stemcell-vmx-dev"
+          OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx-dev"
 
 
 # configure test-vsphere-stemcell-from-diff for dev
