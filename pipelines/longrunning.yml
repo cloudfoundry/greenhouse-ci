@@ -65,10 +65,10 @@ resources:
   source:
     branch: longrunning-pipeline
     uri: https://github.com/greenhouse-org/cfbench.git
-- name: every-20mins
+- name: every-5mins
   type: time
   source:
-    interval: 20m
+    interval: 5m
 - name: every-1min
   type: time
   source:
@@ -170,7 +170,7 @@ jobs:
       tags: [vsphere]
     - get: cfbench
       tags: [vsphere]
-    - get: every-20mins
+    - get: every-5mins
       trigger: true
       tags: [vsphere]
     - get: mulgore-cf-deployment
@@ -256,7 +256,7 @@ jobs:
       tags: [vsphere]
     - get: cfbench
       tags: [vsphere]
-    - get: every-20mins
+    - get: every-5mins
       trigger: true
       tags: [vsphere]
     - get: mulgore-cf-deployment
@@ -342,7 +342,7 @@ jobs:
       tags: [vsphere]
     - get: cfbench
       tags: [vsphere]
-    - get: every-20mins
+    - get: every-5mins
       trigger: true
       tags: [vsphere]
     - get: mulgore-cf-deployment
