@@ -235,7 +235,7 @@
       - task: create-stemcell
         privileged: true
         file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
-        tags: [vsphere-windows-worker]
+        tags: [vsphere-windows-worker-dev]
         params:
           ADMINISTRATOR_PASSWORD: "Password123!"
           NEW_PASSWORD: "Password123!"
