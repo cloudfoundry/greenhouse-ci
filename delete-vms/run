@@ -51,7 +51,7 @@ module DeleteVms
       puts "Deleting Azure vms"
       token_provider = MsRestAzure::ApplicationTokenProvider.new(ENV['TENANT_ID'], ENV['CLIENT_ID'], ENV['CLIENT_SECRET'])
       credentials = MsRest::TokenCredentials.new(token_provider)
-      client = ::Azure::ARM::Resources::ResourceManagementClient.new(credentials)
+      client = ::Azure::Resources::Mgmt::V2017_05_10::ResourceManagementClient.new(credentials)
       client.subscription_id = ENV['SUBSCRIPTION_ID']
       packer_resource_groups = client.resource_groups.list.select { |g| g.name.start_with? "packer" }
       packer_resource_groups.each { |g| puts g.name; client.resource_groups.delete_async(g.name) }
