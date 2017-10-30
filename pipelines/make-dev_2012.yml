@@ -16,25 +16,14 @@
   path: /resources/name=vsphere-stemcell-version/source/bucket
   value: all-bosh-windows-dev
 - type: replace
-  path: /resources/name=vsphere-stemcell-version/source/key
-  value: ((VSPHERE_STEMCELL_VERSION_S3_KEY))
-- type: replace
-  path: /resources/name=stemcells-main-version/source/bucket
-  value: all-bosh-windows-dev
+  path: /resources/name=vsphere-stemcell-version/source/initial_version
+  value: 1200.5000.0
 - type: replace
   path: /resources/name=gcp-stemcell-version/source/bucket
   value: all-bosh-windows-dev
 - type: replace
-  path: /resources/name=gcp-stemcell-version
-  value:
-    name: dev-stemcell-version
-    type: semver
-    source:
-      bucket: bosh-windows-stemcells-dev
-      key: versions/dev-stemcell-version
-      access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      initial_version: 1200.5000.0
+  path: /resources/name=gcp-stemcell-version/source/initial_version
+  value: 1200.5000.0
 
 # s3
 - type: replace
@@ -59,11 +48,6 @@
 # locks
 
 # remove unnecessary resources
-- type: remove
-  path: /resources/name=vsphere-stemcell-version
-- type: remove
-  path: /resources/name=vsphere-director-lock
-
 - type: remove
   path: /resources/name=bosh-agent
 - type: remove
@@ -113,20 +97,6 @@
 - type: remove
   path: /resources/name=stemcells-main-version
 
-- type: replace
-  path: /resources/name=gcp-director-lock
-  value:
-    name: dev-version-lock
-    type: pool
-    source:
-      branch: master
-      pool: dev-version-lock
-      private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-      uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
-
-
-
 # JOBS
 
 # configure create-vsphere-stemcell-from-diff for dev
@@ -148,19 +118,12 @@
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/resource
-  value: dev-stemcell-version
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/put=version/resource
-  value: dev-stemcell-version
-- type: remove˚
+- type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
-- type: replace
-  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/resource
-  value: dev-stemcell-version
+- type: remove
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/trigger
 
 # configure gcp for dev
 - type: replace
@@ -173,19 +136,9 @@
       params:
         acquire: true
     - do:
-      - put: dev-version-lock
-        params:
-          acquire: true
-      - get: version
-        resource: dev-stemcell-version
-      - put: version
-        resource: dev-stemcell-version
-        params:
-          bump: minor
-      - put: dev-version-lock
-        params:
-          release: dev-version-lock
       - aggregate:
+        - get: version
+          resource: gcp-stemcell-version
         - get: ci
         - get: stemcell-builder
         - get: base-gcp-image
@@ -194,6 +147,10 @@
         - get: sshd
           resource: openssh-release
           version: { tag: ((OPEN_SSH_VERSION)) }
+      - put: version
+        resource: gcp-stemcell-version
+        params:
+          bump: minor
       - task: create-stemcell
         file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
         attempts: 10
@@ -227,7 +184,7 @@
       - get: stemcell-builder
         passed: [create-gcp-stemcell]
       - get: version
-        resource: dev-stemcell-version
+        resource: gcp-stemcell-version
         passed: [create-gcp-stemcell]
       - get: windows-stemcell-dependencies
         passed: [create-gcp-stemcell]
@@ -263,7 +220,6 @@
           resource: vsphere-stemcell-version
         - get: vmx-version
           resource: updated-vmx-version
-        - get: stemcells-main-version
         - get: sshd
           resource: openssh-release
           version: { tag: ((OPEN_SSH_VERSION)) }
@@ -271,46 +227,7 @@
       - put: version
         resource: vsphere-stemcell-version
         params:
-          pre: build
-      - task: create-stemcell
-        privileged: true
-        file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
-        tags: [vsphere-windows-worker-dev]
-        params:
-          ADMINISTRATOR_PASSWORD: "Password123!"
-          NEW_PASSWORD: "Password123!"
-          ORGANIZATION: Pivotal
-          OWNER: Pivotal
-          AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-          AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-          AWS_REGION: us-east-1
-          INPUT_BUCKET: "bosh-windows-stemcell-vmx-dev"
-          OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx-dev"
-
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-vmx
-  value:
-    name: create-vsphere-stemcell-from-vmx
-    serial: true
-    plan:
-    - do:
-      - aggregate:
-        - get: ci
-        - get: stemcell-builder
-        - get: windows-stemcell-dependencies
-        - get: version
-          resource: vsphere-stemcell-version
-        - get: vmx-version
-          resource: updated-vmx-version
-        - get: stemcells-main-version
-        - get: sshd
-          resource: openssh-release
-          version: { tag: ((OPEN_SSH_VERSION)) }
-        - get: stembuild
-      - put: version
-        resource: vsphere-stemcell-version
-        params:
-          pre: build
+          bump: minor
       - task: create-stemcell
         privileged: true
         file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
