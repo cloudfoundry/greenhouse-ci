@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -ex
-
-bosh upload-stemcell heavy_stemcell_dir/*.tgz -n --fix
