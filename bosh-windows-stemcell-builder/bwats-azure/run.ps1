@@ -54,7 +54,7 @@ if (($VhdFile | Measure-Object).Count -ne 1) {
     Exit 1
 }
 
-$DestDir=Join-Path $env:WORKING_DIR "stemcell-out-$(Get-Date -f yyyyMMddhhmmFF)"
+$DestDir=Join-Path $env:WORKING_DIR "heavy_stemcell_dir"
 New-Item -ItemType Directory -Path $DestDir
 
 $TempDir=Join-Path $env:WORKING_DIR "Temp"
@@ -88,51 +88,46 @@ if ($LASTEXITCODE -ne 0) {
 # Create Stemcell
 
 # Use finally block to ensure we remove the stemcell
-try {
-    azstemcell `
-        -vhdfile $VhdFile `
-        -key $env:AZURE_SOURCE_KEY `
-        -versionfile $VersionFile `
-        -os $env:STEMCELL_OS `
-        -dest $DestDir `
-        -temp $TempDir
+azstemcell `
+    -vhdfile $VhdFile `
+    -key $env:AZURE_SOURCE_KEY `
+    -versionfile $VersionFile `
+    -os $env:STEMCELL_OS `
+    -dest $DestDir `
+    -temp $TempDir
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "azcell: non-zero exit code ${LASTEXITCODE}"
-    }
-
-    # Setup env vars for BWATs
-
-    $StemcellPath=(Resolve-Path "$DestDir\*.tgz").Path
-    if (($StemcellPath | Measure-Object).Count -ne 1) {
-        Write-Error "Too many files in stemcell destination directory: ${StemcellPath}"
-        Exit 1
-    }
-    $env:STEMCELL_PATH=$StemcellPath
-
-    $env:IAAS='azure'
-
-    $env:BWATS_BOSH_TIMEOUT='3h' # Massive timeout
-
-    # Run BWATs
-
-    Push-Location "$PWD\stemcell-builder"
-        bundle install --without test
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'bundle install --without test' "
-        }
-        rake package:bwats
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'rake package:bwats' "
-        }
-        bash -c 'rake run:bwats[azure]'
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Running command: 'rake run:bwats[azure]' "
-        }
-    Pop-Location
-
-} finally {
-    Remove-Item -Recurse -Path $DestDir
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "azcell: non-zero exit code ${LASTEXITCODE}"
 }
+
+# Setup env vars for BWATs
+
+$StemcellPath=(Resolve-Path "$DestDir\*.tgz").Path
+if (($StemcellPath | Measure-Object).Count -ne 1) {
+    Write-Error "Too many files in stemcell destination directory: ${StemcellPath}"
+    Exit 1
+}
+$env:STEMCELL_PATH=$StemcellPath
+
+$env:IAAS='azure'
+
+$env:BWATS_BOSH_TIMEOUT='3h' # Massive timeout
+
+# Run BWATs
+
+Push-Location "$PWD\stemcell-builder"
+    bundle install --without test
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Running command: 'bundle install --without test' "
+    }
+    rake package:bwats
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Running command: 'rake package:bwats' "
+    }
+    bash -c 'rake run:bwats[azure]'
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Running command: 'rake run:bwats[azure]' "
+    }
+Pop-Location
 
 Exit 0

@@ -10,6 +10,9 @@ inputs:
   - name: azure-base-vhd-uri
   - name: azure-stemcell-version
 
+outputs:
+  - name: heavy_stemcell_dir
+
 run:
   path: /bin/bash
   args:
