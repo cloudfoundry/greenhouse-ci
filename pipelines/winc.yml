@@ -222,6 +222,7 @@ jobs:
       trigger: true
     - get: gats-fork
     - get: garden-runc-release
+      trigger: true
     - get: winc-master
       passed: [winc]
       trigger: true
