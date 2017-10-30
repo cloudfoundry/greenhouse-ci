@@ -82,6 +82,7 @@ push-location garden-runc-release
     --image-plugin=$wincImagePath `
     --image-plugin-extra-arg=--store=$imageRoot `
     --network-plugin=$wincNetworkPath `
+    --network-plugin-extra-arg=--configFile=$env:TEMP/interface.json `
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
@@ -106,8 +107,6 @@ $ExitCode="$LastExitCode"
 
 Kill-Garden
 & $wincNetworkPath --action delete --configFile "$env:TEMP/interface.json"
-
-Set-MpPreference -DisableRealtimeMonitoring $false
 
 if ($ExitCode -ne 0) {
   echo "gdn.exe STDOUT"
