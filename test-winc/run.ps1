@@ -32,8 +32,6 @@ pop-location
 $env:GOPATH = $PWD
 $env:PATH="$env:GOPATH\bin;" +$env:PATH
 
-Set-MpPreference -DisableRealtimeMonitoring $true
-
 $config = '{"name": "winc-nat"}'
 set-content -path "$env:TEMP\interface.json" -value $config
 go run src/code.cloudfoundry.org/winc/cmd/winc-network/main.go --action delete --configFile "$env:TEMP/interface.json"
@@ -48,7 +46,5 @@ if ($LastExitCode -ne 0) {
 
 ginkgo.exe -p -r -race -cover -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
 $exit = $LastExitCode
-
-Set-MpPreference -DisableRealtimeMonitoring $false
 
 Exit $exit
