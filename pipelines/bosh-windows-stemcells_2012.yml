@@ -1212,7 +1212,7 @@ jobs:
     - get: aws-stemcell-final
       passed: [promote-aws-gcp-vsphere]
     - get: version
-      resource: stemcells-main-version`
+      resource: stemcells-main-version
       passed: [promote-aws-gcp-vsphere]
     - get: stemcell-builder
       passed: [promote-aws-gcp-vsphere]
