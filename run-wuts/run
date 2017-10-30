@@ -10,18 +10,20 @@ pushd windows-utilities-release
   bosh cr --tarball=release.tgz
 popd
 
+
+
 pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
   cat > $CONFIG_JSON <<- EOL
   {
     "bosh": {
-      "ca_cert": "$BOSH_CA_CERT",
+    "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
       "client": "$BOSH_CLIENT",
       "client_secret": "$BOSH_CLIENT_SECRET",
       "target": "$BOSH_TARGET",
       "gw_user": "$BOSH_GW_USER",
-      "gw_private_key": "$BOSH_GW_PRIVATE_KEY"
+      "gw_private_key": "$(ruby -e "puts ENV['BOSH_GW_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
     "stemcell_path": "$GOPATH/$STEMCELL_PATH",
     "windows_utilities_path": "$GOPATH/windows-utilities-release/release.tgz",
