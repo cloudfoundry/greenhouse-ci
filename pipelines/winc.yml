@@ -157,12 +157,9 @@ jobs:
     - get: winc-master
     - get: windows2016fs
   - aggregate:
-    - task: test-insider
+    - task: test
       input_mapping: { winc: winc-develop }
       file: ci/test-winc/task.yml
-      params:
-        TEST_CONTAINER_IMAGE_TAG: "insider-10.0.16278.1000"
-      tags: [windows2016-insider-16278]
   - task: merge-develop-to-master
     input_mapping: { from-repo: winc-develop, to-repo: winc-master }
     file: ci/merge-repo/task.yml
@@ -272,7 +269,6 @@ jobs:
     file: ci/run-local-gats/task.yml
     input_mapping:
       garden-runc-release: garden-runc-release-forks
-    tags: [windows2016-insider-16278]
 
 - name: bump-winc-release
   serial: true
