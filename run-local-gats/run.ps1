@@ -12,7 +12,10 @@ go version
 
 $env:GOPATH = $PWD
 push-location src/code.cloudfoundry.org/windows2016fs
-    $image_tag = (cat "IMAGE_TAG")
+    $image_tag = $env:TEST_CONTAINER_IMAGE_TAG
+    if ($image_tag -eq $null -or $image_tag -eq "") {
+        $image_tag = (cat IMAGE_TAG)
+    }
     $output_dir = "temp/windows2016fs"
     mkdir -Force $output_dir
     go run ./cmd/hydrate/main.go -image "cloudfoundry/windows2016fs" -outputDir $output_dir -tag $image_tag

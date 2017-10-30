@@ -15,4 +15,4 @@ run:
   - ci/test-windows2016fs-windows/run.ps1
 
 params:
-  NODES:
+  NODES: 1

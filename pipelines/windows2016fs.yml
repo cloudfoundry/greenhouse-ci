@@ -565,7 +565,6 @@ jobs:
     - get: image-version
       params: {bump: patch}
   - task: build-and-push
-    tags: [docker-builder]
     file: ci/docker-build-and-push/task.yml
     input_mapping:
       repo: windows2016fs-dockerfile
