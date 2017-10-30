@@ -122,48 +122,48 @@ resources:
 - name: updated-vmx-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/updated-vmx-version
+    bucket: all-bosh-windows
+    key: 2012R2/versions/vsphere-updated-vmx
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "1.0.0"
 - name: stemcells-main-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/stemcells-main-version-edge
+    bucket: all-bosh-windows
+    key: 2012R2/versions/main
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: vsphere-stemcell-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/vsphere-stemcell-version-edge
+    bucket: all-bosh-windows
+    key: 2012R2/versions/vsphere
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: aws-stemcell-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/aws-stemcell-version-edge
+    bucket: all-bosh-windows
+    key: 2012R2/versions/aws
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: gcp-stemcell-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/gcp-stemcell-version-edge
+    bucket: all-bosh-windows
+    key: 2012R2/versions/gcp
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
 - name: azure-stemcell-version
   type: semver
   source:
-    bucket: bosh-windows-stemcells
-    key: versions/azure-stemcell-version-edge
+    bucket: all-bosh-windows
+    key: 2012R2/versions/azure
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
@@ -216,36 +216,36 @@ resources:
 - name: major-stemcell
   type: s3
   source:
-    bucket: bosh-windows-stemcells
-    regexp: stemcell-(.*).json
+    bucket: all-bosh-windows
+    regexp: 2012R2/metadata/stemcell-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate
   type: s3
   source:
-    bucket: bosh-windows-stemcells-pre-release-candidate
-    regexp: bosh-stemcell-(.*)-diff-vsphere-esxi-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/vsphere/diffcell/bosh-stemcell-(.*)-diff-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-pre-release-candidate-from-vmx
   type: s3
   source:
-    bucket: stemcells-pre-release-candidate-from-vmx
-    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
-    bucket: bosh-windows-stemcells-private-release-candidates
-    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate-diff
   type: s3
   source:
-    bucket: bosh-windows-stemcells-private-release-candidates-diff
-    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/tested/vsphere/diffcell/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final
@@ -258,8 +258,8 @@ resources:
 - name: aws-stemcell-release-candidate
   type: s3
   source:
-    bucket: bosh-windows-stemcells-release-candidates
-    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-stemcell-final
@@ -273,15 +273,15 @@ resources:
 - name: base-amis-win2012r2
   type: s3
   source:
-    bucket: bosh-windows-stemcells
-    regexp: base-amis-windows2012R2-(.*).json
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/aws/inputs/base-amis-windows2012R2-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2012r2
   type: s3
   source:
-    bucket: bosh-windows-stemcells
-    regexp: base-gcp-image-windows2012R2-(.*).json
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/gcp/inputs/base-gcp-image-windows2012R2-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2012R2-untested
@@ -309,22 +309,22 @@ resources:
 - name: azure-stemcell-pre-release-candidate
   type: s3
   source:
-    bucket: bosh-windows-stemcells-pre-release-candidate
-    regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-base-vhd-uri
   type: s3
   source:
-    bucket: bosh-windows-stemcells-pre-release-candidate
-    regexp: bosh-stemcell-(.*)-azure-vhd-uri.txt
+    bucket: all-bosh-windows
+    regexp: 2012R2/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-release-candidate
   type: s3
   source:
-    bucket: bosh-windows-stemcells-release-candidates
-    regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 2012R2/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-final
@@ -406,8 +406,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
         AWS_REGION: us-east-1
-        INPUT_BUCKET: "bosh-windows-stemcell-vmx"
-        OUTPUT_BUCKET: "bosh-windows-stemcell-vmx"
+        INPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
+        OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
     - put: updated-vmx-version
       params: {bump: major}
     ensure:
@@ -456,8 +456,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
         AWS_REGION: us-east-1
-        INPUT_BUCKET: "bosh-windows-stemcell-vmx"
-        OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx"
+        INPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
+        OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal"
     ensure:
       put: vsphere-worker-lock
       params:
@@ -592,9 +592,9 @@ jobs:
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
-      VHD_VMDK_BUCKET: bosh-windows-diffcell
-      DIFF_OUTPUT_BUCKET: bosh-windows-diffcell
-      STEMCELL_OUTPUT_BUCKET: "bosh-windows-stemcells-pre-release-candidate"
+      VHD_VMDK_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/diffcell/inputs"
+      DIFF_OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/diffcell"
+      STEMCELL_OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/diffcell"
       CACHE_DIR: "C:\\image-data"
 
 - name: test-vsphere-stemcell-from-diff

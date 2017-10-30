@@ -14,36 +14,36 @@
 # versions
 - type: replace
   path: /resources/name=vsphere-stemcell-version/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=vsphere-stemcell-version/source/key
   value: ((VSPHERE_STEMCELL_VERSION_S3_KEY))
 - type: replace
   path: /resources/name=stemcells-main-version/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=gcp-stemcell-version/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 
 # s3
 - type: replace
   path: /resources/name=vsphere-stemcell-pre-release-candidate/source/bucket
-  value: bosh-windows-stemcells-pre-release-candidate-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=vsphere-stemcell-release-candidate-diff/source/bucket
-  value: bosh-windows-stemcells-private-release-candidates-diff-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=base-gcp-image-win2012r2/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=gcp-2012R2-untested/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=gcp-2012R2-tested/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=updated-vmx-version/source/bucket
-  value: bosh-windows-stemcells-dev
+  value: all-bosh-windows-dev
 
 # locks
 
@@ -103,13 +103,13 @@
   value: [diffcell-windows-worker-dev]
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/VHD_VMDK_BUCKET
-  value: bosh-windows-diffcell-dev
+  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell/inputs
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/DIFF_OUTPUT_BUCKET
-  value: bosh-windows-diffcell-dev
+  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
-  value: bosh-windows-stemcells-pre-release-candidate-dev
+  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/passed
 - type: remove
@@ -244,8 +244,8 @@
           AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
           AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
           AWS_REGION: us-east-1
-          INPUT_BUCKET: "bosh-windows-stemcell-vmx-dev"
-          OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx-dev"
+          INPUT_BUCKET: "all-bosh-windows-dev/2012R2/untested/vsphere/internal/inputs"
+          OUTPUT_BUCKET: "all-bosh-windows-dev/2012R2/untested/vsphere/internal"
 
 
 # configure test-vsphere-stemcell-from-diff for dev
