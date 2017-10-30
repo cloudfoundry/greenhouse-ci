@@ -24,6 +24,17 @@
 - type: replace
   path: /resources/name=gcp-stemcell-version/source/bucket
   value: all-bosh-windows-dev
+- type: replace
+  path: /resources/name=gcp-stemcell-version
+  value:
+    name: dev-stemcell-version
+    type: semver
+    source:
+      bucket: bosh-windows-stemcells-dev
+      key: versions/dev-stemcell-version
+      access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      initial_version: 1200.5000.0
 
 # s3
 - type: replace
@@ -48,6 +59,11 @@
 # locks
 
 # remove unnecessary resources
+- type: remove
+  path: /resources/name=vsphere-stemcell-version
+- type: remove
+  path: /resources/name=vsphere-director-lock
+
 - type: remove
   path: /resources/name=bosh-agent
 - type: remove
@@ -94,6 +110,22 @@
   path: /resources/name=azstemcell
 - type: remove
   path: /resources/name=boshio
+- type: remove
+  path: /resources/name=stemcells-main-version
+
+- type: replace
+  path: /resources/name=gcp-director-lock
+  value:
+    name: dev-version-lock
+    type: pool
+    source:
+      branch: master
+      pool: dev-version-lock
+      private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+      uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
+
+
 
 # JOBS
 
@@ -116,7 +148,19 @@
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version/passed
-
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/resource
+  value: dev-stemcell-version
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/put=version/resource
+  value: dev-stemcell-version
+- type: remove˚
+  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
+- type: remove
+  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
+- type: replace
+  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/resource
+  value: dev-stemcell-version
 
 # configure gcp for dev
 - type: replace
@@ -129,22 +173,27 @@
       params:
         acquire: true
     - do:
+      - put: dev-version-lock
+        params:
+          acquire: true
+      - get: version
+        resource: dev-stemcell-version
+      - put: version
+        resource: dev-stemcell-version
+        params:
+          bump: minor
+      - put: dev-version-lock
+        params:
+          release: dev-version-lock
       - aggregate:
         - get: ci
         - get: stemcell-builder
         - get: base-gcp-image
           resource: base-gcp-image-win2012r2
-        - get: version
-          resource: gcp-stemcell-version
         - get: windows-stemcell-dependencies
-        - get: stemcells-main-version
         - get: sshd
           resource: openssh-release
           version: { tag: ((OPEN_SSH_VERSION)) }
-      - put: version
-        resource: gcp-stemcell-version
-        params:
-          pre: build
       - task: create-stemcell
         file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
         attempts: 10
@@ -169,44 +218,74 @@
     name: test-gcp-stemcell
     serial: true
     plan:
-    - put: gcp-director-lock
+    - aggregate:
+      - get: bosh-windows-stemcell
+        resource: gcp-2012R2-untested
+        passed: [create-gcp-stemcell]
+        trigger: true
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-gcp-stemcell]
+      - get: version
+        resource: dev-stemcell-version
+        passed: [create-gcp-stemcell]
+      - get: windows-stemcell-dependencies
+        passed: [create-gcp-stemcell]
+    - task: test-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
-        acquire: true
+        IAAS: gcp
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_TARGET: ((goose_environment))
+        BOSH_CA_CERT: ((goose_ca_cert))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+        NETWORK: private
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+        STEMCELL_OS: windows2012R2
+    - put: gcp-2012R2-tested
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+
+- type: replace
+  path: /jobs/name=create-vsphere-stemcell-from-vmx
+  value:
+    name: create-vsphere-stemcell-from-vmx
+    serial: true
+    plan:
     - do:
       - aggregate:
-        - get: bosh-windows-stemcell
-          resource: gcp-2012R2-untested
-          passed: [create-gcp-stemcell]
-          trigger: true
         - get: ci
         - get: stemcell-builder
-          passed: [create-gcp-stemcell]
-        - get: version
-          resource: gcp-stemcell-version
-          passed: [create-gcp-stemcell]
         - get: windows-stemcell-dependencies
+        - get: version
+          resource: vsphere-stemcell-version
+        - get: vmx-version
+          resource: updated-vmx-version
         - get: stemcells-main-version
-          passed: [create-gcp-stemcell]
-      - task: test-stemcell
-        file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+        - get: sshd
+          resource: openssh-release
+          version: { tag: ((OPEN_SSH_VERSION)) }
+        - get: stembuild
+      - put: version
+        resource: vsphere-stemcell-version
         params:
-          IAAS: gcp
-          ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-          BOSH_CLIENT_SECRET: ((goose_client_secret))
-          BOSH_CLIENT: ((goose_client))
-          BOSH_TARGET: ((goose_environment))
-          BOSH_CA_CERT: ((goose_ca_cert))
-          STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-          NETWORK: private
-          VM_EXTENSIONS: "50GB_ephemeral_disk"
-          STEMCELL_OS: windows2012R2
-      - put: gcp-2012R2-tested
+          pre: build
+      - task: create-stemcell
+        privileged: true
+        file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+        tags: [vsphere-windows-worker-dev]
         params:
-          file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-      ensure:
-        put: gcp-director-lock
-        params:
-          release: gcp-director-lock
+          ADMINISTRATOR_PASSWORD: "Password123!"
+          NEW_PASSWORD: "Password123!"
+          ORGANIZATION: Pivotal
+          OWNER: Pivotal
+          AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+          AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+          AWS_REGION: us-east-1
+          INPUT_BUCKET: "bosh-windows-stemcell-vmx-dev"
+          OUTPUT_BUCKET: "stemcells-pre-release-candidate-from-vmx-dev"
 
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-vmx
