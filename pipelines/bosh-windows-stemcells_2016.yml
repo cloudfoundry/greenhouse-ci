@@ -622,7 +622,7 @@ jobs:
       params:
         pre: build
     - task: create-stemcell
-      file: ci/bosh-windows-stemcell-builder/create-azure/task.yml
+      file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
         OS_VERSION: windows2016
         CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
