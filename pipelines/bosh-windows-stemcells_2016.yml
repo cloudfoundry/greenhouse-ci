@@ -360,7 +360,7 @@ jobs:
       params:
         pre: build
     - task: create-stemcell
-      file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+      file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task-packer-test.yml
       attempts: 10
       params:
         OS_VERSION: windows2016
@@ -427,8 +427,7 @@ jobs:
       - get: stemcell-builder
       - get: base-amis
         resource: base-amis-win2016
-        # we currently do not support 1709 on aws
-        # passed: [build]
+        passed: [build]
       - get: version
         resource: aws-build-number
         passed: [build]
@@ -812,10 +811,9 @@ jobs:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         BASE_OS: ((BASE_IMAGE_OS))
   - aggregate:
-    #   we currently do not support 1709 in aws
-    #    - put: base-amis-win2016
-    #      params:
-    #        file: win2016-amis/base-amis-windows2016-*.json
+    - put: base-amis-win2016
+      params:
+        file: win2016-amis/base-amis-windows2016-*.json
     - put: base-gcp-image-win2016
       params:
         file: win2016-gcp-image/base-gcp-image-windows2016-*.json
