@@ -178,7 +178,7 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: ((BASE_FOLDER_NAME))/untested/gcp/inputs/base-gcp-image-((BASE_IMAGE_OS))-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/inputs/base-gcp-image-windows2016-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: packer-output-ami
@@ -818,5 +818,5 @@ jobs:
     #        file: win2016-amis/base-amis-windows2016-*.json
     - put: base-gcp-image-win2016
       params:
-        file: win2016-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
+        file: win2016-gcp-image/base-gcp-image-windows2016-*.json
 
