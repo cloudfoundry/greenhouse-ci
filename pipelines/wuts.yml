@@ -103,6 +103,7 @@ jobs:
         resource: vsphere-stemcell-release-candidate
         trigger: true
     - task: run-wuts
+      tags: [vsphere-linux-worker]
       file: ci/run-wuts/task.yml
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
