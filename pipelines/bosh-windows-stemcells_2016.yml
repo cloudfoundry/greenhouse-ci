@@ -648,6 +648,14 @@ jobs:
       NETWORK: default
       STEMCELL_OS: windows2016
       AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
+  - task: upload-stemcell-to-acceptance
+    file: ci/pm-acceptance-upload-azure-stemcell/task.yml
+    tags: [azure-linux-worker]
+    params:
+      BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((PM_ACCEPTANCE_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((PM_ACCEPTANCE_BOSH_DIRECTOR))
   - put: azure-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
