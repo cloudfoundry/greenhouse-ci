@@ -6,7 +6,7 @@ function Kill-Garden
   Get-Process | foreach { if ($_.name -eq "gdn") { kill -Force $_.Id } }
 }
 
-$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/bosh/bin;" + $env:PATH
+$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/bosh/bin;C:\var\vcap\packages\mingw64\mingw64\bin" + $env:PATH
 
 go version
 
