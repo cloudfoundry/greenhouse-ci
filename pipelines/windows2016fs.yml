@@ -413,8 +413,8 @@ jobs:
   - put: pesto-windows2016fs-online-deployment
     params:
       manifest: ci/windows2016fs-online-manifest/manifest.yml
-      stemcells:
-      - gcp-windows-stemcell/*.tgz
+      # stemcells:
+      # - gcp-windows-stemcell/*.tgz
       releases:
       - windows2016fs-online-tarball/*.tgz
       cleanup: true
