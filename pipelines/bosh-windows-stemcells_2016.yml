@@ -635,7 +635,7 @@ jobs:
       passed: [create-azure]
       trigger: true
   - task: test-stemcell
-    file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
+    file: ci/bosh-windows-stemcell-builder/bwats-azure-2016/task.yml
     tags: [azure-linux-worker]
     params:
       BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
@@ -646,7 +646,6 @@ jobs:
       VM_TYPE: default
       NETWORK: default
       STEMCELL_OS: windows2016
-      WORKING_DIR: '/'
       AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
   - put: azure-tested
     params:
