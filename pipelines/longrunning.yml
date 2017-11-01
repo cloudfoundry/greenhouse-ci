@@ -21,6 +21,11 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry-incubator/winc-release.git
+- name: garden-windows-bosh-release-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry-incubator/garden-windows-bosh-release.git
 - name: windows2016fs-release-insider
   type: git
   source:
@@ -33,13 +38,13 @@ resources:
    regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-windows2016-stemcell
-  type: s3
-  source:
-   bucket: all-bosh-windows
-   regexp: 2016/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
-   access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-   secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+# - name: vsphere-windows2016-stemcell
+#   type: s3
+#   source:
+#    bucket: all-bosh-windows
+#    regexp: 2016/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+#    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+#    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: mulgore-cf-deployment
   type: bosh-deployment
   source:
@@ -93,11 +98,14 @@ jobs:
       tags: [vsphere]
     - get: vsphere-windows2012R2-stemcell
       tags: [vsphere]
-    - get: vsphere-windows2016-stemcell
-      tags: [vsphere]
+    # - get: vsphere-windows2016-stemcell
+    #   tags: [vsphere]
     - get: garden-windows-private
       tags: [vsphere]
     - get: winc-release-develop
+      trigger: true
+      tags: [vsphere]
+    - get: garden-windows-bosh-release-develop
       trigger: true
       tags: [vsphere]
     - get: windows2016fs-release-insider
@@ -116,44 +124,53 @@ jobs:
         FILE_NAME: cf/vars.yml
         SERVICE_ACCOUNT_KEY: {{SPITFIRE_SERVICE_ACCOUNT_JSON}}
       tags: [vsphere]
-    - task: create-winc-release
+    # - task: create-winc-release
+    #   file: ci/bosh-cr/task.yml
+    #   input_mapping:
+    #     release: winc-release-develop
+    #   output_mapping:
+    #     release-tarball: winc-tarball
+    #   tags: [vsphere]
+    - task: create-garden-windows-bosh-release
       file: ci/bosh-cr/task.yml
       input_mapping:
-        release: winc-release-develop
+        release: garden-windows-bosh-release-develop
       output_mapping:
-        release-tarball: winc-tarball
+        release-tarball: garden-windows-tarball
       tags: [vsphere]
-    - task: upload-windows2016fs-release
-      file: ci/upload-windows2016fs-release/task.yml
-      input_mapping: { windows2016fs-release: windows2016fs-release-insider }
-      params:
-        BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
-      tags: [vsphere]
+    # - task: upload-windows2016fs-release
+    #   file: ci/upload-windows2016fs-release/task.yml
+    #   input_mapping: { windows2016fs-release: windows2016fs-release-insider }
+    #   params:
+    #     BOSH_CA_CERT: {{MULGORE_BOSH_CA_CERT}}
+    #     BOSH_CLIENT: {{MULGORE_BOSH_CLIENT}}
+    #     BOSH_CLIENT_SECRET: {{MULGORE_BOSH_CLIENT_SECRET}}
+    #     BOSH_ENVIRONMENT: {{MULGORE_BOSH_ENVIRONMENT}}
+    #   tags: [vsphere]
   - put: mulgore-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
       stemcells:
       - vsphere-linux-stemcell/*.tgz
       - vsphere-windows2012R2-stemcell/*.tgz
-      - vsphere-windows2016-stemcell/*.tgz
+      # - vsphere-windows2016-stemcell/*.tgz
       releases:
-      - winc-tarball/*.tgz
+      # - winc-tarball/*.tgz
+      - garden-windows-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
       - cf-deployment/operations/use-latest-windows-stemcell.yml
-      - cf-deployment/operations/experimental/windows2016-cell.yml
-      - cf-deployment/operations/experimental/use-latest-windows2016-stemcell.yml
+      # - cf-deployment/operations/experimental/windows2016-cell.yml
+      # - cf-deployment/operations/experimental/use-latest-windows2016-stemcell.yml
       - cf-deployment/operations/experimental/use-bosh-dns.yml
       - cf-deployment/operations/experimental/use-bosh-dns-for-containers.yml
-      - garden-windows-private/operations-common/windows2016-prs.yml
-      - garden-windows-private/operations-common/windows2016-insider-preview.yml
-      - garden-windows-private/operations-common/latest-winc.yml
+      # - garden-windows-private/operations-common/windows2016-prs.yml
+      # - garden-windows-private/operations-common/windows2016-insider-preview.yml
+      # - garden-windows-private/operations-common/latest-winc.yml
+      - garden-windows-private/operations-common/latest-garden-windows.yml
       - garden-windows-private/operations-common/downgrade-garden-runc.yml
-      - garden-windows-private/operations-common/enable-bosh-ssh-windows.yml
+      # - garden-windows-private/operations-common/enable-bosh-ssh-windows.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
