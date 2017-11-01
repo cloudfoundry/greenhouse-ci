@@ -35,7 +35,7 @@ pushd release
       commit_message="$commit_message\n\n[ci skip]"
     fi
 
-    git commit -m "$commit_message"
+    git commit -m "$(echo -e $commit_message)"
 
     echo "----- DEBUG: show the commit we just created"
     git --no-pager show HEAD
