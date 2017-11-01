@@ -166,6 +166,7 @@ jobs:
   - put: garden-windows-release
     params:
       repository: bumped-downstream-release
+
 - name: pesto-deploy-cf
   serial: true
   plan:
@@ -231,6 +232,7 @@ jobs:
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
     - task: wats
+      attempts: 3
       file: ci/run-wats/task.yml
       input_mapping: { wats: wats-develop }
       params:
