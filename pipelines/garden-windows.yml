@@ -215,10 +215,10 @@ jobs:
         ops_files:
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
+        - cf-deployment/operations/use-latest-windows-stemcell.yml
         - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks-windows.yml
         - cf-deployment/operations/experimental/use-bosh-dns.yml
         - garden-windows-private/operations-common/latest-garden-windows.yml
-        - garden-windows-private/operations-common/latest-windows2012R2-stemcell.yml
         vars_files:
         - cf-vars/vars.yml
         cleanup: true
