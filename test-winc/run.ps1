@@ -1,8 +1,6 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-$env:PATH = "C:/var/vcap/packages/golang-windows/go/bin;C:/var/vcap/packages/mingw64/mingw64/bin;" + $env:PATH
-
 go.exe version
 
 $env:GOPATH = $PWD

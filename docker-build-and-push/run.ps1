@@ -10,8 +10,6 @@ function Run-Docker {
   }
 }
 
-$env:PATH = "C:/Program Files/Docker;" + $env:PATH
-
 restart-service docker
 
 $version=(cat version/number)

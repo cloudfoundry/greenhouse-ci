@@ -2,7 +2,7 @@
 trap { $host.SetShouldExit(1) }
 
 $env:GOPATH = $PWD
-$env:PATH = $env:GOPATH + "/bin;C:/var/vcap/packages/golang-windows/go/bin;" + $env:PATH
+$env:PATH = "$env:GOPATH\bin;" + $env:PATH
 
 go version
 

@@ -6,7 +6,7 @@ trap {
 
 $env:GOPATH = "$PWD\cf-networking-release"
 $wincPath = "$PWD\winc-binary"
-$env:PATH = $env:GOPATH + "/bin;C:/go/bin;C:/Program Files/Docker;C:/var/vcap/bosh/bin;$wincPath;" + $env:PATH
+$env:PATH = "$env:GOPATH\bin;C:/var/vcap/bosh/bin;$wincPath;" + $env:PATH
 
 go version
 $wincTestRootfs = (docker inspect microsoft/windowsservercore | ConvertFrom-Json).GraphDriver.Data.Dir | ConvertTo-Json
