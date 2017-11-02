@@ -171,7 +171,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-windows2016-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-((BASE_IMAGE_OS))-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-gcp-image-win2016
@@ -814,7 +814,7 @@ jobs:
   - aggregate:
     - put: base-amis-win2016
       params:
-        file: win2016-amis/base-amis-windows2016-*.json
+        file: win2016-amis/base-amis-((BASE_IMAGE_OS))-*.json
     - put: base-gcp-image-win2016
       params:
         file: win2016-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json

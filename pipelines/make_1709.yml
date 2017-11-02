@@ -5,9 +5,6 @@
 - type: remove
   path: /jobs/name=create-aws/plan/0/do/0/aggregate/get=base-amis/passed
 
-- type: remove
-  path: /jobs/name=build/plan/4/aggregate/put=base-amis-win2016
-
 - type: replace
   path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell
   value:
