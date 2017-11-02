@@ -2,6 +2,12 @@
 
 require 'json'
 
+
+if !File.file?('version/number')
+  raise 'Error: no version number available'
+end
+version = File.read('version/number').chomp
+
 base_ami = ENV["BASE_AMI"]
 base_ami_name = ""
 if base_ami == "windows2012R2"
@@ -9,38 +15,40 @@ if base_ami == "windows2012R2"
 elsif base_ami == "windows2016"
   base_ami_name = "Windows_Server-2016-English-Full-Base-*"
 elsif base_ami == "windows1709"
-  # we currently do not support 1709 on aws
-  exit 0
+  base_ami_name = "windows-1709-prepped"
 else
   abort "Define BASE_AMI environment variable (e.g. windows2012R2,windows2016) "
 end
 
-region_names = [
-  "us-east-1",
-  "us-east-2",
-  "us-west-1",
-  "us-west-2",
-  "ca-central-1",
-  "ap-south-1",
-  "ap-northeast-2",
-  "ap-southeast-1",
-  "ap-southeast-2",
-  "ap-northeast-1",
-  "eu-central-1",
-  "eu-west-1",
-  "eu-west-2",
-  "sa-east-1"
-]
+if (base_ami_name == "windows-1709-prepped")
+  region_names = [
+    "us-east-1"
+  ]
+else
+  region_names = [
+    "us-east-1",
+    "us-east-2",
+    "us-west-1",
+    "us-west-2",
+    "ca-central-1",
+    "ap-south-1",
+    "ap-northeast-2",
+    "ap-southeast-1",
+    "ap-southeast-2",
+    "ap-northeast-1",
+    "eu-central-1",
+    "eu-west-1",
+    "eu-west-2",
+    "sa-east-1"
+  ]
+end
+
 region_infos = []
 region_names.each do |region_name|
   region_info = {}
   region_info['name'] = region_name
 
-  amis = JSON.parse(`aws ec2 describe-images \
-            --region #{region_name} \
-            --owners amazon \
-            --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
-  ami_id = (amis['Images'].sort { |a,b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
+  ami_id = get_ami_for(region_name, base_ami_name)
   region_info['base_ami'] = ami_id
 
   vpcs = JSON.parse(`aws ec2 describe-vpcs \
@@ -80,11 +88,19 @@ end
 
 puts JSON.pretty_generate(region_infos)
 
-if !File.file?('version/number')
-  raise 'Error: no version number available'
-end
-version = File.read('version/number').chomp
-
 File.open(File.join('base-amis', "base-amis-#{base_ami}-#{version}.json"), 'w') do |f|
   f.write(region_infos.to_json)
+end
+
+def get_ami_for(region, base_ami_name)
+  if base_ami_name == "windows-1709-prepped"
+    return ENV['PREPPED_BASE_AMI']
+  else
+    amis = JSON.parse(`aws ec2 describe-images \
+            --region #{region} \
+            --owners amazon \
+            --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
+    ami_id = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
+    return ami_id
+  end
 end
