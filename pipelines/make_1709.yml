@@ -1,0 +1,27 @@
+# JOBS
+- type: remove
+  path: /jobs/name=create-gcp/plan/1/do/task=publish-stemcell
+
+- type: remove
+  path: /jobs/name=create-aws/plan/0/do/0/aggregate/get=base-amis/passed
+
+- type: remove
+  path: /jobs/name=build/plan/4/aggregate/put=base-amis-win2016
+
+- type: replace
+  path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell
+  value:
+    task: create-stemcell
+    file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+    attempts: 10
+    outputs:
+    - name: untested-stemcell
+#      path: bosh-windows-stemcell
+    params:
+      OS_VERSION: windows2016
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+    ensure:
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
+      params:
+        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
