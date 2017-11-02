@@ -213,14 +213,14 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-((BASE_IMAGE_OS))-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-2016-tested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-((BASE_IMAGE_OS))-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: gcp-stemcell-final-2016
@@ -228,7 +228,7 @@ resources:
   source:
     bucket: ((GCP_FINAL_STEMCELL_BUCKET))
     region_name: us-east-2
-    regexp: gcp-((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-((BASE_IMAGE_OS))-go_agent.tgz
+    regexp: gcp-((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-base-vhd-uri
@@ -378,7 +378,7 @@ jobs:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
     - put: gcp-2016-untested
       params:
-        file: untested-stemcell/light-bosh-stemcell-*-google-kvm-((BASE_IMAGE_OS))-go_agent.tgz
+        file: untested-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     ensure:
       put: gcp-lock
       params:
@@ -472,7 +472,7 @@ jobs:
         REGION: us-east-2
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-        OUTPUT_BUCKET_NAME: aws-regional-stemcells-2016
+        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
     - put: packer-output-ami
       params:
         file: amis/packer-output-ami-*.txt

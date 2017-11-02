@@ -10,19 +10,5 @@
   value: us-east-1
 
 - type: replace
-  path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell
-  value:
-    task: create-stemcell
-    file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
-    attempts: 10
-    outputs:
-    - name: untested-stemcell
-#      path: bosh-windows-stemcell
-    params:
-      OS_VERSION: windows2016
-      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
-    ensure:
-      task: delete-orphan-vms
-      file: ci/delete-vms/task.yml
-      params:
-        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+  path: /jobs/name=create-gcp/plan/1/do/put=gcp-2016-untested/params/file
+  value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
