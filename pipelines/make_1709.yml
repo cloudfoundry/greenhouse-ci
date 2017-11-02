@@ -1,5 +1,9 @@
 # RESOURCES
 - type: replace
+  path: /resources/name=aws-2016-regional/source/bucket
+  value: aws-regional-stemcells-1709
+
+- type: replace
   path: /resources/name=aws-2016-regional/source/regexp
   value: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
 # JOBS
