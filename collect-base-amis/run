@@ -2,6 +2,19 @@
 
 require 'json'
 
+# Helper method
+def get_ami_for(region, base_ami_name)
+  if base_ami_name == "windows-1709-prepped"
+    return ENV['PREPPED_BASE_AMI']
+  else
+    amis = JSON.parse(`aws ec2 describe-images \
+            --region #{region} \
+            --owners amazon \
+            --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
+    ami_id = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
+    return ami_id
+  end
+end
 
 if !File.file?('version/number')
   raise 'Error: no version number available'
@@ -92,15 +105,3 @@ File.open(File.join('base-amis', "base-amis-#{base_ami}-#{version}.json"), 'w') 
   f.write(region_infos.to_json)
 end
 
-def get_ami_for(region, base_ami_name)
-  if base_ami_name == "windows-1709-prepped"
-    return ENV['PREPPED_BASE_AMI']
-  else
-    amis = JSON.parse(`aws ec2 describe-images \
-            --region #{region} \
-            --owners amazon \
-            --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
-    ami_id = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
-    return ami_id
-  end
-end
