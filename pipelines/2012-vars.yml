@@ -1,0 +1,4 @@
+---
+BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'
+BASE_IMAGE_REGEX: 'windows-server-2012-r2-dc-v.*'
+IMAGE_FAMILY: 'windows-2012-r2'
