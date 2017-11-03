@@ -469,7 +469,7 @@ jobs:
     - aggregate:
       - put: aws-2016-regional
         params:
-          file: bosh-windows-stemcell/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+          file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
       - put: packer-output-ami
         params:
           file: amis/packer-output-ami-*.txt
