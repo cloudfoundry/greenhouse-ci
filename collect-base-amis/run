@@ -21,16 +21,14 @@ if !File.file?('version/number')
 end
 version = File.read('version/number').chomp
 
-base_ami = ENV["BASE_AMI"]
-base_ami_name = ""
-if base_ami == "windows2012R2"
-  base_ami_name = "Windows_Server-2012-R2_RTM-English-64Bit-Base*"
-elsif base_ami == "windows2016"
-  base_ami_name = "Windows_Server-2016-English-Full-Base-*"
-elsif base_ami == "windows1709"
-  base_ami_name = "windows-1709-prepped"
-else
-  abort "Define BASE_AMI environment variable (e.g. windows2012R2,windows2016) "
+base_ami = ENV['BASE_AMI']
+if base_ami != 'windows2012R2' && base_ami != 'windows2016' && base_ami != 'windows1709'
+  abort 'abort "Define BASE_AMI environment variable (e.g. windows2012R2, windows2016)'
+end
+
+base_ami_name = ENV['BASE_AMI_NAME']
+if base_ami_name == ''
+  abort 'Define BASE_AMI_NAME environment variable'
 end
 
 if (base_ami_name == "windows-1709-prepped")
