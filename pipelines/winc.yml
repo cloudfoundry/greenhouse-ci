@@ -361,6 +361,9 @@ jobs:
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
+      - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks-windows2016.yml
+      - cf-deployment/operations/experimental/enable-instance-identity-credentials.yml
+      - cf-deployment/operations/experimental/enable-instance-identity-credentials-windows2016.yml
       - garden-windows-private/operations-common/windows2016-prs.yml
       - garden-windows-private/operations-common/latest-winc.yml
       - garden-windows-private/operations-common/scale-down-windows2016.yml
