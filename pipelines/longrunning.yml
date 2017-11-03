@@ -160,9 +160,12 @@ jobs:
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/windows-cell.yml
-      - cf-deployment/operations/use-latest-windows-stemcell.yml
       # - cf-deployment/operations/experimental/windows2016-cell.yml
+      - cf-deployment/operations/use-latest-windows-stemcell.yml
       # - cf-deployment/operations/experimental/use-latest-windows2016-stemcell.yml
+      - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks.yml
+      - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks-windows.yml
+      # - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks-windows2016.yml
       - cf-deployment/operations/experimental/use-bosh-dns.yml
       - cf-deployment/operations/experimental/use-bosh-dns-for-containers.yml
       # - cf-deployment/operations/experimental/use-bosh-dns-for-windows2016-containers.yml
@@ -170,10 +173,12 @@ jobs:
       - cf-deployment/operations/experimental/disable-consul-windows.yml
       - cf-deployment/operations/experimental/skip-consul-cell-registrations.yml
       - cf-deployment/operations/experimental/skip-consul-locks.yml
+      - cf-deployment/operations/experimental/enable-instance-identity-credentials.yml
+      - cf-deployment/operations/experimental/enable-instance-identity-credentials-windows.yml
+      # - cf-deployment/operations/experimental/enable-instance-identity-credentials-windows2016.yml
       # - garden-windows-private/operations-common/windows2016-prs.yml
       # - garden-windows-private/operations-common/latest-winc.yml
       - garden-windows-private/operations-common/latest-garden-windows.yml
-      # - garden-windows-private/operations-common/enable-bosh-ssh-windows.yml
       vars_files:
       - cf-vars/vars.yml
       cleanup: true
