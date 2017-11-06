@@ -20,3 +20,11 @@ IMAGE_FAMILY: 'windows-2016-core'
 GCP_FINAL_STEMCELL_BUCKET: 'all-bosh-windows-dev'
 #GCP Packer Info
 WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
+
+
+#Azure Base Image Info
+AZURE_BASE_IMAGE_SKU: ''
+AZURE_BASE_IMAGE_OFFER: ''
+#Azure Output Info
+AZURE_OUTPUT_IMAGE_SKU: ''
+#Azure Packer Info

@@ -589,8 +589,10 @@ jobs:
         VM_SIZE: Standard_DS2_v2
         PUBLISHER: 'pivotal'
         OFFER: 'bosh-windows-server'
-        SKU: '2016'
+        SKU: ((AZURE_OUTPUT_IMAGE_SKU))
         ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
+        BASE_IMAGE: ((AZURE_BASE_IMAGE_SKU))
+        BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml

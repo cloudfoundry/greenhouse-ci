@@ -24,5 +24,8 @@ WINDOWS-STEMCELLS_ACCOUNT_JSON: '((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
 
 
 #Azure Base Image Info
+AZURE_BASE_IMAGE_SKU: 'Datacenter-Core-1709-smalldisk'
+AZURE_BASE_IMAGE_OFFER: 'WindowsServerSemiAnnual'
 #Azure Output Info
+AZURE_OUTPUT_IMAGE_SKU: '1709'
 #Azure Packer Info

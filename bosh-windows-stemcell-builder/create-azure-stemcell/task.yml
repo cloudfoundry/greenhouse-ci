@@ -32,3 +32,5 @@ params:
   SKU:
   ADMIN_PASSWORD:
   VERSION_DIR: ../version
+  BASE_IMAGE:
+  BASE_IMAGE_OFFER:
