@@ -1,11 +1,22 @@
 ---
+#Common Variables
 BASE_FOLDER_NAME: '2016'
 STEMCELL_INITIAL_VERSION: '1600.0.0'
 BASE_IMAGE_OS: 'windows2016'
+ROOT_BUCKET: 'all-bosh-windows-dev'
+
+
+#AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-2016-English-Full-Base-*'
+#AWS Output Info
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-2016-dev'
+#AWS Packer Info
+
+
+#GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-2016-dc-core-v.*'
 IMAGE_FAMILY: 'windows-2016-core'
+#GCP Output Info
 GCP_FINAL_STEMCELL_BUCKET: 'all-bosh-windows-dev'
-ROOT_BUCKET: 'all-bosh-windows-dev'
-AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-2016-dev'
+#GCP Packer Info
 WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'

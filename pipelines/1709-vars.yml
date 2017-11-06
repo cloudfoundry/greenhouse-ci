@@ -1,12 +1,28 @@
 ---
+#Common Variables
 BASE_FOLDER_NAME: '1709'
 STEMCELL_INITIAL_VERSION: '1709.0.0'
 BASE_IMAGE_OS: 'windows1709'
+ROOT_BUCKET: 'all-bosh-windows'
+
+
+#AWS Base Image Info
 BASE_AMI_NAME: 'windows-1709-prepped'
+#AWS Output Info
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
+#AWS Packer Info
+AWS_PACKER_REGION: 'us-east-1'
+
+
+#GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-2016-1709-private-v.*'
 IMAGE_FAMILY: 'windows-2016-1709'
+#GCP Output Info
 GCP_FINAL_STEMCELL_BUCKET: 'gcp-final-stemcells-1709-private'
-ROOT_BUCKET: 'all-bosh-windows'
-AWS_PACKER_REGION: 'us-east-1'
-AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
+#GCP Packer Info
 WINDOWS-STEMCELLS_ACCOUNT_JSON: '((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
+
+
+#Azure Base Image Info
+#Azure Output Info
+#Azure Packer Info
