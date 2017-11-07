@@ -282,7 +282,6 @@ jobs:
       pre: build
   - task: create-stemcell
     privileged: true
-    # WARN: May need to make a new task
     file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
     tags: [vsphere-windows-worker]
     params:
