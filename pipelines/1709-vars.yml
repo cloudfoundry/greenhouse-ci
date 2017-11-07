@@ -15,12 +15,12 @@ AWS_PACKER_REGION: 'us-east-1'
 
 
 #GCP Base Image Info
-BASE_IMAGE_REGEX: 'windows-server-2016-1709-private-v.*'
-IMAGE_FAMILY: 'windows-2016-1709'
+BASE_IMAGE_REGEX: 'windows-server-1709-dc-core-v.*'
+IMAGE_FAMILY: 'windows-1709-core'
 #GCP Output Info
 GCP_FINAL_STEMCELL_BUCKET: 'gcp-final-stemcells-1709-private'
 #GCP Packer Info
-WINDOWS-STEMCELLS_ACCOUNT_JSON: '((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
+WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
 
 
 #Azure Base Image Info

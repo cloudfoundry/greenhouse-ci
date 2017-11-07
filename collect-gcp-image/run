@@ -21,7 +21,7 @@ if [[ "$BASE_IMAGE_REGEX" == "" ]] || [[ "$IMAGE_FAMILY" == "" ]]; then
     exit 1
 fi
 
-image_id=$(gcloud compute images list --regexp ${BASE_IMAGE_REGEX} --format json | jq -r .[0].name)
+image_id=$(gcloud compute images list --filter="name~'${BASE_IMAGE_REGEX}'"  --format json | jq -r .[0].name)
 version=$(cat version/number)
 
 printf '{"base_image":"%s","image_family":"%s"}' "$image_id" "$IMAGE_FAMILY" > base-gcp-image/base-gcp-image-$BASE_OS-$version.json
