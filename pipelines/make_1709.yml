@@ -8,9 +8,6 @@
   value: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
 # JOBS
 - type: remove
-  path: /jobs/name=create-gcp/plan/1/do/task=publish-stemcell
-
-- type: remove
   path: /jobs/name=create-aws/plan/0/do/0/aggregate/get=base-amis/passed
 
 - type: replace
