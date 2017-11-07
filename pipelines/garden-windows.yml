@@ -138,9 +138,8 @@ resources:
 - name: cf-deployment
   type: git
   source:
-    branch: master
+    branch: release-candidate
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    tag_filter: v*
 - name: gcp-windows-stemcell
   type: s3
   source:
