@@ -223,6 +223,8 @@ jobs:
         - cf-deployment/operations/experimental/skip-consul-locks.yml
         - cf-deployment/operations/experimental/enable-instance-identity-credentials.yml
         - cf-deployment/operations/experimental/enable-instance-identity-credentials-windows.yml
+        - cf-deployment/operations/experimental/secure-service-credentials.yml
+        - cf-deployment/operations/experimental/secure-service-credentials-windows-cell.yml
         - garden-windows-private/operations-common/latest-garden-windows.yml
         vars_files:
         - cf-vars/vars.yml
@@ -249,6 +251,7 @@ jobs:
         SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
         CONSUL_MUTUAL_TLS: false
         TEST_TASK: true
+        CREDHUB_MODE: assisted
       on_success:
         task: delete-deployment
         file: ci/bosh-deld/task.yml
