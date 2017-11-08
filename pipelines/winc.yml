@@ -37,12 +37,6 @@ resources:
     branch: master
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:pivotal-cf/garden-windows-private
-- name: windows2016fs-release
-  type: git
-  source:
-    branch: master
-    private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
-    uri: git@github.com:cloudfoundry-incubator/windows2016fs-release
 - name: windows2016fs
   type: git
   source:
@@ -324,7 +318,6 @@ jobs:
       trigger: true
     - get: gcp-windows-stemcell
     - get: garden-windows-private
-    - get: windows2016fs-release
   - aggregate:
     - task: get-cf-vars
       file: ci/get-gcs-file/task.yml
@@ -342,13 +335,6 @@ jobs:
         release: winc-release-develop
       output_mapping:
         release-tarball: winc-tarball
-    - task: upload-windows2016fs-release
-      file: ci/upload-windows2016fs-release/task.yml
-      params:
-        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
   - put: pesto-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
