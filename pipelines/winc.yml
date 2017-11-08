@@ -358,8 +358,8 @@ jobs:
     get_params:
       skip_export: true
   - task: run-wats
+    attempts: 3
     file: ci/run-wats/task.yml
-    input_mapping:
     params:
       ADMIN_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
       ADMIN_USER: admin
