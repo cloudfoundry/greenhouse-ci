@@ -11,15 +11,16 @@ run:
   path: ci/bosh-windows-stemcell-builder/bwats/run
 
 params:
-  IAAS:
   ACCOUNT_JSON:
+  AZ: z1
   BOSH_CA_CERT:
   BOSH_CLIENT:
   BOSH_CLIENT_SECRET:
   BOSH_TARGET:
-  STEMCELL_PATH:
-  STEMCELL_OS:
-  AZ: z1
-  VM_TYPE: large
-  VM_EXTENSIONS: ""
+  GINKGO_FOCUS:
+  IAAS:
   NETWORK: default
+  STEMCELL_OS:
+  STEMCELL_PATH:
+  VM_EXTENSIONS: ""
+  VM_TYPE: large
