@@ -21,3 +21,4 @@ params:
   HTTP_HEALTHCHECK: true
   SKIP_SSH: false
   TEST_TASK:
+  CREDHUB_MODE:
