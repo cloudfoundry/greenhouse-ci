@@ -26,6 +26,9 @@
 - type: replace
   path: /resources/name=gcp-build-number/source/bucket
   value: bosh-windows-stemcells-dev
+- type: replace
+  path: /resources/name=aws-2016-regional/source/bucket
+  value: aws-regional-stemcells-2016-dev
 
 # remove unnecessary resources
 
@@ -54,10 +57,6 @@
 - type: remove
   path: /resources/name=aws-2016-tested
 - type: remove
-  path: /resources/name=aws-2016-untested
-- type: remove
-  path: /resources/name=aws-2016-regional
-- type: remove
   path: /resources/name=azure-base-vhd-uri
 - type: remove
   path: /resources/name=azure-untested
@@ -77,8 +76,6 @@
   path: /jobs/name=create-azure
 - type: remove
   path: /jobs/name=test-aws
-- type: remove
-  path: /jobs/name=copy-regions-aws
 - type: remove
   path: /jobs/name=test-vsphere-from-vmx
 - type: remove
