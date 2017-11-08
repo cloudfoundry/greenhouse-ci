@@ -11,6 +11,7 @@ BASE_AMI_NAME: 'Windows_Server-2016-English-Full-Base-*'
 #AWS Output Info
 AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-2016-dev'
 #AWS Packer Info
+AWS_PACKER_REGION: 'us-east-2'
 
 
 #GCP Base Image Info
