@@ -15,7 +15,7 @@ pushd windows2016fs-release
 	git config --global user.name "Greenhouse CI"
 	git add VERSION CREATE_BIN_SHA_WINDOWS CREATE_BIN_SHA_LINUX
 
-	commit_message="Bumped version to $NEW_VERSION \n\n[ci skip]"
+	commit_message="Bumped version to $NEW_VERSION"
 	git commit -m "$(echo -e $commit_message)"
 popd
 

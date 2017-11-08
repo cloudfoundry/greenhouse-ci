@@ -32,7 +32,7 @@ pushd release
 
     commit_message="Create final release ${FINAL_RELEASE_VERSION}"
     if [[ -n "${CI_SKIP:-}" ]]; then
-      commit_message="$commit_message\n\n[ci skip]"
+      commit_message="$commit_message"
     fi
 
     git commit -m "$(echo -e $commit_message)"
