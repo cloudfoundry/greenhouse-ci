@@ -611,17 +611,13 @@ jobs:
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-diff-vsphere-esxi-windows2012R2-go_agent.tgz
 
-- name: build-aws-regional-amis
+- name: create-aws
   serial: true
   plan:
-  - put: aws-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        # passed: [build-stemcells]
       - get: base-amis
         resource: base-amis-win2012r2
         passed: [build-stemcells]
@@ -630,11 +626,93 @@ jobs:
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-main-version
+      - get: main-version
         passed: [build-stemcells]
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
+    - put: version
+      resource: aws-stemcell-version
+      params:
+        pre: build
+    - task: create-packer-ci-key
+      privileged: true
+      config:
+        platform: linux
+        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+        outputs:
+        - name: packer-ci-private-key
+        run:
+          path: bash
+          args:
+          - "-c"
+          - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
+        params:
+          PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
+    - task: create-stemcell
+      timeout: 1h30m
+      attempts: 3
+      file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+      params:
+        OS_VERSION: windows2012R2
+        REGION: ((AWS_PACKER_REGION))
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
+    - aggregate:
+      - put: aws-2016-regional
+        params:
+          file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+      - put: packer-output-ami
+        params:
+          file: amis/packer-output-ami-*.txt
+    ensure:
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
+      params:
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+
+- name: copy-regions-aws
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: aws-2016-regional
+        passed: [create-aws]
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-aws]
+      - get: base-amis
+        resource: base-amis-win2016
+        passed: [create-aws]
+      - get: version
+        resource: aws-build-number
+        passed: [create-aws]
+        trigger: true
+      - get: main-version
+        passed: [create-aws]
+      - get: amis
+        resource: packer-output-ami
+        passed: [create-aws]
+    - task: copy-stemcells
+      timeout: 1h30m
+      attempts: 3
+      file: ci/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+      params:
+        OS_VERSION: windows2016
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
+        REGIONS: "us-east-1,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
+    - put: aws-2016-untested
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+
+- name: build-aws-regional-amis
+  serial: true
+  plan:
+  - do:
     - task: cleanup-aws-regional-stemcells
       params:
         BUCKET_NAME: aws-regional-stemcells
@@ -660,6 +738,11 @@ jobs:
           - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
         params:
           PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
+        OS_VERSION: windows2012R2
+        REGION: ((AWS_PACKER_REGION))
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
     - aggregate:
       - task: create-stemcell-us-east-1
         timeout: 1h30m
