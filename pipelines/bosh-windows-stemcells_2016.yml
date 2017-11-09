@@ -123,6 +123,13 @@ resources:
     initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # locks
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
@@ -377,7 +384,7 @@ jobs:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
     - put: gcp-2016-untested
       params:
-        file: untested-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     ensure:
       put: gcp-lock
       params:
@@ -517,7 +524,7 @@ jobs:
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
-        REGIONS: "us-east-1,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
+        REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
     - put: aws-2016-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
