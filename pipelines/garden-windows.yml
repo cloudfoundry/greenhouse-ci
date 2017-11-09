@@ -226,6 +226,7 @@ jobs:
         - cf-deployment/operations/experimental/disable-consul.yml
         - cf-deployment/operations/experimental/disable-consul-windows.yml
         - garden-windows-private/operations-common/latest-garden-windows.yml
+        - garden-windows-private/operations-common/scale-down-credhub.yml
         vars_files:
         - cf-vars/vars.yml
         cleanup: true
