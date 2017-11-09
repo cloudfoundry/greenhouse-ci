@@ -171,6 +171,13 @@ resources:
     initial_version: 1200.0.0
 
 # locks
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
@@ -630,6 +637,9 @@ jobs:
 - name: create-aws
   serial: true
   plan:
+  - put: aws-lock
+    params:
+      acquire: true
   - do:
     - aggregate:
       - get: ci
@@ -684,11 +694,16 @@ jobs:
         params:
           file: amis/packer-output-ami-*.txt
     ensure:
-      task: delete-orphan-vms
-      file: ci/delete-vms/task.yml
-      params:
-        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      do:
+      - task: delete-orphan-vms
+        file: ci/delete-vms/task.yml
+        params:
+          AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+          AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      - put: aws-lock
+        params:
+          release: aws-lock
+
 
 - name: copy-regions-aws
   serial: true

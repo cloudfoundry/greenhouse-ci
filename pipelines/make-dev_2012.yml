@@ -46,6 +46,9 @@
   value: all-bosh-windows-dev
 
 # locks
+- type: replace
+  path: /resources/name=aws-lock/source/pool
+  value: stemcells-aws-dev
 
 # remove unnecessary resources
 - type: remove
