@@ -1,0 +1,23 @@
+---
+#Common Variables
+BASE_FOLDER_NAME: '2012R2'
+STEMCELL_INITIAL_VERSION: '1600.0.0'
+BASE_IMAGE_OS: 'windows2012R2'
+ROOT_BUCKET: 'all-bosh-windows-dev'
+
+#AWS Base Image Info
+BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'
+#AWS Output Info
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709-dev'
+#AWS Packer Info
+AWS_PACKER_REGION: 'us-east-2'
+
+#GCP Base Image Info
+BASE_IMAGE_REGEX: 'windows-server-2012-r2-dc-v.*'
+IMAGE_FAMILY: 'windows-2012-r2'
+
+#Azure Base Image Info
+AZURE_BASE_IMAGE_SKU: '2012-R2-Datacenter'
+AZURE_BASE_IMAGE_OFFER: 'WindowsServer'
+#Azure Output Info
+AZURE_OUTPUT_IMAGE_SKU: '2012r2'
