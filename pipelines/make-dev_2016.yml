@@ -27,7 +27,7 @@
   path: /resources/name=gcp-build-number/source/bucket
   value: bosh-windows-stemcells-dev
 - type: replace
-  path: /resources/name=aws-2016-regional/source/bucket
+  path: /resources/name=aws-regional/source/bucket
   value: aws-regional-stemcells-2016-dev
 
 # remove unnecessary resources

@@ -2,7 +2,7 @@
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'
 #AWS Output Info
-AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-2012'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-2'
 

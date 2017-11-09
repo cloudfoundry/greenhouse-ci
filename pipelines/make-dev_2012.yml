@@ -57,8 +57,6 @@
 - type: remove
   path: /resources/name=stemcell-builder-release
 - type: remove
-  path: /resources/name=aws-stemcell-version
-- type: remove
   path: /resources/name=azure-stemcell-version
 - type: remove
   path: /resources/name=aws-lock
@@ -77,13 +75,9 @@
 - type: remove
   path: /resources/name=azure-stemcell-final
 - type: remove
-  path: /resources/name=aws-stemcell-final
-- type: remove
   path: /resources/name=gcp-stemcell-final
 - type: remove
-  path: /resources/name=aws-stemcell-release-candidate
-- type: remove
-  path: /resources/name=base-amis-win2012r2
+  path: /resources/name=aws-stemcell-final
 - type: remove
   path: /resources/name=azure-stemcell-pre-release-candidate
 - type: remove
@@ -94,8 +88,6 @@
   path: /resources/name=azstemcell
 - type: remove
   path: /resources/name=boshio
-- type: remove
-  path: /resources/name=stemcells-main-version
 
 # JOBS
 
@@ -124,6 +116,14 @@
   path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
 - type: remove
   path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/trigger
+
+# configure build job
+- type: remove
+  path: /jobs/name=build-stemcells/plan/0/aggregate/get=stemcell-builder/passed
+- type: remove
+  path: /jobs/name=build-stemcells/plan/0/aggregate/get=updated-vmx-version/passed
+- type: remove
+  path: /jobs/name=build-stemcells/plan/2/aggregate/put=azure-stemcell-version
 
 # configure gcp for dev
 - type: replace
@@ -253,8 +253,6 @@
 - type: remove
   path: /jobs/name=test-stemcell-builder
 - type: remove
-  path: /jobs/name=build-stemcells
-- type: remove
   path: /jobs/name=promote-azure
 - type: remove
   path: /jobs/name=promote-aws-gcp-vsphere
@@ -264,10 +262,6 @@
   path: /jobs/name=create-vsphere-add-updates
 - type: remove
   path: /jobs/name=test-vsphere-stemcell-from-vmx
-- type: remove
-  path: /jobs/name=build-aws-regional-amis
-- type: remove
-  path: /jobs/name=create-aws-stemcell
 - type: remove
   path: /jobs/name=create-azure-stemcell
 - type: remove

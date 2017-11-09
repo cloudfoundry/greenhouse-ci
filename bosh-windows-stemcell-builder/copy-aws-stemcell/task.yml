@@ -8,7 +8,7 @@ inputs:
   - name: stemcell-builder
   - name: version
   - name: amis
-  - name: aws-2016-regional
+  - name: aws-regional
 
 outputs:
   - name: bosh-windows-stemcell
@@ -25,7 +25,7 @@ params:
   VERSION_DIR: ../version
   BASE_AMIS_DIR: ../base-amis
   AMIS_DIR: ../amis
-  DEFAULT_STEMCELL_DIR: ../aws-2016-regional
+  DEFAULT_STEMCELL_DIR: ../aws-regional
 
   OUTPUT_BUCKET_NAME: aws-regional-stemcells
   OUTPUT_BUCKET_REGION: us-east-1
