@@ -84,8 +84,12 @@ push-location garden-runc-release
     --runtime-plugin-extra-arg=--image-store=$imageRoot `
     --image-plugin=$wincImagePath `
     --image-plugin-extra-arg=--store=$imageRoot `
+    --image-plugin-extra-arg=--log=winc-image.log `
+    --image-plugin-extra-arg=--debug `
     --network-plugin=$wincNetworkPath `
     --network-plugin-extra-arg=--configFile=$env:TEMP/interface.json `
+    --network-plugin-extra-arg=--log=winc-network.log `
+    --network-plugin-extra-arg=--debug `
     --bind-ip=$env:GARDEN_ADDRESS `
     --bind-port=$env:GARDEN_PORT `
     --default-rootfs=$wincTestRootfs `
@@ -112,9 +116,13 @@ Kill-Garden
 & $wincNetworkPath --action delete --configFile "$env:TEMP/interface.json"
 
 if ($ExitCode -ne 0) {
-  echo "gdn.exe STDOUT"
+  echo "`n`n`n############# gdn.exe STDOUT"
   Get-Content garden-runc-release/gdn.out.log
-  echo "gdn.exe STDERR"
+  echo "`n`n`n############# gdn.exe STDERR"
   Get-Content garden-runc-release/gdn.err.log
+  echo "`n`n`n############# winc-image.exe"
+  Get-Content garden-runc-release/winc-image.log
+  echo "`n`n`n############# winc-network.exe"
+  Get-Content garden-runc-release/winc-network.log
   Exit $ExitCode
 }
