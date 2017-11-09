@@ -12,8 +12,9 @@ groups:
   - create-vsphere-stemcell-from-diff
   - test-vsphere-stemcell-from-vmx
   - test-vsphere-stemcell-from-diff
-  - build-aws-regional-amis
-  - create-aws-stemcell
+  - create-aws
+  - copy-regions-aws
+  - test-aws
   - create-gcp-stemcell
   - test-gcp-stemcell
   - create-azure-stemcell
@@ -38,8 +39,9 @@ groups:
   - test-vsphere-stemcell-from-diff
 - name: aws
   jobs:
-  - build-aws-regional-amis
-  - create-aws-stemcell
+  - create-aws
+  - copy-regions-aws
+  - test-aws
 - name: gcp
   jobs:
   - create-gcp-stemcell
@@ -169,13 +171,6 @@ resources:
     initial_version: 1200.0.0
 
 # locks
-- name: aws-lock
-  type: pool
-  source:
-    branch: master
-    pool: stemcells-aws
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
