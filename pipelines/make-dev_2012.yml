@@ -59,8 +59,6 @@
 - type: remove
   path: /resources/name=azure-stemcell-version
 - type: remove
-  path: /resources/name=aws-lock
-- type: remove
   path: /resources/name=azure-lock
 - type: remove
   path: /resources/name=vsphere-worker-lock
