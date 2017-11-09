@@ -239,6 +239,12 @@ jobs:
         BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
         BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
         BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+    - task: enable-credhub
+      file: ci/enable-credhub/task.yml
+      params:
+        CF_API: api.pesto.cf-app.com
+        CF_USERNAME: admin
+        CF_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
     - task: wats
       attempts: 3
       file: ci/run-wats/task.yml
