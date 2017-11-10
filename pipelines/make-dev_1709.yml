@@ -7,7 +7,7 @@
 
 # RESOURCES
 - type: replace
-  path: /resources/name=aws-2016-regional/source/regexp
+  path: /resources/name=aws-regional/source/regexp
   value: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
 
 
@@ -53,7 +53,7 @@
 # JOBS
 # remove unnecessary jobs
 - type: remove
-  path: /jobs/name=create-aws/plan/0/do/0/aggregate/get=base-amis/passed
+  path: /jobs/name=create-aws/plan/1/do/0/aggregate/get=base-amis/passed
 - type: remove
   path: /jobs/name=print-azure-publishing-instructions
 - type: remove
@@ -73,7 +73,7 @@
   path: /jobs/name=promote
 
 - type: replace
-  path: /jobs/name=create-aws/plan/0/do/task=create-stemcell/params/REGION
+  path: /jobs/name=create-aws/plan/1/do/task=create-stemcell/params/REGION
   value: us-east-1
 
 - type: replace
