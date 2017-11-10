@@ -24,10 +24,6 @@
 - type: remove
   path: /resources/name=major-stemcell
 - type: remove
-  path: /resources/name=vsphere-stemcell-pre-release-candidate-vmx-2016-insider
-- type: remove
-  path: /resources/name=vsphere-stemcell-release-candidate-vmx-2016-insider
-- type: remove
   path: /resources/name=vsphere-stemcell-final-vmx-2016-insider
 - type: remove
   path: /resources/name=gcp-2016-untested
@@ -64,17 +60,26 @@
 - type: remove
   path: /jobs/name=test-aws
 - type: remove
-  path: /jobs/name=test-vsphere-from-vmx
-- type: remove
   path: /jobs/name=create-gcp
 - type: remove
   path: /jobs/name=test-gcp
 - type: remove
   path: /jobs/name=promote
 
+#create-aws
 - type: replace
   path: /jobs/name=create-aws/plan/1/do/task=create-stemcell/params/REGION
   value: us-east-1
+
+#create-vsphere-from-vmx
+- type: replace
+  path: /jobs/name=create-vsphere-from-vmx/plan/task=create-stemcell/tags
+  value: [vsphere-windows-worker-dev]
+
+#test-vsphere-from-vmx
+- type: replace
+  path: /jobs/name=test-vsphere-from-vmx/plan/task=test-stemcell/tags
+  value: [vsphere-windows-worker-dev]
 
 - type: replace
   path: /jobs/name=copy-regions-aws/plan/0/do/task=copy-stemcells/params/REGIONS
