@@ -175,28 +175,28 @@ resources:
   type: pool
   source:
     branch: master
-    pool: stemcells-aws
+    pool: ((AWS_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
-    pool: stemcells-azure
+    pool: ((AZURE_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
     branch: master
-    pool: stemcells-gcp
+    pool: ((GCP_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-worker-lock
   type: pool
   source:
     branch: master
-    pool: vsphere-worker-lock
+    pool: ((VSPHERE_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 

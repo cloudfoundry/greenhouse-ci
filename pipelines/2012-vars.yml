@@ -4,6 +4,10 @@ BASE_FOLDER_NAME: '2012R2'
 STEMCELL_INITIAL_VERSION: '1200.0.0'
 BASE_IMAGE_OS: 'windows2012R2'
 ROOT_BUCKET: 'all-bosh-windows'
+AWS_LOCK: 'stemcells-aws'
+GCP_LOCK: 'stemcells-gcp'
+AZURE_LOCK: 'stemcells-azure'
+VSPHERE_LOCK: 'vsphere-worker-lock'
 
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'

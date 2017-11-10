@@ -4,6 +4,10 @@ BASE_FOLDER_NAME: '1709'
 STEMCELL_INITIAL_VERSION: '1709.0.0'
 BASE_IMAGE_OS: 'windows1709'
 ROOT_BUCKET: 'all-bosh-windows-dev'
+AWS_LOCK: 'stemcells-aws-dev'
+GCP_LOCK: 'stemcells-gcp-dev'
+AZURE_LOCK: 'stemcells-azure-dev'
+VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 
 
 #AWS Base Image Info
