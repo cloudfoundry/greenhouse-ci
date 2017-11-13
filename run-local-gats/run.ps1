@@ -40,7 +40,7 @@ $env:PATH= "$env:GOPATH/bin;" + $env:PATH
 $wincPath = "$PWD/winc-binary/winc.exe"
 $wincNetworkPath = "$PWD/winc-network-binary/winc-network.exe"
 
-$config = '{"mtu": 0, "network_name": "winc-nat", "subnet_range": "172.30.0.0/22", "gateway_address": "172.30.0.1", "insider_preview": false}'
+$config = '{"mtu": 0, "network_name": "winc-nat", "subnet_range": "172.30.0.0/22", "gateway_address": "172.30.0.1"}'
 set-content -path "$env:TEMP/interface.json" -value $config
 
 & $wincNetworkPath --action create --configFile "$env:TEMP/interface.json"
