@@ -23,3 +23,6 @@ params:
 
   VERSION_DIR: ../version
   BASE_IMAGE_DIR: ../base-gcp-image
+  HTTP_PROXY:
+  HTTPS_PROXY:
+  PROXY_BYPASS_LIST:
