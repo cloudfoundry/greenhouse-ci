@@ -19,11 +19,17 @@
   path: /resources/name=vsphere-stemcell-version/source/initial_version
   value: 1200.5000.0
 - type: replace
+  path: /resources/name=stemcells-main-version/source/initial_version
+  value: 1200.5000.0
+- type: replace
   path: /resources/name=gcp-stemcell-version/source/bucket
   value: all-bosh-windows-dev
 - type: replace
   path: /resources/name=gcp-stemcell-version/source/initial_version
   value: 1200.5000.0
+- type: replace
+  path: /resources/name=updated-vmx-version/source/initial_version
+  value: '30.0.0'
 
 # s3
 - type: replace
