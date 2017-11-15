@@ -324,7 +324,7 @@ jobs:
       passed: [create-vsphere-from-vmx]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
+    attempts: 1
     tags: [vsphere-linux-worker]
     params:
       VM_TYPE: large # WARN: This is Cloud Config specific!!!
@@ -550,7 +550,7 @@ jobs:
       passed: [copy-regions-aws]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
+    attempts: 1
     params:
       BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
       BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
@@ -729,7 +729,7 @@ jobs:
     - task: test-vsphere-stemcell
       input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
+      attempts: 1
       params:
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
         BOSH_CLIENT_SECRET: ((regina_client_secret))
