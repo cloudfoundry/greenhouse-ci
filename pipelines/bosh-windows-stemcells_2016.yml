@@ -153,25 +153,25 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/metadata/2016-stemcell-(.*).json # Be careful not to match 2012's regex: stemcell-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+- name: vsphere-stemcell-pre-release-candidate-vmx-2016
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-release-candidate-vmx-2016-insider
+- name: vsphere-stemcell-release-candidate-vmx-2016
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-final-vmx-2016-insider
+- name: vsphere-stemcell-final-vmx-2016
   type: s3
   source:
    bucket: bosh-windows-stemcells-private
-   regexp: windows2016-insider/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+   regexp: ((BASE_IMAGE_OS))/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-amis-win2016
@@ -312,7 +312,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: bosh-windows-stemcell
-      resource: vsphere-stemcell-pre-release-candidate-vmx-2016-insider
+      resource: vsphere-stemcell-pre-release-candidate-vmx-2016
       tags: [vsphere-linux-worker]
       trigger: true
     - get: stemcell-builder
@@ -334,7 +334,7 @@ jobs:
       BOSH_CA_CERT: ((regina_ca_cert))
       STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
       STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
-  - put: vsphere-stemcell-release-candidate-vmx-2016-insider
+  - put: vsphere-stemcell-release-candidate-vmx-2016
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
@@ -704,7 +704,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: vsphere-stemcell-release-candidate-vmx-2016-insider
+    - get: vsphere-stemcell-release-candidate-vmx-2016
       passed: [test-vsphere-from-vmx]
     - get: gcp-stemcell-release-candidate
       passed: [test-gcp]
@@ -721,13 +721,13 @@ jobs:
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
         - name: ci
-        - name: vsphere-stemcell-release-candidate-vmx-2016-insider
+        - name: vsphere-stemcell-release-candidate-vmx-2016
         - name: gcp-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
   - aggregate:
     - task: test-vsphere-stemcell
-      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016 }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 1
       params:
@@ -754,8 +754,8 @@ jobs:
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
   - aggregate:
     - task: vsphere-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016-insider }
-      output_mapping: { final-stemcell: vsphere-stemcell-final-vmx-2016-insider }
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016 }
+      output_mapping: { final-stemcell: vsphere-stemcell-final-vmx-2016 }
       file: ci/set-stemcell-version/task.yml
     - task: gcp-set-stemcell-filename-version
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
@@ -770,9 +770,9 @@ jobs:
       params:
         file: stemcell-info/2016-stemcell-*.json
     - put: vsphere-stemcell-final-s3
-      resource: vsphere-stemcell-final-vmx-2016-insider
+      resource: vsphere-stemcell-final-vmx-2016
       params:
-        file: vsphere-stemcell-final-vmx-2016-insider/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        file: vsphere-stemcell-final-vmx-2016/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final-2016
       params:

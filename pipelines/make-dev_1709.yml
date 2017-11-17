@@ -24,7 +24,7 @@
 - type: remove
   path: /resources/name=major-stemcell
 - type: remove
-  path: /resources/name=vsphere-stemcell-final-vmx-2016-insider
+  path: /resources/name=vsphere-stemcell-final-vmx-2016
 - type: remove
   path: /resources/name=gcp-2016-untested
 - type: remove

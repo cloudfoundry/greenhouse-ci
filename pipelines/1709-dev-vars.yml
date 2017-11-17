@@ -1,7 +1,7 @@
 ---
 #Common Variables
 BASE_FOLDER_NAME: '1709'
-STEMCELL_INITIAL_VERSION: '1709.5000.0'
+STEMCELL_INITIAL_VERSION: '1709.6000.0'
 BASE_IMAGE_OS: 'windows1709'
 ROOT_BUCKET: 'all-bosh-windows-dev'
 AWS_LOCK: 'stemcells-aws-dev'
