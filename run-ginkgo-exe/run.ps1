@@ -9,5 +9,5 @@ $env:PATH="$env:PATH;C:\var\vcap\bosh\bin"
 go get github.com/onsi/ginkgo/ginkgo
 
 cd repo
-& "$env:GOPATH/bin/ginkgo.exe" -nodes $env:NODES -r -race -cover -keepGoing -randomizeSuites $env:TEST_PATH
+& "$env:GOPATH/bin/ginkgo.exe" -nodes $env:NODES -r -race -keepGoing -randomizeSuites $env:TEST_PATH
 Exit $LastExitCode

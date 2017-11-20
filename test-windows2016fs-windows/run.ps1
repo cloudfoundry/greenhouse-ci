@@ -5,5 +5,5 @@ $env:GOPATH=$PWD
 
 go get github.com/onsi/ginkgo/ginkgo
 
-& "$env:GOPATH/bin/ginkgo.exe" -nodes $env:NODES -r -race -cover -keepGoing -randomizeSuites src/code.cloudfoundry.org/windows2016fs
+& "$env:GOPATH/bin/ginkgo.exe" -nodes $env:NODES -r -race -keepGoing -randomizeSuites src/code.cloudfoundry.org/windows2016fs
 Exit $LastExitCode

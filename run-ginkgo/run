@@ -8,5 +8,5 @@ export PATH="$PATH:$GOPATH/bin"
 go get github.com/onsi/ginkgo/ginkgo
 
 pushd repo
-  ginkgo -p -r -race -cover -keepGoing -randomizeSuites -skipPackage "$IGNORE_PACKAGES" "$TEST_PATH"
+  ginkgo -p -r -race -keepGoing -randomizeSuites -skipPackage "$IGNORE_PACKAGES" "$TEST_PATH"
 popd
