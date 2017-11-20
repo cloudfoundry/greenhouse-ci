@@ -76,6 +76,12 @@
   path: /jobs/name=create-vsphere-from-vmx/plan/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
 
+#copy-regions-aws
 - type: replace
   path: /jobs/name=copy-regions-aws/plan/0/do/task=copy-stemcells/params/REGIONS
   value: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
+
+#build
+- type: replace
+  path: /jobs/name=build/plan/0/aggregate/get=version/params/bump
+  value: minor
