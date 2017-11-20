@@ -1,6 +1,8 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+set-netfirewallprofile -all -defaultInboundAction block -defaultOutboundAction block
+
 go.exe version
 
 $env:GOPATH = $PWD

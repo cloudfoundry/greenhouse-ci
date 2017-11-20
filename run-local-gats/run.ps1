@@ -1,6 +1,8 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+set-netfirewallprofile -all -defaultInboundAction block -defaultOutboundAction block
+
 function Kill-Garden
 {
   Get-Process | foreach { if ($_.name -eq "gdn") { kill -Force $_.Id } }
