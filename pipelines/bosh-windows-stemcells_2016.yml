@@ -591,13 +591,13 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
         OS_VERSION: windows2016
-        CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
-        CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
-        TENANT_ID: ((KOALA_AZURE_TENANT_ID))
-        SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
-        OBJECT_ID: ((KOALA_AZURE_OBJECT_ID))
-        RESOURCE_GROUP_NAME: ((KOALA_AZURE_RESOURCE_GROUP))
-        STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
+        CLIENT_ID: ((AZURE_CLIENT_ID))
+        CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+        TENANT_ID: ((AZURE_TENANT_ID))
+        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        OBJECT_ID: ((AZURE_OBJECT_ID))
+        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
+        STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
         LOCATION: 'East US'
         VM_SIZE: Standard_DS2_v2
         PUBLISHER: 'pivotal'
@@ -610,10 +610,10 @@ jobs:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
-          CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
-          CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
-          TENANT_ID: ((KOALA_AZURE_TENANT_ID))
-          SUBSCRIPTION_ID: ((KOALA_AZURE_SUBSCRIPTION_ID))
+          CLIENT_ID: ((AZURE_CLIENT_ID))
+          CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+          TENANT_ID: ((AZURE_TENANT_ID))
+          SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
     - put: azure-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
@@ -659,7 +659,7 @@ jobs:
       VM_TYPE: default
       NETWORK: default
       STEMCELL_OS: windows2016
-      AZURE_SOURCE_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
+      AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
   - task: upload-stemcell-to-acceptance
     file: ci/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -692,11 +692,11 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
       SKU: '2016'
-      AZURE_STORAGE_ACCOUNT: ((KOALA_AZURE_STORAGE_ACCOUNT))
-      AZURE_STORAGE_ACCESS_KEY: ((KOALA_AZURE_STORAGE_ACCESS_KEY))
-      AZURE_TENANT_ID: ((KOALA_AZURE_TENANT_ID))
-      AZURE_CLIENT_ID: ((KOALA_AZURE_CLIENT_ID))
-      AZURE_CLIENT_SECRET: ((KOALA_AZURE_CLIENT_SECRET))
+      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
+      AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
       CONTAINER_NAME: 'system'
 
 - name: promote
