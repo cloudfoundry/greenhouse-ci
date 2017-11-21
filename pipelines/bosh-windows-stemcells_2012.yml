@@ -465,8 +465,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
         AWS_REGION: us-east-1
-        INPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
-        OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal"
+        INPUT_BUCKET: "((ROOT_BUCKET))/2012R2/untested/vsphere/internal/inputs"
+        OUTPUT_BUCKET: "((ROOT_BUCKET))/2012R2/untested/vsphere/internal"
     ensure:
       put: vsphere-worker-lock
       params:
