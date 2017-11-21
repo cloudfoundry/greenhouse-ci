@@ -133,22 +133,21 @@
       - task: create-stemcell
         file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
         params:
-          ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
-          BASE_IMAGE: ((AZURE_BASE_IMAGE_SKU))
+          BASE_IMAGE: ((AZURE_BASE_IMAGE))
           BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
           CLIENT_ID: ((AZURE_CLIENT_ID))
           CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-          LOCATION: 'Central US'
+          LOCATION: ((AZURE_LOCATION))
           OBJECT_ID: ((AZURE_OBJECT_ID))
-          OFFER: 'bosh-windows-server'
-          OS_VERSION: windows2012R2
-          PUBLISHER: 'pivotal'
-          RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
-          SKU: ((AZURE_OUTPUT_IMAGE_SKU))
+          OFFER: ((AZURE_OFFER))
+          OS_VERSION: ((AZURE_OS_VERSION))
+          PUBLISHER: ((AZURE_PUBLISHER))
+          RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+          SKU: ((AZURE_SKU))
           STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
           SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
           TENANT_ID: ((AZURE_TENANT_ID))
-          VM_SIZE: Standard_DS2_v2
+          VM_SIZE: ((AZURE_VM_SIZE))
         ensure:
           task: delete-orphan-vms
           file: ci/delete-vms/task.yml

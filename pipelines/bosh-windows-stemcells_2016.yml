@@ -590,30 +590,29 @@ jobs:
     - task: create-stemcell
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
-        OS_VERSION: windows2016
+        BASE_IMAGE: ((AZURE_BASE_IMAGE))
+        BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-        TENANT_ID: ((AZURE_TENANT_ID))
-        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        LOCATION: ((AZURE_LOCATION))
         OBJECT_ID: ((AZURE_OBJECT_ID))
-        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
+        OFFER: ((AZURE_OFFER))
+        OS_VERSION: ((AZURE_OS_VERSION))
+        PUBLISHER: ((AZURE_PUBLISHER))
+        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+        SKU: ((AZURE_SKU))
         STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-        LOCATION: 'East US'
-        VM_SIZE: Standard_DS2_v2
-        PUBLISHER: 'pivotal'
-        OFFER: 'bosh-windows-server'
-        SKU: ((AZURE_OUTPUT_IMAGE_SKU))
-        ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
-        BASE_IMAGE: ((AZURE_BASE_IMAGE_SKU))
-        BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
+        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        TENANT_ID: ((AZURE_TENANT_ID))
+        VM_SIZE: ((AZURE_VM_SIZE))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
           CLIENT_ID: ((AZURE_CLIENT_ID))
           CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-          TENANT_ID: ((AZURE_TENANT_ID))
           SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+          TENANT_ID: ((AZURE_TENANT_ID))
     - put: azure-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
@@ -651,15 +650,15 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/bwats-azure-2016/task.yml
     tags: [azure-linux-worker]
     params:
-      BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: '10.0.0.6'
-      AZ: z1
-      VM_TYPE: default
-      NETWORK: default
-      STEMCELL_OS: windows2016
+      AZ: ((AZURE_HEAVY_AZ))
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
+      BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: upload-stemcell-to-acceptance
     file: ci/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -691,13 +690,14 @@ jobs:
   - task: print-azure-publishing-instructions
     file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
-      SKU: '2016'
-      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
       AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
       AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-      CONTAINER_NAME: 'system'
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
+      CONTAINER_NAME: ((CONTAINER_NAME))
+      CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+      SKU: ((AZURE_SKU))
 
 - name: promote
   serial: true

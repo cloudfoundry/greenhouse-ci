@@ -890,22 +890,21 @@ jobs:
     - task: create-stemcell
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
-        ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
-        BASE_IMAGE: ((AZURE_BASE_IMAGE_SKU))
+        BASE_IMAGE: ((AZURE_BASE_IMAGE))
         BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-        LOCATION: 'East US'
+        LOCATION: ((AZURE_LOCATION))
         OBJECT_ID: ((AZURE_OBJECT_ID))
-        OFFER: 'bosh-windows-server'
-        OS_VERSION: windows2012R2
-        PUBLISHER: 'pivotal'
-        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
-        SKU: ((AZURE_OUTPUT_IMAGE_SKU))
+        OFFER: ((AZURE_OFFER))
+        OS_VERSION: ((AZURE_OS_VERSION))
+        PUBLISHER: ((AZURE_PUBLISHER))
+        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+        SKU: ((AZURE_SKU))
         STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
-        VM_SIZE: Standard_DS2_v2
+        VM_SIZE: ((AZURE_VM_SIZE))
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
@@ -944,13 +943,13 @@ jobs:
   - task: print-azure-publishing-instructions
     file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
-      SKU: '2012r2'
-      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
       AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
       AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-      CONTAINER_NAME: 'system'
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
+      CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+      SKU: ((AZURE_SKU))
 
 - name: test-azure-stemcell
   serial: true
@@ -977,16 +976,16 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/bwats-azure/task.yml
     tags: [azure-linux-worker]
     params:
-      BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: '10.0.0.6'
-      AZ: z1
-      VM_TYPE: default
-      NETWORK: default
-      STEMCELL_OS: windows2012R2
-      WORKING_DIR: '/'
+      AZ: ((AZURE_HEAVY_AZ))
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
+      BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      WORKING_DIR: ((AZURE_HEAVY_WORKING_DIR))
   - put: azure-stemcell-release-candidate
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
