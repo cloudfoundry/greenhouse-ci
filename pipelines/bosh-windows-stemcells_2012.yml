@@ -783,22 +783,22 @@ jobs:
       acquire: true
   - do:
     - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [build-stemcells]
       - get: base-gcp-image
         resource: base-gcp-image-win2012r2
+        passed: [build-stemcells]
+      - get: ci
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
+      - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: stemcells-main-version
         passed: [build-stemcells]
       - get: version
         resource: gcp-stemcell-version
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-main-version
-        passed: [build-stemcells]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
     - put: version
       resource: gcp-stemcell-version
       params:
@@ -871,18 +871,18 @@ jobs:
   - do:
     - aggregate:
       - get: ci
+      - get: sshd
+        resource: openssh-release
+        version: { tag: ((OPEN_SSH_VERSION)) }
       - get: stemcell-builder
+        passed: [build-stemcells]
+      - get: stemcells-main-version
         passed: [build-stemcells]
       - get: version
         resource: azure-stemcell-version
         passed: [build-stemcells]
         trigger: true
       - get: windows-stemcell-dependencies
-      - get: stemcells-main-version
-        passed: [build-stemcells]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
     - put: version
       resource: azure-stemcell-version
       params:
@@ -890,30 +890,30 @@ jobs:
     - task: create-stemcell
       file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
       params:
-        OS_VERSION: windows2012R2
-        CLIENT_ID: ((AZURE_CLIENT_ID))
-        CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-        TENANT_ID: ((AZURE_TENANT_ID))
-        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
-        OBJECT_ID: ((AZURE_OBJECT_ID))
-        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
-        STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-        LOCATION: 'East US'
-        VM_SIZE: Standard_DS2_v2
-        PUBLISHER: 'pivotal'
-        OFFER: 'bosh-windows-server'
-        SKU: ((AZURE_OUTPUT_IMAGE_SKU))
         ADMIN_PASSWORD: ((AZURE_STEMCELL_ADMIN_PASSWORD))
         BASE_IMAGE: ((AZURE_BASE_IMAGE_SKU))
         BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
+        CLIENT_ID: ((AZURE_CLIENT_ID))
+        CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+        LOCATION: 'East US'
+        OBJECT_ID: ((AZURE_OBJECT_ID))
+        OFFER: 'bosh-windows-server'
+        OS_VERSION: windows2012R2
+        PUBLISHER: 'pivotal'
+        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP))
+        SKU: ((AZURE_OUTPUT_IMAGE_SKU))
+        STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        TENANT_ID: ((AZURE_TENANT_ID))
+        VM_SIZE: Standard_DS2_v2
       ensure:
         task: delete-orphan-vms
         file: ci/delete-vms/task.yml
         params:
           CLIENT_ID: ((AZURE_CLIENT_ID))
           CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-          TENANT_ID: ((AZURE_TENANT_ID))
           SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+          TENANT_ID: ((AZURE_TENANT_ID))
     - put: azure-stemcell-pre-release-candidate
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
