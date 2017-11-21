@@ -3,7 +3,7 @@
 set -e
 
 cf api "$CF_API" --skip-ssl-validation
-cf login -u "$CF_USERNAME" -p "$CF_PASSWORD" --skip-ssl-validation
+cf login -u "$CF_USERNAME" -p "$CF_PASSWORD"  -o "system" --skip-ssl-validation
 
 cf create-security-group credhub-internal <(echo '[{
   "destination": "10.0.16.0/24",
