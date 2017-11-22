@@ -38,8 +38,6 @@
 - type: remove
   path: /resources/name=stemcell-builder-release
 - type: remove
-  path: /resources/name=azure-lock
-- type: remove
   path: /resources/name=major-stemcell
 - type: remove
   path: /resources/name=vsphere-stemcell-final
@@ -49,10 +47,6 @@
   path: /resources/name=gcp-stemcell-final
 - type: remove
   path: /resources/name=aws-stemcell-final
-- type: remove
-  path: /resources/name=azure-stemcell-release-candidate
-- type: remove
-  path: /resources/name=azstemcell
 - type: remove
   path: /resources/name=boshio
 
@@ -105,64 +99,6 @@
   path: /jobs/name=create-vsphere-stemcell-from-vmx/plan/1/do/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
 
-# configure test-vsphere-stemcell-from-diff for dev
-# no changes required
-
-# configure azure for dev
-- type: replace
-  path: /jobs/name=create-azure-stemcell
-  value:
-    name: create-azure-stemcell
-    serial: true
-    plan:
-    - do:
-      - aggregate:
-        - get: ci
-        - get: sshd
-          resource: openssh-release
-          version: { tag: ((OPEN_SSH_VERSION)) }
-        - get: stemcell-builder
-        - get: stemcells-main-version
-        - get: version
-          resource: azure-stemcell-version
-        - get: windows-stemcell-dependencies
-      - put: version
-        resource: azure-stemcell-version
-        params:
-          pre: build
-      - task: create-stemcell
-        file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
-        params:
-          BASE_IMAGE: ((AZURE_BASE_IMAGE))
-          BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
-          CLIENT_ID: ((AZURE_CLIENT_ID))
-          CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-          LOCATION: ((AZURE_LOCATION))
-          OBJECT_ID: ((AZURE_OBJECT_ID))
-          OFFER: ((AZURE_OFFER))
-          OS_VERSION: ((AZURE_OS_VERSION))
-          PUBLISHER: ((AZURE_PUBLISHER))
-          RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
-          SKU: ((AZURE_SKU))
-          STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-          SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
-          TENANT_ID: ((AZURE_TENANT_ID))
-          VM_SIZE: ((AZURE_VM_SIZE))
-        ensure:
-          task: delete-orphan-vms
-          file: ci/delete-vms/task.yml
-          params:
-            CLIENT_ID: ((AZURE_CLIENT_ID))
-            CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-            SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
-            TENANT_ID: ((AZURE_TENANT_ID))
-      - put: azure-stemcell-pre-release-candidate
-        params:
-          file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-      - put: azure-base-vhd-uri
-        params:
-          file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
-
 # remove unnecessary jobs
 - type: remove
   path: /jobs/name=bump-stemcell-builder-submodules
@@ -179,39 +115,4 @@
 - type: remove
   path: /jobs/name=print-azure-publishing-instructions
 - type: remove
-  path: /jobs/name=test-azure-stemcell
-- type: remove
   path: /jobs/name=promote-boshio
-
-
-# add bosh.io promote job
-# - type: replace
-#   path: /jobs/name=promote-boshio
-#   value:
-#     name: promote-boshio
-#     serial: true
-#     plan:
-#     - aggregate:
-#       - get: ci
-#       - get: gcp
-#         resource: gcp-stemcell-final
-#       - get: azure
-#         resource: azure-stemcell-final
-#       - get: aws
-#         resource: aws-stemcell-final
-#       - get: version
-#         resource: stemcells-main-version
-#       - get: boshio-input
-#         resource: boshio
-#     - aggregate:
-#       - task: commit-meta4-file
-#         file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-#         params:
-#           OS_NAME: windows
-#           OS_VERSION: 2012R2
-#     # - put: boshio-output
-#     #   params: {repository: boshio}
-#     #   rebase: true
-#     - put: stemcells-main-version
-#       params:
-#         bump: minor
