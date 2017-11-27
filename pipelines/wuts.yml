@@ -31,6 +31,13 @@ resources:
     regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: aws-2012R2-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 # locks
 - name: gcp-lock
@@ -47,7 +54,13 @@ resources:
     pool: vsphere-director-lock
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
+- name: aws-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-aws
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 jobs:
 - name: run-wuts-gcp
   serial: true
@@ -123,4 +136,40 @@ jobs:
       params:
         release: vsphere-director-lock
 
+- name: run-wuts-aws
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: aws-2012R2-stemcell-release-candidate
+        trigger: true
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      params:
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
+        BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_OS: windows2012R2
+        NETWORK: default
+        VM_TYPE: large
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
 
