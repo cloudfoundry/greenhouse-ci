@@ -19,7 +19,7 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
       "gw_private_key": "$(ruby -e "puts ENV['BOSH_GW_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
     "stemcell_path": "$GOPATH/$STEMCELL_PATH",
-    "windows_utilities_path": "windows-utilities-release",
+    "windows_utilities_path": "../../../../windows-utilities-release",
     "stemcell_os": "$STEMCELL_OS",
     "az": "$AZ",
     "vm_type": "$VM_TYPE",
