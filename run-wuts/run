@@ -5,13 +5,6 @@ set -ex
 echo "Set GOPATH to $(pwd)"
 export GOPATH=$(pwd)
 
-echo "Make the bosh release for windows utilities"
-pushd windows-utilities-release
-  bosh cr --tarball=release.tgz
-popd
-
-
-
 pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
@@ -26,7 +19,7 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
       "gw_private_key": "$(ruby -e "puts ENV['BOSH_GW_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
     "stemcell_path": "$GOPATH/$STEMCELL_PATH",
-    "windows_utilities_path": "$GOPATH/windows-utilities-release/release.tgz",
+    "windows_utilities_path": "windows-utilities-release",
     "stemcell_os": "$STEMCELL_OS",
     "az": "$AZ",
     "vm_type": "$VM_TYPE",
