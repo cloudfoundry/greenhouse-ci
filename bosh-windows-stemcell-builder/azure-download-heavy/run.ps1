@@ -9,7 +9,7 @@
 $DestDir = $env:DESTINATION_DIR
 
 $RequiredEnvVars=@(
-    'AZURE_SOURCE_KEY'
+    'AZURE_SOURCE_KEY',
     'WORKING_DIR',
     'STEMCELL_OS',
 )
