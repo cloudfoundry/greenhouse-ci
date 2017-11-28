@@ -5,7 +5,6 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci-a
 inputs:
   - name: ci
   - name: azstemcell
-  - name: stemcell-builder
   - name: bosh-windows-stemcell
   - name: azure-base-vhd-uri
   - name: azure-stemcell-version
@@ -19,9 +18,10 @@ run:
   - -l
   - -c
   - |
-    pwsh -ExecutionPolicy Bypass -File ci/bosh-windows-stemcell-builder/bwats-azure/download_heavy.ps1
+    pwsh -ExecutionPolicy Bypass -File ci/bosh-windows-stemcell-builder/azure-download-heavy/run.ps1
 
 params:
   STEMCELL_OS:
   AZURE_SOURCE_KEY:
   WORKING_DIR: 'F:/'
+  DESTINATION_DIR:

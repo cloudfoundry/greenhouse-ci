@@ -6,7 +6,8 @@
 # Test these early so that we don't waste time making the stemcell
 # ignoring: VM_EXTENSIONS
 #
-$DestDir = "download-heavy"
+$DestDir = $env:DESTINATION_DIR
+
 $RequiredEnvVars=@(
     'AZURE_SOURCE_KEY'
     'WORKING_DIR',
@@ -17,6 +18,9 @@ foreach ($key in $RequiredEnvVars) {
         Write-Error "Missing required env variable: $key"
     }
 }
+
+New-Item -ItemType file -Path $DestDir
+Exit 0
 
 # TODO: Get pigz and go from pipeline (tar.exe is required by Concourse so not worth it).
 $RequiredExes=@(
