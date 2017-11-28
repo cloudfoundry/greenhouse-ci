@@ -11,7 +11,7 @@ $DestDir = $env:DESTINATION_DIR
 $RequiredEnvVars=@(
     'AZURE_SOURCE_KEY',
     'WORKING_DIR',
-    'STEMCELL_OS',
+    'STEMCELL_OS'
 )
 foreach ($key in $RequiredEnvVars) {
     if ((Get-Item env:$key).Value -eq $null) {
