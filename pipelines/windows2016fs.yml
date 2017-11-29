@@ -103,12 +103,10 @@ resources:
 - name: gcp-windows-stemcell
   type: s3
   source:
-    # bucket: all-bosh-windows
-    # regexp: 2016/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
-    # access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    # secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    bucket: windows-bosh-temp
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    bucket: all-bosh-windows
+    regexp: 1709/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 - name: create-windows-rcs
   type: s3
