@@ -5,6 +5,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
   - name: wats
+  - name: ci
 
 run:
   path: ci/run-wats/run
