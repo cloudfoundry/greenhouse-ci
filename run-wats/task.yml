@@ -8,6 +8,7 @@ inputs:
 
 run:
   path: wats/scripts/run_wats.sh
+  args: ["-nodes", "4"]
 
 params:
   ADMIN_PASSWORD:
