@@ -7,8 +7,7 @@ inputs:
   - name: wats
 
 run:
-  path: wats/scripts/run_wats.sh
-  args: ["-nodes", "4"]
+  path: ci/run-wats/run
 
 params:
   ADMIN_PASSWORD:
@@ -23,3 +22,4 @@ params:
   SKIP_SSH: false
   TEST_TASK:
   CREDHUB_MODE:
+  NODES: 4
