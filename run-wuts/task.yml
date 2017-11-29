@@ -6,7 +6,7 @@ inputs:
   - name: ci
   - name: windows-utilities-release
   - name: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-  - name: bosh-windows-stemcell
+  - name: stemcell
 
 run:
   path: ci/run-wuts/run

@@ -19,9 +19,6 @@ foreach ($key in $RequiredEnvVars) {
     }
 }
 
-New-Item -ItemType file -Path $DestDir
-Exit 0
-
 # TODO: Get pigz and go from pipeline (tar.exe is required by Concourse so not worth it).
 $RequiredExes=@(
     'go',

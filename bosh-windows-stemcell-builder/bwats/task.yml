@@ -5,7 +5,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
   - name: ci
   - name: stemcell-builder
-  - name: bosh-windows-stemcell
+  - name: stemcell
 
 run:
   path: ci/bosh-windows-stemcell-builder/bwats/run

@@ -324,6 +324,7 @@ jobs:
       passed: [create-vsphere-from-vmx]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: { stemcell: bosh-windows-stemcell }
     attempts: 1
     tags: [vsphere-linux-worker]
     params:
@@ -332,7 +333,7 @@ jobs:
       BOSH_CLIENT: ((regina_client))
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
-      STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+      STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
       STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
   - put: vsphere-stemcell-release-candidate-vmx-2016
     params:
@@ -409,6 +410,7 @@ jobs:
       passed: [create-gcp]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       IAAS: gcp
       ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
@@ -416,7 +418,7 @@ jobs:
       BOSH_CLIENT: ((goose_client))
       BOSH_TARGET: ((goose_environment))
       BOSH_CA_CERT: ((goose_ca_cert))
-      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
       STEMCELL_OS: windows2016
       NETWORK: private
       VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
@@ -550,13 +552,14 @@ jobs:
       passed: [copy-regions-aws]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: { stemcell: bosh-windows-stemcell }
     attempts: 1
     params:
       BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
       BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
       BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-      STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
       STEMCELL_OS: windows2016
   - put: aws-2016-tested
     params:
@@ -646,18 +649,26 @@ jobs:
       resource: azure-build-number
       passed: [create-azure]
       trigger: true
-  - task: test-stemcell
-    file: ci/bosh-windows-stemcell-builder/bwats-azure-2016/task.yml
+  - task: download-heavy
+    file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
     tags: [azure-linux-worker]
     params:
-      AZ: ((AZURE_HEAVY_AZ))
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      DESTINATION_DIR: heavy-stemcell
+  - task: test-stemcell
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: {stemcell: heavy-stemcell}
+    params:
+      AZ: ((AZURE_HEAVY_AZ))
       BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
       BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
       BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
       BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+      IAAS: azure
       NETWORK: ((AZURE_HEAVY_NETWORK))
       STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: upload-stemcell-to-acceptance
     file: ci/pm-acceptance-upload-azure-stemcell/task.yml
@@ -727,7 +738,7 @@ jobs:
         path: ci/match-stemcell-versions/run
   - aggregate:
     - task: test-vsphere-stemcell
-      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate-vmx-2016 }
+      input_mapping: { stemcell: vsphere-stemcell-release-candidate-vmx-2016 }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 1
       params:
@@ -736,10 +747,10 @@ jobs:
         BOSH_CLIENT: ((regina_client))
         BOSH_TARGET: ((regina_environment))
         BOSH_CA_CERT: ((regina_ca_cert))
-        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016
     - task: test-gcp-stemcell
-      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+      input_mapping: { stemcell: gcp-stemcell-release-candidate }
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
       params:
         IAAS: gcp
@@ -748,7 +759,7 @@ jobs:
         BOSH_CLIENT: ((goose_client))
         BOSH_TARGET: ((goose_environment))
         BOSH_CA_CERT: ((goose_ca_cert))
-        STEMCELL_PATH: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016
         NETWORK: private
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
