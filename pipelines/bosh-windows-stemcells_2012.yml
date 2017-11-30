@@ -984,6 +984,7 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       DESTINATION_DIR: heavy-stemcell
   - task: test-stemcell
+    attempts: 3
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: {stemcell: heavy-stemcell}
     params:
