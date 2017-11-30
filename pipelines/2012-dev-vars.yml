@@ -20,14 +20,8 @@ AWS_PACKER_REGION: 'us-east-2'
 BASE_IMAGE_REGEX: 'windows-server-2012-r2-dc-v.*'
 IMAGE_FAMILY: 'windows-2012-r2'
 
-#Azure Base Image Info
-AZURE_BASE_IMAGE_SKU: '2012-R2-Datacenter-smalldisk'
-AZURE_BASE_IMAGE_OFFER: 'WindowsServer'
-#Azure Output Info
-AZURE_OUTPUT_IMAGE_SKU: '2012r2'
-
 #Azure Create & Publish Variables
-AZURE_BASE_IMAGE: '2012-R2-Datacenter-smalldisk'
+AZURE_BASE_IMAGE: '2012-R2-Datacenter'
 AZURE_BASE_IMAGE_OFFER: 'WindowsServer'
 AZURE_CLIENT_ID: ((DINGO_CLIENT_ID))
 AZURE_CLIENT_SECRET: ((DINGO_CLIENT_SECRET))
