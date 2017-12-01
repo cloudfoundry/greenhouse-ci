@@ -239,6 +239,7 @@ jobs:
         STEMCELL_OS: windows2012R2
         DESTINATION_DIR: heavy-stemcell
     - task: run-wuts
+      attempts: 3
       file: ci/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
