@@ -673,6 +673,7 @@ jobs:
   - task: upload-stemcell-to-acceptance
     file: ci/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
+    input_mapping: {heavy_stemcell_dir: heavy-stemcell}
     params:
       BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
