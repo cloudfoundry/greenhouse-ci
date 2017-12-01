@@ -387,6 +387,7 @@ jobs:
       TEST_TASK: true
       SKIP_SSH: false
       STACK: windows2016
+      NODES: 1
     on_success:
       task: delete-deployment
       file: ci/bosh-deld/task.yml
