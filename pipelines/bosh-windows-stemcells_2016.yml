@@ -799,9 +799,9 @@ jobs:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
-        - name: ci
-        - name: aws-2016-tested
-        - name: gcp-stemcell-release-candidate
+      - name: ci
+      - name: aws-2016-tested
+      - name: gcp-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
   - aggregate:
@@ -862,6 +862,7 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: ci
     - get: stemcell-builder
       passed: [promote-aws-gcp]
     - get: main-version

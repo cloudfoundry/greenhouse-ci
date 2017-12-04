@@ -1197,6 +1197,7 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: ci
     - get: stemcell-builder
       passed: [promote-aws-gcp-vsphere]
     - get: stemcells-main-version
