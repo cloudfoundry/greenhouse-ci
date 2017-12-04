@@ -9,4 +9,4 @@ run:
   path: bash
   args:
   - "-c"
-  - "cat stemcells-main-version/version | sed -e 's#\([0-9]*\.[0-9]*\)\.[0-9]*#\1#' > stemcell-builder-release-version/version"
+  - "cat stemcells-main-version/version | sed -e 's#\\([0-9]*\\.[0-9]*\\)\\.[0-9]*#\\1#' > stemcell-builder-release-version/version"
