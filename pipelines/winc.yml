@@ -24,7 +24,7 @@ resources:
 - name: wats
   type: git
   source:
-    branch: master
+    branch: skip-restart-tests
     uri: https://github.com/cloudfoundry/wats
 - name: cf-deployment
   type: git
