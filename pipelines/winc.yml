@@ -316,6 +316,8 @@ jobs:
       acquire: true
   - aggregate:
     - get: ci
+    - get: every-2hrs
+      trigger: true
     - get: winc-release-develop
       passed: [test-nstar]
       trigger: true
