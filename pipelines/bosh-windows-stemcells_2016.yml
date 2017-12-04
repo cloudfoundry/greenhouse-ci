@@ -40,6 +40,11 @@ groups:
 
 resources:
 # repos
+- name: azstemcell
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 - name: ci
   type: git
   source:
@@ -57,6 +62,8 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
+
+# github releases
 - name: openssh-release
   type: github-release
   source:
@@ -70,13 +77,38 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-- name: azstemcell
-  type: git
+- name: stemcell-builder-release
+  type: github-release
   source:
-    branch: master
-    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
+    user: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-builder
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # versions
+- name: aws-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/aws
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: azure-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/azure
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: gcp-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/gcp
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: main-version
   type: semver
   source:
@@ -101,30 +133,6 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
-- name: gcp-build-number
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/gcp
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
-- name: aws-build-number
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/aws
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
-- name: azure-build-number
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/azure
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # locks
 - name: aws-lock
@@ -134,18 +142,18 @@ resources:
     pool: ((AWS_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: gcp-lock
-  type: pool
-  source:
-    branch: master
-    pool: ((GCP_LOCK))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
     pool: ((AZURE_LOCK))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((GCP_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
@@ -855,15 +863,13 @@ jobs:
   plan:
   - aggregate:
     - get: stemcell-builder
-      passed: [promote-aws-gcp-vsphere]
-    - get: stemcells-main-version
-      passed: [promote-aws-gcp-vsphere]
+      passed: [promote-aws-gcp]
+    - get: main-version
+      passed: [promote-aws-gcp]
       trigger: true
-    - get: vsphere-stemcell
-      resource: vsphere-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
   - aggregate:
     - task: shorten-stemcell-version
+      input_mapping: { stemcells-main-version: main-version }
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     - task: build-psmodules-zip
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
@@ -879,6 +885,6 @@ jobs:
       globs:
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
-  - put: stemcells-main-version
+  - put: main-version
     params:
       bump: minor
