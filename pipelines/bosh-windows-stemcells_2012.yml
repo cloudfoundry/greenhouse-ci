@@ -3,29 +3,29 @@ groups:
   jobs:
   - bump-stemcell-builder-submodules
   - test-stemcell-builder
-  - build-stemcells
-  - promote-azure
-  - promote-aws-gcp-vsphere
-  - ship-bosh-stemcell-builder
-  - create-vsphere-add-updates
-  - create-vsphere-stemcell-from-vmx
-  - create-vsphere-stemcell-from-diff
-  - test-vsphere-stemcell-from-vmx
-  - test-vsphere-stemcell-from-diff
+  - build
   - create-aws
   - copy-regions-aws
   - test-aws
+  - create-azure-stemcell
+  - test-azure-stemcell
+  - print-azure-publishing-instructions
   - create-gcp-stemcell
   - test-gcp-stemcell
-  - create-azure-stemcell
-  - print-azure-publishing-instructions
-  - test-azure-stemcell
+  - create-vsphere-add-updates
+  - create-vsphere-stemcell-from-vmx
+  - test-vsphere-stemcell-from-vmx
+  - promote-aws-gcp-vsphere
+  - ship-bosh-stemcell-builder
+  - promote-azure
   - promote-boshio
+  - create-vsphere-stemcell-from-diff
+  - test-vsphere-stemcell-from-diff
 - name: main
   jobs:
   - bump-stemcell-builder-submodules
   - test-stemcell-builder
-  - build-stemcells
+  - build
   - promote-azure
   - promote-aws-gcp-vsphere
   - promote-boshio
@@ -434,17 +434,17 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [build-stemcells]
+        passed: [build]
       - get: windows-stemcell-dependencies
       - get: version
         resource: vsphere-stemcell-version
-        passed: [build-stemcells]
+        passed: [build]
         trigger: true
       - get: vmx-version
         resource: updated-vmx-version
-        passed: [build-stemcells]
+        passed: [build]
       - get: stemcells-main-version
-        passed: [build-stemcells]
+        passed: [build]
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
@@ -506,7 +506,7 @@ jobs:
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
-- name: build-stemcells
+- name: build
   serial: true
   plan:
   - aggregate:
@@ -567,14 +567,14 @@ jobs:
   - aggregate:
     - get: ci
     - get: version
-      passed: [build-stemcells]
+      passed: [build]
       resource: vsphere-stemcell-version
       trigger: true
     - get: stemcell-builder
-      passed: [build-stemcells]
+      passed: [build]
     - get: windows-stemcell-dependencies
     - get: stemcells-main-version
-      passed: [build-stemcells]
+      passed: [build]
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
@@ -648,15 +648,15 @@ jobs:
       - get: stemcell-builder
       - get: base-amis
         resource: base-amis-win2012r2
-        passed: [build-stemcells]
+        passed: [build]
       - get: version
         resource: aws-stemcell-version
-        passed: [build-stemcells]
+        passed: [build]
         trigger: true
       - get: windows-stemcell-dependencies
       - get: main-version
         resource: stemcells-main-version
-        passed: [build-stemcells]
+        passed: [build]
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
@@ -788,18 +788,18 @@ jobs:
     - aggregate:
       - get: base-gcp-image
         resource: base-gcp-image-win2012r2
-        passed: [build-stemcells]
+        passed: [build]
       - get: ci
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
       - get: stemcell-builder
-        passed: [build-stemcells]
+        passed: [build]
       - get: stemcells-main-version
-        passed: [build-stemcells]
+        passed: [build]
       - get: version
         resource: gcp-stemcell-version
-        passed: [build-stemcells]
+        passed: [build]
         trigger: true
       - get: windows-stemcell-dependencies
     - put: version
@@ -879,12 +879,12 @@ jobs:
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
       - get: stemcell-builder
-        passed: [build-stemcells]
+        passed: [build]
       - get: stemcells-main-version
-        passed: [build-stemcells]
+        passed: [build]
       - get: version
         resource: azure-stemcell-version
-        passed: [build-stemcells]
+        passed: [build]
         trigger: true
       - get: windows-stemcell-dependencies
     - put: version

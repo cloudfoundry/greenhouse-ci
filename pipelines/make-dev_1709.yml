@@ -24,13 +24,13 @@
 - type: remove
   path: /resources/name=major-stemcell
 - type: remove
-  path: /resources/name=vsphere-stemcell-final-vmx-2016
+  path: /resources/name=aws-stemcell-final
 - type: remove
   path: /resources/name=gcp-2016-untested
 - type: remove
   path: /resources/name=gcp-2016-tested
 - type: remove
-  path: /resources/name=gcp-stemcell-final-2016
+  path: /resources/name=gcp-stemcell-final
 - type: remove
   path: /resources/name=gcp-lock
 - type: remove
@@ -64,7 +64,7 @@
 - type: remove
   path: /jobs/name=test-gcp
 - type: remove
-  path: /jobs/name=promote
+  path: /jobs/name=promote-aws-gcp
 
 #create-aws
 - type: replace

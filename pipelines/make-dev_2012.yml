@@ -78,9 +78,9 @@
 
 # configure build job
 - type: remove
-  path: /jobs/name=build-stemcells/plan/0/aggregate/get=stemcell-builder/passed
+  path: /jobs/name=build/plan/0/aggregate/get=stemcell-builder/passed
 - type: remove
-  path: /jobs/name=build-stemcells/plan/0/aggregate/get=updated-vmx-version/passed
+  path: /jobs/name=build/plan/0/aggregate/get=updated-vmx-version/passed
 
 # configure gcp for dev
 - type: replace
