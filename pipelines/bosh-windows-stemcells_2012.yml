@@ -1207,57 +1207,13 @@ jobs:
       passed: [promote-aws-gcp-vsphere]
   - aggregate:
     - task: shorten-stemcell-version
-      config:
-        platform: linux
-        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-        inputs:
-        - name: stemcells-main-version
-        outputs:
-        - name: stemcell-builder-release-version
-        run:
-          path: bash
-          args:
-          - "-c"
-          - "cat stemcells-main-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     - task: build-psmodules-zip
-      config:
-        platform: linux
-        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-        inputs:
-        - name: stemcell-builder
-        outputs:
-        - name: bosh-psmodules
-        run:
-          path: bash
-          args:
-          - "-c"
-          - "cd stemcell-builder && bundle && rake package:psmodules && mv build/*.zip ../bosh-psmodules"
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
     - task: build-agent-zip
-      config:
-        platform: linux
-        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-        inputs:
-        - name: stemcell-builder
-        outputs:
-        - name: bosh-agent
-        run:
-          path: bash
-          args:
-          - "-c"
-          - "cd stemcell-builder && bundle && rake package:agent && mv build/*.zip ../bosh-agent"
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
     - task: get-stemcell-builder-sha
-      config:
-        platform: linux
-        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-        inputs:
-        - name: stemcell-builder
-        outputs:
-        - name: stemcell-builder-commit
-        run:
-          path: bash
-          args:
-          - "-c"
-          - "cd stemcell-builder && git rev-parse HEAD > ../stemcell-builder-commit/sha"
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version

@@ -1,0 +1,12 @@
+---
+platform: linux
+image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+inputs:
+- name: stemcells-main-version
+outputs:
+- name: stemcell-builder-release-version
+run:
+  path: bash
+  args:
+  - "-c"
+  - "cat stemcells-main-version/version | rev | cut -c 3- | rev > stemcell-builder-release-version/version"

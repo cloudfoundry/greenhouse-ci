@@ -13,10 +13,12 @@ groups:
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
   - promote-aws-gcp
+  - ship-bosh-stemcell-builder
 - name: main
   jobs:
   - build
   - promote-aws-gcp
+  - ship-bosh-stemcell-builder
 - name: aws
   jobs:
   - create-aws
@@ -848,3 +850,35 @@ jobs:
       params:
         file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
 
+- name: ship-bosh-stemcell-builder
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-builder
+      passed: [promote-aws-gcp-vsphere]
+    - get: stemcells-main-version
+      passed: [promote-aws-gcp-vsphere]
+      trigger: true
+    - get: vsphere-stemcell
+      resource: vsphere-stemcell-final
+      passed: [promote-aws-gcp-vsphere]
+  - aggregate:
+    - task: shorten-stemcell-version
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
+    - task: build-psmodules-zip
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+    - task: build-agent-zip
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+    - task: get-stemcell-builder-sha
+      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
+  - put: stemcell-builder-release
+    params:
+      name: stemcell-builder-release-version/version
+      tag: stemcell-builder-release-version/version
+      commitish: stemcell-builder-commit/sha
+      globs:
+      - bosh-psmodules/bosh-psmodules.zip
+      - bosh-agent/agent.zip
+  - put: stemcells-main-version
+    params:
+      bump: minor
