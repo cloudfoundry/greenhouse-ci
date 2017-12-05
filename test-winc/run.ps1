@@ -99,12 +99,5 @@ if ($LastExitCode -ne 0) {
     throw "Ginkgo installation process returned error code: $LastExitCode"
 }
 
-ginkgo.exe -p -r -race -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10 -skipPackage perf
-if ($LastExitCode -ne 0) {
-    throw "Unit + integration tests failed: $LastExitCode"
-}
-
-ginkgo.exe -failOnPending -slowSpecThreshold 30 perf
-
+ginkgo.exe -p -r -race -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
 Exit $LastExitCode
-
