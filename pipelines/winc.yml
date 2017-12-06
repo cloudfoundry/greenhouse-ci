@@ -80,6 +80,12 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry/garden-runc-release.git
+- name: windows2016fs-release-develop
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
+    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 # - name: cf-networking-release
 #   type: git
 #   source:
@@ -315,6 +321,7 @@ jobs:
     - get: winc-release-develop
       passed: [test-nstar]
       trigger: true
+    - get: windows2016fs-release-develop
     - get: wats
       trigger: true
     - get: cf-deployment
@@ -338,6 +345,12 @@ jobs:
         release: winc-release-develop
       output_mapping:
         release-tarball: winc-tarball
+    - task: create-windows2016fs-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: windows2016fs-release-develop
+      output_mapping:
+        release-tarball: windows2016fs-tarball
   - put: pesto-cf-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
@@ -346,6 +359,7 @@ jobs:
       - gcp-windows-stemcell/*.tgz
       releases:
       - winc-tarball/*.tgz
+      - windows2016fs-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
@@ -354,6 +368,7 @@ jobs:
       - cf-deployment/operations/experimental/enable-instance-identity-credentials-windows2016.yml
       - garden-windows-private/operations-common/windows2016-prs.yml
       - garden-windows-private/operations-common/latest-winc.yml
+      - garden-windows-private/operations-common/latest-windows2016fs-release.yml
       - garden-windows-private/operations-common/scale-down-windows2016.yml
       vars_files:
       - cf-vars/vars.yml
