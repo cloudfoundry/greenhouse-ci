@@ -6,7 +6,7 @@ resource_types:
 groups:
 - name: main
   jobs:
-  - pesto-deploy-cf
+  - tartar-deploy-cf
   - bump-garden-windows-blob
   - sync-garden-windows-release-submodules
   - shipit
@@ -63,25 +63,25 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-- name: pesto-cf-deployment
+- name: tartar-cf-deployment
   type: bosh-deployment
   source:
     deployment: cf
-    client: {{PESTO_BOSH_CLIENT}}
-    client_secret: {{PESTO_BOSH_CLIENT_SECRET}}
-    ca_cert: {{PESTO_BOSH_CA_CERT}}
-    target: {{PESTO_BOSH_ENVIRONMENT}}
+    client: {{TARTAR_BOSH_CLIENT}}
+    client_secret: {{TARTAR_BOSH_CLIENT_SECRET}}
+    ca_cert: {{TARTAR_BOSH_CA_CERT}}
+    target: {{TARTAR_BOSH_ENVIRONMENT}}
     vars_store:
       provider: gcs
       config:
-        bucket: cff-greenhouse-pesto
+        bucket: cf-greenhouse-tartar
         file_name: cf/creds.yml
-        json_key: {{PESTO_SERVICE_ACCOUNT_JSON}}
-- name: pesto-lock-pool
+        json_key: {{TARTAR_SERVICE_ACCOUNT_JSON}}
+- name: tartar-lock-pool
   type: pool
   source:
     branch: master
-    pool: pesto
+    pool: tartar
     private_key: {{GREENHOUSE-CI_SSH_KEY}}
     uri: git@github.com:greenhouse-ci/locks
 - name: garden-windows-bosh-artifacts
@@ -166,10 +166,10 @@ jobs:
     params:
       repository: bumped-downstream-release
 
-- name: pesto-deploy-cf
+- name: tartar-deploy-cf
   serial: true
   plan:
-  - put: pesto-lock-pool
+  - put: tartar-lock-pool
     params:
       acquire: true
   - do:
@@ -200,10 +200,10 @@ jobs:
       file: ci/get-gcs-file/task.yml
       output_mapping: { output: cf-vars }
       params:
-        BUCKET: cff-greenhouse-pesto
+        BUCKET: cf-greenhouse-tartar
         FILE_NAME: cf/vars.yml
-        SERVICE_ACCOUNT_KEY: {{PESTO_SERVICE_ACCOUNT_JSON}}
-    - put: pesto-cf-deployment
+        SERVICE_ACCOUNT_KEY: {{TARTAR_SERVICE_ACCOUNT_JSON}}
+    - put: tartar-cf-deployment
       params:
         manifest: cf-deployment/cf-deployment.yml
         stemcells:
@@ -236,25 +236,25 @@ jobs:
     - task: clean-up
       file: ci/bosh-cleanup/task.yml
       params:
-        BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-        BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-        BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{TARTAR_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{TARTAR_BOSH_CLIENT_SECRET}}
+        BOSH_ENVIRONMENT: {{TARTAR_BOSH_ENVIRONMENT}}
+        BOSH_CA_CERT: {{TARTAR_BOSH_CA_CERT}}
     - task: enable-credhub
       file: ci/enable-credhub/task.yml
       params:
-        CF_API: api.pesto.cf-app.com
+        CF_API: api.tartar.cf-app.com
         CF_USERNAME: admin
-        CF_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
+        CF_PASSWORD: {{TARTAR_ADMIN_PASSWORD}}
     - task: wats
       attempts: 3
       file: ci/run-wats/task.yml
       input_mapping: { wats: wats-develop }
       params:
-        ADMIN_PASSWORD: {{PESTO_ADMIN_PASSWORD}}
+        ADMIN_PASSWORD: {{TARTAR_ADMIN_PASSWORD}}
         ADMIN_USER: admin
-        API: api.pesto.cf-app.com
-        APPS_DOMAIN: pesto.cf-app.com
+        API: api.tartar.cf-app.com
+        APPS_DOMAIN: tartar.cf-app.com
         NUM_WIN_CELLS: 1
         SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
         CONSUL_MUTUAL_TLS: false
@@ -265,10 +265,10 @@ jobs:
         file: ci/bosh-deld/task.yml
         params:
           BOSH_DEPLOYMENT: cf
-          BOSH_ENVIRONMENT: {{PESTO_BOSH_ENVIRONMENT}}
-          BOSH_CLIENT: {{PESTO_BOSH_CLIENT}}
-          BOSH_CLIENT_SECRET: {{PESTO_BOSH_CLIENT_SECRET}}
-          BOSH_CA_CERT: {{PESTO_BOSH_CA_CERT}}
+          BOSH_ENVIRONMENT: {{TARTAR_BOSH_ENVIRONMENT}}
+          BOSH_CLIENT: {{TARTAR_BOSH_CLIENT}}
+          BOSH_CLIENT_SECRET: {{TARTAR_BOSH_CLIENT_SECRET}}
+          BOSH_CA_CERT: {{TARTAR_BOSH_CA_CERT}}
     - task: rename
       file: ci/rename/task.yml
       input_mapping: { source: release-tarball }
@@ -287,9 +287,9 @@ jobs:
     - put: wats-mergedback
       params: { repository: merged-repo/to-repo }
     ensure:
-      put: pesto-lock-pool
+      put: tartar-lock-pool
       params:
-        release: pesto-lock-pool
+        release: tartar-lock-pool
 
 - name: shipit
   serial: true
@@ -301,12 +301,12 @@ jobs:
       params: {bump: final}
     - get: release-develop
       resource: garden-windows-bosh-release-develop
-      passed: [pesto-deploy-cf]
+      passed: [tartar-deploy-cf]
     - get: release-master
       resource: garden-windows-bosh-release-master
     - get: bucket-develop
       resource: garden-windows-bosh-release-bucket-dev
-      passed: [pesto-deploy-cf]
+      passed: [tartar-deploy-cf]
   - put: version
     params: {file: version/number}
   - task: finalize-release
