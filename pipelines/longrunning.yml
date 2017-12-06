@@ -10,6 +10,11 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: wats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/wats.git
 - name: cf-deployment
   type: git
   source:
@@ -191,6 +196,8 @@ jobs:
       tags: [vsphere]
     - get: cfbench
       tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
     - get: every-5mins
       trigger: true
       tags: [vsphere]
@@ -200,7 +207,7 @@ jobs:
       tags: [vsphere]
   - task: cfbench
     file: ci/cfbench/task.yml
-    input_mapping: {app: ci}
+    input_mapping: {app: wats}
     params:
       CF_API: api.mulgore.cf-app.com
       CF_STACK: windows2016
@@ -209,9 +216,8 @@ jobs:
       CF_ORG: cfbench
       CF_SPACE: windows2016
       CF_TAG: windows2016
-      APP_DIR: app/test-webapp
-      APP_BUILDPACK: binary_buildpack
-      APP_START_COMMAND: ./webapp.exe
+      APP_DIR: app/assets/nora/NoraPublished
+      APP_BUILDPACK: hwc_buildpack
       DATADOG_API_KEY: {{DATADOG_API_KEY}}
       DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
     tags: [vsphere]
@@ -224,13 +230,15 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
     - get: mulgore-cf-deployment
       trigger: true
       passed: [mulgore-deploy-cf]
       tags: [vsphere]
   - task: push-app
     file: ci/push-app/task.yml
-    input_mapping: {app: ci}
+    input_mapping: {app: wats}
     params:
       CF_API: api.mulgore.cf-app.com
       CF_STACK: windows2016
@@ -238,9 +246,8 @@ jobs:
       CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
       CF_ORG: longrunning
       CF_SPACE: windows2016
-      APP_DIR: app/test-webapp
-      APP_START_COMMAND: ./webapp.exe
-      APP_BUILDPACK: binary_buildpack
+      APP_DIR: app/assets/nora/NoraPublished
+      APP_BUILDPACK: hwc_buildpack
     tags: [vsphere]
 
 - name: mulgore-curl-longrunning-app-windows2016
@@ -277,6 +284,8 @@ jobs:
       tags: [vsphere]
     - get: cfbench
       tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
     - get: every-5mins
       trigger: true
       tags: [vsphere]
@@ -286,7 +295,7 @@ jobs:
       tags: [vsphere]
   - task: cfbench
     file: ci/cfbench/task.yml
-    input_mapping: {app: ci}
+    input_mapping: {app: wats}
     params:
       CF_API: api.mulgore.cf-app.com
       CF_STACK: windows2012R2
@@ -295,9 +304,8 @@ jobs:
       CF_ORG: cfbench
       CF_SPACE: windows2012R2
       CF_TAG: windows2012R2
-      APP_DIR: app/test-webapp
-      APP_BUILDPACK: binary_buildpack
-      APP_START_COMMAND: ./webapp.exe
+      APP_DIR: app/assets/nora/NoraPublished
+      APP_BUILDPACK: hwc_buildpack
       DATADOG_API_KEY: {{DATADOG_API_KEY}}
       DATADOG_APPLICATION_KEY: {{DATADOG_APPLICATION_KEY}}
     tags: [vsphere]
@@ -310,13 +318,15 @@ jobs:
   - aggregate:
     - get: ci
       tags: [vsphere]
+    - get: wats
+      tags: [vsphere]
     - get: mulgore-cf-deployment
       trigger: true
       passed: [mulgore-deploy-cf]
       tags: [vsphere]
   - task: push-app
     file: ci/push-app/task.yml
-    input_mapping: {app: ci}
+    input_mapping: {app: wats}
     params:
       CF_API: api.mulgore.cf-app.com
       CF_STACK: windows2012R2
@@ -324,9 +334,8 @@ jobs:
       CF_PASSWORD: {{MULGORE_ADMIN_PASSWORD}}
       CF_ORG: longrunning
       CF_SPACE: windows2012R2
-      APP_DIR: app/test-webapp
-      APP_START_COMMAND: ./webapp.exe
-      APP_BUILDPACK: binary_buildpack
+      APP_DIR: app/assets/nora/NoraPublished
+      APP_BUILDPACK: hwc_buildpack
     tags: [vsphere]
 
 - name: mulgore-curl-longrunning-app-windows2012R2
