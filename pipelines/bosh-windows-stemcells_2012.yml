@@ -965,6 +965,7 @@ jobs:
       passed: [create-azure-stemcell]
     - get: azure-stemcell-version
       passed: [create-azure-stemcell]
+      trigger: true
     - get: stemcells-main-version
       passed: [create-azure-stemcell]
     - get: bosh-windows-stemcell
@@ -975,7 +976,6 @@ jobs:
     - get: version
       resource: azure-stemcell-version
       passed: [create-azure-stemcell]
-      trigger: true
   - task: download-heavy
     file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
     tags: [azure-linux-worker]
