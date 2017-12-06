@@ -29,7 +29,7 @@ resources:
   type: git
   source:
     branch: develop
-    uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs-online-release.git
 - name: garden-windows-bosh-release-develop
   type: git
   source:

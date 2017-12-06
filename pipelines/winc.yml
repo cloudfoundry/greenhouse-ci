@@ -84,7 +84,7 @@ resources:
   type: git
   source:
     branch: develop
-    uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
+    uri: https://github.com/cloudfoundry-incubator/windows2016fs-online-release.git
 # - name: cf-networking-release
 #   type: git
 #   source:
