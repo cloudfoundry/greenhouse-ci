@@ -85,7 +85,6 @@ resources:
   source:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/windows2016fs-online-release.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
 # - name: cf-networking-release
 #   type: git
 #   source:
