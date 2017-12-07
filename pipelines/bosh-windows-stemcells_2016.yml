@@ -12,12 +12,12 @@ groups:
   - test-gcp
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
-  - promote-aws-gcp
+  - promote-aws-gcp-vsphere
   - ship-bosh-stemcell-builder
 - name: main
   jobs:
   - build
-  - promote-aws-gcp
+  - promote-aws-gcp-vsphere
   - ship-bosh-stemcell-builder
 - name: aws
   jobs:
@@ -177,6 +177,14 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-final
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-production
+    region_name: us-east-2
+    regexp: ((BASE_FOLDER_NAME))/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-regional
@@ -779,7 +787,7 @@ jobs:
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
-- name: promote-aws-gcp
+- name: promote-aws-gcp-vsphere
   serial: true
   plan:
   - aggregate:
@@ -789,6 +797,8 @@ jobs:
     - get: gcp-stemcell-release-candidate
       passed: [test-gcp]
       resource: gcp-2016-tested
+    - get: vsphere-stemcell-release-candidate
+      passed: [test-vsphere-from-vmx]
     - get: stemcell-builder
       passed: [test-gcp,test-aws]
     - get: version
@@ -802,6 +812,7 @@ jobs:
       - name: ci
       - name: aws-2016-tested
       - name: gcp-stemcell-release-candidate
+      - name: vsphere-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
   - aggregate:
@@ -832,6 +843,18 @@ jobs:
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk"
+    - task: test-vsphere-stemcell
+      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: vsphere-stemcell-release-candidate }
+      tags: [vsphere-linux-worker]
+      params:
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
   - aggregate:
     - task: aws-set-stemcell-filename-version
       input_mapping: { bosh-windows-stemcell: aws-2016-tested }
@@ -840,6 +863,10 @@ jobs:
     - task: gcp-set-stemcell-filename-version
       input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
       output_mapping: { final-stemcell: gcp-stemcell-final }
+      file: ci/set-stemcell-version/task.yml
+    - task: vsphere-set-stemcell-filename-version
+      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+      output_mapping: { final-stemcell: vsphere-stemcell-final }
       file: ci/set-stemcell-version/task.yml
   - task: create-major-stemcell
     file: ci/create-major-stemcell/task.yml
@@ -857,6 +884,10 @@ jobs:
       resource: gcp-stemcell-final
       params:
         file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+    - put: vsphere-stemcell-final-s3
+      resource: vsphere-stemcell-final
+      params:
+        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
 
 - name: ship-bosh-stemcell-builder
   serial: true
@@ -864,9 +895,9 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [promote-aws-gcp]
+      passed: [promote-aws-gcp-vsphere]
     - get: main-version
-      passed: [promote-aws-gcp]
+      passed: [promote-aws-gcp-vsphere]
       trigger: true
   - aggregate:
     - task: shorten-stemcell-version
