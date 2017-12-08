@@ -23,11 +23,16 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
 RUN mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 RUN sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main" > /etc/apt/sources.list.d/dotnetdev.list'
 RUN apt-get update
-RUN apt-get install dotnet-dev-1.1.4 -y
+RUN apt update
 RUN apt install -y wget
+RUN apt-get install dotnet-sdk-2.0.2 -y
 RUN wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
 RUN tar -xf azcopy.tar.gz
-RUN ./install.sh
+RUN apt-get install dos2unix -y
+RUN dos2unix /install.sh
+RUN chmod 777 /install.sh
+RUN apt-get install rsync -y
+RUN /install.sh
 
 # bosh Golang CLI
 RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' 2>&1 | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') && \
