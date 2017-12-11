@@ -43,17 +43,6 @@ resources:
     branch: master
     private_key: {{GARDEN_WINDOWS_CI_GITHUB_PRIVATE_KEY}}
     uri: git@github.com:cloudfoundry-incubator/windows2016fs
-# - name: wincni-develop
-#   type: git
-#   source:
-#     branch: develop
-#     uri: https://github.com/cloudfoundry/wincni.git
-# - name: wincni-master
-#   type: git
-#   source:
-#     branch: master
-#     uri: git@github.com:cloudfoundry/wincni.git
-#     private_key: {{CLOUDFOUNDRY_WINCNI_DEPLOY_KEY}}
 - name: winc-release-develop
   type: git
   source:
@@ -76,11 +65,6 @@ resources:
   source:
     branch: develop
     uri: https://github.com/cloudfoundry-incubator/windows2016fs-online-release.git
-# - name: cf-networking-release
-#   type: git
-#   source:
-#     branch: develop
-#     uri: https://github.com/cloudfoundry-incubator/cf-networking-release.git
 - name: gats-fork
   type: git
   source:
@@ -158,48 +142,6 @@ jobs:
     params: { FROM_BRANCH: develop }
   - put: winc-master
     params: { repository: merged-repo/to-repo }
-
-# - name: wincni
-#   serial: true
-#   plan:
-#   - aggregate:
-#     - get: ci
-#     - get: every-2hrs
-#       trigger: true
-#     - get: wincni-develop
-#       trigger: true
-#     - get: wincni-master
-#   - task: test
-#     input_mapping: { wincni: wincni-develop }
-#     file: ci/test-wincni/task.yml
-#   - task: merge-develop-to-master
-#     input_mapping: { from-repo: wincni-develop, to-repo: wincni-master }
-#     file: ci/merge-repo/task.yml
-#     params: { FROM_BRANCH: develop }
-#   - put: wincni-master
-#     params: { repository: merged-repo/to-repo }
-
-# - name: wincni-smoke
-#   serial: true
-#   serial_groups: [window2016]
-#   plan:
-#   - aggregate:
-#     - get: ci
-#     - get: wincni-master
-#       trigger: true
-#       passed: [wincni]
-#     - get: cf-networking-release
-#   - task: build-wincni
-#     file: ci/build-binary/task.yml
-#     input_mapping:
-#       repo: wincni-master
-#     output_mapping:
-#       binary-output: wincni-binary
-#     params:
-#       IMPORT_PATH: "code.cloudfoundry.org/wincni"
-#       PACKAGE: "./cmd/wincni"
-#   - task: wincni-smoke-test
-#     file: ci/wincni-smoke/task.yml
 
 - name: local-gats
   serial: true
