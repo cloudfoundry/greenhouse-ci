@@ -60,15 +60,6 @@ resources:
     branch: develop
     uri: git@github.com:cloudfoundry-incubator/winc-release.git
     private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
-- name: winc-release-develop-trigger
-  type: git
-  source:
-    branch: develop
-    uri: git@github.com:cloudfoundry-incubator/winc-release.git
-    private_key: {{CLOUDFOUNDRYINCUBATOR_WINC-RELEASE_DEPLOY_KEY}}
-    ignore_paths:
-      - .final_builds/**/*
-      - releases/**/*
 - name: winc-release-master
   type: git
   source:
@@ -298,7 +289,6 @@ jobs:
   - aggregate:
     - get: ci
     - get: winc-release-develop
-    - get: winc-release-develop-trigger
       trigger: true
   - task: run-ginkgo-exe
     file: ci/run-ginkgo-exe/task.yml
