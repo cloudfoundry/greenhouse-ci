@@ -14,6 +14,7 @@ RUN apt-get update -qq && \
     build-essential \
     ca-certificates \
     curl \
+    freerdp-x11 \
     g++ \
     gcc \
     git \
