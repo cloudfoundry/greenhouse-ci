@@ -16,14 +16,15 @@ run:
   - ci/bosh-windows-stemcell-builder/create-vmx-add-updates/run.ps1
 
 params:
-  AWS_ACCESS_KEY_ID:
-  AWS_SECRET_ACCESS_KEY:
-  AWS_REGION: us-east-1
-
   ADMINISTRATOR_PASSWORD: replace-me
-
+  AWS_ACCESS_KEY_ID:
+  AWS_REGION: us-east-1
+  AWS_SECRET_ACCESS_KEY:
   INPUT_BUCKET:
-  OUTPUT_BUCKET:
-  VMX_CACHE_DIR: "C:\\vmx-data"
-  VERSION_DIR: ../version
   OS_VERSION: "windows2012R2"
+  OUTPUT_BUCKET:
+  UPDATES_HTTPS_PROXY:
+  UPDATES_HTTP_PROXY:
+  UPDATES_PROXY_BYPASS_LIST:
+  VERSION_DIR: ../version
+  VMX_CACHE_DIR: "C:\\vmx-data"

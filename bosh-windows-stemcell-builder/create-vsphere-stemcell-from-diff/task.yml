@@ -17,12 +17,15 @@ run:
   - "-File"
   - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/run.ps1
 params:
-  OS_VERSION: windows2012R2
   AWS_ACCESS_KEY_ID:
-  AWS_SECRET_ACCESS_KEY:
   AWS_REGION:
-  VHD_VMDK_BUCKET:
-  STEMCELL_OUTPUT_BUCKET:
-  OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
+  AWS_SECRET_ACCESS_KEY:
   CACHE_DIR:
+  OS_VERSION: windows2012R2
+  OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
+  STEMCELL_OUTPUT_BUCKET:
+  UPDATES_HTTPS_PROXY:
+  UPDATES_HTTP_PROXY:
+  UPDATES_PROXY_BYPASS_LIST:
   VERSION_DIR: ../version
+  VHD_VMDK_BUCKET:

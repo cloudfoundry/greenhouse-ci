@@ -18,11 +18,7 @@ run:
   path: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/run
 
 params:
-  OS_VERSION: windows2012R2
   ACCOUNT_JSON:
-
-  VERSION_DIR: ../version
   BASE_IMAGE_DIR: ../base-gcp-image
-  HTTP_PROXY:
-  HTTPS_PROXY:
-  PROXY_BYPASS_LIST:
+  OS_VERSION: windows2012R2
+  VERSION_DIR: ../version

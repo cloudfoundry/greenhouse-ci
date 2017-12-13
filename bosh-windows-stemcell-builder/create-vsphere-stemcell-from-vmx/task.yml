@@ -18,29 +18,25 @@ run:
   - "-File"
   - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/run.ps1
 params:
-  AWS_ACCESS_KEY_ID:
-  AWS_SECRET_ACCESS_KEY:
-  AWS_REGION: us-east-1
-
   ADMINISTRATOR_PASSWORD: replace-me
-  NEW_PASSWORD:
-  OS_VERSION: windows2012R2
-
-  INPUT_BUCKET:
-  OUTPUT_BUCKET:
-  VMX_CACHE_DIR: "C:\\vmx-data"
-
-  PRODUCT_KEY:
-  ORGANIZATION:
-  OWNER:
-
-  VERSION_DIR: ../version
-  VMX_VERSION_DIR: ../vmx-version
-  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
-  SKIP_WINDOWS_UPDATE: false
-  ENABLE_RDP:
+  AWS_ACCESS_KEY_ID:
+  AWS_REGION: us-east-1
+  AWS_SECRET_ACCESS_KEY:
   ENABLE_KMS:
+  ENABLE_RDP:
+  INPUT_BUCKET:
   KMS_ADDRESS:
-  UPDATES_HTTP_PROXY:
+  NEW_PASSWORD:
+  ORGANIZATION:
+  OS_VERSION: windows2012R2
+  OUTPUT_BUCKET:
+  OWNER:
+  PRODUCT_KEY:
+  SKIP_WINDOWS_UPDATE: false
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   UPDATES_HTTPS_PROXY:
+  UPDATES_HTTP_PROXY:
   UPDATES_PROXY_BYPASS_LIST:
+  VERSION_DIR: ../version
+  VMX_CACHE_DIR: "C:\\vmx-data"
+  VMX_VERSION_DIR: ../vmx-version
