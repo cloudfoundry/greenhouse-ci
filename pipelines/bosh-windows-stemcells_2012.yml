@@ -646,6 +646,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
+        passed: [build]
       - get: base-amis
         resource: base-amis-win2012r2
         passed: [build]

@@ -356,6 +356,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
+        passed: [build]
       - get: base-amis
         resource: base-amis-win2016
         passed: [build]
@@ -642,6 +643,7 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
+        passed: [build]
       - get: base-gcp-image
         resource: base-gcp-image-win2016
         passed: [build]
