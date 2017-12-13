@@ -26,19 +26,11 @@
 - type: remove
   path: /resources/name=aws-stemcell-final
 - type: remove
-  path: /resources/name=gcp-2016-untested
-- type: remove
-  path: /resources/name=gcp-2016-tested
-- type: remove
   path: /resources/name=gcp-stemcell-final
-- type: remove
-  path: /resources/name=gcp-lock
 - type: remove
   path: /resources/name=azstemcell
 - type: remove
   path: /resources/name=azure-lock
-- type: remove
-  path: /resources/name=aws-2016-tested
 - type: remove
   path: /resources/name=azure-base-vhd-uri
 - type: remove
@@ -64,12 +56,6 @@
 - type: remove
   path: /jobs/name=create-azure
 - type: remove
-  path: /jobs/name=test-aws
-- type: remove
-  path: /jobs/name=create-gcp
-- type: remove
-  path: /jobs/name=test-gcp
-- type: remove
   path: /jobs/name=promote-aws-gcp-vsphere
 - type: remove
   path: /jobs/name=promote-azure
@@ -80,6 +66,19 @@
 - type: replace
   path: /jobs/name=create-aws/plan/1/do/task=create-stemcell/params/REGION
   value: us-east-1
+
+# configure gcp for dev
+- type: replace
+  path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell/params/ACCOUNT_JSON
+  value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+- type: replace
+  path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell/ensure/params/ACCOUNT_JSON
+  value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+- type: replace
+  path: /jobs/name=create-gcp/plan/1/do/put=gcp-2016-untested/params/file
+  value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+- type: remove
+  path: /jobs/name=create-gcp/plan/1/do/task=publish-stemcell
 
 #create-vsphere-from-vmx
 - type: replace
