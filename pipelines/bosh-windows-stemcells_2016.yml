@@ -941,7 +941,6 @@ jobs:
       BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
       BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
       BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-      GINKGO_FOCUS: "is fully updated"
       IAAS: azure
       NETWORK: default
       STEMCELL_OS: windows2016
