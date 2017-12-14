@@ -527,6 +527,7 @@ jobs:
       - windows2016fs-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
+      - cf-deployment/operations/workaround/use-3-azs-for-router.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
       - garden-windows-private/operations-common/windows2016-prs.yml
       - garden-windows-private/operations-common/windows2016-debug.yml
@@ -678,6 +679,7 @@ jobs:
       - windows2016fs-tarball/*.tgz
       ops_files:
       - cf-deployment/operations/scale-to-one-az.yml
+      - cf-deployment/operations/workaround/use-3-azs-for-router.yml
       - cf-deployment/operations/experimental/windows2016-cell.yml
       - garden-windows-private/operations-common/windows2016-prs.yml
       - garden-windows-private/operations-common/windows2016-debug.yml
