@@ -11,12 +11,6 @@
   value: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
 
 
-# repos
-- type: replace
-  path: /resources/name=stemcell-builder/source/branch
-  value: ((DEV_BRANCH))
-
-
 # versions
 
 

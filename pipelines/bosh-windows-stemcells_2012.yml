@@ -57,7 +57,7 @@ resources:
 - name: ci
   type: git
   source:
-    branch: master
+    branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: bosh-agent
   type: git
@@ -78,7 +78,7 @@ resources:
 - name: stemcell-builder
   type: git
   source:
-    branch: master
+    branch: ((STEMCELL_BUILDER_BRANCH))
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
 - name: windows-stemcell-dependencies
