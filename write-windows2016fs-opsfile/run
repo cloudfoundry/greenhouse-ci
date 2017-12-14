@@ -6,6 +6,7 @@ pushd release-tarball
 release_version=$(bosh int --path /version <(tar -xzf release.tgz -O release.MF))
 popd
 
+echo "Found version: $release_version"
 
 cat << EOF > windows2016fs-opsfile/specified-windows2016fs-version.yml
 ---
