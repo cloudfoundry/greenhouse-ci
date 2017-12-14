@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -eu
+
+pushd release-tarball
+release_version=$(bosh int --path /version <(tar -xzf release.tgz -O release.MF))
+popd
+
+
+cat << EOF > windows2016fs-opsfile/specified-windows2016fs-version.yml
+---
+- type: replace
+  path: /releases/name=windows2016fs?
+  value:
+    name: windows2016fs
+    version: $release_version
+EOF
+
