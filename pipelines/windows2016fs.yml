@@ -240,6 +240,56 @@ groups:
     - ship-it-online
 
 jobs:
+
+- name: build-and-push
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs
+    - get: windowsservercore
+      trigger: true
+      params:
+        save: false
+        rootfs: false
+        skip_download: true
+    - get: windows2016fs-dockerfile
+      trigger: true
+    - get: git-setup
+      trigger: true
+      params:
+        globs: [Git-*-64-bit.exe]
+    - get: tar
+      trigger: true
+    - get: image-version
+      params: {bump: patch}
+  - task: build-and-push
+    file: ci/docker-build-and-push/task.yml
+    input_mapping:
+      repo: windows2016fs-dockerfile
+      version: image-version
+    params:
+      DOCKERFILE: repo/Dockerfile
+      IMAGE_NAME: cloudfoundry/windows2016fs
+      DOCKER_USERNAME: {{DOCKER_USERNAME}}
+      DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
+  - task: update-image-tag
+    file: ci/update-image-tag/task.yml
+  - task: commit-changes
+    file: ci/commit/task.yml
+    input_mapping:
+      repo: windows2016fs-updated
+    output_mapping:
+      repo_with_commit: windows2016fs-commit
+    params:
+      MESSAGE: "Updated image tag"
+  - put: windows2016fs
+    params:
+      repository: windows2016fs-commit
+      rebase: true
+  - put: image-version
+    params: {file: image-version/version}
+
 - name: test-windows2016fs-windows
   serial: true
   plan:
@@ -420,88 +470,6 @@ jobs:
         sha: create-linux-sha
         windows2016fs-release: windows2016fs-release-develop
 
-- name: tartar-online-wats
-  serial: true
-  plan:
-  - put: tartar-lock-pool
-    params:
-      acquire: true
-  - aggregate:
-    - get: ci
-    - get: windows2016fs-online-release-develop
-      trigger: true
-    - get: wats
-    - get: cf-deployment
-    - get: gcp-windows-stemcell
-    - get: garden-windows-private
-  - aggregate:
-    - task: get-cf-vars
-      file: ci/get-gcs-file/task.yml
-      output_mapping: { output: cf-vars }
-      params:
-        BUCKET: cf-greenhouse-tartar
-        FILE_NAME: cf/vars.yml
-        SERVICE_ACCOUNT_KEY: {{TARTAR_SERVICE_ACCOUNT_JSON}}
-    - task: get-linux-stemcell
-      file: ci/get-gcp-linux-stemcell/task.yml
-      output_mapping: { stemcell: gcp-linux-stemcell }
-    - task: create-windows2016fs-release
-      file: ci/bosh-cr/task.yml
-      input_mapping:
-        release: windows2016fs-online-release-develop
-      output_mapping:
-        release-tarball: windows2016fs-tarball
-  - task: create-windows2016fs-opsfile
-    file: ci/write-windows2016fs-opsfile/task.yml
-    input_mapping: { release-tarball: windows2016fs-tarball }
-  - put: tartar-cf-deployment
-    params:
-      manifest: cf-deployment/cf-deployment.yml
-      stemcells:
-      - gcp-linux-stemcell/*.tgz
-      - gcp-windows-stemcell/*.tgz
-      releases:
-      - windows2016fs-tarball/*.tgz
-      ops_files:
-      - cf-deployment/operations/scale-to-one-az.yml
-      - cf-deployment/operations/experimental/windows2016-cell.yml
-      - garden-windows-private/operations-common/windows2016-prs.yml
-      - garden-windows-private/operations-common/windows2016-debug.yml
-      - garden-windows-private/operations-common/scale-down-windows2016.yml
-      - windows2016fs-opsfile/specified-windows2016fs-version.yml
-      vars_files:
-      - cf-vars/vars.yml
-      cleanup: true
-    get_params:
-      skip_export: true
-  - task: run-wats
-    file: ci/run-wats/task.yml
-    params:
-      ADMIN_PASSWORD: {{TARTAR_ADMIN_PASSWORD}}
-      ADMIN_USER: admin
-      API: api.tartar.cf-app.com
-      APPS_DOMAIN: tartar.cf-app.com
-      NUM_WIN_CELLS: 1
-      SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
-      CONSUL_MUTUAL_TLS: false
-      TEST_TASK: true
-      SKIP_SSH: false
-      STACK: windows2016
-      NODES: 1
-    on_success:
-      task: delete-deployment
-      file: ci/bosh-deld/task.yml
-      params:
-        BOSH_CA_CERT: {{TARTAR_BOSH_CA_CERT}}
-        BOSH_CLIENT: {{TARTAR_BOSH_CLIENT}}
-        BOSH_CLIENT_SECRET: {{TARTAR_BOSH_CLIENT_SECRET}}
-        BOSH_DEPLOYMENT: cf
-        BOSH_ENVIRONMENT: {{TARTAR_BOSH_ENVIRONMENT}}
-  ensure:
-    put: tartar-lock-pool
-    params:
-      release: tartar-lock-pool
-
 - name: tartar-offline-wats
   serial: true
   plan:
@@ -666,6 +634,88 @@ jobs:
     params:
       file: windows2016fs-release-version/version
 
+- name: tartar-online-wats
+  serial: true
+  plan:
+  - put: tartar-lock-pool
+    params:
+      acquire: true
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-online-release-develop
+      trigger: true
+    - get: wats
+    - get: cf-deployment
+    - get: gcp-windows-stemcell
+    - get: garden-windows-private
+  - aggregate:
+    - task: get-cf-vars
+      file: ci/get-gcs-file/task.yml
+      output_mapping: { output: cf-vars }
+      params:
+        BUCKET: cf-greenhouse-tartar
+        FILE_NAME: cf/vars.yml
+        SERVICE_ACCOUNT_KEY: {{TARTAR_SERVICE_ACCOUNT_JSON}}
+    - task: get-linux-stemcell
+      file: ci/get-gcp-linux-stemcell/task.yml
+      output_mapping: { stemcell: gcp-linux-stemcell }
+    - task: create-windows2016fs-release
+      file: ci/bosh-cr/task.yml
+      input_mapping:
+        release: windows2016fs-online-release-develop
+      output_mapping:
+        release-tarball: windows2016fs-tarball
+  - task: create-windows2016fs-opsfile
+    file: ci/write-windows2016fs-opsfile/task.yml
+    input_mapping: { release-tarball: windows2016fs-tarball }
+  - put: tartar-cf-deployment
+    params:
+      manifest: cf-deployment/cf-deployment.yml
+      stemcells:
+      - gcp-linux-stemcell/*.tgz
+      - gcp-windows-stemcell/*.tgz
+      releases:
+      - windows2016fs-tarball/*.tgz
+      ops_files:
+      - cf-deployment/operations/scale-to-one-az.yml
+      - cf-deployment/operations/experimental/windows2016-cell.yml
+      - garden-windows-private/operations-common/windows2016-prs.yml
+      - garden-windows-private/operations-common/windows2016-debug.yml
+      - garden-windows-private/operations-common/scale-down-windows2016.yml
+      - windows2016fs-opsfile/specified-windows2016fs-version.yml
+      vars_files:
+      - cf-vars/vars.yml
+      cleanup: true
+    get_params:
+      skip_export: true
+  - task: run-wats
+    file: ci/run-wats/task.yml
+    params:
+      ADMIN_PASSWORD: {{TARTAR_ADMIN_PASSWORD}}
+      ADMIN_USER: admin
+      API: api.tartar.cf-app.com
+      APPS_DOMAIN: tartar.cf-app.com
+      NUM_WIN_CELLS: 1
+      SOCKET_ADDRESS_FOR_SECURITY_GROUP_TEST: 10.0.0.6:25555
+      CONSUL_MUTUAL_TLS: false
+      TEST_TASK: true
+      SKIP_SSH: false
+      STACK: windows2016
+      NODES: 1
+    on_success:
+      task: delete-deployment
+      file: ci/bosh-deld/task.yml
+      params:
+        BOSH_CA_CERT: {{TARTAR_BOSH_CA_CERT}}
+        BOSH_CLIENT: {{TARTAR_BOSH_CLIENT}}
+        BOSH_CLIENT_SECRET: {{TARTAR_BOSH_CLIENT_SECRET}}
+        BOSH_DEPLOYMENT: cf
+        BOSH_ENVIRONMENT: {{TARTAR_BOSH_ENVIRONMENT}}
+  ensure:
+    put: tartar-lock-pool
+    params:
+      release: tartar-lock-pool
+
 - name: ship-it-online
   serial: true
   plan:
@@ -706,53 +756,3 @@ jobs:
       tag: generated-release/version
       globs:
       - finalized-release/windows2016fs-*.tgz
-
-- name: build-and-push
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows2016fs
-    - get: windowsservercore
-      trigger: true
-      params:
-        save: false
-        rootfs: false
-        skip_download: true
-    - get: windows2016fs-dockerfile
-      trigger: true
-    - get: git-setup
-      trigger: true
-      params:
-        globs: [Git-*-64-bit.exe]
-    - get: tar
-      trigger: true
-    - get: image-version
-      params: {bump: patch}
-  - task: build-and-push
-    file: ci/docker-build-and-push/task.yml
-    input_mapping:
-      repo: windows2016fs-dockerfile
-      version: image-version
-    params:
-      DOCKERFILE: repo/Dockerfile
-      IMAGE_NAME: cloudfoundry/windows2016fs
-      DOCKER_USERNAME: {{DOCKER_USERNAME}}
-      DOCKER_PASSWORD: {{DOCKER_PASSWORD}}
-  - task: update-image-tag
-    file: ci/update-image-tag/task.yml
-  - task: commit-changes
-    file: ci/commit/task.yml
-    input_mapping:
-      repo: windows2016fs-updated
-    output_mapping:
-      repo_with_commit: windows2016fs-commit
-    params:
-      MESSAGE: "Updated image tag"
-  - put: windows2016fs
-    params:
-      repository: windows2016fs-commit
-      rebase: true
-  - put: image-version
-    params: {file: image-version/version}
-
