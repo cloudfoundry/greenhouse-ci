@@ -127,10 +127,11 @@ jobs:
     - get: winc-master
     - get: windows2016fs
       trigger: true
-  - aggregate:
-    - task: test
-      input_mapping: { winc: winc-develop }
-      file: ci/test-winc/task.yml
+  - task: test
+    input_mapping: { winc: winc-develop }
+    file: ci/test-winc/task.yml
+    params:
+      WINC_TEST_PERF_CONCURRENT_CONTAINERS: 20
   - task: merge-develop-to-master
     input_mapping: { from-repo: winc-develop, to-repo: winc-master }
     file: ci/merge-repo/task.yml
