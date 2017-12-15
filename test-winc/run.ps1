@@ -102,5 +102,4 @@ if ($LastExitCode -ne 0) {
 ginkgo.exe -p -r -race -keepGoing -randomizeSuites -failOnPending -slowSpecThreshold 10
 $exitCode = $LastExitCode
 
-Remove-NetFirewallRule -Name CFAllowAdmins -ErrorAction SilentlyContinue
 Exit $exitCode
