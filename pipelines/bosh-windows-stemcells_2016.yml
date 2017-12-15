@@ -185,7 +185,6 @@ resources:
   type: s3
   source:
     bucket: bosh-windows-stemcells-private
-    region_name: us-east-2
     regexp: ((BASE_FOLDER_NAME))/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
@@ -899,7 +898,7 @@ jobs:
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
       params:
-        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
 - name: promote-azure
   serial: true

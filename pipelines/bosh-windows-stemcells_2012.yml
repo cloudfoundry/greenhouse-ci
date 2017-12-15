@@ -1096,10 +1096,6 @@ jobs:
       resource: major-stemcell
       params:
         file: stemcell-info/stemcell-*.json
-    - put: vsphere-stemcell-final-s3
-      resource: vsphere-stemcell-final
-      params:
-        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
@@ -1108,6 +1104,10 @@ jobs:
       resource: gcp-stemcell-final
       params:
         file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    - put: vsphere-stemcell-final-s3
+      resource: vsphere-stemcell-final
+      params:
+        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
 - name: promote-boshio
   serial: true
