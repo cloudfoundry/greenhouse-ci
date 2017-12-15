@@ -214,6 +214,7 @@ jobs:
         ops_files:
         - cf-deployment/operations/windows-cell.yml
         - cf-deployment/operations/scale-to-one-az.yml
+        - cf-deployment/operations/workaround/use-3-azs-for-router.yml
         - cf-deployment/operations/use-latest-windows-stemcell.yml
         - cf-deployment/operations/experimental/enable-prefer-declarative-healthchecks-windows.yml
         - cf-deployment/operations/experimental/use-bosh-dns.yml
@@ -247,7 +248,6 @@ jobs:
         CF_USERNAME: admin
         CF_PASSWORD: {{TARTAR_ADMIN_PASSWORD}}
     - task: wats
-      attempts: 3
       file: ci/run-wats/task.yml
       input_mapping: { wats: wats-develop }
       params:
