@@ -142,18 +142,18 @@ jobs:
     file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
     params:
       ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
-      NEW_PASSWORD: {{STEMCELL_PASSWORD}}
-      PRODUCT_KEY: {{PRODUCT_KEY}}
-      ORGANIZATION: Pivotal
-      OWNER: Pivotal
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
       AWS_REGION: {{REGION}}
-      INPUT_BUCKET: {{private_windows_stemcells_vmx}}
-      OUTPUT_BUCKET: {{private_windows_stemcells_production}}
-      ENABLE_RDP: true
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
       ENABLE_KMS: true
+      ENABLE_RDP: true
+      INPUT_BUCKET: {{private_windows_stemcells_vmx}}
       KMS_HOST: {{KMS_HOST}}
+      NEW_PASSWORD: {{STEMCELL_PASSWORD}}
+      ORGANIZATION: Pivotal
+      OUTPUT_BUCKET: {{private_windows_stemcells_production}}
+      OWNER: Pivotal
+      PRODUCT_KEY: {{PRODUCT_KEY}}
     tags:
     - private-windows-worker
   - put: stemcell-version
@@ -183,6 +183,7 @@ jobs:
     - task: test-stemcell
       tags: [vsphere-linux-worker]
       file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
       attempts: 5
       params:
         VM_TYPE: large
@@ -190,7 +191,7 @@ jobs:
         BOSH_CLIENT: {{regina_client}}
         BOSH_TARGET: {{regina_environment}}
         BOSH_CA_CERT: {{regina_ca_cert}}
-        STEMCELL_PATH: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
         STEMCELL_OS: windows2012R2
     - task: vsphere-set-stemcell-version
       file: ci/set-stemcell-version/task.yml
