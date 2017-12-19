@@ -5,33 +5,65 @@
 
 set -e
 
+CYAN='\033[1;32m'
+NC='\033[0m' # No Color
+
 function meta4-the-stemcell {
-  iaas=$1
-  candidate_build_number=$2
-  metalink=$3
-  stemcell_path=`ls ${iaas}/*.tgz`
-  stemcell=`basename $stemcell_path`
+    local iaas=$1
+    local candidate_build_number=$2
+    local metalink=$3
+    local stemcell_path=`ls ${iaas}/*.tgz`
+    local stemcell=`basename $stemcell_path`
 
-  # import the stemcell tarball (this automatically calculates checksums)
-  meta4 import-file --metalink="$metalink" \
-    --version="$candidate_build_number" \
-    $stemcell_path
+    # import the stemcell tarball (this automatically calculates checksums)
+    meta4 import-file --metalink="$metalink" \
+        --version="$candidate_build_number" \
+        $stemcell_path
 
-  # define where the stemcell can be downloaded
-  meta4 file-set-url --metalink="$metalink" --file=$stemcell \
-    https://bosh-windows-stemcells-production.s3.amazonaws.com/${stemcell}
+    # define where the stemcell can be downloaded
+    meta4 file-set-url --metalink="$metalink" --file=$stemcell \
+        https://bosh-windows-stemcells-production.s3.amazonaws.com/${stemcell}
+}
+
+function create-meta4-file {
+    local filename=$1
+    local version=$2
+
+    local metalink=boshio-output/dev/$OS_NAME-$OS_VERSION/$version/$filename.meta4
+
+    # create an empty metalink file for us to add the files
+    mkdir -p "$( dirname "$metalink" )"
+    meta4 create --metalink="$metalink"
+
+    echo $metalink
 }
 
 version=`cut -d'.' -f1-2 version/number`
-metalink=boshio-output/published/$OS_NAME-$OS_VERSION/$version/stemcells.meta4
 cp -r boshio-input/. boshio-output
-# create an empty metalink file for us to add the files
-mkdir -p "$( dirname "$metalink" )"
-meta4 create --metalink="$metalink"
 
-meta4-the-stemcell aws $version $metalink
-meta4-the-stemcell gcp $version $metalink
-meta4-the-stemcell azure $version $metalink
+# parse IaaSes (comma- or space-delimited string) as array
+IFS=', ' read -r -a iaas_array <<< "$IAASES"
+
+for iaas in "${iaas_array[@]}"
+do
+    echo -e "Creating meta4 file for ${CYAN}${iaas}${NC}"
+    case "$iaas" in
+    "aws")
+      filename='aws-xen-hvm-go_agent'
+      ;;
+
+    "gcp")
+      filename='google-kvm-go_agent'
+      ;;
+
+    "azure")
+      filename='azure-hyperv-go_agent'
+      ;;
+    esac
+
+    metalink=$(create-meta4-file $filename $version)
+    meta4-the-stemcell $iaas $version $metalink
+done
 
 cd boshio-output
 git add .

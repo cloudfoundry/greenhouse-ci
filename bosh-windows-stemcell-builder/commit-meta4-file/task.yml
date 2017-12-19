@@ -19,6 +19,7 @@ outputs:
 run:
   path: ci/bosh-windows-stemcell-builder/commit-meta4-file/run
 params:
+  IAASES:
   OS_NAME:
   OS_VERSION:
 
