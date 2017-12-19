@@ -18,7 +18,6 @@ groups:
   - promote-aws-gcp-vsphere
   - ship-bosh-stemcell-builder
   - promote-azure
-  - promote-boshio
   - create-vsphere-stemcell-from-diff
   - test-vsphere-stemcell-from-diff
 - name: main
@@ -28,7 +27,6 @@ groups:
   - build
   - promote-azure
   - promote-aws-gcp-vsphere
-  - promote-boshio
   - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
@@ -1108,32 +1106,16 @@ jobs:
       resource: vsphere-stemcell-final
       params:
         file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-
-- name: promote-boshio
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: gcp
-      passed: [promote-aws-gcp-vsphere]
-      resource: gcp-stemcell-final
-    - get: azure
-      passed: [promote-azure]
-      resource: azure-stemcell-final
-    - get: aws
-      resource: aws-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
-    - get: version
-      passed: [promote-aws-gcp-vsphere]
-      resource: stemcells-main-version
-    - get: boshio-input
-      resource: boshio
-  - aggregate:
-    - task: commit-meta4-file
-      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-      params:
-        OS_NAME: windows
-        OS_VERSION: 2012R2
+  - task: commit-meta4-file-aws-gcp
+    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+    input_mapping: {
+      aws: aws-stemcell-final,
+      gcp: gcp-stemcell-final
+    }
+    params:
+      IAASES: 'aws, gcp'
+      OS_NAME: windows
+      OS_VERSION: 2012R2
   - put: boshio
     params:
       repository: boshio-output
@@ -1192,6 +1174,17 @@ jobs:
     resource: azure-stemcell-final
     params:
       file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+  - task: commit-meta4-file
+    input_mapping: { azure: azure-stemcell-final }
+    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+    params:
+      IAASES: 'azure'
+      OS_NAME: windows
+      OS_VERSION: 2012R2
+  - put: boshio
+    params:
+      repository: boshio-output
+      rebase: true
 
 - name: ship-bosh-stemcell-builder
   serial: true

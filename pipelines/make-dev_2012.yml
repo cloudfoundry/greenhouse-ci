@@ -109,5 +109,3 @@
   path: /jobs/name=create-vsphere-add-updates
 - type: remove
   path: /jobs/name=print-azure-publishing-instructions
-- type: remove
-  path: /jobs/name=promote-boshio
