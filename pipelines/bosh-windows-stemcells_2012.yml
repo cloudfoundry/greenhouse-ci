@@ -23,14 +23,6 @@ groups:
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
-#- name: main
-#  jobs:
-#  - bump-stemcell-builder-submodules
-#  - test-stemcell-builder
-#  - build
-#  - promote-azure
-#  - promote-aws-gcp-vsphere
-#  - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
   - create-vsphere-add-updates
