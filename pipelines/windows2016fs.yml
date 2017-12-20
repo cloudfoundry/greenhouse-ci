@@ -226,6 +226,7 @@ groups:
     - bump-windows2016fs-release
     - bump-windows2016fs-online-release
     - build-and-push
+    - create-tracker-story
 - name: windows2016fs-release
   jobs:
     - build-create-release
@@ -289,6 +290,22 @@ jobs:
       rebase: true
   - put: image-version
     params: {file: image-version/version}
+
+- name: create-tracker-story
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: image-version
+      passed: [build-and-push]
+      trigger: true
+  - task: create-story
+    file: ci/create-rootfs-tracker-story/task.yml
+    input_mapping:
+      version: image-version
+    params:
+      TRACKER_TOKEN: {{TRACKER_GITBOT_TOKEN}}
+      TRACKER_PROJECT_ID: {{GARDEN_WINDOWS_PROJECT_ID}}
 
 - name: test-windows2016fs-windows
   serial: true
