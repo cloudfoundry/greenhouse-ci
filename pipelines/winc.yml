@@ -323,7 +323,7 @@ jobs:
     params:
       release: pesto-lock-pool
 
-- name: shipit
+- name: shipit-major
   serial: true
   plan:
   - aggregate:
@@ -331,9 +331,7 @@ jobs:
     - get: winc-release-develop
       passed: [pesto-wats]
     - get: version
-      params: {bump: minor}
-  - put: version
-    params: {file: version/number}
+      params: {bump: major}
   - task: finalize-release
     file: ci/finalize-release/task.yml
     input_mapping: { release: winc-release-develop }
@@ -349,6 +347,82 @@ jobs:
   - put: winc-release-master
     params:
       repository: finalized-release/release
+  - put: version
+    params: {file: version/number}
+  - task: generate-github-release
+    input_mapping: { release: finalized-repo }
+    file: ci/generate-github-release/task.yml
+  - put: winc-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/winc-*.tgz
+
+- name: shipit-minor
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release-develop
+      passed: [pesto-wats]
+    - get: version
+      params: {bump: minor}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping: { release: winc-release-develop }
+    params:
+      RELEASE_NAME: winc
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+  - put: winc-release-develop
+    params:
+      repository: finalized-release/release
+      tag: version/number
+      tag_prefix: v
+  - put: winc-release-master
+    params:
+      repository: finalized-release/release
+  - put: version
+    params: {file: version/number}
+  - task: generate-github-release
+    input_mapping: { release: finalized-repo }
+    file: ci/generate-github-release/task.yml
+  - put: winc-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/winc-*.tgz
+
+- name: shipit-patch
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: winc-release-develop
+      passed: [pesto-wats]
+    - get: version
+      params: {bump: patch}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping: { release: winc-release-develop }
+    params:
+      RELEASE_NAME: winc
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+  - put: winc-release-develop
+    params:
+      repository: finalized-release/release
+      tag: version/number
+      tag_prefix: v
+  - put: winc-release-master
+    params:
+      repository: finalized-release/release
+  - put: version
+    params: {file: version/number}
   - task: generate-github-release
     input_mapping: { release: finalized-repo }
     file: ci/generate-github-release/task.yml
