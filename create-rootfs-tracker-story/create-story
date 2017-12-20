@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+include 'tracker_api'
+
+token = ARGV[1]
+project_id = ARGV[2].to_i
+image_version = ARGV[3]
+
+client = TrackerAPI::Client.new(token: token)
+project = client.project(project_id)
+
+name = "New version of cloudfoundry/windows2016fs #{image_version}"
+description = 'A new version of cloudfoundry/windows2016fs is available. Once all the pipelines are green, release new versions of the BOSH releases that consume it'
+tasks = ['release cloudfoundry-incubator/windows2016fs-release', 'release cloudfoundry-incubator/windows2016fs-online-release']
+labels = ['windows2016fs-release', 'windows2016fs-online-release']
+
+project.create_story(
+  name: name,
+  description: description,
+  tasks: tasks,
+  point_value: 0,
+  labels: labels
+)

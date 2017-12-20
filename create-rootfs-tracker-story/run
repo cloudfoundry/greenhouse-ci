@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+
+version=$(cat version/version)
+
+pushd create-rootfs-tracker-story
+  bundle install
+  ./create-story $TRACKER_TOKEN $TRACKER_PROJECT_ID $version
+popd
