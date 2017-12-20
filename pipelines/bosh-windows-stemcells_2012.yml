@@ -346,6 +346,15 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
+#pivnet
+- name: pivnet-public-stemcells-release
+  type: pivnet
+  source:
+    api_token: ((PIVNET_BOT_API_TOKEN))
+    product_slug: stemcells-windows-server
+    access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
+    secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
+
 jobs:
 - name: bump-stemcell-builder-submodules
   serial: true
@@ -996,10 +1005,10 @@ jobs:
     - get: azure-stemcell-version
       passed: [test-azure-stemcell]
     - get: stemcell-builder
-      passed: [test-gcp-stemcell,test-aws,test-vsphere-stemcell-from-vmx]
+      passed: [test-gcp-stemcell,test-aws,test-vsphere-stemcell-from-vmx,test-azure-stemcell]
     - get: version
       resource: stemcells-main-version
-      passed: [test-gcp-stemcell,test-aws,test-vsphere-stemcell-from-vmx]
+      passed: [test-gcp-stemcell,test-aws,test-vsphere-stemcell-from-vmx,test-azure-stemcell]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -1044,21 +1053,34 @@ jobs:
     input_mapping: { bosh-windows-stemcell: aws-2012-tested }
     output_mapping: { final-stemcell: aws-stemcell-final }
     file: ci/set-stemcell-version/task.yml
-  - put: aws-stemcell-final-s3
-    resource: aws-stemcell-final
-    params:
-      file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-  - task: commit-dev-meta4-file
-    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-    input_mapping: { stemcell: aws-stemcell-final }
-    params:
-      IAAS: aws
-      OS_NAME: windows
-      OS_VERSION: 2012R2
-  - put: boshio
-    params:
-      repository: boshio-output
-      rebase: true
+  - aggregate:
+    - task: upload-pivnet
+      file: ci/upload-pivnet/task.yml
+      input_mapping: { stemcell: aws-stemcell-final }
+      params:
+        IAAS: aws
+        OS: 2012R2
+    - task: commit-dev-meta4-file
+      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      input_mapping: { stemcell: aws-stemcell-final }
+      params:
+        IAAS: aws
+        OS_NAME: windows
+        OS_VERSION: 2012R2
+  - aggregate:
+    - put: aws-stemcell-final-s3
+      resource: aws-stemcell-final
+      params:
+        file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    - put: pivnet-public-stemcells-release
+      params:
+        file_glob: 'stemcell/*.tgz'
+        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
 
 - name: promote-gcp
   serial: true
