@@ -12,7 +12,7 @@ function meta4-the-stemcell {
     local iaas=$1
     local candidate_build_number=$2
     local metalink=$3
-    local stemcell_path=`ls ${iaas}/*.tgz`
+    local stemcell_path=`ls stemcell/*.tgz`
     local stemcell=`basename $stemcell_path`
 
     # import the stemcell tarball (this automatically calculates checksums)
@@ -41,13 +41,8 @@ function create-meta4-file {
 version=`cut -d'.' -f1-2 version/number`
 cp -r boshio-input/. boshio-output
 
-# parse IaaSes (comma- or space-delimited string) as array
-IFS=', ' read -r -a iaas_array <<< "$IAASES"
-
-for iaas in "${iaas_array[@]}"
-do
-    echo -e "Creating meta4 file for ${CYAN}${iaas}${NC}"
-    case "$iaas" in
+echo -e "Creating meta4 file for ${CYAN}${IAAS}${NC}"
+case "$IAAS" in
     "aws")
       filename='aws-xen-hvm-go_agent'
       ;;
@@ -59,11 +54,10 @@ do
     "azure")
       filename='azure-hyperv-go_agent'
       ;;
-    esac
+esac
 
-    metalink=$(create-meta4-file $filename $version)
-    meta4-the-stemcell $iaas $version $metalink
-done
+metalink=$(create-meta4-file $filename $version)
+meta4-the-stemcell $IAAS $version $metalink
 
 cd boshio-output
 git add .

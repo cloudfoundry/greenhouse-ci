@@ -9,25 +9,28 @@ groups:
   - test-aws
   - create-azure-stemcell
   - test-azure-stemcell
-  - print-azure-publishing-instructions
   - create-gcp-stemcell
   - test-gcp-stemcell
   - create-vsphere-add-updates
   - create-vsphere-stemcell-from-vmx
   - test-vsphere-stemcell-from-vmx
-  - promote-aws-gcp-vsphere
-  - ship-bosh-stemcell-builder
-  - promote-azure
   - create-vsphere-stemcell-from-diff
   - test-vsphere-stemcell-from-diff
-- name: main
-  jobs:
-  - bump-stemcell-builder-submodules
-  - test-stemcell-builder
-  - build
+  - promote
+  - promote-gcp
+  - promote-aws
+  - promote-vsphere
   - promote-azure
-  - promote-aws-gcp-vsphere
+  - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
+#- name: main
+#  jobs:
+#  - bump-stemcell-builder-submodules
+#  - test-stemcell-builder
+#  - build
+#  - promote-azure
+#  - promote-aws-gcp-vsphere
+#  - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
   - create-vsphere-add-updates
@@ -47,8 +50,16 @@ groups:
 - name: azure
   jobs:
   - create-azure-stemcell
-  - print-azure-publishing-instructions
   - test-azure-stemcell
+- name: promote
+  jobs:
+  - promote
+  - promote-gcp
+  - promote-aws
+  - promote-vsphere
+  - promote-azure
+  - print-azure-publishing-instructions
+  - ship-bosh-stemcell-builder
 
 resources:
 # repos
@@ -927,33 +938,6 @@ jobs:
       params:
         release: azure-lock
 
-- name: print-azure-publishing-instructions
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [test-azure-stemcell]
-    - get: version
-      resource: azure-stemcell-version
-      passed: [test-azure-stemcell]
-    - get: stemcells-main-version
-      passed: [test-azure-stemcell]
-    - get: azure-stemcell-release-candidate
-      passed: [test-azure-stemcell]
-    - get: azure-base-vhd-uri
-      passed: [test-azure-stemcell]
-  - task: print-azure-publishing-instructions
-    file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
-    params:
-      AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
-      AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
-      CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
-      SKU: ((AZURE_SKU))
-
 - name: test-azure-stemcell
   serial: true
   plan:
@@ -1001,8 +985,7 @@ jobs:
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
 
-- name: promote-aws-gcp-vsphere
-  serial_groups: ["vsphere-director"]
+- name: promote
   serial: true
   plan:
   - aggregate:
@@ -1014,6 +997,12 @@ jobs:
     - get: gcp-stemcell-release-candidate
       passed: [test-gcp-stemcell]
       resource: gcp-2012R2-tested
+    - get: azure-stemcell-release-candidate
+      passed: [test-azure-stemcell]
+    - get: azure-base-vhd-uri
+      passed: [test-azure-stemcell]
+    - get: azure-stemcell-version
+      passed: [test-azure-stemcell]
     - get: stemcell-builder
       passed: [test-gcp-stemcell,test-aws,test-vsphere-stemcell-from-vmx]
     - get: version
@@ -1028,92 +1017,50 @@ jobs:
         - name: vsphere-stemcell-release-candidate
         - name: aws-2012-tested
         - name: gcp-stemcell-release-candidate
+        - name: azure-stemcell-release-candidate
       run:
         path: ci/match-stemcell-versions/run
+
+- name: promote-aws
+  serial: true
+  plan:
   - aggregate:
-    - task: test-aws-stemcell
-      input_mapping: { stemcell: aws-2012-tested }
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
-      params:
-        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        GINKGO_FOCUS: "is fully updated"
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    - task: test-gcp-stemcell
-      input_mapping: { stemcell: gcp-stemcell-release-candidate }
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      params:
-        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-        BOSH_CA_CERT: ((goose_ca_cert))
-        BOSH_CLIENT: ((goose_client))
-        BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_TARGET: ((goose_environment))
-        GINKGO_FOCUS: "is fully updated"
-        IAAS: gcp
-        NETWORK: private
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-        VM_EXTENSIONS: "50GB_ephemeral_disk"
-    - task: test-vsphere-stemcell
-      input_mapping: { stemcell: vsphere-stemcell-release-candidate }
-      tags: [vsphere-linux-worker]
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
-      params:
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_TARGET: ((regina_environment))
-        GINKGO_FOCUS: "is fully updated"
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-        VM_TYPE: large
-  - aggregate:
-    - task: vsphere-set-stemcell-filename-version
-      tags: [vsphere-linux-worker]
-      input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
-      output_mapping: { final-stemcell: vsphere-stemcell-final }
-      file: ci/set-stemcell-version/task.yml
-    - task: aws-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: aws-2012-tested }
-      output_mapping: { final-stemcell: aws-stemcell-final }
-      file: ci/set-stemcell-version/task.yml
-    - task: gcp-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
-      output_mapping: { final-stemcell: gcp-stemcell-final }
-      file: ci/set-stemcell-version/task.yml
-  - task: create-major-stemcell
-    file: ci/create-major-stemcell/task.yml
-    input_mapping: { final-stemcell: aws-stemcell-final }
-  - aggregate:
-    - put: major-stemcell-s3
-      resource: major-stemcell
-      params:
-        file: stemcell-info/stemcell-*.json
-    - put: aws-stemcell-final-s3
-      resource: aws-stemcell-final
-      params:
-        file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    - put: gcp-stemcell-final-s3
-      resource: gcp-stemcell-final
-      params:
-        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-    - put: vsphere-stemcell-final-s3
-      resource: vsphere-stemcell-final
-      params:
-        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-  - task: commit-meta4-file-aws-gcp
-    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-    input_mapping: {
-      aws: aws-stemcell-final,
-      gcp: gcp-stemcell-final
-    }
+    - get: ci
+    - get: aws-2012-tested
+      passed: [promote]
+      trigger: true
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote]
+    - get: boshio-input
+      resource: boshio
+  - task: test-aws-stemcell
+    input_mapping: { stemcell: aws-2012-tested }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
     params:
-      IAASES: 'aws, gcp'
+      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      GINKGO_FOCUS: "is fully updated"
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+  - task: aws-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: aws-2012-tested }
+    output_mapping: { final-stemcell: aws-stemcell-final }
+    file: ci/set-stemcell-version/task.yml
+  - put: aws-stemcell-final-s3
+    resource: aws-stemcell-final
+    params:
+      file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+  - task: commit-dev-meta4-file
+    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+    input_mapping: { stemcell: aws-stemcell-final }
+    params:
+      IAAS: aws
       OS_NAME: windows
       OS_VERSION: 2012R2
   - put: boshio
@@ -1121,36 +1068,136 @@ jobs:
       repository: boshio-output
       rebase: true
 
+- name: promote-gcp
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: gcp-stemcell-release-candidate
+      passed: [promote]
+      resource: gcp-2012R2-tested
+      trigger: true
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote]
+    - get: boshio-input
+      resource: boshio
+  - task: test-gcp-stemcell
+    input_mapping: { stemcell: gcp-stemcell-release-candidate }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    params:
+      ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+      BOSH_CA_CERT: ((goose_ca_cert))
+      BOSH_CLIENT: ((goose_client))
+      BOSH_CLIENT_SECRET: ((goose_client_secret))
+      BOSH_TARGET: ((goose_environment))
+      GINKGO_FOCUS: "is fully updated"
+      IAAS: gcp
+      NETWORK: private
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      VM_EXTENSIONS: "50GB_ephemeral_disk"
+  - task: gcp-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+    output_mapping: { final-stemcell: gcp-stemcell-final }
+    file: ci/set-stemcell-version/task.yml
+  - put: gcp-stemcell-final-s3
+    resource: gcp-stemcell-final
+    params:
+      file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+  - task: commit-meta4-dev-file
+    file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+    input_mapping: { stemcell: gcp-stemcell-final }
+    params:
+      IAAS: gcp
+      OS_NAME: windows
+      OS_VERSION: 2012R2
+  - put: boshio
+    params:
+      repository: boshio-output
+      rebase: true
+
+- name: promote-vsphere
+  serial_groups: ["vsphere-director"]
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: vsphere-stemcell-release-candidate
+      passed: [promote]
+      trigger: true
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote]
+  - task: test-vsphere-stemcell
+    input_mapping: { stemcell: vsphere-stemcell-release-candidate }
+    tags: [vsphere-linux-worker]
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
+    params:
+      BOSH_CA_CERT: ((regina_ca_cert))
+      BOSH_CLIENT: ((regina_client))
+      BOSH_CLIENT_SECRET: ((regina_client_secret))
+      BOSH_TARGET: ((regina_environment))
+      GINKGO_FOCUS: "is fully updated"
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      VM_TYPE: large
+  - task: vsphere-set-stemcell-filename-version
+    tags: [vsphere-linux-worker]
+    input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+    output_mapping: { final-stemcell: vsphere-stemcell-final }
+    file: ci/set-stemcell-version/task.yml
+  - put: vsphere-stemcell-final-s3
+    resource: vsphere-stemcell-final
+    params:
+      file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+
+- name: print-azure-publishing-instructions
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: azure-stemcell-version
+      passed: [promote]
+    - get: stemcells-main-version
+      passed: [promote]
+    - get: azure-stemcell-release-candidate
+      passed: [promote]
+    - get: azure-base-vhd-uri
+      passed: [promote]
+  - task: print-azure-publishing-instructions
+    file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
+    params:
+      AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
+      CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+      SKU: ((AZURE_SKU))
+
 - name: promote-azure
   serial: true
   plan:
   - aggregate:
     - get: ci
-    - get: vsphere-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
-    - get: gcp-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
     - get: azure-stemcell-release-candidate
       passed: [print-azure-publishing-instructions]
-    - get: aws-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
     - get: version
       resource: stemcells-main-version
-      passed: [promote-aws-gcp-vsphere]
+      passed: [print-azure-publishing-instructions]
     - get: stemcell-builder
-      passed: [promote-aws-gcp-vsphere]
-  - task: ensure-versions-match
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: ci
-        - name: vsphere-stemcell-final
-        - name: aws-stemcell-final
-        - name: gcp-stemcell-final
-        - name: azure-stemcell-release-candidate
-      run:
-        path: ci/match-stemcell-versions/run
+      passed: [print-azure-publishing-instructions]
+    - get: boshio-input
+      resource: boshio
   - task: test-azure-stemcell
     input_mapping: { stemcell: azure-stemcell-release-candidate }
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
@@ -1175,10 +1222,10 @@ jobs:
     params:
       file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
   - task: commit-meta4-file
-    input_mapping: { azure: azure-stemcell-final }
+    input_mapping: { stemcell: azure-stemcell-final }
     file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
     params:
-      IAASES: 'azure'
+      IAAS: azure
       OS_NAME: windows
       OS_VERSION: 2012R2
   - put: boshio
@@ -1192,13 +1239,12 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [promote-aws-gcp-vsphere]
+      passed: [promote-vsphere]
     - get: stemcells-main-version
-      passed: [promote-aws-gcp-vsphere]
-      trigger: true
+      passed: [promote-vsphere]
     - get: vsphere-stemcell
       resource: vsphere-stemcell-final
-      passed: [promote-aws-gcp-vsphere]
+      passed: [promote-vsphere]
   - aggregate:
     - task: shorten-stemcell-version
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
@@ -1208,6 +1254,9 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
     - task: get-stemcell-builder-sha
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
+    - task: create-major-stemcell
+      file: ci/create-major-stemcell/task.yml
+      input_mapping: { final-stemcell: vsphere-stemcell-final }
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version
@@ -1219,3 +1268,7 @@ jobs:
   - put: stemcells-main-version
     params:
       bump: minor
+  - put: major-stemcell-s3
+    resource: major-stemcell
+    params:
+      file: stemcell-info/stemcell-*.json

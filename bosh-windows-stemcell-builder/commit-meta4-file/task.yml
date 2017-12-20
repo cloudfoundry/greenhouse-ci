@@ -8,9 +8,7 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: azure
-  - name: gcp
-  - name: aws
+  - name: stemcell
   - name: version
   - name: boshio-input
 outputs:
@@ -19,7 +17,7 @@ outputs:
 run:
   path: ci/bosh-windows-stemcell-builder/commit-meta4-file/run
 params:
-  IAASES:
+  IAAS:
   OS_NAME:
   OS_VERSION:
 
