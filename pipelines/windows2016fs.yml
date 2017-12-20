@@ -238,7 +238,9 @@ groups:
 - name: windows2016fs-online-release
   jobs:
     - tartar-online-wats
-    - ship-it-online
+    - shipit-online-major
+    - shipit-online-minor
+    - shipit-online-patch
 
 jobs:
 
@@ -735,7 +737,7 @@ jobs:
     params:
       release: tartar-lock-pool
 
-- name: ship-it-online
+- name: shipit-online-major
   serial: true
   plan:
   - aggregate:
@@ -743,7 +745,93 @@ jobs:
     - get: windows2016fs-online-release-develop
       passed: [tartar-online-wats]
     - get: windows2016fs-online-release-master
-    - put: windows2016fs-online-release-version
+    - get: windows2016fs-online-release-version
+      params: {bump: major}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping:
+      release: windows2016fs-online-release-develop
+      version: windows2016fs-online-release-version
+    params:
+      RELEASE_NAME: windows2016fs
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      CI_SKIP: true
+  - put: windows2016fs-online-release-develop
+    params:
+      repository: finalized-release/release
+      tag: windows2016fs-online-release-version/number
+      tag_prefix: v
+  - put: windows2016fs-online-release-master
+    params:
+      repository: finalized-release/release
+  - put: windows2016fs-online-release-version
+    params: {file: windows2016fs-online-release-version/number}
+  - task: generate-github-release
+    input_mapping:
+      release: finalized-repo
+      version: windows2016fs-online-release-version
+    file: ci/generate-github-release/task.yml
+  - put: windows2016fs-online-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/windows2016fs-*.tgz
+
+- name: shipit-online-minor
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-online-release-develop
+      passed: [tartar-online-wats]
+    - get: windows2016fs-online-release-master
+    - get: windows2016fs-online-release-version
+      params: {bump: minor}
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping:
+      release: windows2016fs-online-release-develop
+      version: windows2016fs-online-release-version
+    params:
+      RELEASE_NAME: windows2016fs
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+      CI_SKIP: true
+  - put: windows2016fs-online-release-develop
+    params:
+      repository: finalized-release/release
+      tag: windows2016fs-online-release-version/number
+      tag_prefix: v
+  - put: windows2016fs-online-release-master
+    params:
+      repository: finalized-release/release
+  - put: windows2016fs-online-release-version
+    params: {file: windows2016fs-online-release-version/number}
+  - task: generate-github-release
+    input_mapping:
+      release: finalized-repo
+      version: windows2016fs-online-release-version
+    file: ci/generate-github-release/task.yml
+  - put: windows2016fs-online-release-github-release
+    params:
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
+      globs:
+      - finalized-release/windows2016fs-*.tgz
+
+- name: shipit-online-patch
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows2016fs-online-release-develop
+      passed: [tartar-online-wats]
+    - get: windows2016fs-online-release-master
+    - get: windows2016fs-online-release-version
       params: {bump: patch}
   - task: finalize-release
     file: ci/finalize-release/task.yml
@@ -763,6 +851,8 @@ jobs:
   - put: windows2016fs-online-release-master
     params:
       repository: finalized-release/release
+  - put: windows2016fs-online-release-version
+    params: {file: windows2016fs-online-release-version/number}
   - task: generate-github-release
     input_mapping:
       release: finalized-repo
