@@ -1143,10 +1143,10 @@ jobs:
     #     OS_NAME: windows
     #     OS_VERSION: 2012R2
   - aggregate:
-    # - put: gcp-stemcell-final-s3
-    #   resource: gcp-stemcell-final
-    #   params:
-    #     file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    - put: gcp-stemcell-final-s3
+      resource: gcp-stemcell-final
+      params:
+        file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
     - put: pivnet-public-stemcells-release
       params:
         file_glob: 'final-stemcell/*.tgz'
@@ -1279,10 +1279,10 @@ jobs:
     #     OS_NAME: windows
     #     OS_VERSION: 2012R2
   - aggregate:
-    # - put: azure-stemcell-final-s3
-    #   resource: azure-stemcell-final
-    #   params:
-    #     file: final-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+    - put: azure-stemcell-final-s3
+      resource: azure-stemcell-final
+      params:
+        file: final-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
     - put: pivnet-public-stemcells-release
       params:
         file_glob: 'final-stemcell/*.tgz'
