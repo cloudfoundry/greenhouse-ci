@@ -16,7 +16,6 @@ final_version = File.read("version/number").match(/\d+\.\d+/)[0]
 stemcell_name = new_stemcell_name(stemcell[0], final_version)
 FileUtils.mv stemcell[0], File.join("final-stemcell", stemcell_name)
 
-version_file = File.new("final_version", "w+")
-version_file.write(final_version)
-version_file.close
-FileUtils.mv version_file, File.join("final-stemcell", "version")
+File.open(File.join('final-stemcell', "version"), 'w') do |f|
+  f.write(final_version)
+end
