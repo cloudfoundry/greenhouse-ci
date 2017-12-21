@@ -47,7 +47,8 @@ release:
 product_files:
 EOF
 
-if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
+release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
+if [ "$(ls pivnet-release/*.tgz)" != "" && release_version == "$(cat stemcell/version)" ]; then
   mv pivnet-release/*.tgz pivnet-metadata
 fi
 
