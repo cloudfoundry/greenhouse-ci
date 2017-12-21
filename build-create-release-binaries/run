@@ -4,16 +4,18 @@ set -e
 
 go version
 
-VERSION=$(cat version/version)
+TIMESTAMP=$(date +%s)
 
 export GOPATH="$PWD/windows2016fs-release"
 
-go build -o "output/create-$VERSION-linux-amd64" create
+go build -o "output/create-$TIMESTAMP-linux-amd64" create
 
-sha=$(sha256sum "output/create-$VERSION-linux-amd64" | awk '{ print $1 }')
-printf $sha > "output/create-$VERSION-linux-amd64.sha256"
+sha=$(sha256sum "output/create-$TIMESTAMP-linux-amd64" | awk '{ print $1 }')
+printf $sha > "output/create-$TIMESTAMP-linux-amd64.sha256"
 
-GOOS=windows go build -o "output/create-$VERSION-windows-amd64.exe" create
+GOOS=windows go build -o "output/create-$TIMESTAMP-windows-amd64.exe" create
 
-sha=$(sha256sum "output/create-$VERSION-windows-amd64.exe" | awk '{ print $1 }')
-printf $sha > "output/create-$VERSION-windows-amd64.exe.sha256"
+sha=$(sha256sum "output/create-$TIMESTAMP-windows-amd64.exe" | awk '{ print $1 }')
+printf $sha > "output/create-$TIMESTAMP-windows-amd64.exe.sha256"
+
+printf $TIMESTAMP > "output/create-$TIMESTAMP-timestamp"

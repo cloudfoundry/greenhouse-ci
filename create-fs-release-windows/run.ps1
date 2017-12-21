@@ -4,7 +4,7 @@ trap { $host.SetShouldExit(1) }
 # get tar on the path
 $env:PATH="$env:PATH;C:\var\vcap\bosh\bin"
 
-$pre_version=(cat version/version)
+$timestamp=(cat create-timestamp/create-*-timestamp)
 $sha=(cat sha/create-*-windows-amd64.exe.sha256)
 
 push-location windows2016fs-release
@@ -18,7 +18,7 @@ push-location windows2016fs-release
   }
 
   if ($env:DEV_ENV -eq $null -or $env:DEV_ENV -eq "") {
-    set-content -path VERSION -value $pre_version -NoNewLine
+    set-content -path VERSION -value $timestamp -NoNewLine
     set-content -path CREATE_BIN_SHA_WINDOWS -value $sha
 
     git config --global user.email "pivotal-netgarden-eng@pivotal.io"

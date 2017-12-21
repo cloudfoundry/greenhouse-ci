@@ -2,11 +2,11 @@
 
 set -eu
 
-pre_version=$(cat version/version)
+timestamp=$(cat create-timestamp/create-*-timestamp)
 sha=$(cat sha/create-*-linux-amd64.sha256)
 
 pushd windows2016fs-release
-    echo -n "$pre_version" > VERSION
+    echo -n "$timestamp" > VERSION
     echo -n "$sha" > CREATE_BIN_SHA_LINUX
 
     git config --global user.email "pivotal-netgarden-eng@pivotal.io"

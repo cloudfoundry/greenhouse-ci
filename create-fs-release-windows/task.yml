@@ -4,7 +4,7 @@ platform: windows
 inputs:
 - name: ci
 - name: windows2016fs-release
-- name: version
+- name: create-timestamp
 - name: sha
 
 run:
