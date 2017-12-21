@@ -28,9 +28,13 @@ function add-pivnet-productfile () {
        exit 1
   esac
 
+<<<<<<< Updated upstream
   mv $stemcell ../pivnet-metadata
 
   cat >> ../pivnet-metadata/metadata <<EOF
+=======
+  cat >> pivnet-metadata/metadata <<EOF
+>>>>>>> Stashed changes
   - file: pivnet-metadata/$stemcell
     upload_as: "$stemcellname Stemcell for Windows $OS Server"
 EOF
@@ -49,10 +53,15 @@ release:
 product_files:
 EOF
 
+<<<<<<< Updated upstream
 
 if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
   mv pivnet-release/*.tgz stemcell
 fi
+=======
+mv pivnet-release/*.tgz pivnet-metadata
+mv stemcell/*.tgz pivnet-metadata
+>>>>>>> Stashed changes
 
 cd stemcell
 ls *.tgz
