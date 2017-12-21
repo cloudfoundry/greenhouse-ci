@@ -2,9 +2,8 @@
 
 set -e
 
-
-function add-pivnet-productfile {
-  $stemcell = $1
+function add-pivnet-productfile () {
+  stemcell="$1"
 
   echo "Adding $stemcell to Pivnet metadata"
   case "$stemcell" in
@@ -31,7 +30,7 @@ function add-pivnet-productfile {
 
   mv $stemcell ../pivnet-metadata
 
-  cat >> pivnet-metadata/metadata <<EOF
+  cat >> ../pivnet-metadata/metadata <<EOF
   - file: pivnet-metadata/$stemcell
     upload_as: "$stemcellname Stemcell for Windows $OS Server"
 EOF
@@ -50,11 +49,16 @@ release:
 product_files:
 EOF
 
-mv pivnet-release/*.tgz stemcell
+
+if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
+  mv pivnet-release/*.tgz stemcell
+fi
 
 cd stemcell
-for s in $(ls *.tgz) do
-  add-pivnet-productfile "$s"
+ls *.tgz
+for s in $(ls *.tgz)
+  do
+    add-pivnet-productfile "$s"
 done
 cd ..
 
