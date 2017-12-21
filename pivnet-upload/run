@@ -4,8 +4,6 @@ set -e
 
 echo "Uploading $IAAS $OS stemcell to Pivnet"
 
-stemcell-name=''
-
 case "$IAAS" in
     "aws")
       stemcellname='AWS light'
