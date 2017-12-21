@@ -38,7 +38,7 @@ release:
   eccn: ""
   license_exception: ""
 product_files:
-- file: $(ls stemcell/*.tgz)
+- file: $(ls stemcell-final/*.tgz)
   upload_as: "$stemcellname Stemcell for Windows $OS Server"
 EOF
 
