@@ -15,6 +15,5 @@ outputs:
 run:
   path: ci/pivnet-upload/run
 params:
-  IAAS:
   OS:
 

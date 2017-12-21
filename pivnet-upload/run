@@ -2,30 +2,40 @@
 
 set -e
 
-echo "Uploading $IAAS $OS stemcell to Pivnet"
 
-case "$IAAS" in
-    "aws")
-      stemcellname='AWS light'
-      ;;
+function add-pivnet-productfile {
+  $stemcell = $1
 
-    "gcp")
-      stemcellname='GCP light'
-      ;;
+  echo "Adding $stemcell to Pivnet metadata"
+  case "$stemcell" in
+      *"aws"*)
+        stemcellname='AWS light'
+        ;;
 
-    "azure")
-      stemcellname='Azure light'
-      ;;
+      *"google"*)
+        stemcellname='GCP light'
+        ;;
 
-    "vsphere")
-      stemcellname='vSphere'
-      ;;
+      *"azure"*)
+        stemcellname='Azure light'
+        ;;
 
-    *)
-     echo "Invalid IAAS: $IAAS, supported IAASes are: awz, azure, gcp, vsphere"
-     exit 1
-esac
+      *"vsphere"*)
+        stemcellname='vSphere'
+        ;;
 
+      *)
+       echo "Invalid stemcell: $stemcell, supported IAASes are: aws, azure, google, vsphere"
+       exit 1
+  esac
+
+  mv $stemcell ../pivnet-metadata
+
+  cat >> pivnet-metadata/metadata <<EOF
+  - file: pivnet-metadata/$stemcell
+    upload_as: "$stemcellname Stemcell for Windows $OS Server"
+EOF
+}
 
 cat > pivnet-metadata/metadata <<EOF
 ---
@@ -38,9 +48,18 @@ release:
   eccn: ""
   license_exception: ""
 product_files:
-- file: final-$(ls stemcell/*.tgz)
-  upload_as: "$stemcellname Stemcell for Windows $OS Server"
 EOF
+
+mv pivnet-release/*.tgz stemcell
+
+cd stemcell
+for s in $(ls *.tgz) do
+  add-pivnet-productfile "$s"
+done
+cd ..
 
 echo 'Release details:'
 cat pivnet-metadata/metadata
+
+echo 'Stemcells:'
+ls pivnet-metadata/*.tgz
