@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: ci
   - name: stemcell
+  - name: pivnet-release
 outputs:
   - name: pivnet-metadata
 run:
