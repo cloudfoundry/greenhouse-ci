@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/git-resource
+
+inputs:
+  - name: ci
+  - name: stemcell
+outputs:
+  - name: pivnet-metadata
+run:
+  path: ci/pivnet-upload/run
+params:
+  IAAS:
+  OS:
+

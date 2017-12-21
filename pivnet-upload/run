@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo 'Uploading $IAAS $OS stemcell to Pivnet'
+
+case "$IAAS" in
+    "aws")
+      stemcell-name='AWS light'
+      ;;
+
+    "gcp")
+      stemcell-name='GCP light'
+      ;;
+
+    "azure")
+      stemcell-name='Azure light'
+      ;;
+
+    "vsphere")
+      stemcell-name='vSphere'
+esac
+
+
+cat > pivnet-metadata/metadata <<EOF
+---
+release:
+  version: "$(cat stemcell/version)"
+  release_type: Beta Release
+  eula_slug: "pivotal_beta_eula"
+  availability: Admins Only
+  user_group_ids: []
+  eccn: ""
+  license_exception: ""
+product_files:
+- file: $(ls stemcell/*.tgz)
+  upload_as: "$stemcell-name Stemcell for Windows $OS Server"
+EOF
+
+echo 'Release details:'
+cat pivnet-metadata/metadata
