@@ -1054,8 +1054,8 @@ jobs:
     output_mapping: { final-stemcell: aws-stemcell-final }
     file: ci/set-stemcell-version/task.yml
   - aggregate:
-    - task: upload-pivnet
-      file: ci/upload-pivnet/task.yml
+    - task: pivnet-upload
+      file: ci/pivnet-upload/task.yml
       input_mapping: { stemcell: aws-stemcell-final }
       params:
         IAAS: aws
