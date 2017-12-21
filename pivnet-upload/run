@@ -2,23 +2,30 @@
 
 set -e
 
-echo 'Uploading $IAAS $OS stemcell to Pivnet'
+echo "Uploading $IAAS $OS stemcell to Pivnet"
+
+stemcell-name=''
 
 case "$IAAS" in
     "aws")
-      stemcell-name='AWS light'
+      stemcellname='AWS light'
       ;;
 
     "gcp")
-      stemcell-name='GCP light'
+      stemcellname='GCP light'
       ;;
 
     "azure")
-      stemcell-name='Azure light'
+      stemcellname='Azure light'
       ;;
 
     "vsphere")
-      stemcell-name='vSphere'
+      stemcellname='vSphere'
+      ;;
+
+    *)
+     echo "Invalid IAAS: $IAAS, supported IAASes are: awz, azure, gcp, vsphere"
+     exit 1
 esac
 
 
@@ -34,7 +41,7 @@ release:
   license_exception: ""
 product_files:
 - file: $(ls stemcell/*.tgz)
-  upload_as: "$stemcell-name Stemcell for Windows $OS Server"
+  upload_as: "$stemcellname Stemcell for Windows $OS Server"
 EOF
 
 echo 'Release details:'
