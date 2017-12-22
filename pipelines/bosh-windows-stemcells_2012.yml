@@ -1223,7 +1223,7 @@ jobs:
     - put: pivnet-internal-stemcells-release
       params:
         file_glob: 'pivnet-metadata/*.tgz'
-        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
+        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
