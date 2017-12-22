@@ -163,6 +163,7 @@ push-location garden-runc-release
       throw "Pinging garden server failed with code: $pingResult"
   }
 
+  $env:GARDEN_TEST_ROOTFS="$wincTestRootfs"
   Push-Location src/code.cloudfoundry.org/garden-integration-tests
     ginkgo -p -randomizeSuites -noisyPendings=false
   Pop-Location
