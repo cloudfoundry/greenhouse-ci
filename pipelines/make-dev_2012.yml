@@ -44,6 +44,12 @@
   path: /resources/name=aws-stemcell-final
 - type: remove
   path: /resources/name=boshio
+- type: remove
+  path: /resources/name=pivnet-lock
+- type: remove
+  path: /resources/name=pivnet-public-stemcells-release
+- type: remove
+  path: /resources/name=pivnet-internal-stemcells-release
 
 # JOBS
 
@@ -101,6 +107,12 @@
   path: /jobs/name=test-stemcell-builder
 - type: remove
   path: /jobs/name=promote-azure
+- type: remove
+  path: /jobs/name=promote-gcp
+- type: remove
+  path: /jobs/name=promote-vsphere
+- type: remove
+  path: /jobs/name=promote-aws
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 - type: remove
