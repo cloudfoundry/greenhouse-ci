@@ -1,3 +1,6 @@
+$ErrorActionPreference = "Stop";
+trap { Exit 1 }
+
 $ROOT_DIR= (Get-Item "$PSScriptRoot/../..").FullName
 $LIBRSYNC_DIR=Join-Path $ROOT_DIR librsync
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
@@ -35,8 +38,12 @@ copy $LIBRSYNC_DIR/src/* .
 copy $LIBRSYNC_BUILD_DIR/src/* .
 del rdiff.c
 
-Write-Host ***Building Stembuild***
+Write-Host ***Test Stembuild Code***
 cd ..
+go test
+
+
+Write-Host ***Building Stembuild***
 go install
 
 Write-Host ***Copying stembuild binary to errand log directory***
