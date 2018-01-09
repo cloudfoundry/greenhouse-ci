@@ -1350,7 +1350,7 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
     - task: create-major-stemcell
       file: ci/create-major-stemcell/task.yml
-      input_mapping: { final-stemcell: vsphere-stemcell-final }
+      input_mapping: { final-stemcell: vsphere-stemcell }
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version
