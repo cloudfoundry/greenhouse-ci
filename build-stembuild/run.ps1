@@ -35,9 +35,9 @@ copy $LIBRSYNC_DIR/src/* .
 copy $LIBRSYNC_BUILD_DIR/src/* .
 del rdiff.c
 
-echo ***Building Stembuild***
+Write-Host ***Building Stembuild***
 cd ..
 go install
 
-echo ***Copying stembuild binary to errand log directory***
+Write-Host ***Copying stembuild binary to errand log directory***
 copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild-$VERSION.exe

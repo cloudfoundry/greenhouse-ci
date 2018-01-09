@@ -1,0 +1,61 @@
+groups:
+- name: all
+  jobs:
+  - build-stembuild
+
+resources:
+- name: librsync
+  type: git
+  source:
+    branch: mingw64-fseeko64-v2.0.0-windows
+    uri: https://github.com/charlievieth/librsync.git
+
+- name: stembuild
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/stembuild.git
+
+- name: ci
+  type: git
+  source:
+    branch: ((CI_BRANCH))
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
+- name: untested-stembuild-bucket
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-(.*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+- name: stembuild-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: stembuild/version
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: "0.14.0"
+
+
+jobs:
+- name: build-stembuild
+  serial: true
+  plan:
+  - aggregate:
+    - get: librsync
+      trigger: true
+    - get: stembuild
+      trigger: true
+    - get: ci
+    - get: stembuild-version
+  - task: build
+    tags: [vsphere-stembuild-worker]
+    file: ci/build-stembuild/task.yml
+  - put: untested-stembuild-bucket
+    params:
+      file: output/stembuild-*.exe
+  - put: stembuild-version
+    params: {bump: patch}
