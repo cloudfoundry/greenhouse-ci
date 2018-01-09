@@ -1,9 +1,9 @@
 $ROOT_DIR= (Get-Item "$PSScriptRoot/../..").FullName
-$LIBRSYNC_DIR=Join-Path $ROOT librsync
-$OUTPUT_DIR=Join-Path $ROOT output
+$LIBRSYNC_DIR=Join-Path $ROOT_DIR librsync
+$OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR stembuild-version) version)
 
-$GO_DIR=Join-Path $ROOT go-work
+$GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/pivotal-cf-experimental/stembuild"
 
 $env:GOPATH = $GO_DIR
