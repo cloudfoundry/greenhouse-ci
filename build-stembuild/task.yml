@@ -1,0 +1,17 @@
+---
+platform: windows
+
+inputs:
+- name: librsync
+- name: stembuild
+- name: ci
+- name: stembuild-version
+
+outputs:
+- name: output
+
+run:
+  path: powershell
+  args:
+  - "-File"
+  - ci/build-stembuild/run.ps1
