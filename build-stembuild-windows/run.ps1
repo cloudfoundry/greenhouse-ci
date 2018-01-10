@@ -47,4 +47,4 @@ Write-Host ***Building Stembuild***
 go install
 
 Write-Host ***Copying stembuild to output directory***
-copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild-$VERSION.exe
+copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild_windows_amd64-$VERSION.exe

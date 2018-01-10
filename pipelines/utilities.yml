@@ -1,7 +1,8 @@
 groups:
 - name: all
   jobs:
-  - build-stembuild
+  - build-stembuild-windows
+  - build-stembuild-linux
 
 resources:
 - name: librsync
@@ -22,11 +23,19 @@ resources:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 
-- name: untested-stembuild-bucket
+- name: stembuild-untested-windows
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild-(.*).exe
+    regexp: stembuild/untested/stembuild_windows_amd64-(.*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+- name: stembuild-untested-linux
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild_linux_amd64-(.*)
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -41,7 +50,7 @@ resources:
 
 
 jobs:
-- name: build-stembuild
+- name: build-stembuild-windows
   serial: true
   plan:
   - aggregate:
@@ -53,8 +62,26 @@ jobs:
     - get: stembuild-version
   - task: build
     tags: [vsphere-stembuild-worker]
-    file: ci/build-stembuild/task.yml
-  - put: untested-stembuild-bucket
+    file: ci/build-stembuild-windows/task.yml
+  - put: stembuild-untested-windows
+    params:
+      file: output/stembuild_windows_amd64-*.exe
+  - put: stembuild-version
+    params: {bump: patch}
+
+- name: build-stembuild-linux
+  serial: true
+  plan:
+  - aggregate:
+    - get: librsync
+      trigger: true
+    - get: stembuild
+      trigger: true
+    - get: ci
+    - get: stembuild-version
+  - task: build
+    file: ci/build-stembuild-linux/task.yml
+  - put: stembuild-untested-linux
     params:
       file: output/stembuild-*.exe
   - put: stembuild-version
