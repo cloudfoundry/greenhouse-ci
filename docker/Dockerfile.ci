@@ -21,6 +21,7 @@ RUN apt-get update -qq && \
     git \
     google-cloud-sdk \
     libc6-dev \
+    libpopt-dev \
     lsb-release \
     make \
     mingw-w64 \
