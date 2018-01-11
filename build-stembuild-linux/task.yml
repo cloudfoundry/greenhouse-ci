@@ -1,17 +1,19 @@
 ---
-platform: windows
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
-- name: librsync
-- name: stembuild
-- name: ci
-- name: stembuild-version
+  - name: librsync
+  - name: stembuild
+  - name: ci
+  - name: stembuild-version
+  - name: ovftool
 
 outputs:
-- name: output
+  - name: output
 
 run:
-  path: powershell
+  path: /bin/bash
   args:
-  - "-File"
-  - ci/build-stembuild-linux/run.ps1
+    - -c
+    - ci/build-stembuild-linux/run.sh
