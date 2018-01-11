@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -e -x
-
-export GOPATH=$PWD
-
-./src/code.cloudfoundry.org/hwc/scripts/build.sh

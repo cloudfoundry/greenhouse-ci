@@ -1,9 +1,0 @@
-{
-"cni_plugin_dir": ".\\wincni-binary",
-"cni_config_dir": ".\\cni-config",
-"bind_mount_dir": ".\\bindmounts",
-"state_file": ".\\state\\state.json",
-"start_port": 6100,
-"total_ports": 5000,
-"log_prefix": "concourse-wincni"
-}

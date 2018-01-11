@@ -1,6 +1,0 @@
-# encoding: utf-8
-source 'https://rubygems.org'
-
-ruby '~> 2.3'
-
-gem 'tracker_api'
