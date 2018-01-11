@@ -1,14 +1,23 @@
 groups:
 - name: all
   jobs:
+  - build
   - build-stembuild-windows
   - build-stembuild-linux
 
 resources:
-- name: librsync
+
+#repos
+- name: librsync-windows
   type: git
   source:
     branch: mingw64-fseeko64-v2.0.0-windows
+    uri: https://github.com/charlievieth/librsync.git
+
+- name: librsync-linux
+  type: git
+  source:
+    branch: mingw64-fseeko64-v2.0.0
     uri: https://github.com/charlievieth/librsync.git
 
 - name: stembuild
@@ -23,11 +32,12 @@ resources:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 
+#files
 - name: stembuild-untested-windows
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild_windows_amd64-(.*).exe
+    regexp: stembuild/untested/stembuild-windows-x86_64-(.*).exe
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -35,10 +45,19 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild_linux_amd64-(.*)
+    regexp: stembuild/untested/stembuild-linux-x86_64-(.*)
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
+- name: ovftool
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+#versions
 - name: stembuild-version
   type: semver
   source:
@@ -50,39 +69,48 @@ resources:
 
 
 jobs:
+- name: build
+  serial: true
+  plan:
+  - aggregate:
+    - get: stembuild
+      trigger: true
+    - get: stembuild-version
+  - put: stembuild-version
+    params: {bump: patch}
+
 - name: build-stembuild-windows
   serial: true
   plan:
   - aggregate:
     - get: librsync
-      trigger: true
+      resource: librsync-windows
     - get: stembuild
-      trigger: true
+      passed: [ build ]
     - get: ci
     - get: stembuild-version
+      trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/build-stembuild-windows/task.yml
   - put: stembuild-untested-windows
     params:
-      file: output/stembuild_windows_amd64-*.exe
-  - put: stembuild-version
-    params: {bump: patch}
+      file: output/stembuild-windows-x86_64-*.exe
 
 - name: build-stembuild-linux
   serial: true
   plan:
   - aggregate:
     - get: librsync
-      trigger: true
+      resource: librsync-linux
     - get: stembuild
-      trigger: true
+      passed: [ build ]
     - get: ci
     - get: stembuild-version
+      trigger: true
+    - get: ovftool
   - task: build
     file: ci/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux
     params:
-      file: output/stembuild-*.exe
-  - put: stembuild-version
-    params: {bump: patch}
+      file: output/stembuild-linux-x86_64-*
