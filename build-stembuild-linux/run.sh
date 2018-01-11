@@ -3,7 +3,7 @@
 set -ex
 
 VERSION=`cat stembuild-version/version`
-ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
+ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../.. && pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
 echo ***Installing VMWare OVF Tools***
@@ -14,8 +14,8 @@ echo ***Generating librsync sources***
 LIBRSYNC_DIR=${ROOT_DIR}/librsync
 LIBRSYNC_BUILD_DIR=${LIBRSYNC_DIR}/build
 LIBRSYNC_INSTALL_DIR=${LIBRSYNC_DIR}/install
-mkdir ${LIBRSYNC_BUILD_DIR}
-mkdir ${LIBRSYNC_INSTALL_DIR}
+mkdir -p ${LIBRSYNC_BUILD_DIR}
+mkdir -p ${LIBRSYNC_INSTALL_DIR}
 
 pushd ${LIBRSYNC_BUILD_DIR}
   cmake -DCMAKE_INSTALL_PREFIX=${LIBRSYNC_INSTALL_DIR} -DCMAKE_BUILD_TYPE=release -G "Unix Makefiles" ..
@@ -32,10 +32,16 @@ pushd ${STEMBUILD_RDIFF_DIR}
   rm rdiff.c
 popd
 
-pushd ${STEMBUILD_DIR}
-  export GOPATH=$PWD
-  export PATH=${GOPATH}/bin:$PATH
+echo "***Creating GOPATH environment & structure ***"
+export GOPATH=$PWD/gopath
+export PATH=${GOPATH}/bin:$PATH
 
+CF_EXP_DIR=${GOPATH}/src/github.com/pivotal-cf-experimental
+mkdir -p ${CF_EXP_DIR}
+cp -r ${STEMBUILD_DIR} ${CF_EXP_DIR}
+
+GO_STEMBUILD_DIR=${CF_EXP_DIR}/stembuild
+pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
   go test
 
@@ -43,7 +49,7 @@ pushd ${STEMBUILD_DIR}
   go build
 popd
 
-***Copying stembuild to output directory***
-cp ${STEMBUILD_DIR}/stembuild ${OUTPUT_DIR}/stembuild-linux-x86_64-${VERSION}
+echo ***Copying stembuild to output directory***
+cp ${GO_STEMBUILD_DIR}/stembuild ${OUTPUT_DIR}/stembuild-linux-x86_64-${VERSION}
 
 
