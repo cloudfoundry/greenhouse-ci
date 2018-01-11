@@ -28,7 +28,7 @@ mingw32-make
 
 Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
-Copy-Item ./stembuild $GO_DIR/src/github.com/pivotal-cf-experimental -Recurse -Force -Verbose
+Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
 Write-Host ***Copying librsync sources into stembuild***
 $STEMBUILD_RDIFF_DIR=Join-Path $STEMBUILD_DIR rdiff
