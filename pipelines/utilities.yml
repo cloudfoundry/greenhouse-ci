@@ -4,9 +4,9 @@ groups:
   - build
   - build-stembuild-windows
   - build-stembuild-linux
+  - post-draft-release
 
 resources:
-
 #repos
 - name: librsync-windows
   type: git
@@ -31,6 +31,16 @@ resources:
   source:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
+#releases
+- name: stembuild-release
+  type: github-release
+  source:
+    owner: pivotal-cf-experimental
+    repository: stembuild
+    pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
 
 #files
 - name: stembuild-untested-windows
@@ -67,7 +77,6 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "0.14.0"
 
-
 jobs:
 - name: build
   serial: true
@@ -89,6 +98,7 @@ jobs:
       passed: [ build ]
     - get: ci
     - get: stembuild-version
+      passed: [ build ]
       trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
@@ -107,6 +117,7 @@ jobs:
       passed: [ build ]
     - get: ci
     - get: stembuild-version
+      passed: [ build ]
       trigger: true
     - get: ovftool
   - task: build
@@ -114,3 +125,25 @@ jobs:
   - put: stembuild-untested-linux
     params:
       file: output/stembuild-linux-x86_64-*
+
+- name: post-draft-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stembuild-untested-windows
+      passed: [ build-stembuild-windows ]
+    - get: stembuild-untested-linux
+      passed: [ build-stembuild-linux ]
+    - get: stembuild-version
+      passed: [ build-stembuild-linux, build-stembuild-windows ]
+  - task: trim-version-from-binaries
+    file: ci/set-stembuild-version/task.yml
+  - put: stembuild-release
+    params:
+      name: output/tag
+      tag: output/tag
+      globs:
+      - output/stembuild-*-x86_64-*
+  - put: stembuild-version
+    params: {bump: minor}
