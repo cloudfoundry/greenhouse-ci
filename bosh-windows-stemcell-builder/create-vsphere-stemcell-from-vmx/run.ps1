@@ -1,9 +1,9 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-Write-Host "Copying stembuild (${PWD}\stembuild\stembuild_windows_amd64.exe) to: ${PWD}\bin\stembuild.exe"
+Write-Host "Copying stembuild (${PWD}\stembuild\stembuild-windows-x86_64-*.exe) to: ${PWD}\bin\stembuild.exe"
 mkdir "${PWD}\bin"
-mv "${PWD}\stembuild\stembuild_windows_amd64.exe" "${PWD}\bin\stembuild.exe"
+mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
 
 $env:PATH="${PWD}\bin;$env:PATH"
 
