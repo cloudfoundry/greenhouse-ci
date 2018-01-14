@@ -119,3 +119,8 @@
   path: /jobs/name=create-vsphere-add-updates
 - type: remove
   path: /jobs/name=print-azure-publishing-instructions
+
+#build
+- type: replace
+  path: /jobs/name=build/plan/0/aggregate/get=version/params/bump
+  value: minor
