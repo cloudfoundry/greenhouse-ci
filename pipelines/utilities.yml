@@ -8,17 +8,11 @@ groups:
 
 resources:
 #repos
-- name: librsync-windows
+- name: librsync
   type: git
   source:
-    branch: mingw64-fseeko64-v2.0.0-windows
-    uri: https://github.com/charlievieth/librsync.git
-
-- name: librsync-linux
-  type: git
-  source:
-    branch: mingw64-fseeko64-v2.0.0
-    uri: https://github.com/charlievieth/librsync.git
+    branch: master
+    uri: https://github.com/librsync/librsync.git
 
 - name: stembuild
   type: git
@@ -93,7 +87,6 @@ jobs:
   plan:
   - aggregate:
     - get: librsync
-      resource: librsync-windows
     - get: stembuild
       passed: [ build ]
     - get: ci
@@ -112,7 +105,6 @@ jobs:
   plan:
   - aggregate:
     - get: librsync
-      resource: librsync-linux
     - get: stembuild
       passed: [ build ]
     - get: ci
