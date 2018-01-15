@@ -17,6 +17,7 @@ New-Item $GO_DIR -ItemType Directory
 Write-Host ***Generating librsync sources***
 $LIBRSYNC_BUILD_DIR= Join-Path $LIBRSYNC_DIR build
 $LIBRSYNC_INSTALL_DIR= Join-Path $LIBRSYNC_DIR install
+$LIBRSYNC_BLAKE2_DIR= Join-Path (Join-Path $LIBRSYNC_DIR src) blake2
 
 New-Item $LIBRSYNC_BUILD_DIR -ItemType Directory
 New-Item $LIBRSYNC_INSTALL_DIR -ItemType Directory
@@ -25,6 +26,7 @@ cd $LIBRSYNC_BUILD_DIR
 
 cmake -DCMAKE_INSTALL_PREFIX=$LIBRSYNC_INSTALL_DIR -DCMAKE_BUILD_TYPE=release -G "MinGW Makefiles" ..
 mingw32-make
+mingw32-make.exe test
 
 Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
@@ -36,6 +38,7 @@ cd $STEMBUILD_RDIFF_DIR
 
 copy $LIBRSYNC_DIR/src/* .
 copy $LIBRSYNC_BUILD_DIR/src/* .
+copy $LIBRSYNC_BLAKE2_DIR/* .
 del rdiff.c
 
 Write-Host ***Test Stembuild Code***
