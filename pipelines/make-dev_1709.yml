@@ -37,6 +37,8 @@
   path: /resources/name=stemcell-builder-release
 - type: remove
   path: /resources/name=vsphere-stemcell-final
+- type: remove
+  path: /resources/name=boshio
 
 # JOBS
 # remove unnecessary jobs
@@ -50,9 +52,15 @@
 - type: remove
   path: /jobs/name=create-azure
 - type: remove
-  path: /jobs/name=promote-aws-gcp-vsphere
-- type: remove
   path: /jobs/name=promote-azure
+- type: remove
+  path: /jobs/name=promote-gcp
+- type: remove
+  path: /jobs/name=promote-vsphere
+- type: remove
+  path: /jobs/name=promote-aws
+- type: remove
+  path: /jobs/name=promote
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 
