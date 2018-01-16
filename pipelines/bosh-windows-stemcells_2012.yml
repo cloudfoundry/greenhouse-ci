@@ -512,12 +512,12 @@ jobs:
     - get: bosh-windows-stemcell
       tags: [vsphere-linux-worker]
       resource: vsphere-stemcell-pre-release-candidate-from-vmx
-      trigger: true
     - get: stemcell-builder
       passed: [create-vsphere-stemcell-from-vmx]
     - get: version
       resource: vsphere-stemcell-version
       passed: [create-vsphere-stemcell-from-vmx]
+      trigger: true
     - get: stemcells-main-version
       passed: [create-vsphere-stemcell-from-vmx]
   - task: test-stemcell
@@ -642,12 +642,12 @@ jobs:
     - get: bosh-windows-stemcell
       tags: [vsphere-linux-worker]
       resource: vsphere-stemcell-pre-release-candidate
-      trigger: true
     - get: stemcell-builder
       passed: [create-vsphere-stemcell-from-diff]
     - get: version
       resource: vsphere-stemcell-version
       passed: [create-vsphere-stemcell-from-diff]
+      trigger: true
     - get: stemcells-main-version
       passed: [create-vsphere-stemcell-from-diff]
   - task: test-stemcell
