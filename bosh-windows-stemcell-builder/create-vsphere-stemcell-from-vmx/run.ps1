@@ -1,6 +1,8 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+New-Item -ItemType Directory -Force -Path $env:VMX_CACHE_DIR
+
 Write-Host "Copying stembuild (${PWD}\stembuild\stembuild-windows-x86_64-*.exe) to: ${PWD}\bin\stembuild.exe"
 mkdir "${PWD}\bin"
 mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
