@@ -22,3 +22,4 @@ params:
   BASE_IMAGE_DIR: ../base-gcp-image
   OS_VERSION: windows2012R2
   VERSION_DIR: ../version
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies

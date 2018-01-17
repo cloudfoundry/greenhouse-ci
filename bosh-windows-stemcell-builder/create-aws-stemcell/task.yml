@@ -29,6 +29,7 @@ params:
   VERSION_DIR: ../version
   BASE_AMIS_DIR: ../base-amis
   AMIS_DIR: ../amis
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
 
   OUTPUT_BUCKET_NAME: aws-regional-stemcells
   OUTPUT_BUCKET_REGION: us-east-1
