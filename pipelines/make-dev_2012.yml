@@ -114,6 +114,8 @@
 - type: remove
   path: /jobs/name=promote-aws
 - type: remove
+  path: /jobs/name=promote
+- type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 - type: remove
   path: /jobs/name=create-vsphere-add-updates
