@@ -24,7 +24,7 @@ params:
   OS_VERSION:
   AWS_ACCESS_KEY:
   AWS_SECRET_KEY:
-  REGION:
+  AWS_REGION:
 
   VERSION_DIR: ../version
   BASE_AMIS_DIR: ../base-amis
