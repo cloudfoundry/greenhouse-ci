@@ -1004,6 +1004,15 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+  - task: upload-stemcell-to-acceptance
+    file: ci/pm-acceptance-upload-azure-stemcell/task.yml
+    tags: [azure-linux-worker]
+    input_mapping: {heavy_stemcell_dir: heavy-stemcell}
+    params:
+      BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((PM_ACCEPTANCE_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((PM_ACCEPTANCE_BOSH_DIRECTOR))
   - put: azure-stemcell-release-candidate
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
