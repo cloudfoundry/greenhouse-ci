@@ -5,12 +5,10 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
 - name: ci
 - name: release
+- name: version
 
 outputs:
 - name: release-tarball
 
 run:
   path: ci/bosh-cr/run
-
-params:
-  SKIP_TARBALL: "false"

@@ -107,13 +107,20 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # github releases
-- name: windows-utilities-release-github
+- name: windows-utilities-release-github-draft
   type: github-release
   source:
     owner: cloudfoundry-incubator
     repository: windows-utilities-release
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
+
+- name: windows-utilities-release-github
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: windows-utilities-release
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 jobs:
 - name: run-wuts-gcp
@@ -279,7 +286,7 @@ jobs:
       params:
         release: azure-lock
 
-- name: release
+- name: release-dev
   serial: true
   plan:
   - aggregate:
@@ -290,6 +297,33 @@ jobs:
       - run-wuts-azure
       - run-wuts-gcp
       - run-wuts-vsphere
+    - get: windows-utilities-release-version
+      params:
+        bump: minor
+  - task: create-dev-release
+    file: ci/bosh-cr/task.yml
+    input_mapping:
+      release: windows-utilities-release
+      version: windows-utilities-release-version
+    params:
+      RELEASE_NAME: windows-utilities
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+  - put: windows-utilities-release-github-draft
+    params:
+      name: windows-utilities-release-version/number
+      tag: windows-utilities-release-version/number
+      globs:
+      - release-tarball/*.tgz
+
+- name: release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: windows-utilities-release
+      passed:
+      - release-dev
     - get: windows-utilities-release-version
       params:
         bump: minor

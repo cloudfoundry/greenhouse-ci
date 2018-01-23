@@ -2,8 +2,5 @@
 
 set -eux
 
-if [[ "$SKIP_TARBALL" == "true" ]]; then
-  bosh -n create-release --dir=release --timestamp-version
-else
-  bosh -n create-release --dir=release --tarball=release-tarball/release.tgz --timestamp-version
-fi
+version=$(cat version/number)
+bosh -n create-release --dir=release --tarball=release-tarball/release.tgz --version=$version
