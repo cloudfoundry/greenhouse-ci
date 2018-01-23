@@ -27,18 +27,19 @@ cd $LIBRSYNC_BUILD_DIR
 #Remove Git from path as CMake does not like sh in the path
 $orig_env_path = $env:Path
 
-Write-Host "Current Paht: $env:Path"
-$new_env_path = ($env:Path.Split(';') | Where-Object {$_ -notlike "*git"}) -join ';'
-
+Write-Host "Removing Git directory from path"
+$new_env_path = ($env:Path.Split(';') | Where-Object {$_ -notlike "*git*"}) -join ';'
+Write-Host "Updating path to: $new_env_path"
 $env:Path = $new_env_path
-Write-Host "Updated Paht: $env:Path"
 
 cmake -DCMAKE_INSTALL_PREFIX=$LIBRSYNC_INSTALL_DIR -DCMAKE_BUILD_TYPE=release -G "MinGW Makefiles" ..
 mingw32-make
 mingw32-make.exe test
 
 #Restore environment variable back
+Write-Host "Reverting Path to original value"
 $env:Path = $orig_env_path
+Write-Host "Reverted Path: $env:Path"
 
 Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
