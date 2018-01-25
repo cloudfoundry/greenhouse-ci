@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -ex
-
-cd stemcell-builder
-bundle install
-rake run:cleanup_aws_bucket
