@@ -715,10 +715,11 @@ jobs:
       attempts: 3
       file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
       params:
-        OS_VERSION: windows2012R2
-        AWS_REGION: ((AWS_PACKER_REGION))
         AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
         AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        PACKER_REGION: ((AWS_PACKER_REGION))
+        OS_VERSION: windows2012R2
         OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
     - aggregate:
       - put: aws-regional
