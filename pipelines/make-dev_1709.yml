@@ -64,11 +64,6 @@
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 
-#create-aws
-- type: replace
-  path: /jobs/name=create-aws/plan/1/do/task=create-stemcell/params/REGION
-  value: us-east-1
-
 # configure gcp for dev
 - type: replace
   path: /jobs/name=create-gcp/plan/1/do/task=create-stemcell/params/ACCOUNT_JSON
