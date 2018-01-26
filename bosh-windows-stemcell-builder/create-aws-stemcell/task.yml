@@ -11,6 +11,7 @@ inputs:
   - name: windows-stemcell-dependencies
   - name: sshd
   - name: packer-ci-private-key
+  - name: private-patch
 
 outputs:
   - name: bosh-windows-stemcell
