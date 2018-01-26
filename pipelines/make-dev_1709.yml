@@ -39,6 +39,12 @@
   path: /resources/name=vsphere-stemcell-final
 - type: remove
   path: /resources/name=boshio
+- type: remove
+  path: /resources/name=pivnet-lock
+- type: remove
+  path: /resources/name=pivnet-public-stemcells-release
+- type: remove
+  path: /resources/name=pivnet-internal-stemcells-release
 
 # JOBS
 # remove unnecessary jobs

@@ -15,5 +15,5 @@ outputs:
 run:
   path: ci/pivnet-upload/run
 params:
-  OS:
+  OS_NAME:
 

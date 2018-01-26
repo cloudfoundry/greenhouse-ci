@@ -30,7 +30,7 @@ function add-pivnet-productfile () {
 
   cat >> metadata <<EOF
   - file: pivnet-metadata/$stemcell
-    upload_as: "$stemcellname Stemcell for Windows $OS Server"
+    upload_as: "$stemcellname Stemcell for $OS_NAME"
 EOF
 }
 
