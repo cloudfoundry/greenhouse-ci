@@ -890,14 +890,14 @@ jobs:
         file: ci/pivnet-upload/task.yml
         input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
         params:
-          OS_NAME: "Windows 2016 Server (1709)"
+          OS_NAME: ((PIVNET_OS_NAME))
       - task: commit-dev-meta4-file
         file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
         input_mapping: { stemcell: aws-stemcell-final }
         params:
           IAAS: aws
           OS_NAME: windows
-          OS_VERSION: '1709'
+          OS_VERSION: ((BOSHIO_OS_VERSION))
     - aggregate:
       - put: aws-stemcell-final-s3
         resource: aws-stemcell-final
@@ -961,14 +961,14 @@ jobs:
         file: ci/pivnet-upload/task.yml
         input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
         params:
-          OS_NAME: "Windows 2016 Server (1709)"
+          OS_NAME: ((PIVNET_OS_NAME))
       - task: commit-meta4-dev-file
         file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
         input_mapping: { stemcell: gcp-stemcell-final }
         params:
           IAAS: gcp
           OS_NAME: windows
-          OS_VERSION: '1709'
+          OS_VERSION: ((BOSHIO_OS_VERSION))
     - aggregate:
       - put: gcp-stemcell-final-s3
         resource: gcp-stemcell-final
@@ -1024,7 +1024,7 @@ jobs:
     file: ci/pivnet-upload/task.yml
     input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells-release }
     params:
-      OS_NAME: "Windows 2016 Server (1709)"
+      OS_NAME: ((PIVNET_OS_NAME))
   - aggregate:
     - put: pivnet-internal-stemcells-release
       params:
@@ -1106,14 +1106,14 @@ jobs:
         file: ci/pivnet-upload/task.yml
         input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
         params:
-          OS_NAME: "Windows 2016 Server (1709)"
+          OS_NAME: ((PIVNET_OS_NAME))
       - task: commit-meta4-file
         input_mapping: { stemcell: azure-stemcell-final }
         file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
         params:
           IAAS: azure
           OS_NAME: windows
-          OS_VERSION: '1709'
+          OS_VERSION: ((BOSHIO_OS_VERSION))
     - aggregate:
       - put: azure-stemcell-final-s3
         resource: azure-stemcell-final
