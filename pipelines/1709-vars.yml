@@ -8,7 +8,6 @@ AWS_LOCK: 'stemcells-aws'
 GCP_LOCK: 'stemcells-gcp'
 AZURE_LOCK: 'stemcells-azure'
 VSPHERE_LOCK: 'vsphere-worker-lock'
-PIVNET_LOCK: 'pivnet-1709'
 
 #AWS Base Image Info
 BASE_AMI_NAME: 'windows-1709-prepped'

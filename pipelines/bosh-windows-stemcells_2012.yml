@@ -207,13 +207,6 @@ resources:
     pool: ((VSPHERE_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: pivnet-lock
-  type: pool
-  source:
-    branch: master
-    pool: ((PIVNET_LOCK))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
 - name: major-stemcell
@@ -1055,142 +1048,128 @@ jobs:
         path: ci/match-stemcell-versions/run
 
 - name: promote-aws
+  serial_groups: ["pivnet"]
   serial: true
   plan:
-  - put: pivnet-lock
+  - aggregate:
+    - get: ci
+    - get: aws-2012-tested
+      passed: [promote]
+      trigger: true
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote]
+    - get: boshio-input
+      resource: boshio
+  - get: pivnet-public-stemcells-release
+  - task: test-aws-stemcell
+    input_mapping: { stemcell: aws-2012-tested }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
     params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: aws-2012-tested
-        passed: [promote]
-        trigger: true
-      - get: stemcell-builder
-        passed: [promote]
-      - get: version
-        resource: stemcells-main-version
-        passed: [promote]
-      - get: boshio-input
-        resource: boshio
-    - get: pivnet-public-stemcells-release
-    - task: test-aws-stemcell
-      input_mapping: { stemcell: aws-2012-tested }
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
+      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      GINKGO_FOCUS: "is fully updated"
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+  - task: aws-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: aws-2012-tested }
+    file: ci/set-stemcell-version/task.yml
+  - aggregate:
+    - task: pivnet-upload
+      file: ci/pivnet-upload/task.yml
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
       params:
-        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        GINKGO_FOCUS: "is fully updated"
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    - task: aws-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: aws-2012-tested }
-      file: ci/set-stemcell-version/task.yml
-    - aggregate:
-      - task: pivnet-upload
-        file: ci/pivnet-upload/task.yml
-        input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
-        params:
-          OS_NAME: ((PIVNET_OS_NAME))
-      - task: commit-dev-meta4-file
-        file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-        input_mapping: { stemcell: final-stemcell }
-        params:
-          IAAS: aws
-          OS_NAME: windows
-          OS_VERSION: ((BOSHIO_OS_VERSION))
-    - aggregate:
-      - put: aws-stemcell-final-s3
-        resource: aws-stemcell-final
-        params:
-          file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-      - put: pivnet-public-stemcells-release
-        params:
-          file_glob: 'pivnet-metadata/*.tgz'
-          s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
-          metadata_file: pivnet-metadata/metadata
-      - put: boshio
-        params:
-          repository: boshio-output
-          rebase: true
-    ensure:
-      put: pivnet-lock
+        OS_NAME: ((PIVNET_OS_NAME))
+    - task: commit-dev-meta4-file
+      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      input_mapping: { stemcell: final-stemcell }
       params:
-        release: pivnet-lock
+        IAAS: aws
+        OS_NAME: windows
+        OS_VERSION: ((BOSHIO_OS_VERSION))
+  - aggregate:
+    - put: aws-stemcell-final-s3
+      resource: aws-stemcell-final
+      params:
+        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+    - put: pivnet-public-stemcells-release
+      params:
+        file_glob: 'pivnet-metadata/*.tgz'
+        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
 
 - name: promote-gcp
+  serial_groups: ["pivnet"]
   serial: true
   plan:
-  - put: pivnet-lock
+  - aggregate:
+    - get: ci
+    - get: gcp-stemcell-release-candidate
+      passed: [promote]
+      resource: gcp-2012R2-tested
+      trigger: true
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: stemcells-main-version
+      passed: [promote]
+    - get: boshio-input
+      resource: boshio
+  - get: pivnet-public-stemcells-release
+  - task: test-gcp-stemcell
+    input_mapping: { stemcell: gcp-stemcell-release-candidate }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: gcp-stemcell-release-candidate
-        passed: [promote]
-        resource: gcp-2012R2-tested
-        trigger: true
-      - get: stemcell-builder
-        passed: [promote]
-      - get: version
-        resource: stemcells-main-version
-        passed: [promote]
-      - get: boshio-input
-        resource: boshio
-    - get: pivnet-public-stemcells-release
-    - task: test-gcp-stemcell
-      input_mapping: { stemcell: gcp-stemcell-release-candidate }
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+      BOSH_CA_CERT: ((goose_ca_cert))
+      BOSH_CLIENT: ((goose_client))
+      BOSH_CLIENT_SECRET: ((goose_client_secret))
+      BOSH_TARGET: ((goose_environment))
+      GINKGO_FOCUS: "is fully updated"
+      IAAS: gcp
+      NETWORK: private
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      VM_EXTENSIONS: "50GB_ephemeral_disk"
+  - task: gcp-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
+    file: ci/set-stemcell-version/task.yml
+  - aggregate:
+    - task: pivnet-upload
+      file: ci/pivnet-upload/task.yml
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
       params:
-        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-        BOSH_CA_CERT: ((goose_ca_cert))
-        BOSH_CLIENT: ((goose_client))
-        BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_TARGET: ((goose_environment))
-        GINKGO_FOCUS: "is fully updated"
+        OS_NAME: ((PIVNET_OS_NAME))
+    - task: commit-meta4-dev-file
+      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      input_mapping: { stemcell: final-stemcell }
+      params:
         IAAS: gcp
-        NETWORK: private
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-        VM_EXTENSIONS: "50GB_ephemeral_disk"
-    - task: gcp-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: gcp-stemcell-release-candidate }
-      file: ci/set-stemcell-version/task.yml
-    - aggregate:
-      - task: pivnet-upload
-        file: ci/pivnet-upload/task.yml
-        input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
-        params:
-          OS_NAME: ((PIVNET_OS_NAME))
-      - task: commit-meta4-dev-file
-        file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-        input_mapping: { stemcell: final-stemcell }
-        params:
-          IAAS: gcp
-          OS_NAME: windows
-          OS_VERSION: ((BOSHIO_OS_VERSION))
-    - aggregate:
-      - put: gcp-stemcell-final-s3
-        resource: gcp-stemcell-final
-        params:
-          file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-      - put: pivnet-public-stemcells-release
-        params:
-          file_glob: 'pivnet-metadata/*.tgz'
-          s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
-          metadata_file: pivnet-metadata/metadata
-      - put: boshio
-        params:
-          repository: boshio-output
-          rebase: true
-    ensure:
-      put: pivnet-lock
+        OS_NAME: windows
+        OS_VERSION: ((BOSHIO_OS_VERSION))
+  - aggregate:
+    - put: gcp-stemcell-final-s3
+      resource: gcp-stemcell-final
       params:
-        release: pivnet-lock
+        file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+    - put: pivnet-public-stemcells-release
+      params:
+        file_glob: 'pivnet-metadata/*.tgz'
+        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
 
 - name: promote-vsphere
   serial_groups: ["vsphere-director"]
@@ -1270,73 +1249,66 @@ jobs:
       SKU: ((AZURE_SKU))
 
 - name: promote-azure
+  serial_groups: ["pivnet"]
   serial: true
   plan:
-  - put: pivnet-lock
+  - aggregate:
+    - get: ci
+    - get: azure-stemcell-release-candidate
+      passed: [print-azure-publishing-instructions]
+    - get: version
+      resource: stemcells-main-version
+      passed: [print-azure-publishing-instructions]
+    - get: stemcell-builder
+      passed: [print-azure-publishing-instructions]
+    - get: boshio-input
+      resource: boshio
+  - get: pivnet-public-stemcells-release
+  - task: test-azure-stemcell
+    input_mapping: { stemcell: azure-stemcell-release-candidate }
+    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: azure-stemcell-release-candidate
-        passed: [print-azure-publishing-instructions]
-      - get: version
-        resource: stemcells-main-version
-        passed: [print-azure-publishing-instructions]
-      - get: stemcell-builder
-        passed: [print-azure-publishing-instructions]
-      - get: boshio-input
-        resource: boshio
-    - get: pivnet-public-stemcells-release
-    - task: test-azure-stemcell
-      input_mapping: { stemcell: azure-stemcell-release-candidate }
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      ACCOUNT_JSON:
+      AZ: z1
+      BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
+      IAAS: azure
+      NETWORK: default
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+      VM_TYPE: default
+  - task: azure-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: azure-stemcell-release-candidate }
+    file: ci/set-stemcell-version/task.yml
+  - aggregate:
+    - task: pivnet-upload
+      file: ci/pivnet-upload/task.yml
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
       params:
-        ACCOUNT_JSON:
-        AZ: z1
-        BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-        BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
+        OS_NAME: ((PIVNET_OS_NAME))
+    - task: commit-meta4-file
+      input_mapping: { stemcell: final-stemcell }
+      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      params:
         IAAS: azure
-        NETWORK: default
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-        VM_TYPE: default
-    - task: azure-set-stemcell-filename-version
-      input_mapping: { bosh-windows-stemcell: azure-stemcell-release-candidate }
-      file: ci/set-stemcell-version/task.yml
-    - aggregate:
-      - task: pivnet-upload
-        file: ci/pivnet-upload/task.yml
-        input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
-        params:
-          OS_NAME: ((PIVNET_OS_NAME))
-      - task: commit-meta4-file
-        input_mapping: { stemcell: final-stemcell }
-        file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-        params:
-          IAAS: azure
-          OS_NAME: windows
-          OS_VERSION: ((BOSHIO_OS_VERSION))
-    - aggregate:
-      - put: azure-stemcell-final-s3
-        resource: azure-stemcell-final
-        params:
-          file: final-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-      - put: pivnet-public-stemcells-release
-        params:
-          file_glob: 'pivnet-metadata/*.tgz'
-          s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
-          metadata_file: pivnet-metadata/metadata
-      - put: boshio
-        params:
-          repository: boshio-output
-          rebase: true
-    ensure:
-      put: pivnet-lock
+        OS_NAME: windows
+        OS_VERSION: ((BOSHIO_OS_VERSION))
+  - aggregate:
+    - put: azure-stemcell-final-s3
+      resource: azure-stemcell-final
       params:
-        release: pivnet-lock
+        file: final-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
+    - put: pivnet-public-stemcells-release
+      params:
+        file_glob: 'pivnet-metadata/*.tgz'
+        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
 
 - name: ship-bosh-stemcell-builder
   serial: true
