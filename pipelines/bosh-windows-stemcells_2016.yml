@@ -300,13 +300,6 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: private-patch
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: private-patch/private-patch(.*).exe
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 jobs:
 - name: build
@@ -387,7 +380,6 @@ jobs:
       - get: sshd
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
-      - get: private-patch
     - put: version
       resource: aws-build-number
       params:
