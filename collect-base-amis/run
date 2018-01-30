@@ -2,9 +2,11 @@
 
 require 'json'
 
+PREPPED_BASE_AMI_NAME = "windows-1709-ena-prepped"
+
 # Helper method
 def get_ami_for(region, base_ami_name)
-  if base_ami_name == "windows-1709-prepped"
+  if base_ami_name == PREPPED_BASE_AMI_NAME
     return ENV['PREPPED_BASE_AMI']
   else
     amis = JSON.parse(`aws ec2 describe-images \
@@ -31,7 +33,7 @@ if base_ami_name == ''
   abort 'Define BASE_AMI_NAME environment variable'
 end
 
-if (base_ami_name == "windows-1709-prepped")
+if (base_ami_name == PREPPED_BASE_AMI_NAME)
   region_names = [
     "us-east-1"
   ]

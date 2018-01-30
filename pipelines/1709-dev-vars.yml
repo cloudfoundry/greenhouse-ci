@@ -11,7 +11,7 @@ VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 
 
 #AWS Base Image Info
-BASE_AMI_NAME: 'windows-1709-prepped'
+BASE_AMI_NAME: 'windows-1709-ena-prepped'
 #AWS Output Info
 AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709-dev'
 #AWS Packer Info

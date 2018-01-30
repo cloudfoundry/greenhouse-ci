@@ -361,7 +361,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
         BASE_AMI: ((BASE_IMAGE_OS))
-        PREPPED_BASE_AMI: ami-80bf14fa
+        PREPPED_BASE_AMI: ami-86f3c9fc
         BASE_AMI_NAME: ((BASE_AMI_NAME))
     - task: collect-win2016-gcp-image
       file: ci/collect-gcp-image/task.yml
