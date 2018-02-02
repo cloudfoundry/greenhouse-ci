@@ -873,7 +873,6 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
   - task: aws-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: aws-2016-tested }
-    output_mapping: { final-stemcell: aws-stemcell-final }
     file: ci/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
@@ -892,7 +891,7 @@ jobs:
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
-        file: aws-stemcell-final/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
     - put: pivnet-public-stemcells-release
       params:
         file_glob: 'pivnet-metadata/*.tgz'
@@ -937,7 +936,6 @@ jobs:
       VM_EXTENSIONS: "50GB_ephemeral_disk"
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-2016-tested }
-    output_mapping: { final-stemcell: gcp-stemcell-final }
     file: ci/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
@@ -956,7 +954,7 @@ jobs:
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final
       params:
-        file: gcp-stemcell-final/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     - put: pivnet-public-stemcells-release
       params:
         file_glob: 'pivnet-metadata/*.tgz'
@@ -997,7 +995,6 @@ jobs:
   - task: vsphere-set-stemcell-filename-version
     tags: [vsphere-linux-worker]
     input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
-    output_mapping: { final-stemcell: vsphere-stemcell-final }
     file: ci/set-stemcell-version/task.yml
   - task: pivnet-upload
     file: ci/pivnet-upload/task.yml
@@ -1013,7 +1010,7 @@ jobs:
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
       params:
-        file: vsphere-stemcell-final/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
 - name: print-azure-publishing-instructions
   serial: true
