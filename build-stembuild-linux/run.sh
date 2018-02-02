@@ -46,10 +46,15 @@ CF_EXP_DIR=${GOPATH}/src/github.com/pivotal-cf-experimental
 mkdir -p ${CF_EXP_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_EXP_DIR}
 
+# install ginkgo
+go get github.com/onsi/ginkgo/ginkgo
+go install github.com/onsi/ginkgo/ginkgo
+
 GO_STEMBUILD_DIR=${CF_EXP_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
-  go test
+  make units
+  make integration
 
   echo ***Building Stembuild***
   go build
