@@ -67,7 +67,15 @@ $env:PATH="${GO_DIR}/bin;$env:PATH"
 
 # run tests
 ginkgo -r -randomizeAllSpecs integration
+if ($lastexitcode -ne 0)
+{
+  throw "integration specs failed"
+}
 ginkgo -r -randomizeAllSpecs -randomizeSuites -skipPackage integration
+if ($lastexitcode -ne 0)
+{
+  throw "unit tests failed"
+}
 
 Write-Host ***Copying stembuild to output directory***
 copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild-windows-x86_64-$VERSION.exe
