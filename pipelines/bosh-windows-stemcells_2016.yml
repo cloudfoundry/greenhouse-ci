@@ -882,7 +882,7 @@ jobs:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-dev-meta4-file
       file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-      input_mapping: { stemcell: aws-stemcell-final }
+      input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: aws
         OS_NAME: windows
@@ -945,7 +945,7 @@ jobs:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-dev-file
       file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
-      input_mapping: { stemcell: gcp-stemcell-final }
+      input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: gcp
         OS_NAME: windows
