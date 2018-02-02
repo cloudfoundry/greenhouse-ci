@@ -16,7 +16,7 @@ module DeleteVms
       regions.each do |region|
         ec2 = ::Aws::EC2::Client.new(region: region)
         reservations = ec2.describe_instances()
-        instances = reservations.map { |r| r.reservations.map(&:instances).flatten.map { |x| x.instance_id } }.flatten
+        instances = reservations.map { |r| r.reservations.map(&:instances) }.flatten.select { |x| !x.tags[0].nil? && x.tags[0].value =~ /Packer*/ }.map { |x| x.instance_id }
         if instances.any?
           puts "Deleting #{instances.to_s} in region #{region}"
           ec2.terminate_instances({
