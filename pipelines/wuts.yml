@@ -30,7 +30,7 @@ resources:
     regexp: 2012R2/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-release-candidate
+- name: vsphere-2012R2-stemcell-release-candidate
   type: s3
   source:
     bucket: all-bosh-windows
@@ -44,14 +44,14 @@ resources:
     regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: azure-stemcell-release-candidate
+- name: azure-2012R2-stemcell-release-candidate
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 2012R2/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: azure-stemcell-version
+- name: azure-2012R2-stemcell-version
   type: semver
   source:
     bucket: all-bosh-windows
@@ -59,7 +59,7 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1200.0.0
-- name: azure-base-vhd-uri
+- name: azure-2012R2-base-vhd-uri
   type: s3
   source:
     bucket: all-bosh-windows
@@ -75,6 +75,49 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 0.4.0
 
+- name: gcp-1709-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 1709/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-1709-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 1709/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: aws-1709-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 1709/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-1709-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 1709/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-1709-stemcell-version
+  type: semver
+  source:
+    bucket: all-bosh-windows
+    key: 1709/versions/azure
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1709.0.0
+- name: azure-1709-base-vhd-uri
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: 1709/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 # locks
 - name: gcp-lock
@@ -123,7 +166,7 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 jobs:
-- name: run-wuts-gcp
+- name: run-wuts-gcp-2012R2
   serial: true
   plan:
   - put: gcp-lock
@@ -160,7 +203,7 @@ jobs:
       put: gcp-lock
       params:
         release: gcp-lock
-- name: run-wuts-vsphere
+- name: run-wuts-vsphere-2012R2
   serial: true
   plan:
   - put: vsphere-director-lock
@@ -175,7 +218,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: vsphere-stemcell-release-candidate
+        resource: vsphere-2012R2-stemcell-release-candidate
         trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
@@ -199,7 +242,7 @@ jobs:
       params:
         release: vsphere-director-lock
 
-- name: run-wuts-aws
+- name: run-wuts-aws-2012R2
   serial: true
   plan:
   - put: aws-lock
@@ -237,7 +280,7 @@ jobs:
       params:
         release: aws-lock
 
-- name: run-wuts-azure
+- name: run-wuts-azure-2012R2
   serial: true
   plan:
   - put: azure-lock
@@ -247,18 +290,21 @@ jobs:
     - aggregate:
       - get: azstemcell
       - get: ci
-      - get: azure-base-vhd-uri
+      - get: azure-2012R2-base-vhd-uri
       - get: windows-utilities-release
         trigger: true
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: azure-stemcell-release-candidate
+        resource: azure-2012R2-stemcell-release-candidate
         trigger: true
-      - get: azure-stemcell-version
+      - get: azure-2012R2-stemcell-version
     - task: download-heavy
       file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      input_mapping:
+        azure-stemcell-version: azure-2012R2-stemcell-version
+        azure-base-vhd-uri: azure-2012R2-base-vhd-uri
       tags: [azure-linux-worker]
       params:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
@@ -286,6 +332,172 @@ jobs:
       params:
         release: azure-lock
 
+- name: run-wuts-gcp-1709
+  serial: true
+  plan:
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: gcp-1709-stemcell-release-candidate
+        trigger: true
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_CLIENT: ((mustang_client))
+        BOSH_TARGET: ((mustang_environment))
+        BOSH_CA_CERT: ((mustang_ca_cert))
+        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((mustang_gw_private_key))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+- name: run-wuts-vsphere-1709
+  serial: true
+  plan:
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: vsphere-1709-stemcell-release-candidate
+        trigger: true
+    - task: run-wuts
+      tags: [vsphere-linux-worker]
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_GW_USER: ((regina_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((regina_gw_private_key))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+
+- name: run-wuts-aws-1709
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: aws-1709-stemcell-release-candidate
+        trigger: true
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
+        BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: large
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
+
+- name: run-wuts-azure-1709
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: azstemcell
+      - get: ci
+      - get: azure-1709-base-vhd-uri
+      - get: windows-utilities-release
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+        trigger: true
+      - get: bosh-windows-stemcell
+        resource: azure-1709-stemcell-release-candidate
+        trigger: true
+      - get: azure-1709-stemcell-version
+    - task: download-heavy
+      file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      input_mapping:
+        azure-stemcell-version: azure-1709-stemcell-version
+        azure-base-vhd-uri: azure-1709-base-vhd-uri
+      tags: [azure-linux-worker]
+      params:
+        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+        STEMCELL_OS: windows2016
+        DESTINATION_DIR: heavy-stemcell
+    - task: run-wuts
+      attempts: 3
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: heavy-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
+        BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
+        BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
+        BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
+        BOSH_GW_USER: ((KOALA_BOSH_GW_USER))
+        BOSH_GW_PRIVATE_KEY: ((KOALA_BOSH_GW_PRIVATE_KEY))
+        STEMCELL_PATH: stemcell/*.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
+
 - name: release-dev
   serial: true
   plan:
@@ -293,10 +505,14 @@ jobs:
     - get: ci
     - get: windows-utilities-release
       passed:
-      - run-wuts-aws
-      - run-wuts-azure
-      - run-wuts-gcp
-      - run-wuts-vsphere
+      - run-wuts-aws-2012R2
+      - run-wuts-azure-2012R2
+      - run-wuts-gcp-2012R2
+      - run-wuts-vsphere-2012R2
+      - run-wuts-aws-1709
+      - run-wuts-azure-1709
+      - run-wuts-gcp-1709
+      - run-wuts-vsphere-1709
     - get: windows-utilities-release-version
       params:
         bump: minor
