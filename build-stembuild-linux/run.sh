@@ -10,8 +10,12 @@ echo ***Installing VMWare OVF Tools***
 chmod +x ./ovftool/VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle
 ./ovftool/VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle --eulas-agreed --required
 
+echo ***Extracting librsync***
+mkdir librsync-source
+tar xzvf librsync/source.tar.gz -C librsync-source
+
 echo ***Generating librsync sources***
-LIBRSYNC_DIR=${ROOT_DIR}/librsync
+LIBRSYNC_DIR=${ROOT_DIR}/librsync-source
 LIBRSYNC_BUILD_DIR=${LIBRSYNC_DIR}/build
 LIBRSYNC_INSTALL_DIR=${LIBRSYNC_DIR}/install
 LIBRSYNC_BLAKE2_DIR=${LIBRSYNC_DIR}/src/blake2
