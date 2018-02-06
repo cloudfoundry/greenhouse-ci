@@ -223,13 +223,6 @@ resources:
     regexp: 2012R2/untested/vsphere/diffcell/bosh-stemcell-(.*)-diff-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-pre-release-candidate-from-vmx
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
@@ -489,8 +482,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
         AWS_REGION: us-east-1
-        INPUT_BUCKET: "((ROOT_BUCKET))/2012R2/untested/vsphere/internal/inputs"
-        OUTPUT_BUCKET: "((ROOT_BUCKET))/2012R2/untested/vsphere/internal"
+        INPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs"
+        OUTPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal"
     ensure:
       put: vsphere-worker-lock
       params:
@@ -502,9 +495,6 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: bosh-windows-stemcell
-      tags: [vsphere-linux-worker]
-      resource: vsphere-stemcell-pre-release-candidate-from-vmx
     - get: stemcell-builder
       passed: [create-vsphere-stemcell-from-vmx]
     - get: version
@@ -513,10 +503,29 @@ jobs:
       trigger: true
     - get: stemcells-main-version
       passed: [create-vsphere-stemcell-from-vmx]
+  - task: bosh-windows-stemcell
+    tags: [vsphere-linux-worker]
+    params:
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: version
+      outputs:
+        - name: stemcell
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            VERSION=$(cat version/number)
+            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2012R2-go_agent.tgz"
+            aws s3 cp s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2012R2-go_agent.tgz stemcell
   - task: test-stemcell
     tags: [vsphere-linux-worker]
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    input_mapping: { stemcell: bosh-windows-stemcell }
     attempts: 5
     params:
       VM_TYPE: large
@@ -528,7 +537,7 @@ jobs:
       STEMCELL_OS: windows2012R2
   - put: vsphere-stemcell-release-candidate
     params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+      file: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
 
 - name: build
   serial: true

@@ -185,13 +185,6 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/metadata/2016-stemcell-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-pre-release-candidate-from-vmx
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
@@ -778,9 +771,6 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: bosh-windows-stemcell
-      resource: vsphere-stemcell-pre-release-candidate-from-vmx
-      tags: [vsphere-linux-worker]
     - get: stemcell-builder
       passed: [create-vsphere-from-vmx]
     - get: version
@@ -789,9 +779,28 @@ jobs:
       trigger: true
     - get: main-version
       passed: [create-vsphere-from-vmx]
+  - task: bosh-windows-stemcell
+    tags: [vsphere-linux-worker]
+    params:
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: version
+      outputs:
+        - name: stemcell
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            VERSION=$(cat version/number)
+            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
+            aws s3 cp s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
-    input_mapping: { stemcell: bosh-windows-stemcell }
     attempts: 1
     tags: [vsphere-linux-worker]
     params:
@@ -804,7 +813,7 @@ jobs:
       STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
   - put: vsphere-stemcell-release-candidate
     params:
-      file: bosh-windows-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+      file: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
 - name: promote
   serial: true
@@ -990,6 +999,7 @@ jobs:
       BOSH_CLIENT: ((regina_client))
       BOSH_TARGET: ((regina_environment))
       BOSH_CA_CERT: ((regina_ca_cert))
+      GINKGO_FOCUS: "is fully updated"
       STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
       STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
   - task: vsphere-set-stemcell-filename-version
