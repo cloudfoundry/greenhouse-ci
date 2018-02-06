@@ -5,12 +5,16 @@ groups:
   - create-aws
   - copy-regions-aws
   - test-aws
+  - wuts-aws
   - create-azure
   - test-azure
+  - wuts-azure
   - create-gcp
   - test-gcp
+  - wuts-gcp
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
+  - wuts-vsphere
   - promote
   - promote-gcp
   - promote-aws
@@ -23,18 +27,22 @@ groups:
   - create-aws
   - copy-regions-aws
   - test-aws
+  - wuts-aws
 - name: azure
   jobs:
   - create-azure
   - test-azure
+  - wuts-azure
 - name: gcp
   jobs:
   - create-gcp
   - test-gcp
+  - wuts-gcp
 - name: vsphere
   jobs:
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
+  - wuts-vsphere
 - name: promote
   jobs:
   - promote
@@ -82,6 +90,16 @@ resources:
     branch: master
     uri: git@github.com:bosh-io/stemcells-windows-index.git
     private_key: ((BOSH_WINDOWS_BOSHIO_DEPLOY_KEY))
+- name: windows-utilities-release
+  type: git
+  source:
+    tag_filter: "*"
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
+- name: windows-utilities-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
 
 # github releases
 - name: openssh-release
@@ -174,6 +192,13 @@ resources:
   source:
     branch: master
     pool: ((GCP_LOCK))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-director-lock
+  type: pool
+  source:
+    branch: master
+    pool: vsphere-director-lock
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
@@ -513,6 +538,47 @@ jobs:
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
 
+- name: wuts-aws
+  serial: true
+  plan:
+  - put: aws-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+      - get: bosh-windows-stemcell
+        resource: aws-2016-tested
+        passed: [test-aws]
+        trigger: true
+      - get: stemcell-builder
+        passed: [test-aws]
+      - get: main-version
+        passed: [test-aws]
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
+        BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: large
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
+
 - name: create-azure
   serial: true
   plan:
@@ -631,6 +697,62 @@ jobs:
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
 
+- name: wuts-azure
+  serial: true
+  plan:
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: azstemcell
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+      - get: bosh-windows-stemcell
+        resource: azure-tested
+        passed: [test-azure]
+        trigger: true
+      - get: azure-base-vhd-uri
+        passed: [test-azure]
+      - get: azure-build-number
+        passed: [test-azure]
+      - get: stemcell-builder
+        passed: [test-azure]
+      - get: main-version
+        passed: [test-azure]
+    - task: download-heavy
+      file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      input_mapping:
+        azure-stemcell-version: azure-build-number
+        azure-base-vhd-uri: azure-base-vhd-uri
+      tags: [azure-linux-worker]
+      params:
+        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+        STEMCELL_OS: windows2016
+        DESTINATION_DIR: heavy-stemcell
+    - task: run-wuts
+      attempts: 3
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: heavy-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
+        BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
+        BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
+        BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
+        BOSH_GW_USER: ((KOALA_BOSH_GW_USER))
+        BOSH_GW_PRIVATE_KEY: ((KOALA_BOSH_GW_PRIVATE_KEY))
+        STEMCELL_PATH: stemcell/*.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
 
 
 - name: create-gcp
@@ -720,6 +842,47 @@ jobs:
   - put: gcp-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+
+- name: wuts-gcp
+  serial: true
+  plan:
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+      - get: bosh-windows-stemcell
+        resource: gcp-2016-tested
+        passed: [test-gcp]
+        trigger: true
+      - get: stemcell-builder
+        passed: [test-gcp]
+      - get: main-version
+        passed: [test-gcp]
+    - task: run-wuts
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_CLIENT: ((mustang_client))
+        BOSH_TARGET: ((mustang_environment))
+        BOSH_CA_CERT: ((mustang_ca_cert))
+        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((mustang_gw_private_key))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
 
 - name: create-vsphere-from-vmx
   serial: true
@@ -815,28 +978,71 @@ jobs:
     params:
       file: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
 
+- name: wuts-vsphere
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: ci
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests
+      - get: bosh-windows-stemcell
+        resource: vsphere-stemcell-release-candidate
+        passed: [test-vsphere-from-vmx]
+        trigger: true
+      - get: stemcell-builder
+        passed: [test-vsphere-from-vmx]
+      - get: main-version
+        passed: [test-vsphere-from-vmx]
+    - task: run-wuts
+      tags: [vsphere-linux-worker]
+      file: ci/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_GW_USER: ((regina_gw_user))
+        BOSH_GW_PRIVATE_KEY: ((regina_gw_private_key))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016
+        NETWORK: default
+        VM_TYPE: default
+        AZ: z1
+        VM_EXTENSIONS: ""
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+
 - name: promote
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: vsphere-stemcell-release-candidate
-      passed: [test-vsphere-from-vmx]
+      passed: [wuts-vsphere]
     - get: aws-2016-tested
-      passed: [test-aws]
+      passed: [wuts-aws]
     - get: gcp-2016-tested
-      passed: [test-gcp]
+      passed: [wuts-gcp]
     - get: azure-tested
-      passed: [test-azure]
+      passed: [wuts-azure]
     - get: azure-base-vhd-uri
-      passed: [test-azure]
+      passed: [wuts-azure]
     - get: azure-stemcell-version
       resource: azure-build-number
-      passed: [test-azure]
+      passed: [wuts-azure]
     - get: stemcell-builder
-      passed: [test-gcp,test-aws,test-vsphere-from-vmx,test-azure]
+      passed: [wuts-gcp,wuts-aws,wuts-vsphere,wuts-azure]
     - get: main-version
-      passed: [test-gcp,test-aws,test-vsphere-from-vmx,test-azure]
+      passed: [wuts-gcp,wuts-aws,wuts-vsphere,wuts-azure]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -975,7 +1181,7 @@ jobs:
         rebase: true
 
 - name: promote-vsphere
-  serial_groups: ["vsphere-director"]
+  serial_groups: ["vsphere"]
   serial: true
   plan:
   - aggregate:

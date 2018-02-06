@@ -54,6 +54,8 @@
   path: /jobs/name=test-azure
   # TODO: when create-azure is added back, ensure we don't override the stemcell in pm acceptance environment
 - type: remove
+  path: /jobs/name=wuts-azure
+- type: remove
   path: /jobs/name=create-azure
 - type: remove
   path: /jobs/name=promote-azure
