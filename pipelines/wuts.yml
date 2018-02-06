@@ -182,7 +182,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-2012R2-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       file: ci/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -219,7 +218,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: vsphere-2012R2-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/run-wuts/task.yml
@@ -258,7 +256,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: aws-2012R2-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       file: ci/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -298,7 +295,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: azure-2012R2-stemcell-release-candidate
-        trigger: true
       - get: azure-2012R2-stemcell-version
     - task: download-heavy
       file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
@@ -348,7 +344,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-1709-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       file: ci/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -385,7 +380,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: vsphere-1709-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/run-wuts/task.yml
@@ -424,7 +418,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: aws-1709-stemcell-release-candidate
-        trigger: true
     - task: run-wuts
       file: ci/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -464,7 +457,6 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: azure-1709-stemcell-release-candidate
-        trigger: true
       - get: azure-1709-stemcell-version
     - task: download-heavy
       file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
