@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    padding: 0;
+    margin: 0;
+    border-spacing: 0;
+    border: 0;
+    border-collapse: collapse;
+    width: 100%;
+    height: 100%;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+td {
+    padding: 0;
+}
+
+.titleCell {
+    height: 1px;
+    text-align: center;
+}
+
+.titleFont {
+    color: white;
+    background: #1A252F;
+    font-weight: bolder;
+    font-size: x-large;
+}
+
+.rowSpading {
+    height: 1px;
+    background: white;
+}
+
+.columnSpacing {
+    padding-right: 1px;
+}
+
+.bottomRowCells {
+    width: 33%;
+}
