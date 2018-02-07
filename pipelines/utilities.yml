@@ -13,6 +13,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/librsync/librsync.git
+    tag_filter: v*
 
 - name: stembuild
   type: git
