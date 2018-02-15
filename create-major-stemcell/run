@@ -5,16 +5,16 @@ dirs = %w(stemcell-builder
           stemcell-builder/src/github.com/cloudfoundry/bosh-agent
           stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests)
 
-stemcell = Dir.glob("final-stemcell/*.tgz")[0]
-final_version = stemcell.match(/\d+\.\d+/)[0]
+final_version = File.read("version/number")
 
-if stemcell.match('windows2012R2')
+
+if final_version.match('1200')
   filename = "stemcell-#{final_version}.json"
-elsif stemcell.match('windows2016')
+elsif final_version.match('1709')
   # Use 2016 as a prefix so it doesn't match the 2012 regex
   filename = "2016-stemcell-#{final_version}.json"
 else
-  throw "invalid stemcell filename: #{stemcell}"
+  throw "invalid stemcell version: #{final_version}"
 end
 
 shas = dirs.inject({}) do |acc, dir|

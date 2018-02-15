@@ -132,6 +132,7 @@ resources:
     user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
 - name: openssh-release
   type: github-release
   source:
@@ -1532,15 +1533,12 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [promote-vsphere]
+      passed: [promote]
     - get: stemcells-main-version
-      passed: [promote-vsphere]
-    - get: vsphere-stemcell
-      resource: vsphere-stemcell-final
-      passed: [promote-vsphere]
+      passed: [promote]
+  - task: shorten-stemcell-version
+    file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
   - aggregate:
-    - task: shorten-stemcell-version
-      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     - task: build-psmodules-zip
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
     - task: build-agent-zip
@@ -1549,7 +1547,7 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
     - task: create-major-stemcell
       file: ci/create-major-stemcell/task.yml
-      input_mapping: { final-stemcell: vsphere-stemcell }
+      input_mapping: { version: stemcell-builder-release-version }
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version
