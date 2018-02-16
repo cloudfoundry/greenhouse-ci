@@ -388,6 +388,12 @@ resources:
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
 
+#time
+- name: monthly-updates-trigger
+  type: time
+  source:
+    interval: 720h
+
 jobs:
 - name: bump-stemcell-builder-submodules
   serial: true
@@ -442,6 +448,8 @@ jobs:
       acquire: true
   - do:
     - aggregate:
+      - get: monthly-updates-trigger
+        trigger: true
       - get: ci
       - get: stemcell-builder
       - get: windows-stemcell-dependencies
