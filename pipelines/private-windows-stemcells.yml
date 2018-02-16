@@ -113,6 +113,7 @@ jobs:
       AWS_REGION: {{REGION}}
       INPUT_BUCKET: {{private_windows_stemcells_vmx}}
       OUTPUT_BUCKET: {{private_windows_stemcells_vmx}}
+      VMX_CACHE_DIR: C:\vmx-data-private
   - put: updated-vmx-version
     params: {bump: major}
 
@@ -154,6 +155,7 @@ jobs:
       OUTPUT_BUCKET: {{private_windows_stemcells_production}}
       OWNER: Pivotal
       PRODUCT_KEY: {{PRODUCT_KEY}}
+      VMX_CACHE_DIR: C:\vmx-data-private
     tags:
     - private-windows-worker
   - put: stemcell-version
