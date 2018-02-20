@@ -188,11 +188,11 @@ resources:
     pool: ((AZURE_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: gcp-lock
+- name: mustang-lock
   type: pool
   source:
     branch: master
-    pool: ((GCP_LOCK))
+    pool: mustang
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
@@ -759,7 +759,7 @@ jobs:
 - name: create-gcp
   serial: true
   plan:
-  - put: gcp-lock
+  - put: mustang-lock
     params:
       acquire: true
   - do:
@@ -805,9 +805,9 @@ jobs:
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     ensure:
-      put: gcp-lock
+      put: mustang-lock
       params:
-        release: gcp-lock
+        release: mustang-lock
 
 - name: test-gcp
   serial: true
@@ -847,7 +847,7 @@ jobs:
 - name: wuts-gcp
   serial: true
   plan:
-  - put: gcp-lock
+  - put: mustang
     params:
       acquire: true
   - do:
@@ -881,9 +881,9 @@ jobs:
         AZ: z1
         VM_EXTENSIONS: "50GB_ephemeral_disk"
     ensure:
-      put: gcp-lock
+      put: mustang-lock
       params:
-        release: gcp-lock
+        release: mustang-lock
 
 - name: create-vsphere-from-vmx
   serial: true

@@ -120,7 +120,7 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 # locks
-- name: gcp-lock
+- name: mustang-lock
   type: pool
   source:
     branch: master
@@ -169,7 +169,7 @@ jobs:
 - name: run-wuts-gcp-2012R2
   serial: true
   plan:
-  - put: gcp-lock
+  - put: mustang-lock
     params:
       acquire: true
   - do:
@@ -199,9 +199,9 @@ jobs:
         AZ: z1
         VM_EXTENSIONS: "50GB_ephemeral_disk"
     ensure:
-      put: gcp-lock
+      put: mustang-lock
       params:
-        release: gcp-lock
+        release: mustang-lock
 - name: run-wuts-vsphere-2012R2
   serial: true
   plan:
@@ -331,7 +331,7 @@ jobs:
 - name: run-wuts-gcp-1709
   serial: true
   plan:
-  - put: gcp-lock
+  - put: mustang-lock
     params:
       acquire: true
   - do:
@@ -361,9 +361,9 @@ jobs:
         AZ: z1
         VM_EXTENSIONS: "50GB_ephemeral_disk"
     ensure:
-      put: gcp-lock
+      put: mustang-lock
       params:
-        release: gcp-lock
+        release: mustang-lock
 - name: run-wuts-vsphere-1709
   serial: true
   plan:
