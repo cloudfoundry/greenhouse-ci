@@ -5,7 +5,7 @@ dirs = %w(stemcell-builder
           stemcell-builder/src/github.com/cloudfoundry/bosh-agent
           stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests)
 
-final_version = File.read("version/number")
+final_version = File.read("version/version")
 
 
 if final_version.match('1200')
