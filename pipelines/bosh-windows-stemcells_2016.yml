@@ -121,6 +121,7 @@ resources:
     user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
 
 # versions
 - name: aws-build-number
@@ -1324,16 +1325,14 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [promote-vsphere]
+      passed: [promote]
     - get: main-version
-      passed: [promote-vsphere]
-    - get: vsphere-stemcell
-      resource: vsphere-stemcell-final
-      passed: [promote-vsphere]
+      passed: [promote]
+      trigger: true
+  - task: shorten-stemcell-version
+    file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
+    input_mapping: { stemcells-main-version: main-version }
   - aggregate:
-    - task: shorten-stemcell-version
-      input_mapping: { stemcells-main-version: main-version }
-      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     - task: build-psmodules-zip
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
     - task: build-agent-zip
@@ -1342,7 +1341,7 @@ jobs:
       file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
     - task: create-major-stemcell
       file: ci/create-major-stemcell/task.yml
-      input_mapping: { final-stemcell: vsphere-stemcell }
+      input_mapping: { version: stemcell-builder-release-version }
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version
@@ -1351,10 +1350,10 @@ jobs:
       globs:
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
+  - put: main-version
+    params:
+      bump: minor
   - put: major-stemcell-s3
     resource: major-stemcell
     params:
       file: stemcell-info/2016-stemcell-*.json
-  - put: main-version
-    params:
-      bump: minor

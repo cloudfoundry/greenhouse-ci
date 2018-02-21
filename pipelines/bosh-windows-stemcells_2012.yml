@@ -1544,6 +1544,7 @@ jobs:
       passed: [promote]
     - get: stemcells-main-version
       passed: [promote]
+      trigger: true
   - task: shorten-stemcell-version
     file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
   - aggregate:
