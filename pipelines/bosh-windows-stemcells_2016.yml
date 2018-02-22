@@ -1296,7 +1296,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
+      input_mapping: { stemcell: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-file
