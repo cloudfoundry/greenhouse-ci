@@ -847,7 +847,7 @@ jobs:
 - name: wuts-gcp
   serial: true
   plan:
-  - put: mustang
+  - put: mustang-lock
     params:
       acquire: true
   - do:
