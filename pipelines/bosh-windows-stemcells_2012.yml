@@ -373,20 +373,22 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 #pivnet
-- name: pivnet-public-stemcells-release
+- name: pivnet-public-stemcells
   type: pivnet
   source:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
-- name: pivnet-internal-stemcells-release
+    product_version: 1200.*
+- name: pivnet-internal-stemcells
   type: pivnet
   source:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server-internal
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
+    product_version: 1200.*
 
 #time
 - name: monthly-updates-trigger
@@ -1288,7 +1290,7 @@ jobs:
       passed: [promote]
     - get: boshio-input
       resource: boshio
-  - get: pivnet-public-stemcells-release
+  - get: pivnet-public-stemcells
   - task: test-aws-stemcell
     input_mapping: { stemcell: aws-2012-tested }
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
@@ -1307,7 +1309,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-dev-meta4-file
@@ -1322,7 +1324,7 @@ jobs:
       resource: aws-stemcell-final
       params:
         file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    - put: pivnet-public-stemcells-release
+    - put: pivnet-public-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
@@ -1349,7 +1351,7 @@ jobs:
       passed: [promote]
     - get: boshio-input
       resource: boshio
-  - get: pivnet-public-stemcells-release
+  - get: pivnet-public-stemcells
   - task: test-gcp-stemcell
     input_mapping: { stemcell: gcp-stemcell-release-candidate }
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
@@ -1371,7 +1373,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-dev-file
@@ -1386,7 +1388,7 @@ jobs:
       resource: gcp-stemcell-final
       params:
         file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-    - put: pivnet-public-stemcells-release
+    - put: pivnet-public-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
@@ -1410,7 +1412,7 @@ jobs:
     - get: version
       resource: stemcells-main-version
       passed: [promote]
-    - get: pivnet-internal-stemcells-release
+    - get: pivnet-internal-stemcells
   - task: test-vsphere-stemcell
     input_mapping: { stemcell: vsphere-stemcell-release-candidate }
     tags: [vsphere-linux-worker]
@@ -1431,11 +1433,11 @@ jobs:
     file: ci/set-stemcell-version/task.yml
   - task: pivnet-upload
     file: ci/pivnet-upload/task.yml
-    input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells-release }
+    input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells }
     params:
       OS_NAME: ((PIVNET_OS_NAME))
   - aggregate:
-    - put: pivnet-internal-stemcells-release
+    - put: pivnet-internal-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX))
@@ -1488,7 +1490,7 @@ jobs:
       passed: [print-azure-publishing-instructions]
     - get: boshio-input
       resource: boshio
-  - get: pivnet-public-stemcells-release
+  - get: pivnet-public-stemcells
   - task: test-azure-stemcell
     input_mapping: { stemcell: azure-stemcell-release-candidate }
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
@@ -1510,7 +1512,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells-release }
+      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-file
@@ -1525,7 +1527,7 @@ jobs:
       resource: azure-stemcell-final
       params:
         file: final-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
-    - put: pivnet-public-stemcells-release
+    - put: pivnet-public-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
