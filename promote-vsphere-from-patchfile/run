@@ -2,7 +2,15 @@
 
 set -e
 
-echo azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
+pushd patchfile
+  PATCHFILE=$(ls patchfile-*)
+popd
+
+pushd manifest
+  MANIFEST=$(ls patchfile-*)
+popd
+
+echo "Copying ${PATCHFILE} to https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile/${PATCHFILE}"
 azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
-echo azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
+echo "Copying ${MANIFEST} to https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile/${MANIFEST}"
 azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
