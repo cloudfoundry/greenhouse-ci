@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+echo azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
+azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
+echo azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
+azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet

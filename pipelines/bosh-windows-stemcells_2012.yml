@@ -1642,23 +1642,9 @@ jobs:
     input_mapping:
       manifest: vsphere-manifest-tested
       patchfile: vsphere-patchfile-tested
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci-azcopy}}
-      inputs:
-        - name: manifest
-        - name: patchfile
-      run:
-        path: sh
-        args:
-        - -c
-        - |
-          #!/bin/sh
-          set -e
-          echo azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
-          azcopy --source ./patchfile --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "((KOALA_STANDARD_STORAGE_ACCESS_KEY))" --quiet
-          echo azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key [redacted] --quiet
-          azcopy --source ./manifest --destination https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile --include "patchfile-*" --dest-key "((KOALA_STANDARD_STORAGE_ACCESS_KEY))" --quiet
+    file: ci/promote-vsphere-from-patchfile/task.yml
+    params:
+      STORAGE_ACCESS_KEY: ((KOALA_STANDARD_STORAGE_ACCESS_KEY))
 
 - name: print-azure-publishing-instructions
   serial: true
