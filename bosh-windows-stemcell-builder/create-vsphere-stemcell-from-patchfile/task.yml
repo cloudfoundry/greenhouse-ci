@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+
+outputs:
+- name: patchfile-stemcell
+- name: patchfile-manifest
+
+inputs:
+- name: patchfile-dir
+- name: 2012-vhd
+- name: version
+- name: stembuild
+- name: ovftool
+- name: ci
+
+run:
+  path: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/run.sh
+
+params:
+  OS_VERSION:
+  OUTPUT_DIR:

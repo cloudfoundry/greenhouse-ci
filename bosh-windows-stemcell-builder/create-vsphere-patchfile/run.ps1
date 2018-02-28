@@ -1,13 +1,8 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-Write-Host "Copying stembuild (${PWD}\stembuild\stembuild-windows-x86_64-*.exe) to: ${PWD}\bin\stembuild.exe"
-mkdir "${PWD}\bin"
-mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
+pushd "stemcell-builder"
 
-$env:PATH="${PWD}\bin;$env:PATH"
-
-cd "stemcell-builder"
 bundle install
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not bundle install"
@@ -26,8 +21,10 @@ if ($LASTEXITCODE -ne 0) {
   Exit 1
 }
 
-rake build:vsphere_diff
+rake build:vsphere_patchfile
 if ($LASTEXITCODE -ne 0) {
-  Write-Error "Could not build vsphere stemcell from diff"
+  Write-Error "Could not build vsphere stemcell from patchfile"
   Exit 1
 }
+
+popd

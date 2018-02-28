@@ -48,32 +48,21 @@
   path: /resources/name=pivnet-public-stemcells-release
 - type: remove
   path: /resources/name=pivnet-internal-stemcells-release
+- type: remove
+  path: /resources/name=monthly-updates-trigger
 
 # JOBS
 
-# configure create-vsphere-stemcell-from-diff for dev
+# configure create-vsphere-stemcell-from-patchfile for dev
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/tags
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/tags
   value: [diffcell-windows-worker-dev]
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/VHD_VMDK_BUCKET
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/VHD_VMDK_BUCKET
   value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell/inputs
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/DIFF_OUTPUT_BUCKET
-  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell
-- type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/task=create-stemcell/params/STEMCELL_OUTPUT_BUCKET
-  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/passed
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcell-builder/passed
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
-- type: remove
-  path: /jobs/name=test-vsphere-stemcell-from-diff/plan/0/aggregate/get=stemcells-main-version
-- type: remove
-  path: /jobs/name=create-vsphere-stemcell-from-diff/plan/0/aggregate/get=version/trigger
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/PATCH_OUTPUT_BUCKET
+  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell/patchfiles
 
 # configure build job
 - type: remove
@@ -109,6 +98,8 @@
   path: /jobs/name=promote-gcp
 - type: remove
   path: /jobs/name=promote-vsphere
+- type: remove
+  path: /jobs/name=promote-vsphere-patchfile
 - type: remove
   path: /jobs/name=promote-aws
 - type: remove

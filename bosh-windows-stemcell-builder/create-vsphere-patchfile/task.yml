@@ -7,7 +7,6 @@ inputs:
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
   - name: sshd
-  - name: stembuild
 
 run:
   path: powershell
@@ -15,7 +14,7 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-diff/run.ps1
+  - ci/bosh-windows-stemcell-builder/create-vsphere-patchfile/run.ps1
 params:
   AWS_ACCESS_KEY_ID:
   AWS_REGION:
@@ -23,7 +22,6 @@ params:
   CACHE_DIR:
   OS_VERSION: windows2012R2
   OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
-  STEMCELL_OUTPUT_BUCKET:
   UPDATES_HTTPS_PROXY:
   UPDATES_HTTP_PROXY:
   UPDATES_PROXY_BYPASS_LIST:
