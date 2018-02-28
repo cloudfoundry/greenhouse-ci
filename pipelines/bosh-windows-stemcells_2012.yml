@@ -26,6 +26,7 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
+  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -61,6 +62,7 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
+  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
