@@ -403,73 +403,67 @@ jobs:
 - name: create-aws
   serial: true
   plan:
-  - put: aws-lock
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [build]
-      - get: base-amis
-        resource: base-amis-win2016
-        passed: [build]
-      - get: version
-        resource: aws-build-number
-        passed: [build]
-        trigger: true
-      - get: windows-stemcell-dependencies
-      - get: main-version
-        passed: [build]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
-    - put: version
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [build]
+    - get: base-amis
+      resource: base-amis-win2016
+      passed: [build]
+    - get: version
       resource: aws-build-number
+      passed: [build]
+      trigger: true
+    - get: windows-stemcell-dependencies
+    - get: main-version
+      passed: [build]
+    - get: sshd
+      resource: openssh-release
+      version: { tag: ((OPEN_SSH_VERSION)) }
+  - put: version
+    resource: aws-build-number
+    params:
+      pre: build
+  - task: create-packer-ci-key
+    privileged: true
+    config:
+      platform: linux
+      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+      outputs:
+      - name: packer-ci-private-key
+      run:
+        path: bash
+        args:
+        - "-c"
+        - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
       params:
-        pre: build
-    - task: create-packer-ci-key
-      privileged: true
-      config:
-        platform: linux
-        image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-        outputs:
-        - name: packer-ci-private-key
-        run:
-          path: bash
-          args:
-          - "-c"
-          - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
-        params:
-          PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
-    - task: create-stemcell
-      timeout: 1h30m
-      attempts: 3
-      file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
-      params:
-        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-        PACKER_REGION: ((AWS_PACKER_REGION))
-        OS_VERSION: windows2016
-        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
-    - aggregate:
-      - put: aws-regional
-        params:
-          file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
-      - put: packer-output-ami
-        params:
-          file: amis/packer-output-ami-*.txt
+        PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
+  - task: create-stemcell
+    timeout: 1h30m
+    attempts: 3
+    file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+    params:
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      PACKER_REGION: ((AWS_PACKER_REGION))
+      OS_VERSION: windows2016
+      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
+      VM_PREFIX: ((VM_PREFIX))
     ensure:
-      do:
-      - task: delete-orphan-vms
-        file: ci/delete-vms/task.yml
-        params:
-          AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-          AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-      - put: aws-lock
-        params:
-          release: aws-lock
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
+      params:
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        VM_PREFIX: ((VM_PREFIX))
+  - aggregate:
+    - put: aws-regional
+      params:
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+    - put: packer-output-ami
+      params:
+        file: amis/packer-output-ami-*.txt
 
 - name: copy-regions-aws
   serial: true
@@ -585,64 +579,58 @@ jobs:
 - name: create-azure
   serial: true
   plan:
-  - put: azure-lock
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [build]
-      - get: version
-        resource: azure-build-number
-        passed: [build]
-        trigger: true
-      - get: windows-stemcell-dependencies
-      - get: main-version
-        passed: [build]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
-    - put: version
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [build]
+    - get: version
       resource: azure-build-number
+      passed: [build]
+      trigger: true
+    - get: windows-stemcell-dependencies
+    - get: main-version
+      passed: [build]
+    - get: sshd
+      resource: openssh-release
+      version: { tag: ((OPEN_SSH_VERSION)) }
+  - put: version
+    resource: azure-build-number
+    params:
+      pre: build
+  - task: create-stemcell
+    file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+    params:
+      BASE_IMAGE: ((AZURE_BASE_IMAGE))
+      BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
+      CLIENT_ID: ((AZURE_CLIENT_ID))
+      CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+      LOCATION: ((AZURE_LOCATION))
+      OBJECT_ID: ((AZURE_OBJECT_ID))
+      OFFER: ((AZURE_OFFER))
+      OS_VERSION: ((AZURE_OS_VERSION))
+      PUBLISHER: ((AZURE_PUBLISHER))
+      RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+      SKU: ((AZURE_SKU))
+      STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+      TENANT_ID: ((AZURE_TENANT_ID))
+      VM_SIZE: ((AZURE_VM_SIZE))
+      VM_PREFIX: ((VM_PREFIX))
+    ensure:
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
       params:
-        pre: build
-    - task: create-stemcell
-      file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
-      params:
-        BASE_IMAGE: ((AZURE_BASE_IMAGE))
-        BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-        LOCATION: ((AZURE_LOCATION))
-        OBJECT_ID: ((AZURE_OBJECT_ID))
-        OFFER: ((AZURE_OFFER))
-        OS_VERSION: ((AZURE_OS_VERSION))
-        PUBLISHER: ((AZURE_PUBLISHER))
-        RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
-        SKU: ((AZURE_SKU))
-        STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
-        VM_SIZE: ((AZURE_VM_SIZE))
-      ensure:
-        task: delete-orphan-vms
-        file: ci/delete-vms/task.yml
-        params:
-          CLIENT_ID: ((AZURE_CLIENT_ID))
-          CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
-          SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
-          TENANT_ID: ((AZURE_TENANT_ID))
-    - put: azure-untested
-      params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
-    - put: azure-base-vhd-uri
-      params:
-        file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+        VM_PREFIX: ((VM_PREFIX))
+  - put: azure-untested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+  - put: azure-base-vhd-uri
+    params:
+      file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
 
 - name: test-azure
   serial: true
@@ -761,55 +749,49 @@ jobs:
 - name: create-gcp
   serial: true
   plan:
-  - put: mustang-lock
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [build]
-      - get: base-gcp-image
-        resource: base-gcp-image-win2016
-        passed: [build]
-      - get: version
-        resource: gcp-build-number
-        passed: [build]
-        trigger: true
-      - get: windows-stemcell-dependencies
-      - get: main-version
-        passed: [build]
-      - get: sshd
-        resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
-    - put: version
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [build]
+    - get: base-gcp-image
+      resource: base-gcp-image-win2016
+      passed: [build]
+    - get: version
       resource: gcp-build-number
-      params:
-        pre: build
-    - task: create-stemcell
-      file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
-      attempts: 10
-      params:
-        OS_VERSION: windows2016
-        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
-      ensure:
-        task: delete-orphan-vms
-        file: ci/delete-vms/task.yml
-        params:
-          ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
-    - task: publish-stemcell
-      file: ci/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
-      attempts: 1
-      params:
-        OS_VERSION: windows2016
-        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
-    - put: gcp-2016-untested
-      params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      passed: [build]
+      trigger: true
+    - get: windows-stemcell-dependencies
+    - get: main-version
+      passed: [build]
+    - get: sshd
+      resource: openssh-release
+      version: { tag: ((OPEN_SSH_VERSION)) }
+  - put: version
+    resource: gcp-build-number
+    params:
+      pre: build
+  - task: create-stemcell
+    file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+    attempts: 10
+    params:
+      OS_VERSION: windows2016
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      VM_PREFIX: ((VM_PREFIX))
     ensure:
-      put: mustang-lock
+      task: delete-orphan-vms
+      file: ci/delete-vms/task.yml
       params:
-        release: mustang-lock
+        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+        VM_PREFIX: ((VM_PREFIX))
+  - task: publish-stemcell
+    file: ci/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
+    attempts: 1
+    params:
+      OS_VERSION: windows2016
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+  - put: gcp-2016-untested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
 
 - name: test-gcp
   serial: true

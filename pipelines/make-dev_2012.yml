@@ -72,16 +72,16 @@
 
 # configure gcp for dev
 - type: replace
-  path: /jobs/name=create-gcp-stemcell/plan/1/do/task=create-stemcell/params/ACCOUNT_JSON
+  path: /jobs/name=create-gcp-stemcell/plan/task=create-stemcell/params/ACCOUNT_JSON
   value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
 - type: replace
-  path: /jobs/name=create-gcp-stemcell/plan/1/do/task=create-stemcell/ensure/params/ACCOUNT_JSON
+  path: /jobs/name=create-gcp-stemcell/plan/task=create-stemcell/ensure/params/ACCOUNT_JSON
   value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
 - type: replace
-  path: /jobs/name=create-gcp-stemcell/plan/1/do/put=gcp-2012R2-untested/params/file
+  path: /jobs/name=create-gcp-stemcell/plan/put=gcp-2012R2-untested/params/file
   value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 - type: remove
-  path: /jobs/name=create-gcp-stemcell/plan/1/do/task=publish-stemcell
+  path: /jobs/name=create-gcp-stemcell/plan/task=publish-stemcell
 
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-vmx/plan/1/do/task=create-stemcell/tags

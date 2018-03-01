@@ -35,3 +35,4 @@ params:
   STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   BASE_IMAGE:
   BASE_IMAGE_OFFER:
+  VM_PREFIX:

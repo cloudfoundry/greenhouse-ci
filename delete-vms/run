@@ -7,8 +7,8 @@ require 'tempfile'
 
 module DeleteVms
   class Aws
-    def self.delete
-      puts "Deleting AWS vms"
+    def self.delete(vm_prefix)
+      puts "Deleting AWS vms with prefix #{vm_prefix}"
       regions = ["us-east-1","us-east-2","us-west-1","us-west-2",
                  "ca-central-1","ap-south-1","ap-northeast-1","ap-northeast-2",
                  "ap-southeast-1","ap-southeast-2","eu-central-1","eu-west-1",
@@ -16,7 +16,9 @@ module DeleteVms
       regions.each do |region|
         ec2 = ::Aws::EC2::Client.new(region: region)
         reservations = ec2.describe_instances()
-        instances = reservations.map { |r| r.reservations.map(&:instances) }.flatten.select { |x| !x.tags[0].nil? && x.tags[0].value =~ /Packer*/ }.map { |x| x.instance_id }
+        instances = reservations.map { |r| r.reservations.map(&:instances) }.flatten.select do |i|
+          i.tags.any? { |t| t.key == 'Name' && t.value.start_with?(vm_prefix) }
+        end.map(&:instance_id)
         if instances.any?
           puts "Deleting #{instances.to_s} in region #{region}"
           ec2.terminate_instances({
@@ -29,8 +31,8 @@ module DeleteVms
   end
 
   class Gcp
-    def self.delete
-      puts "Deleting GCP vms"
+    def self.delete(vm_prefix)
+      puts "Deleting GCP vms with prefix #{vm_prefix}"
       account_json = ENV['ACCOUNT_JSON']
       account_data = JSON.parse(account_json)
       account_email = account_data['client_email']
@@ -42,18 +44,20 @@ module DeleteVms
       end
 
       `gcloud config set project #{account_data['project_id']}`
-      `gcloud compute instances delete --quiet $(gcloud compute instances list --uri --regexp packer.*)`
+      filter="metadata.items.key['name'][value]~'#{vm_prefix}.*'"
+      puts `gcloud compute instances list --filter="#{filter}"`
+      `gcloud compute instances delete --quiet $(gcloud compute instances list --uri --filter="#{filter}")`
     end
   end
 
   class Azure
-    def self.delete
-      puts "Deleting Azure vms"
+    def self.delete(vm_prefix)
+      puts "Deleting Azure vms with prefix #{vm_prefix}"
       token_provider = MsRestAzure::ApplicationTokenProvider.new(ENV['TENANT_ID'], ENV['CLIENT_ID'], ENV['CLIENT_SECRET'])
       credentials = MsRest::TokenCredentials.new(token_provider)
       client = ::Azure::Resources::Mgmt::V2017_05_10::ResourceManagementClient.new(credentials)
       client.subscription_id = ENV['SUBSCRIPTION_ID']
-      packer_resource_groups = client.resource_groups.list.select { |g| g.name.start_with? "packer" }
+      packer_resource_groups = client.resource_groups.list.select { |g| g.name.start_with?(vm_prefix) }
       packer_resource_groups.each { |g| puts g.name; client.resource_groups.delete_async(g.name) }
       sleep(1)
     end
@@ -72,12 +76,16 @@ def gcp?
   ENV.has_key?('ACCOUNT_JSON')
 end
 
+if ENV['VM_PREFIX'] == ''
+  throw 'Must specify a prefix for VMs to delete'
+end
+
 if aws?
-  DeleteVms::Aws.delete
+  DeleteVms::Aws.delete(ENV['VM_PREFIX'])
 elsif azure?
-  DeleteVms::Azure.delete
+  DeleteVms::Azure.delete(ENV['VM_PREFIX'])
 elsif gcp?
-  DeleteVms::Gcp.delete
+  DeleteVms::Gcp.delete(ENV['VM_PREFIX'])
 else
   throw "Could not find an environment to run delete"
 end

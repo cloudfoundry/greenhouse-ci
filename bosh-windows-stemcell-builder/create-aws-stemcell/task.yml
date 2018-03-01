@@ -26,6 +26,7 @@ params:
   AWS_SECRET_KEY:
   AWS_REGION:
   PACKER_REGION:
+  VM_PREFIX:
 
   VERSION_DIR: ../version
   BASE_AMIS_DIR: ../base-amis
@@ -34,4 +35,3 @@ params:
 
   OUTPUT_BUCKET_NAME: aws-regional-stemcells
   OUTPUT_BUCKET_REGION: us-east-1
-

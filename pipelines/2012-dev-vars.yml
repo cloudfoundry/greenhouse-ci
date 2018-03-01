@@ -8,6 +8,7 @@ AWS_LOCK: 'stemcells-aws-dev'
 GCP_LOCK: 'stemcells-gcp-dev'
 AZURE_LOCK: 'stemcells-azure-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
+VM_PREFIX: 'packer-2012R2-dev'
 
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'
