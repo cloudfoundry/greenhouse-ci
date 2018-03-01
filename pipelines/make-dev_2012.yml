@@ -45,9 +45,9 @@
 - type: remove
   path: /resources/name=boshio
 - type: remove
-  path: /resources/name=pivnet-public-stemcells-release
+  path: /resources/name=pivnet-public-stemcells
 - type: remove
-  path: /resources/name=pivnet-internal-stemcells-release
+  path: /resources/name=pivnet-internal-stemcells
 - type: remove
   path: /resources/name=monthly-updates-trigger
 
