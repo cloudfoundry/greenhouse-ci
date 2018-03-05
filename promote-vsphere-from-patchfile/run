@@ -8,6 +8,7 @@ popd
 
 pushd manifest
   MANIFEST=$(ls patchfile-*)
+  sed -e "s#2012-vhd/##" -i -- $MANIFEST
 popd
 
 echo "Copying ${PATCHFILE} to https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile/${PATCHFILE}"
