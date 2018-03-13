@@ -8,6 +8,7 @@ popd
 
 pushd manifest
   MANIFEST=$(ls patchfile-*)
+  sed -e "s#patch_file: patchfile#patch_file: https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile/patchfile#" -i -- $MANIFEST
   sed -e "s#2012-vhd/##" -i -- $MANIFEST
 popd
 
