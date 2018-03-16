@@ -5,7 +5,6 @@ groups:
   - test-stemcell-builder
   - build
   - create-aws
-  - copy-regions-aws
   - test-aws
   - wuts-aws
   - create-azure-stemcell
@@ -43,7 +42,6 @@ groups:
 - name: aws
   jobs:
   - create-aws
-  - copy-regions-aws
   - test-aws
   - wuts-aws
 - name: gcp
@@ -305,13 +303,6 @@ resources:
    regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-regional
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: packer-output-ami
   type: s3
   source:
@@ -323,14 +314,14 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-2012-tested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-stemcell-final
@@ -974,49 +965,12 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         VM_PREFIX: ((VM_PREFIX))
   - aggregate:
-    - put: aws-regional
+    - put: aws-2012-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
     - put: packer-output-ami
       params:
         file: amis/packer-output-ami-*.txt
-
-- name: copy-regions-aws
-  serial: true
-  plan:
-  - do:
-    - aggregate:
-      - get: aws-regional
-        passed: [create-aws]
-      - get: ci
-      - get: stemcell-builder
-        passed: [create-aws]
-      - get: base-amis
-        resource: base-amis-win2012r2
-        passed: [create-aws]
-      - get: version
-        resource: aws-stemcell-version
-        passed: [create-aws]
-        trigger: true
-      - get: main-version
-        resource: stemcells-main-version
-        passed: [create-aws]
-      - get: amis
-        resource: packer-output-ami
-        passed: [create-aws]
-    - task: copy-stemcells
-      timeout: 1h30m
-      attempts: 3
-      file: ci/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
-      params:
-        OS_VERSION: windows2012R2
-        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-        OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
-        REGIONS: "us-east-1,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
-    - put: aws-2012-untested
-      params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
 
 - name: test-aws
   serial: true
@@ -1024,19 +978,20 @@ jobs:
   - aggregate:
     - get: bosh-windows-stemcell
       resource: aws-2012-untested
-      passed: [copy-regions-aws]
+      passed: [create-aws]
     - get: ci
     - get: stemcell-builder
-      passed: [copy-regions-aws]
-    - get: base-amis
-      resource: base-amis-win2012r2
-      passed: [copy-regions-aws]
+      passed: [create-aws]
     - get: version
       resource: aws-stemcell-version
-      passed: [copy-regions-aws]
+      passed: [create-aws]
       trigger: true
     - get: stemcells-main-version
-      passed: [copy-regions-aws]
+      passed: [create-aws]
+    - get: aws-stemcell-version
+      passed: [create-aws]
+    - get: packer-output-ami
+      passed: [create-aws]
   - task: test-stemcell
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
@@ -1046,11 +1001,11 @@ jobs:
       BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
       BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
       STEMCELL_OS: windows2012R2
   - put: aws-2012-tested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
 
 - name: wuts-aws
   serial: true
@@ -1073,6 +1028,10 @@ jobs:
       - get: version
         resource: stemcells-main-version
         passed: [test-aws]
+      - get: aws-stemcell-version
+        passed: [test-aws]
+      - get: packer-output-ami
+        passed: [test-aws]
     - task: run-wuts
       file: ci/run-wuts/task.yml
       params:
@@ -1082,7 +1041,7 @@ jobs:
         BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
         BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
         BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
         VM_TYPE: large
@@ -1410,10 +1369,24 @@ jobs:
     - get: azure-stemcell-version
       passed: [wuts-azure]
     - get: stemcell-builder
-      passed: [wuts-gcp,wuts-aws,wuts-vsphere,wuts-vsphere-from-patchfile,wuts-azure]
+      passed:
+        - wuts-gcp
+        - wuts-aws
+        - wuts-vsphere
+        - wuts-vsphere-from-patchfile
+        - wuts-azure
     - get: version
       resource: stemcells-main-version
-      passed: [wuts-gcp,wuts-aws,wuts-vsphere,wuts-vsphere-from-patchfile,wuts-azure]
+      passed:
+        - wuts-gcp
+        - wuts-aws
+        - wuts-vsphere
+        - wuts-vsphere-from-patchfile
+        - wuts-azure
+    - get: aws-stemcell-version
+      passed: [wuts-aws]
+    - get: packer-output-ami
+      passed: [wuts-aws]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -1444,16 +1417,34 @@ jobs:
       passed: [promote]
     - get: boshio-input
       resource: boshio
+    - get: aws-stemcell-version
+      resource: aws-stemcell-version
+      passed: [promote]
+      trigger: true
+    - get: amis
+      resource: packer-output-ami
+      passed: [promote]
   - get: pivnet-public-stemcells
+  - task: copy-stemcells
+    timeout: 1h30m
+    attempts: 3
+    file: ci/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    input_mapping: { version: aws-stemcell-version, aws-regional: aws-2012-tested }
+    params:
+      OS_VERSION: windows2012R2
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
+      REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
   - task: test-aws-stemcell
-    input_mapping: { stemcell: aws-2012-tested }
+    input_mapping: { stemcell: bosh-windows-stemcell }
     file: ci/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
-      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      BOSH_CA_CERT: ((BOSH_CONCOURSE_2_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((BOSH_CONCOURSE_2_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_2_BOSH_PASSWORD))
+      BOSH_TARGET: ((BOSH_CONCOURSE_2_DIRECTOR_IP))
       GINKGO_FOCUS: "is fully updated"
       STEMCELL_OS: windows2012R2
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz

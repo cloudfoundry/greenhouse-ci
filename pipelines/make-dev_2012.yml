@@ -89,27 +89,29 @@
 
 # remove unnecessary jobs
 - type: remove
-  path: /jobs/name=bump-stemcell-builder-submodules
+  path: /jobs/name=promote-aws
 - type: remove
-  path: /jobs/name=test-stemcell-builder
+  path: /jobs/name=promote
+
+- type: remove
+  path: /jobs/name=promote-vsphere
 - type: remove
   path: /jobs/name=promote-azure
 - type: remove
   path: /jobs/name=promote-gcp
 - type: remove
-  path: /jobs/name=promote-vsphere
-- type: remove
   path: /jobs/name=promote-vsphere-patchfile
-- type: remove
-  path: /jobs/name=promote-aws
-- type: remove
-  path: /jobs/name=promote
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 - type: remove
+  path: /jobs/name=print-azure-publishing-instructions
+- type: remove
   path: /jobs/name=create-vsphere-add-updates
 - type: remove
-  path: /jobs/name=print-azure-publishing-instructions
+  path: /jobs/name=bump-stemcell-builder-submodules
+- type: remove
+  path: /jobs/name=test-stemcell-builder
+
 
 #build
 - type: replace
