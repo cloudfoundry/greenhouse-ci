@@ -773,8 +773,6 @@ jobs:
       - get: version
         resource: stemcells-main-version
         passed: [test-vsphere-stemcell-from-patchfile]
-      - get: vsphere-stemcell-version
-        passed: [test-vsphere-stemcell-from-patchfile]
       - get: 2012-vhd
         passed: [test-vsphere-stemcell-from-patchfile]
     - task: run-wuts
@@ -1251,8 +1249,6 @@ jobs:
       passed: [wuts-vsphere-from-patchfile]
     - get: vsphere-manifest-tested
       passed: [wuts-vsphere-from-patchfile]
-    - get: vsphere-stemcell-version
-      passed: [wuts-vsphere-from-patchfile]
     - get: aws-2012-tested
       passed: [wuts-aws]
     - get: gcp-stemcell-tested
@@ -1496,13 +1492,12 @@ jobs:
     - get: ci
     - get: vsphere-stemcell-from-patchfile-tested
       passed: [promote]
-    - get: vsphere-stemcell-version
-      passed: [promote]
-      trigger: true
     - get: vsphere-patchfile-tested
       passed: [promote]
+      trigger: true
     - get: vsphere-manifest-tested
       passed: [promote]
+      trigger: true
     - get: stemcell-builder
       passed: [promote]
     - get: version

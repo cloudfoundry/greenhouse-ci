@@ -3,23 +3,24 @@
 set -e
 
 BASE_URL_PATH="https://koaladefaultstore.blob.core.windows.net/stemcell/patchfile"
-FULL_VERSION=$(cat vsphere-stemcell-version)
-MAJOR_MINOR_VERSION=$(cat vsphere-stemcell-version | sed -e "s#^\([0-9]*\.[0-9]*\)\.*#\1#")
-STRIP_PATCH_REGEX="s#${FULL_VERSION}#${MAJOR_MINOR_VERSION}#"
+STRIP_PATCH_REGEX="s#^\([0-9]*\.[0-9]*\)\.[0-9]*-build\.[0-9]*#\1#"
 
 pushd patchfile
   SRC_PATCHFILE=$(ls patchfile-*)
-  DEST_PATCHFILE=$(echo ${SRC_PATCHFILE} | sed -e "${STRIP_PATCH_REGEX}")
+  PATCHFILE=$(echo ${SRC_PATCHFILE} | sed -e "${STRIP_PATCH_REGEX}")
+  mv ${SRC_PATCHFILE} ${PATCHFILE}
 popd
 
 pushd manifest
-  MANIFEST=$(ls patchfile-*)
+  SRC_MANIFEST=$(ls patchfile-*)
+  MANIFEST=$(echo ${SRC_PATCHFILE} | sed -e "${STRIP_PATCH_REGEX}")
+  mv ${SRC_MANIFEST} ${MANIFEST}
   sed -e "s#patch_file: patchfile#patch_file: ${BASE_URL_PATH}/patchfile#" -i -- $MANIFEST
   sed -e "s#2012-vhd/##" -i -- $MANIFEST
   sed -e "${STRIP_PATCH_REGEX}" -i -- $MANIFEST
 popd
 
-echo "Copying ${SRC_PATCHFILE} to ${BASE_URL_PATH}/${DEST_PATCHFILE}"
-azcopy --source "./patchfile/${SRC_PATCHFILE}" --destination "${BASE_URL_PATH}/${DEST_PATCHFILE}" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
-echo "Copying ${MANIFEST} to ${BASE_URL_PATH}/${MANIFEST}"
+echo "Copying ${SRC_PATCHFILE} to ${BASE_URL_PATH}/${PATCHFILE}"
+azcopy --source ./patchfile --destination "${BASE_URL_PATH}" --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
+echo "Copying ${SRC_MANIFEST} to ${BASE_URL_PATH}/${MANIFEST}"
 azcopy --source ./manifest --destination "${BASE_URL_PATH}" --include "patchfile-*" --dest-key "${STORAGE_ACCESS_KEY}" --quiet
