@@ -126,7 +126,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/aws
+    key: ((BASE_FOLDER_NAME))/versions/aws-((PIPELINE_NAME))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
@@ -134,7 +134,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/azure
+    key: ((BASE_FOLDER_NAME))/versions/azure-((PIPELINE_NAME))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
@@ -142,7 +142,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/gcp
+    key: ((BASE_FOLDER_NAME))/versions/gcp-((PIPELINE_NAME))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
@@ -166,7 +166,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/vsphere
+    key: ((BASE_FOLDER_NAME))/versions/vsphere-((PIPELINE_NAME))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
@@ -339,6 +339,7 @@ resources:
 jobs:
 - name: build
   serial: true
+  serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version]
   plan:
   - aggregate:
     - get: ci
@@ -393,6 +394,7 @@ jobs:
 
 - name: create-aws
   serial: true
+  serial_groups: [aws-version]
   plan:
   - aggregate:
     - get: ci
@@ -535,6 +537,7 @@ jobs:
 
 - name: create-azure
   serial: true
+  serial_groups: [azure-version]
   plan:
   - aggregate:
     - get: ci
@@ -705,6 +708,7 @@ jobs:
 
 - name: create-gcp
   serial: true
+  serial_groups: [gcp-version]
   plan:
   - aggregate:
     - get: ci
@@ -828,7 +832,7 @@ jobs:
 
 - name: create-vsphere-from-vmx
   serial: true
-  serial_groups: [vsphere]
+  serial_groups: [vsphere-vmx-version, vsphere]
   plan:
   - aggregate:
     - get: ci

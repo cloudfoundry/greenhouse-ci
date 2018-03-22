@@ -8,16 +8,22 @@
 
 # versions
 - type: replace
-  path: /resources/name=azure-stemcell-version/source/initial_version
+  path: /resources/name=aws-build-number/source/initial_version
   value: 1200.5000.0
 - type: replace
-  path: /resources/name=vsphere-stemcell-version/source/initial_version
+  path: /resources/name=azure-build-number/source/initial_version
   value: 1200.5000.0
 - type: replace
-  path: /resources/name=stemcells-main-version/source/initial_version
+  path: /resources/name=vsphere-from-vmx-build-number/source/initial_version
   value: 1200.5000.0
 - type: replace
-  path: /resources/name=gcp-stemcell-version/source/initial_version
+  path: /resources/name=vsphere-from-patchfile-build-number/source/initial_version
+  value: 1200.5000.0
+- type: replace
+  path: /resources/name=main-version/source/initial_version
+  value: 1200.5000.0
+- type: replace
+  path: /resources/name=gcp-build-number/source/initial_version
   value: 1200.5000.0
 - type: replace
   path: /resources/name=updated-vmx-version/source/initial_version
