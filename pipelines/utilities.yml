@@ -4,10 +4,31 @@ groups:
   - build
   - build-stembuild-windows
   - build-stembuild-linux
+  - bump-stemcell-builder-submodules
+  - create-vsphere-add-updates
   - post-draft-release
+  - test-stemcell-builder
 
 resources:
-#repos
+# repos
+- name: bosh-agent
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-agent.git
+
+- name: bwats
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
+
+- name: ci
+  type: git
+  source:
+    branch: ((CI_BRANCH))
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
 - name: librsync
   type: git
   source:
@@ -21,13 +42,28 @@ resources:
     branch: master
     uri: https://github.com/pivotal-cf-experimental/stembuild.git
 
-- name: ci
+- name: stemcell-builder-develop
   type: git
   source:
-    branch: ((CI_BRANCH))
-    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    branch: develop
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
 
-#releases
+- name: stemcell-builder
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+
+- name: windows-stemcell-dependencies
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
+    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
+
+# releases
 - name: stembuild-release
   type: github-release
   source:
@@ -37,7 +73,13 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
-#files
+# time
+- name: monthly-updates-trigger
+  type: time
+  source:
+    interval: 720h
+
+# files
 - name: stembuild-untested-windows
   type: s3
   source:
@@ -62,7 +104,16 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
-#versions
+# locks
+- name: vsphere-worker-lock
+  type: pool
+  source:
+    branch: master
+    pool: 'vsphere-worker-lock'
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
+# versions
 - name: stembuild-version
   type: semver
   source:
@@ -71,6 +122,15 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "0.14.0"
+
+- name: updated-vmx-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: 2012R2/versions/vsphere-updated-vmx
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: "1.0.0"
 
 jobs:
 - name: build
@@ -119,6 +179,62 @@ jobs:
     params:
       file: output/stembuild-linux-x86_64-*
 
+- name: bump-stemcell-builder-submodules
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder-develop
+    - get: bosh-agent
+      trigger: true
+    - get: bwats
+      trigger: true
+  - task: bump-submodules
+    input_mapping:
+      source-repo: stemcell-builder-develop
+    output_mapping:
+      bumped-repo: stemcell-builder-bumped
+    file: ci/bump-submodules/task.yml
+  - put: stemcell-builder-develop
+    params:
+      repository: stemcell-builder-bumped
+      rebase: true
+
+- name: create-vsphere-add-updates
+  serial: true
+  plan:
+  - put: vsphere-worker-lock
+    params:
+      acquire: true
+  - do:
+    - aggregate:
+      - get: monthly-updates-trigger
+        trigger: true
+      - get: ci
+      - get: stemcell-builder
+      - get: windows-stemcell-dependencies
+      - get: vmx-version
+        resource: updated-vmx-version
+    - task: add-updates
+      privileged: true
+      input_mapping: { version: vmx-version }
+      file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+      tags: [vsphere-windows-worker]
+      params:
+        OS_VERSION: windows2012R2
+        ADMINISTRATOR_PASSWORD: "Password123!"
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        AWS_REGION: us-east-1
+        INPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
+        OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
+    - put: updated-vmx-version
+      params: {bump: major}
+    ensure:
+      put: vsphere-worker-lock
+      params:
+        release: vsphere-worker-lock
+
 - name: post-draft-release
   serial: true
   plan:
@@ -140,3 +256,27 @@ jobs:
       - output/stembuild-*-x86_64-*
   - put: stembuild-version
     params: {bump: minor}
+
+- name: test-stemcell-builder
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder-develop
+      trigger: true
+    - get: stemcell-builder-master
+      resource: stemcell-builder
+  - aggregate:
+    - task: test-stemcell-builder
+      file: ci/bosh-windows-stemcell-builder/rspec/task.yml
+      input_mapping: {stemcell-builder: stemcell-builder-develop}
+    - task: test-bosh-psmodules
+      file: ci/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      input_mapping: {stemcell-builder: stemcell-builder-develop}
+  - task: merge-to-master
+    input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
+    file: ci/merge-repo/task.yml
+    params:
+      FROM_BRANCH: develop
+  - put: stemcell-builder
+    params: { repository: merged-repo/to-repo }
