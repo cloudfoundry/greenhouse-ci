@@ -8,6 +8,18 @@ groups:
   - create-vsphere-add-updates
   - post-draft-release
   - test-stemcell-builder
+  - build-draft-event-log-release
+  - build-final-event-log-release
+- name: stembuild
+  jobs:
+  - build
+  - build-stembuild-windows
+  - build-stembuild-linux
+  - post-draft-release
+- name: event-log-release
+  jobs:
+  - build-draft-event-log-release
+  - build-final-event-log-release
 
 resources:
 # repos
@@ -63,7 +75,13 @@ resources:
     uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
     private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
 
-# releases
+- name: event-log-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/event-log-release.git
+
+#releases
 - name: stembuild-release
   type: github-release
   source:
@@ -73,13 +91,28 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
+- name: event-log-release-github-draft
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: event-log-release
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
+
+- name: event-log-release-github
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: event-log-release
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
 # time
 - name: monthly-updates-trigger
   type: time
   source:
     interval: 720h
 
-# files
+#files
 - name: stembuild-untested-windows
   type: s3
   source:
@@ -131,6 +164,16 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "1.0.0"
+
+- name: event-log-release-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: event-log-release/version
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: "0.2.0"
+
 
 jobs:
 - name: build
@@ -280,3 +323,59 @@ jobs:
       FROM_BRANCH: develop
   - put: stemcell-builder
     params: { repository: merged-repo/to-repo }
+
+- name: build-draft-event-log-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: event-log-release-version
+      params:
+        bump: minor
+    - get: event-log-release
+      trigger: true
+  - task: create-dev-release
+    input_mapping:
+      version: event-log-release-version
+      release: event-log-release
+    file: ci/bosh-cr/task.yml
+  - put: event-log-release-github-draft
+    params:
+      name:
+      tag: event-log-release-version/number
+      name: event-log-release-version/number
+      globs:
+      - release-tarball/*.tgz
+
+- name: build-final-event-log-release
+  serial: true
+  plan:
+  - aggregate:
+      - get: ci
+      - get: event-log-release-version
+        params:
+          bump: minor
+      - get: event-log-release
+        passed: [ build-draft-event-log-release ]
+  - task: finalize-release
+    file: ci/finalize-release/task.yml
+    input_mapping:
+      release: event-log-release
+      version: event-log-release-version
+    params:
+      RELEASE_NAME: event-log-release
+      AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
+  - put: event-log-release
+    params:
+      repository: finalized-release/release
+      tag: event-log-release-version/number
+  - put: event-log-release-version
+    params:
+      file: event-log-release-version/number
+  - put: event-log-release-github
+    params:
+      name: event-log-release-version/number
+      tag: event-log-release-version/number
+      globs:
+      - finalized-release/event-log-release-*.tgz
