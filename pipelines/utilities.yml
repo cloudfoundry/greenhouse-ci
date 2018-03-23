@@ -16,6 +16,10 @@ groups:
   - build-stembuild-windows
   - build-stembuild-linux
   - post-draft-release
+- name: stemcell-builder
+  jobs:
+  - bump-stemcell-builder-submodules
+  - test-stemcell-builder
 - name: event-log-release
   jobs:
   - build-draft-event-log-release
