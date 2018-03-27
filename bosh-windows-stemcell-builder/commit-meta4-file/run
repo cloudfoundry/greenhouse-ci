@@ -22,7 +22,7 @@ function meta4-the-stemcell {
 
     # define where the stemcell can be downloaded
     meta4 file-set-url --metalink="$metalink" --file=$stemcell \
-        https://bosh-windows-stemcells-production.s3.amazonaws.com/${stemcell}
+        https://bosh-windows-stemcells-production.s3.amazonaws.com/$OS_VERSION/${stemcell}
 }
 
 function create-meta4-file {
