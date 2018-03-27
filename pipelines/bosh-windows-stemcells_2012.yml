@@ -288,7 +288,7 @@ resources:
   type: s3
   source:
    bucket: bosh-windows-stemcells-private
-   regexp: bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
+   regexp: ((BASE_FOLDER_NAME))/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: packer-output-ami
@@ -317,7 +317,7 @@ resources:
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
-    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: base-amis-win2012r2
@@ -353,7 +353,7 @@ resources:
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
-    regexp: light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-stemcell-untested
@@ -382,7 +382,7 @@ resources:
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
-    regexp: light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
+    regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: 2012-vhd
