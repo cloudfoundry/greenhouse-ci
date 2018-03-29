@@ -742,10 +742,10 @@ jobs:
       attempts: 5
       params:
         VM_TYPE: large
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_TARGET: ((regina_environment))
-        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT_SECRET: ((regina2_client_secret))
+        BOSH_CLIENT: ((regina2_client))
+        BOSH_TARGET: ((regina2_environment))
+        BOSH_CA_CERT: ((regina2_ca_cert))
         STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
         STEMCELL_OS: windows2012R2
     - put: vsphere-stemcell-from-patchfile-tested
