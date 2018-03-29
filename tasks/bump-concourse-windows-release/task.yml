@@ -1,0 +1,17 @@
+---
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+- name: ci
+- name: concourse-github-release
+- name: concourse-windows-release
+
+outputs:
+- name: body
+- name: concourse-windows-release-out
+- name: concourse-windows-tarball
+
+run:
+  path: ci/tasks/bump-concourse-windows-release/run
+

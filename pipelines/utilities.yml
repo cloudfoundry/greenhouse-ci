@@ -203,7 +203,7 @@ jobs:
       trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
-    file: ci/build-stembuild-windows/task.yml
+    file: ci/tasks/build-stembuild-windows/task.yml
   - put: stembuild-untested-windows
     params:
       file: output/stembuild-windows-x86_64-*.exe
@@ -221,7 +221,7 @@ jobs:
       trigger: true
     - get: ovftool
   - task: build
-    file: ci/build-stembuild-linux/task.yml
+    file: ci/tasks/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux
     params:
       file: output/stembuild-linux-x86_64-*
@@ -241,7 +241,7 @@ jobs:
       source-repo: stemcell-builder-develop
     output_mapping:
       bumped-repo: stemcell-builder-bumped
-    file: ci/bump-submodules/task.yml
+    file: ci/tasks/bump-submodules/task.yml
   - put: stemcell-builder-develop
     params:
       repository: stemcell-builder-bumped
@@ -265,7 +265,7 @@ jobs:
     - task: add-updates
       privileged: true
       input_mapping: { version: vmx-version }
-      file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
       tags: [vsphere-windows-worker]
       params:
         OS_VERSION: windows2012R2
@@ -294,7 +294,7 @@ jobs:
     - get: stembuild-version
       passed: [ build-stembuild-linux, build-stembuild-windows ]
   - task: trim-version-from-binaries
-    file: ci/set-stembuild-version/task.yml
+    file: ci/tasks/set-stembuild-version/task.yml
   - put: stembuild-release
     params:
       name: output/tag
@@ -315,14 +315,14 @@ jobs:
       resource: stemcell-builder
   - aggregate:
     - task: test-stemcell-builder
-      file: ci/bosh-windows-stemcell-builder/rspec/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
       input_mapping: {stemcell-builder: stemcell-builder-develop}
     - task: test-bosh-psmodules
-      file: ci/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
       input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
-    file: ci/merge-repo/task.yml
+    file: ci/tasks/merge-repo/task.yml
     params:
       FROM_BRANCH: develop
   - put: stemcell-builder
@@ -342,7 +342,7 @@ jobs:
     input_mapping:
       version: event-log-release-version
       release: event-log-release
-    file: ci/bosh-cr/task.yml
+    file: ci/tasks/bosh-cr/task.yml
   - put: event-log-release-github-draft
     params:
       name:
@@ -362,7 +362,7 @@ jobs:
       - get: event-log-release
         passed: [ build-draft-event-log-release ]
   - task: finalize-release
-    file: ci/finalize-release/task.yml
+    file: ci/tasks/finalize-release/task.yml
     input_mapping:
       release: event-log-release
       version: event-log-release-version

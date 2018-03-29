@@ -35,7 +35,7 @@ jobs:
           - concourse_windows_amd64.exe
     - get: concourse-windows-release
   - task: bump-concourse-windows-release
-    file: ci/bump-concourse-windows-release/task.yml
+    file: ci/tasks/bump-concourse-windows-release/task.yml
     params:
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}

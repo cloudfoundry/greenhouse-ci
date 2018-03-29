@@ -451,7 +451,7 @@ jobs:
         pre: build
     - task: create-stemcell
       privileged: true
-      file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
       tags: [vsphere-windows-worker]
       params:
         ADMINISTRATOR_PASSWORD: "Password123!"
@@ -508,7 +508,7 @@ jobs:
               aws s3 cp s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2012R2-go_agent.tgz stemcell
     - task: test-stemcell
       tags: [vsphere-linux-worker]
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 5
       params:
         VM_TYPE: large
@@ -551,7 +551,7 @@ jobs:
         passed: [test-vsphere-stemcell-from-vmx]
     - task: run-wuts
       tags: [vsphere-linux-worker]
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
@@ -605,7 +605,7 @@ jobs:
         file: version/number
   - aggregate:
     - task: collect-win2012r2-amis
-      file: ci/collect-base-amis/task.yml
+      file: ci/tasks/collect-base-amis/task.yml
       output_mapping: { base-amis: win2012r2-amis }
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
@@ -613,7 +613,7 @@ jobs:
         BASE_AMI: windows2012R2
         BASE_AMI_NAME: ((BASE_AMI_NAME))
     - task: collect-win2012r2-gcp-image
-      file: ci/collect-gcp-image/task.yml
+      file: ci/tasks/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2012r2-gcp-image }
       params:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
@@ -652,7 +652,7 @@ jobs:
       pre: build
   - task: create-patchfile
     privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-patchfile/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-patchfile/task.yml
     tags: [diffcell-windows-worker]
     params:
       ADMINISTRATOR_PASSWORD: "Password123!"
@@ -695,7 +695,7 @@ jobs:
     - get: vsphere-patchfile-untested
   - task: build-stemcell
     input_mapping: { patchfile-dir: vsphere-patchfile-untested }
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/task.yml
     params:
       OS_VERSION: 2012R2
       OUTPUT_DIR: patchfile-stemcell
@@ -737,7 +737,7 @@ jobs:
         passed: [create-vsphere-stemcell-from-patchfile]
     - task: test-stemcell
       tags: [vsphere-linux-worker]
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       attempts: 5
       params:
@@ -796,7 +796,7 @@ jobs:
     - task: run-wuts
       attempts: 5
       tags: [vsphere-linux-worker]
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
@@ -859,7 +859,7 @@ jobs:
   - task: create-stemcell
     timeout: 1h30m
     attempts: 3
-    file: ci/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
@@ -870,7 +870,7 @@ jobs:
       VM_PREFIX: ((VM_PREFIX))
     ensure:
       task: delete-orphan-vms
-      file: ci/delete-vms/task.yml
+      file: ci/tasks/delete-vms/task.yml
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
@@ -904,7 +904,7 @@ jobs:
     - get: packer-output-ami
       passed: [create-aws]
   - task: test-stemcell
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
     attempts: 5
     params:
@@ -944,7 +944,7 @@ jobs:
       - get: packer-output-ami
         passed: [test-aws]
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       params:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
         BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
@@ -989,7 +989,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
     timeout: 60m
     attempts: 10
     params:
@@ -998,12 +998,12 @@ jobs:
       VM_PREFIX: ((VM_PREFIX))
     ensure:
       task: delete-orphan-vms
-      file: ci/delete-vms/task.yml
+      file: ci/tasks/delete-vms/task.yml
       params:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         VM_PREFIX: ((VM_PREFIX))
   - task: publish-stemcell
-    file: ci/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     attempts: 1
     params:
       OS_VERSION: windows2012R2
@@ -1030,7 +1030,7 @@ jobs:
     - get: main-version
       passed: [create-gcp-stemcell]
   - task: test-stemcell
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       IAAS: gcp
@@ -1069,7 +1069,7 @@ jobs:
         resource: main-version
         passed: [test-gcp-stemcell]
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
@@ -1112,7 +1112,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
@@ -1132,7 +1132,7 @@ jobs:
       VM_PREFIX: ((VM_PREFIX))
     ensure:
       task: delete-orphan-vms
-      file: ci/delete-vms/task.yml
+      file: ci/tasks/delete-vms/task.yml
       params:
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
@@ -1169,7 +1169,7 @@ jobs:
       resource: azure-build-number
       passed: [create-azure-stemcell]
   - task: download-heavy
-    file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
     tags: [azure-linux-worker]
     params:
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
@@ -1177,7 +1177,7 @@ jobs:
       DESTINATION_DIR: heavy-stemcell
   - task: test-stemcell
     attempts: 3
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: {stemcell: heavy-stemcell}
     params:
       AZ: ((AZURE_HEAVY_AZ))
@@ -1191,7 +1191,7 @@ jobs:
       STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: upload-stemcell-to-acceptance
-    file: ci/pm-acceptance-upload-azure-stemcell/task.yml
+    file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
     input_mapping: {heavy_stemcell_dir: heavy-stemcell}
     params:
@@ -1230,7 +1230,7 @@ jobs:
         resource: main-version
         passed: [test-azure-stemcell]
     - task: download-heavy
-      file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
       params:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
@@ -1238,7 +1238,7 @@ jobs:
         DESTINATION_DIR: heavy-stemcell
     - task: run-wuts
       attempts: 3
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
@@ -1317,7 +1317,7 @@ jobs:
         - name: gcp-stemcell-tested
         - name: azure-stemcell-tested
       run:
-        path: ci/match-stemcell-versions/run
+        path: ci/tasks/match-stemcell-versions/run
 
 - name: promote-aws
   serial_groups: ["pivnet"]
@@ -1346,7 +1346,7 @@ jobs:
   - task: copy-stemcells
     timeout: 1h30m
     attempts: 3
-    file: ci/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
     input_mapping: { version: aws-build-number, aws-regional: aws-2012-tested }
     params:
       OS_VERSION: windows2012R2
@@ -1356,7 +1356,7 @@ jobs:
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
   - task: test-aws-stemcell
     input_mapping: { stemcell: bosh-windows-stemcell }
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
       BOSH_CA_CERT: ((BOSH_CONCOURSE_2_BOSH_TARGET_CERT))
@@ -1368,15 +1368,15 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
   - task: aws-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: aws-2012-tested }
-    file: ci/set-stemcell-version/task.yml
+    file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
-      file: ci/pivnet-upload/task.yml
+      file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-dev-meta4-file
-      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: aws
@@ -1417,7 +1417,7 @@ jobs:
   - get: pivnet-public-stemcells
   - task: test-gcp-stemcell
     input_mapping: { stemcell: gcp-stemcell-tested }
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     params:
       ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
       BOSH_CA_CERT: ((goose_ca_cert))
@@ -1432,15 +1432,15 @@ jobs:
       VM_EXTENSIONS: "50GB_ephemeral_disk"
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-stemcell-tested }
-    file: ci/set-stemcell-version/task.yml
+    file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
-      file: ci/pivnet-upload/task.yml
+      file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-dev-file
-      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: gcp
@@ -1479,7 +1479,7 @@ jobs:
   - task: test-vsphere-stemcell
     input_mapping: { stemcell: vsphere-stemcell-tested }
     tags: [vsphere-linux-worker]
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
       BOSH_CA_CERT: ((regina_ca_cert))
@@ -1493,9 +1493,9 @@ jobs:
   - task: vsphere-set-stemcell-filename-version
     tags: [vsphere-linux-worker]
     input_mapping: { bosh-windows-stemcell: vsphere-stemcell-tested }
-    file: ci/set-stemcell-version/task.yml
+    file: ci/tasks/set-stemcell-version/task.yml
   - task: pivnet-upload
-    file: ci/pivnet-upload/task.yml
+    file: ci/tasks/pivnet-upload/task.yml
     input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells }
     params:
       OS_NAME: ((PIVNET_OS_NAME))
@@ -1533,7 +1533,7 @@ jobs:
   - task: test-vsphere-stemcell
     input_mapping: { stemcell: vsphere-stemcell-from-patchfile-tested }
     tags: [vsphere-linux-worker]
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
     params:
       BOSH_CA_CERT: ((regina_ca_cert))
@@ -1547,12 +1547,12 @@ jobs:
   - task: vsphere-set-stemcell-filename-version
     tags: [vsphere-linux-worker]
     input_mapping: { bosh-windows-stemcell: vsphere-stemcell-from-patchfile-tested }
-    file: ci/set-stemcell-version/task.yml
+    file: ci/tasks/set-stemcell-version/task.yml
   - task: upload-patch-and-manifest-to-azure-blobstore
     input_mapping:
       manifest: vsphere-manifest-tested
       patchfile: vsphere-patchfile-tested
-    file: ci/promote-vsphere-from-patchfile/task.yml
+    file: ci/tasks/promote-vsphere-from-patchfile/task.yml
     params:
       STORAGE_ACCESS_KEY: ((KOALA_STANDARD_STORAGE_ACCESS_KEY))
 
@@ -1573,7 +1573,7 @@ jobs:
     - get: azure-base-vhd-uri
       passed: [promote]
   - task: print-azure-publishing-instructions
-    file: ci/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
     params:
       AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
       AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
@@ -1601,7 +1601,7 @@ jobs:
   - get: pivnet-public-stemcells
   - task: test-azure-stemcell
     input_mapping: { stemcell: azure-stemcell-tested }
-    file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     params:
       ACCOUNT_JSON:
       AZ: z1
@@ -1616,16 +1616,16 @@ jobs:
       VM_TYPE: default
   - task: azure-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: azure-stemcell-tested }
-    file: ci/set-stemcell-version/task.yml
+    file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
-      file: ci/pivnet-upload/task.yml
+      file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-file
       input_mapping: { stemcell: final-stemcell }
-      file: ci/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       params:
         IAAS: azure
         OS_NAME: windows
@@ -1656,16 +1656,16 @@ jobs:
       passed: [promote]
       trigger: true
   - task: shorten-stemcell-version
-    file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
   - aggregate:
     - task: build-psmodules-zip
-      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
     - task: build-agent-zip
-      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
     - task: get-stemcell-builder-sha
-      file: ci/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
     - task: create-major-stemcell
-      file: ci/create-major-stemcell/task.yml
+      file: ci/tasks/create-major-stemcell/task.yml
       input_mapping: { version: stemcell-builder-release-version }
   - put: stemcell-builder-release
     params:

@@ -1,0 +1,23 @@
+---
+platform: windows
+
+inputs:
+- name: ci
+- name: version
+- name: repo
+- name: git-setup
+- name: tar
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-File"
+  - ci/tasks/docker-build-and-push/run.ps1
+
+params:
+  DOCKERFILE: ""
+  IMAGE_NAME: ""
+  DOCKER_USERNAME: ""
+  DOCKER_PASSWORD: ""

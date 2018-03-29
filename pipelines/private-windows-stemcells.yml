@@ -98,14 +98,14 @@ jobs:
     - get: vmx-version
       resource: updated-vmx-version
   - task: checkout-stemcell-builder
-    file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: add-updates
     privileged: true
     input_mapping:
       version: vmx-version
     tags:
      - private-windows-worker
-    file: ci/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
     params:
       ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
@@ -137,10 +137,10 @@ jobs:
       version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stembuild
   - task: checkout-stemcell-builder
-    file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
     privileged: true
-    file: ci/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
     params:
       ADMINISTRATOR_PASSWORD: {{ADMINISTRATOR_PASSWORD}}
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
@@ -179,10 +179,10 @@ jobs:
         passed: [create-vsphere-stemcell]
     - task: checkout-stemcell-builder
       tags: [vsphere-linux-worker]
-      file: ci/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
     - task: test-stemcell
       tags: [vsphere-linux-worker]
-      file: ci/bosh-windows-stemcell-builder/bwats/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       attempts: 5
       params:
@@ -194,7 +194,7 @@ jobs:
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
         STEMCELL_OS: windows2012R2
     - task: vsphere-set-stemcell-version
-      file: ci/set-stemcell-version/task.yml
+      file: ci/tasks/set-stemcell-version/task.yml
     - put: private-stemcell-release-candidate
       params:
         file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz

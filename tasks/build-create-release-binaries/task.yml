@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+- name: ci
+- name: windows2016fs-release
+
+outputs:
+- name: output
+
+run:
+  path: ci/tasks/build-create-release-binaries/run

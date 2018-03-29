@@ -183,7 +183,7 @@ jobs:
       - get: bosh-windows-stemcell
         resource: gcp-2012R2-stemcell-release-candidate
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
@@ -220,7 +220,7 @@ jobs:
         resource: vsphere-2012R2-stemcell-release-candidate
     - task: run-wuts
       tags: [vsphere-linux-worker]
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
@@ -257,7 +257,7 @@ jobs:
       - get: bosh-windows-stemcell
         resource: aws-2012R2-stemcell-release-candidate
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
@@ -297,7 +297,7 @@ jobs:
         resource: azure-2012R2-stemcell-release-candidate
       - get: azure-2012R2-stemcell-version
     - task: download-heavy
-      file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       input_mapping:
         azure-stemcell-version: azure-2012R2-stemcell-version
         azure-base-vhd-uri: azure-2012R2-base-vhd-uri
@@ -308,7 +308,7 @@ jobs:
         DESTINATION_DIR: heavy-stemcell
     - task: run-wuts
       attempts: 3
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
@@ -345,7 +345,7 @@ jobs:
       - get: bosh-windows-stemcell
         resource: gcp-1709-stemcell-release-candidate
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
@@ -382,7 +382,7 @@ jobs:
         resource: vsphere-1709-stemcell-release-candidate
     - task: run-wuts
       tags: [vsphere-linux-worker]
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
@@ -419,7 +419,7 @@ jobs:
       - get: bosh-windows-stemcell
         resource: aws-1709-stemcell-release-candidate
     - task: run-wuts
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
@@ -459,7 +459,7 @@ jobs:
         resource: azure-1709-stemcell-release-candidate
       - get: azure-1709-stemcell-version
     - task: download-heavy
-      file: ci/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       input_mapping:
         azure-stemcell-version: azure-1709-stemcell-version
         azure-base-vhd-uri: azure-1709-base-vhd-uri
@@ -470,7 +470,7 @@ jobs:
         DESTINATION_DIR: heavy-stemcell
     - task: run-wuts
       attempts: 3
-      file: ci/run-wuts/task.yml
+      file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
@@ -509,7 +509,7 @@ jobs:
       params:
         bump: minor
   - task: create-dev-release
-    file: ci/bosh-cr/task.yml
+    file: ci/tasks/bosh-cr/task.yml
     input_mapping:
       release: windows-utilities-release
       version: windows-utilities-release-version
@@ -532,7 +532,7 @@ jobs:
       params:
         bump: minor
   - task: finalize-release
-    file: ci/finalize-release/task.yml
+    file: ci/tasks/finalize-release/task.yml
     input_mapping:
       release: windows-utilities-release
       version: windows-utilities-release-version

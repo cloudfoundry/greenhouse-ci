@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: version
+  - name: release
+  - name: ci
+
+outputs:
+  - name: finalized-release
+  - name: finalized-repo
+
+run:
+  path: ci/tasks/finalize-release/run
+
+params:
+  RELEASE_NAME:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  CI_SKIP:

@@ -44,7 +44,7 @@ jobs:
     - get: zlib
       trigger: true
   - task: bump-libarchive
-    file: ci/bump-submodule/task.yml
+    file: ci/tasks/bump-submodule/task.yml
     params:
       SUBMODULE: "libarchive"
     input_mapping:
@@ -53,7 +53,7 @@ jobs:
     output_mapping:
       bumped-repo: bumped-libarchive
   - task: bump-zlib
-    file: ci/bump-submodule/task.yml
+    file: ci/tasks/bump-submodule/task.yml
     params:
       SUBMODULE: "zlib"
     input_mapping:
@@ -74,7 +74,7 @@ jobs:
     - get: bsdtar
       trigger: true
   - task: build-tar
-    file: ci/build-tar/task.yml
+    file: ci/tasks/build-tar/task.yml
   - put: s3-bucket
     params:
       file: tar-output/tar-*.exe
