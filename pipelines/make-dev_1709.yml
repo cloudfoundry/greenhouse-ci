@@ -22,7 +22,6 @@
 - type: remove
   path: /resources/name=gcp-stemcell-final
 - type: remove
-- type: remove
   path: /resources/name=azure-stemcell-final
 - type: remove
   path: /resources/name=stemcell-builder-release
