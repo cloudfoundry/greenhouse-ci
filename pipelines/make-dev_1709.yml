@@ -50,13 +50,7 @@
   path: /jobs/name=create-aws/plan/0/aggregate/get=base-amis/passed
 - type: remove
   path: /jobs/name=print-azure-publishing-instructions
-- type: remove
-  path: /jobs/name=test-azure
   # TODO: when create-azure is added back, ensure we don't override the stemcell in pm acceptance environment
-- type: remove
-  path: /jobs/name=wuts-azure
-- type: remove
-  path: /jobs/name=create-azure
 - type: remove
   path: /jobs/name=promote-azure
 - type: remove
