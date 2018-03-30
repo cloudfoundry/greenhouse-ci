@@ -22,15 +22,6 @@
 - type: remove
   path: /resources/name=gcp-stemcell-final
 - type: remove
-  path: /resources/name=azstemcell
-- type: remove
-  path: /resources/name=azure-lock
-- type: remove
-  path: /resources/name=azure-base-vhd-uri
-- type: remove
-  path: /resources/name=azure-untested
-- type: remove
-  path: /resources/name=azure-tested
 - type: remove
   path: /resources/name=azure-stemcell-final
 - type: remove
