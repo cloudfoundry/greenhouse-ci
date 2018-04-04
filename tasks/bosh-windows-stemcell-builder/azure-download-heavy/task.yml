@@ -3,11 +3,11 @@ platform: linux
 image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci-azcopy}}
 
 inputs:
-  - name: ci
-  - name: azstemcell
-  - name: bosh-windows-stemcell
-  - name: azure-base-vhd-uri
-  - name: azure-stemcell-version
+- name: azstemcell
+- name: azure-base-vhd-uri
+- name: azure-build-number
+- name: bosh-windows-stemcell
+- name: ci
 
 outputs:
   - name: heavy-stemcell

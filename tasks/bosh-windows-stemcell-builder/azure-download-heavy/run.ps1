@@ -29,12 +29,12 @@ foreach ($exe in $RequiredExes) {
     Get-Command -CommandType Application -Name $exe > $null
 }
 
-$VersionFile=(Resolve-Path "${PWD}\azure-stemcell-version\version*").Path
+$VersionFile=(Resolve-Path "${PWD}\azure-build-number\version*").Path
 if (($VersionFile | Measure-Object).Count -ne 1) {
     if (($VersionFile | Measure-Object).Count -eq 0) {
-        Write-Error "No files in 'azure-stemcell-version' directory: ${VersionFile}"
+        Write-Error "No files in 'azure-build-number' directory: ${VersionFile}"
     } else {
-        Write-Error "Too many files in 'azure-stemcell-version' directory: ${VersionFile}"
+        Write-Error "Too many files in 'azure-build-number' directory: ${VersionFile}"
     }
     Exit 1
 }
