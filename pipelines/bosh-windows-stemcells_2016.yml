@@ -600,8 +600,7 @@ jobs:
     - get: azstemcell
     - get: stemcell-builder
       passed: [create-azure]
-    - get: azure-stemcell-version
-      resource: azure-build-number # TODO: can we consolidate with the other fetching of azure-build-number in this job?
+    - get: azure-build-number
       passed: [create-azure]
     - get: main-version
       passed: [create-azure]
@@ -675,9 +674,6 @@ jobs:
         passed: [test-azure]
     - task: download-heavy
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-      input_mapping:
-        azure-stemcell-version: azure-build-number
-        azure-base-vhd-uri: azure-base-vhd-uri
       tags: [azure-linux-worker]
       params:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
@@ -982,8 +978,7 @@ jobs:
       passed: [wuts-azure]
     - get: azure-base-vhd-uri
       passed: [wuts-azure]
-    - get: azure-stemcell-version
-      resource: azure-build-number
+    - get: azure-build-number
       passed: [wuts-azure]
     - get: stemcell-builder
       passed:

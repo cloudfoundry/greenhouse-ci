@@ -1154,8 +1154,7 @@ jobs:
     - get: azstemcell
     - get: stemcell-builder
       passed: [create-azure-stemcell]
-    - get: azure-stemcell-version
-      resource: azure-build-number # TODO: can we consolidate with the other fetching of azure-build-number in this job?
+    - get: azure-build-number
       passed: [create-azure-stemcell]
       trigger: true
     - get: main-version

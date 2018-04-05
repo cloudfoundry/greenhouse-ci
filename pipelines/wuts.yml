@@ -299,7 +299,7 @@ jobs:
     - task: download-heavy
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       input_mapping:
-        azure-stemcell-version: azure-2012R2-stemcell-version
+        azure-build-number: azure-2012R2-stemcell-version
         azure-base-vhd-uri: azure-2012R2-base-vhd-uri
       tags: [azure-linux-worker]
       params:
@@ -461,7 +461,7 @@ jobs:
     - task: download-heavy
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       input_mapping:
-        azure-stemcell-version: azure-1709-stemcell-version
+        azure-build-number: azure-1709-stemcell-version
         azure-base-vhd-uri: azure-1709-base-vhd-uri
       tags: [azure-linux-worker]
       params:
