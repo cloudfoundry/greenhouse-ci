@@ -903,7 +903,7 @@ jobs:
           - |
             VERSION=$(cat version/number)
             echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
-            aws s3 cp s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
+            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 1
