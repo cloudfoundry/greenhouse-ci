@@ -197,6 +197,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
+        VM_EXTENSIONS: "128GB_ephemeral_disk"
     ensure:
       put: mustang-lock
       params:
@@ -358,6 +359,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
+        VM_EXTENSIONS: "128GB_ephemeral_disk"
     ensure:
       put: mustang-lock
       params:

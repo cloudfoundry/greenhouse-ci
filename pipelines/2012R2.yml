@@ -1041,6 +1041,7 @@ jobs:
       BOSH_CA_CERT: ((goose_ca_cert))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
       NETWORK: private
+      VM_EXTENSIONS: "128GB_ephemeral_disk"
       STEMCELL_OS: windows2012R2
   - put: gcp-2012R2-tested
     params:
@@ -1082,6 +1083,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
+        VM_EXTENSIONS: "128GB_ephemeral_disk"
     ensure:
       put: mustang-lock
       params:
@@ -1426,6 +1428,7 @@ jobs:
       NETWORK: private
       STEMCELL_OS: windows2012R2
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
+      VM_EXTENSIONS: "128GB_ephemeral_disk"
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-stemcell-tested }
     file: ci/tasks/set-stemcell-version/task.yml

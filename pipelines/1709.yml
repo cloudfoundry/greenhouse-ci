@@ -780,6 +780,7 @@ jobs:
       NETWORK: private
       STEMCELL_OS: windows2016
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      VM_EXTENSIONS: "128GB_ephemeral_disk" # WARN: Cloud Config specific
   - put: gcp-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
@@ -819,6 +820,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
+        VM_EXTENSIONS: "128GB_ephemeral_disk"
     ensure:
       put: mustang-lock
       params:
@@ -1114,6 +1116,7 @@ jobs:
       NETWORK: private
       STEMCELL_OS: windows2016
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      VM_EXTENSIONS: "128GB_ephemeral_disk"
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-2016-tested }
     file: ci/tasks/set-stemcell-version/task.yml
