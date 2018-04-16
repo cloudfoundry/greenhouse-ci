@@ -418,6 +418,14 @@ resources:
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
     product_version: 1200.*
 
+# time
+- name: midnight
+  type: time
+  source:
+    start: 12:00 AM
+    stop: 1:00 AM
+    location: America/New_York
+
 jobs:
 - name: create-vsphere-stemcell-from-vmx
   serial: true
@@ -585,6 +593,8 @@ jobs:
       resource: main-version
       params:
         bump: patch
+    - get: midnight
+      trigger: true
   - put: main-version
     params:
       file: version/number
