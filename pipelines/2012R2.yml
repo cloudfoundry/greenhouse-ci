@@ -578,6 +578,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder
+      trigger: true
     - get: windows-stemcell-dependencies
     - get: updated-vmx-version
     - get: version
