@@ -269,7 +269,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: large
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
@@ -320,7 +320,7 @@ jobs:
         STEMCELL_PATH: stemcell/*.tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: default
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
@@ -359,7 +359,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
-        VM_EXTENSIONS: "128GB_ephemeral_disk"
+        VM_EXTENSIONS: ""
     ensure:
       put: mustang-lock
       params:
@@ -431,7 +431,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016
         NETWORK: default
-        VM_TYPE: large
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
@@ -482,7 +482,7 @@ jobs:
         STEMCELL_PATH: stemcell/*.tgz
         STEMCELL_OS: windows2016
         NETWORK: default
-        VM_TYPE: default
+        VM_TYPE: 30GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:

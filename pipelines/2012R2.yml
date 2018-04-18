@@ -925,6 +925,7 @@ jobs:
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
       STEMCELL_OS: windows2012R2
+      VM_TYPE: 128GB_root_disk
   - put: aws-2012-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
@@ -966,7 +967,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: large
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
@@ -1052,7 +1053,7 @@ jobs:
       BOSH_CA_CERT: ((goose_ca_cert))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
       NETWORK: private
-      VM_EXTENSIONS: "128GB_ephemeral_disk"
+      VM_EXTENSIONS: ""
       STEMCELL_OS: windows2012R2
   - put: gcp-2012R2-tested
     params:
@@ -1094,7 +1095,7 @@ jobs:
         NETWORK: default
         VM_TYPE: default
         AZ: z1
-        VM_EXTENSIONS: "128GB_ephemeral_disk"
+        VM_EXTENSIONS: ""
     ensure:
       put: mustang-lock
       params:
@@ -1260,7 +1261,7 @@ jobs:
         STEMCELL_PATH: stemcell/*.tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: default
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
