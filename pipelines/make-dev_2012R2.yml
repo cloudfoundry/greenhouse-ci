@@ -48,6 +48,8 @@
   path: /resources/name=pivnet-public-stemcells
 - type: remove
   path: /resources/name=pivnet-internal-stemcells
+- type: remove
+  path: /resources/name=midnight
 
 # JOBS
 
@@ -103,3 +105,5 @@
 - type: replace
   path: /jobs/name=build/plan/0/aggregate/get=version/params/bump
   value: minor
+- type: remove
+  path: /jobs/name=build/plan/0/aggregate/get=midnight
