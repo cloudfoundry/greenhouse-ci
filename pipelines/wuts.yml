@@ -482,7 +482,7 @@ jobs:
         STEMCELL_PATH: stemcell/*.tgz
         STEMCELL_OS: windows2016
         NETWORK: default
-        VM_TYPE: 30GB_root_disk
+        VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
