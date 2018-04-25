@@ -1244,7 +1244,7 @@ jobs:
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
       params:
-        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+        AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2012R2
         DESTINATION_DIR: heavy-stemcell
     - task: run-wuts
