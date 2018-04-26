@@ -35,7 +35,7 @@ EOL
     | sed -e "s/ /\n/g" \
     | sed -e "s/\($prefix_pattern\)\t/\1 /g" > $key_file
   chmod 600 $key_file
-  export $BOSH_GW_PRIVATE_KEY=$key_file
+  export BOSH_GW_PRIVATE_KEY=$key_file
 
   echo "Build ginkgo"
   ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
