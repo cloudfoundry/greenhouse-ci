@@ -98,7 +98,7 @@ resources:
     branch: master
     uri: git@github.com:bosh-io/stemcells-windows-index.git
     private_key: ((BOSH_WINDOWS_BOSHIO_DEPLOY_KEY))
-- name: windows-utilities-release
+- name: windows-utilities
   type: git
   source:
     tag_filter: "*"
@@ -543,7 +543,7 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: windows-utilities-release
+      - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
       - get: bosh-windows-stemcell
@@ -560,7 +560,9 @@ jobs:
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
+      input_mapping:
+        stemcell: bosh-windows-stemcell
+        windows-utilities-release: windows-utilities
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
         BOSH_CLIENT: ((regina_client))
@@ -782,7 +784,7 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: windows-utilities-release
+      - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
       - get: bosh-windows-stemcell
@@ -808,7 +810,9 @@ jobs:
       attempts: 5
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
+      input_mapping:
+        stemcell: bosh-windows-stemcell
+        windows-utilities-release: windows-utilities
       params:
         BOSH_CLIENT_SECRET: ((regina_client_secret))
         BOSH_CLIENT: ((regina_client))
@@ -939,7 +943,7 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: windows-utilities-release
+      - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
       - get: stemcell
@@ -957,6 +961,8 @@ jobs:
         passed: [test-aws]
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
+      input_mapping:
+        windows-utilities-release: windows-utilities
       params:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
         BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
@@ -1068,7 +1074,7 @@ jobs:
   - do:
     - aggregate:
       - get: ci
-      - get: windows-utilities-release
+      - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
       - get: bosh-windows-stemcell
@@ -1082,7 +1088,9 @@ jobs:
         passed: [test-gcp-stemcell]
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
+      input_mapping:
+        stemcell: bosh-windows-stemcell
+        windows-utilities-release: windows-utilities
       params:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
         BOSH_CLIENT: ((mustang_client))
@@ -1226,7 +1234,7 @@ jobs:
       - get: ci
       - get: azure-base-vhd-uri
         passed: [test-azure-stemcell]
-      - get: windows-utilities-release
+      - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
       - get: bosh-windows-stemcell
@@ -1250,7 +1258,9 @@ jobs:
     - task: run-wuts
       attempts: 3
       file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: heavy-stemcell }
+      input_mapping:
+        stemcell: heavy-stemcell
+        windows-utilities-release: windows-utilities
       params:
         BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
         BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))

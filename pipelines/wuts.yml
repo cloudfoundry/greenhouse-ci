@@ -66,14 +66,15 @@ resources:
     regexp: 2012R2/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: windows-utilities-release-version
+
+- name: windows-utilities-release-semver
   type: semver
   source:
     bucket: all-bosh-windows
     key: versions/windows-utilities-release
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 0.4.0
+    initial_version: 0.8.0
 
 - name: gcp-1709-stemcell-release-candidate
   type: s3
@@ -148,15 +149,6 @@ resources:
     pool: stemcells-azure
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
-# github releases
-- name: windows-utilities-release-github-draft
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: windows-utilities-release
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 
 - name: windows-utilities-release-github
   type: github-release
@@ -490,7 +482,7 @@ jobs:
       params:
         release: azure-lock
 
-- name: release-dev
+- name: release-final
   serial: true
   plan:
   - aggregate:
@@ -505,37 +497,14 @@ jobs:
       - run-wuts-azure-1709
       - run-wuts-gcp-1709
       - run-wuts-vsphere-1709
-    - get: windows-utilities-release-version
-      params:
-        bump: minor
-  - task: create-dev-release
-    file: ci/tasks/bosh-cr/task.yml
-    input_mapping:
-      release: windows-utilities-release
-      version: windows-utilities-release-version
-  - put: windows-utilities-release-github-draft
-    params:
-      name: windows-utilities-release-version/number
-      tag: windows-utilities-release-version/number
-      globs:
-      - release-tarball/*.tgz
-
-- name: release
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: windows-utilities-release
-      passed:
-      - release-dev
-    - get: windows-utilities-release-version
+    - get: windows-utilities-release-semver
       params:
         bump: minor
   - task: finalize-release
     file: ci/tasks/finalize-release/task.yml
     input_mapping:
       release: windows-utilities-release
-      version: windows-utilities-release-version
+      version: windows-utilities-release-semver
     params:
       RELEASE_NAME: windows-utilities
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
@@ -543,13 +512,13 @@ jobs:
   - put: windows-utilities-release
     params:
       repository: finalized-release/release
-      tag: windows-utilities-release-version/number
-  - put: windows-utilities-release-version
+      tag: windows-utilities-release-semver/number
+  - put: windows-utilities-release-semver
     params:
-      file: windows-utilities-release-version/number
+      file: windows-utilities-release-semver/number
   - put: windows-utilities-release-github
     params:
-      name: windows-utilities-release-version/number
-      tag: windows-utilities-release-version/number
+      name: windows-utilities-release-semver/number
+      tag: windows-utilities-release-semver/number
       globs:
       - finalized-release/windows-utilities-*.tgz
