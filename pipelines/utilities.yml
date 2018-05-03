@@ -8,8 +8,7 @@ groups:
   - create-vsphere-add-updates
   - post-draft-release
   - test-stemcell-builder
-  - build-draft-event-log-release
-  - build-final-event-log-release
+  - build-event-log-release
 - name: stembuild
   jobs:
   - build
@@ -22,8 +21,7 @@ groups:
   - test-stemcell-builder
 - name: event-log-release
   jobs:
-  - build-draft-event-log-release
-  - build-final-event-log-release
+  - build-event-log-release
 
 resources:
 # repos
@@ -93,14 +91,6 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
-
-- name: event-log-release-github-draft
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: event-log-release
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
@@ -329,30 +319,7 @@ jobs:
   - put: stemcell-builder
     params: { repository: merged-repo/to-repo }
 
-- name: build-draft-event-log-release
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: event-log-release-version
-      params:
-        bump: minor
-    - get: event-log-release
-      trigger: true
-  - task: create-dev-release
-    input_mapping:
-      version: event-log-release-version
-      release: event-log-release
-    file: ci/tasks/bosh-cr/task.yml
-  - put: event-log-release-github-draft
-    params:
-      name:
-      tag: event-log-release-version/number
-      name: event-log-release-version/number
-      globs:
-      - release-tarball/*.tgz
-
-- name: build-final-event-log-release
+- name: build-event-log-release
   serial: true
   plan:
   - aggregate:
@@ -361,14 +328,13 @@ jobs:
         params:
           bump: minor
       - get: event-log-release
-        passed: [ build-draft-event-log-release ]
   - task: finalize-release
     file: ci/tasks/finalize-release/task.yml
     input_mapping:
       release: event-log-release
       version: event-log-release-version
     params:
-      RELEASE_NAME: event_log
+      RELEASE_NAME: event-log
       AWS_ACCESS_KEY_ID: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
   - put: event-log-release
@@ -383,4 +349,4 @@ jobs:
       name: event-log-release-version/number
       tag: event-log-release-version/number
       globs:
-      - finalized-release/event-log-release-*.tgz
+      - finalized-release/event-log-*.tgz
