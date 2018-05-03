@@ -1407,7 +1407,7 @@ jobs:
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
-        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
     - put: pivnet-public-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
