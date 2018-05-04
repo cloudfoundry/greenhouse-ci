@@ -1387,7 +1387,6 @@ jobs:
       STEMCELL_OS: windows2012R2
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
   - task: aws-set-stemcell-filename-version
-    input_mapping: { bosh-windows-stemcell: aws-2012-tested }
     file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
     - task: pivnet-upload
@@ -1406,7 +1405,7 @@ jobs:
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
-        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
+        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
         file_glob: 'pivnet-metadata/*.tgz'
