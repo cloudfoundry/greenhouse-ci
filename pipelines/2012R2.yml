@@ -116,7 +116,6 @@ resources:
     user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 - name: openssh-release
   type: github-release
   source:
