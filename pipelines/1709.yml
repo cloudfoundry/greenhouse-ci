@@ -488,6 +488,7 @@ jobs:
       passed: [create-aws]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
@@ -526,6 +527,7 @@ jobs:
         passed: [test-aws]
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
+      attempts: 5
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
@@ -1054,7 +1056,7 @@ jobs:
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
   - task: test-aws-stemcell
-    attempts: 5
+    attempts: 10
     input_mapping: { stemcell: bosh-windows-stemcell }
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     params:
