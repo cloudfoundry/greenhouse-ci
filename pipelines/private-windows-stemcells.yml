@@ -77,6 +77,7 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
+    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 - name: vsphere-director-lock
   type: pool
