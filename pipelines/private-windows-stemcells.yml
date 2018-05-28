@@ -95,6 +95,7 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder-released-sha
+      trigger: true
     - get: windows-stemcell-dependencies
     - get: vmx-version
       resource: updated-vmx-version
@@ -125,13 +126,14 @@ jobs:
   - aggregate:
     - get: ci
     - get: stemcell-builder-released-sha
+      passed: [create-vsphere-add-updates]
       trigger: true
     - get: windows-stemcell-dependencies
+      passed: [create-vsphere-add-updates]
     - get: version
       resource: stemcell-version
     - get: vmx-version
       resource: updated-vmx-version
-      trigger: true
       passed: [create-vsphere-add-updates]
     - get: sshd
       resource: openssh-release
@@ -210,6 +212,7 @@ jobs:
   - aggregate:
     - get: private-stemcell-release-candidate
       passed: [test-vsphere-stemcell]
+      trigger: true
     - get: stemcell-version
       passed: [test-vsphere-stemcell]
   - task: pivnet-metadata
