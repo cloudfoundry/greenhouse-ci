@@ -1208,6 +1208,7 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      BWATS_BOSH_TIMEOUT: 3h
   - task: upload-stemcell-to-acceptance
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -1273,6 +1274,7 @@ jobs:
         VM_TYPE: 128GB_root_disk
         AZ: z1
         VM_EXTENSIONS: ""
+        WUTS_BOSH_TIMEOUT: 3h
     ensure:
       put: azure-lock
       params:
