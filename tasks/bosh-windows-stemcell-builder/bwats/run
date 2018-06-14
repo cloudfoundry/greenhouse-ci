@@ -4,6 +4,13 @@ set -ex
 
 export STEMCELL_PATH=$(readlink -f $STEMCELL_PATH)
 
+if [ "$IAAS" == "aws" ]; then
+    export JUMPBOX_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
+    echo $JUMPBOX_PRIVATE_KEY > $JUMPBOX_PRIVATE_KEY_FILE
+    chmod 600 $JUMPBOX_PRIVATE_KEY_FILE
+    export BOSH_ALL_PROXY="ssh+socks5://${JUMPBOX_USER}@${JUMPBOX_IP}:22?private-key=${JUMPBOX_PRIVATE_KEY_FILE}"
+fi
+
 cd stemcell-builder
 bundle install --without test
 rake package:bwats
