@@ -39,6 +39,19 @@ EOL
   export BOSH_GW_PRIVATE_KEY=$key_file
   set -x
 
+  if [ "${IAAS}" == "aws" ]; then
+      set +x
+      export JUMPBOX_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
+      prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
+      echo ${JUMPBOX_PRIVATE_KEY} \
+          | sed -e "s/\($prefix_pattern\) /\1\t/g" \
+          | sed -e "s/ /\n/g" \
+          | sed -e "s/\($prefix_pattern\)\t/\1 /g" > ${JUMPBOX_PRIVATE_KEY_FILE}
+      chmod 600 ${JUMPBOX_PRIVATE_KEY_FILE}
+      export BOSH_ALL_PROXY="ssh+socks5://${JUMPBOX_USER}@${JUMPBOX_IP}:22?private-key=${JUMPBOX_PRIVATE_KEY_FILE}"
+      set -x
+  fi
+
   echo "Build ginkgo"
   ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
   go build -o ginkgo $ginkgo_dir
