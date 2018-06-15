@@ -934,7 +934,7 @@ jobs:
       JUMPBOX_USER: ((BOSH_CONCOURSE_GW_USER))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
       STEMCELL_OS: windows2012R2
-      VM_TYPE: 128GB_root_disk
+      VM_TYPE: large
   - put: aws-2012-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
@@ -982,7 +982,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: 128GB_root_disk
+        VM_TYPE: large
         AZ: z1
         VM_EXTENSIONS: ""
     ensure:
@@ -1281,7 +1281,7 @@ jobs:
         STEMCELL_PATH: stemcell/*.tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
-        VM_TYPE: 128GB_root_disk
+        VM_TYPE: large
         AZ: z1
         VM_EXTENSIONS: ""
         WUTS_BOSH_TIMEOUT: 3h
