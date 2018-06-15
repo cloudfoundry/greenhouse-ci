@@ -25,6 +25,7 @@ RUN apt-get update -qq && \
     make \
     mingw-w64 \
     nano \
+    netcat-openbsd \
     pkg-config \
     python-all \
     python-dev \
