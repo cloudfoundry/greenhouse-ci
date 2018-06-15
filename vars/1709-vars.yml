@@ -17,7 +17,6 @@ AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-1'
 
-
 #GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-1709-dc-core-v.*'
 IMAGE_FAMILY: 'windows-1709-core'
