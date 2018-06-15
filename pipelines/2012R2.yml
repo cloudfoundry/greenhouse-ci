@@ -973,6 +973,10 @@ jobs:
         BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
         BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
         BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        IAAS: aws
+        JUMPBOX_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
+        JUMPBOX_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        JUMPBOX_USER: ((BOSH_CONCOURSE_GW_USER))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-((AWS_PACKER_REGION)).tgz
         STEMCELL_OS: windows2012R2
         NETWORK: default
