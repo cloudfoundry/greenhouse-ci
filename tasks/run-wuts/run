@@ -6,17 +6,6 @@ echo "Set GOPATH to $(pwd)"
 export GOPATH=$(pwd)
 
 pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
-  set +x
-  key_file=/tmp/bosh_ga.key
-  prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
-  echo $BOSH_GW_PRIVATE_KEY \
-    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
-    | sed -e "s/ /\n/g" \
-    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > $key_file
-  chmod 600 $key_file
-  export BOSH_GW_PRIVATE_KEY=$key_file
-  set -x
-
   export SSH_TUNNEL_IP=${BOSH_TARGET}
 
   if [ "${IAAS}" == "aws" ]; then
@@ -55,6 +44,17 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
     "network": "$NETWORK"
   }
 EOL
+
+  set +x
+  key_file=/tmp/bosh_ga.key
+  prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
+  echo $BOSH_GW_PRIVATE_KEY \
+    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
+    | sed -e "s/ /\n/g" \
+    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > $key_file
+  chmod 600 $key_file
+  export BOSH_GW_PRIVATE_KEY=$key_file
+  set -x
 
   echo "Build ginkgo"
   ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
