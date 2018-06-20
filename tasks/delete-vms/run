@@ -45,8 +45,13 @@ module DeleteVms
 
       `gcloud config set project #{account_data['project_id']}`
       filter="metadata.items.key['name'][value]~'#{vm_prefix}.*'"
-      puts `gcloud compute instances list --filter="#{filter}"`
-      `gcloud compute instances delete --quiet $(gcloud compute instances list --uri --filter="#{filter}")`
+      instances = JSON.parse(`gcloud compute instances list --filter="#{filter}" --format=json`)
+      if instances.empty?
+        puts "No instances found to delete"
+      else
+        puts `gcloud compute instances list --filter="#{filter}"`
+        `gcloud compute instances delete --quiet $(gcloud compute instances list --uri --filter="#{filter}")`
+      end
     end
   end
 
