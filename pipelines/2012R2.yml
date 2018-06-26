@@ -1108,15 +1108,16 @@ jobs:
         BOSH_CA_CERT: ((mustang_ca_cert))
         BOSH_CLIENT: ((mustang_client))
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_TARGET: ((mustang_environment))
         BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_TARGET: ((mustang_environment))
+        IAAS: gcp
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
         SSH_TUNNEL_USER: ((mustang_gw_user))
         STEMCELL_OS: windows2012R2
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
-        VM_EXTENSIONS: ""
+        VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
       put: mustang-lock

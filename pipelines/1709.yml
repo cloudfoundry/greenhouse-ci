@@ -837,15 +837,16 @@ jobs:
         BOSH_CA_CERT: ((mustang_ca_cert))
         BOSH_CLIENT: ((mustang_client))
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_TARGET: ((mustang_environment))
         BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_TARGET: ((mustang_environment))
+        IAAS: gcp
         NETWORK: default
-        SSH_TUNNEL_IP: ((mustang_environment))
+        SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
         SSH_TUNNEL_USER: ((mustang_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        VM_EXTENSIONS: "128GB_ephemeral_disk"
+        VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
       put: mustang-lock
@@ -972,20 +973,20 @@ jobs:
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_TARGET: ((regina_environment))
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_GW_USER: ((regina_gw_user))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_IP: ((regina_environment))
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
-        STEMCELL_OS: windows2016
-        NETWORK: default
-        VM_TYPE: default
         AZ: z1
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_GW_USER: ((regina_gw_user))
+        BOSH_TARGET: ((regina_environment))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((regina_environment))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
         VM_EXTENSIONS: ""
+        VM_TYPE: default
     ensure:
       put: vsphere-director-lock
       params:
