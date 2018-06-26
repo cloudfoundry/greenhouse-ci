@@ -6,20 +6,19 @@ echo "Set GOPATH to $(pwd)"
 export GOPATH=$(pwd)
 
 pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
-  export SSH_TUNNEL_IP=${BOSH_TARGET}
+  set +x
+  key_file=/tmp/bosh_ga.key
+  prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
+  echo $SSH_TUNNEL_PRIVATE_KEY \
+    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
+    | sed -e "s/ /\n/g" \
+    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > $key_file
+  chmod 600 $key_file
+  export BOSH_GW_PRIVATE_KEY=$key_file
+  set -x
 
   if [ "${IAAS}" == "aws" ]; then
-      set +x
-      export JUMPBOX_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
-      prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
-      echo ${JUMPBOX_PRIVATE_KEY} \
-          | sed -e "s/\($prefix_pattern\) /\1\t/g" \
-          | sed -e "s/ /\n/g" \
-          | sed -e "s/\($prefix_pattern\)\t/\1 /g" > ${JUMPBOX_PRIVATE_KEY_FILE}
-      chmod 600 ${JUMPBOX_PRIVATE_KEY_FILE}
-      export BOSH_ALL_PROXY="ssh+socks5://${JUMPBOX_USER}@${JUMPBOX_IP}:22?private-key=${JUMPBOX_PRIVATE_KEY_FILE}"
-      export SSH_TUNNEL_IP=${JUMPBOX_IP}
-      set -x
+      export BOSH_ALL_PROXY="ssh+socks5://${SSH_TUNNEL_USER}@${SSH_TUNNEL_IP}:22?private-key=${key_file}"
   fi
 
   echo "Write config.json"
@@ -32,8 +31,8 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
       "client_secret": "$BOSH_CLIENT_SECRET",
       "target": "$BOSH_TARGET",
       "ssh_tunnel_ip": "$SSH_TUNNEL_IP",
-      "gw_user": "$BOSH_GW_USER",
-      "gw_private_key": "$(ruby -e "puts ENV['BOSH_GW_PRIVATE_KEY'].split(\"\n\").join('\n')")"
+      "gw_user": "$SSH_TUNNEL_USER",
+      "gw_private_key": "$(ruby -e "puts ENV['SSH_TUNNEL_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
     "stemcell_path": "$GOPATH/$STEMCELL_PATH",
     "windows_utilities_path": "../../../../windows-utilities-release",
@@ -45,17 +44,6 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   }
 EOL
 
-  set +x
-  key_file=/tmp/bosh_ga.key
-  prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
-  echo $BOSH_GW_PRIVATE_KEY \
-    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
-    | sed -e "s/ /\n/g" \
-    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > $key_file
-  chmod 600 $key_file
-  export BOSH_GW_PRIVATE_KEY=$key_file
-  set -x
-
   echo "Build ginkgo"
   ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
   go build -o ginkgo $ginkgo_dir
@@ -63,4 +51,3 @@ EOL
   echo "Run ginkgo"
   ./ginkgo -v
 popd
-

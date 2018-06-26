@@ -535,22 +535,21 @@ jobs:
       attempts: 5
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
-        BOSH_GW_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-        IAAS: aws
-        JUMPBOX_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-        JUMPBOX_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-        JUMPBOX_USER: ((BOSH_CONCOURSE_GW_USER))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
-        STEMCELL_OS: windows2016
-        NETWORK: default
-        VM_TYPE: large
         AZ: z1
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
+        IAAS: aws
+        NETWORK: default
+        SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
+        VM_TYPE: large
     ensure:
       put: aws-lock
       params:
@@ -706,18 +705,20 @@ jobs:
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
-        BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
-        BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
-        BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
-        BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
-        BOSH_GW_USER: ((KOALA_BOSH_GW_USER))
-        BOSH_GW_PRIVATE_KEY: ((KOALA_BOSH_GW_PRIVATE_KEY))
-        STEMCELL_PATH: stemcell/*.tgz
-        STEMCELL_OS: windows2016
-        NETWORK: default
-        VM_TYPE: default
         AZ: z1
+        BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
+        BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
+        BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
+        BOSH_GW_USER: ((KOALA_BOSH_GW_USER))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((KOALA_BOSH_DIRECTOR_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((KOALA_BOSH_GW_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((KOALA_BOSH_GW_USER))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/*.tgz
         VM_EXTENSIONS: ""
+        VM_TYPE: default
         WUTS_BOSH_TIMEOUT: 3h
     ensure:
       put: azure-lock
@@ -832,18 +833,20 @@ jobs:
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_CLIENT: ((mustang_client))
-        BOSH_TARGET: ((mustang_environment))
-        BOSH_CA_CERT: ((mustang_ca_cert))
-        BOSH_GW_USER: ((mustang_gw_user))
-        BOSH_GW_PRIVATE_KEY: ((mustang_gw_private_key))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        STEMCELL_OS: windows2016
-        NETWORK: default
-        VM_TYPE: default
         AZ: z1
+        BOSH_CA_CERT: ((mustang_ca_cert))
+        BOSH_CLIENT: ((mustang_client))
+        BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_TARGET: ((mustang_environment))
+        BOSH_GW_USER: ((mustang_gw_user))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((mustang_environment))
+        SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
+        SSH_TUNNEL_USER: ((mustang_gw_user))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
         VM_EXTENSIONS: "128GB_ephemeral_disk"
+        VM_TYPE: default
     ensure:
       put: mustang-lock
       params:
@@ -974,7 +977,9 @@ jobs:
         BOSH_TARGET: ((regina_environment))
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_GW_USER: ((regina_gw_user))
-        BOSH_GW_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_IP: ((regina_environment))
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016
         NETWORK: default
