@@ -17,9 +17,7 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   export BOSH_GW_PRIVATE_KEY=$key_file
   set -x
 
-  if [ "${IAAS}" != "azure" ]; then
-    export BOSH_ALL_PROXY="ssh+socks5://${SSH_TUNNEL_USER}@${SSH_TUNNEL_IP}:22?private-key=${key_file}"
-  fi
+  export BOSH_ALL_PROXY="ssh+socks5://${SSH_TUNNEL_USER}@${SSH_TUNNEL_IP}:22?private-key=${key_file}"
 
   echo "Write config.json"
   export CONFIG_JSON=config.json
