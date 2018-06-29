@@ -184,7 +184,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
         BOSH_GW_USER: ((mustang_gw_user))
         BOSH_TARGET: ((mustang_environment))
-        IAAS: gcp
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -225,7 +224,7 @@ jobs:
         BOSH_TARGET: ((regina_environment))
         BOSH_GW_USER: ((regina_gw_user))
         NETWORK: default
-        SSH_TUNNEL_IP: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
         STEMCELL_OS: windows2012R2
@@ -263,7 +262,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
         BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
         BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        IAAS: aws
         NETWORK: default
         SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
@@ -356,7 +354,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
         BOSH_GW_USER: ((mustang_gw_user))
         BOSH_TARGET: ((mustang_environment))
-        IAAS: gcp
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -397,7 +394,7 @@ jobs:
         BOSH_GW_USER: ((regina_gw_user))
         BOSH_TARGET: ((regina_environment))
         NETWORK: default
-        SSH_TUNNEL_IP: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
         STEMCELL_OS: windows2016
@@ -435,7 +432,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
         BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
         BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        IAAS: aws
         NETWORK: default
         SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
