@@ -4,18 +4,16 @@ set -ex
 
 export STEMCELL_PATH=$(readlink -f ${STEMCELL_PATH})
 
-if [ "${IAAS}" == "aws" ]; then
-    set +x
-    export JUMPBOX_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
-    prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
-    echo ${JUMPBOX_PRIVATE_KEY} \
-        | sed -e "s/\($prefix_pattern\) /\1\t/g" \
-        | sed -e "s/ /\n/g" \
-        | sed -e "s/\($prefix_pattern\)\t/\1 /g" > ${JUMPBOX_PRIVATE_KEY_FILE}
-    chmod 600 ${JUMPBOX_PRIVATE_KEY_FILE}
-    export BOSH_ALL_PROXY="ssh+socks5://${JUMPBOX_USER}@${JUMPBOX_IP}:22?private-key=${JUMPBOX_PRIVATE_KEY_FILE}"
-    set -x
-fi
+set +x
+export SSH_TUNNEL_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
+prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
+echo ${SSH_TUNNEL_PRIVATE_KEY} \
+    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
+    | sed -e "s/ /\n/g" \
+    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > ${SSH_TUNNEL_PRIVATE_KEY_FILE}
+chmod 600 ${SSH_TUNNEL_PRIVATE_KEY_FILE}
+export BOSH_ALL_PROXY="ssh+socks5://${SSH_TUNNEL_USER}@${SSH_TUNNEL_IP}:22?private-key=${SSH_TUNNEL_PRIVATE_KEY_FILE}"
+set -x
 
 cd stemcell-builder
 bundle install --without test
