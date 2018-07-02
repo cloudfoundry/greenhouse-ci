@@ -1238,22 +1238,33 @@ jobs:
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
       STEMCELL_OS: ((AZURE_OS_VERSION))
       DESTINATION_DIR: heavy-stemcell
-  - task: test-stemcell
-    attempts: 3
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    input_mapping: {stemcell: heavy-stemcell}
+  - put: azure-lock
     params:
-      AZ: ((AZURE_HEAVY_AZ))
-      BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
-      BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
-      BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
-      IAAS: azure
-      NETWORK: ((AZURE_HEAVY_NETWORK))
-      STEMCELL_OS: ((AZURE_OS_VERSION))
-      STEMCELL_PATH: stemcell/*.tgz
-      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
-      BWATS_BOSH_TIMEOUT: 3h
+      acquire: true
+  - do:
+    - task: test-stemcell
+      attempts: 3
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: {stemcell: heavy-stemcell}
+      params:
+        AZ: ((AZURE_HEAVY_AZ))
+        BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
+        BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
+        BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
+        BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+        SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
+        BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
+        SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
+        NETWORK: ((AZURE_HEAVY_NETWORK))
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        STEMCELL_PATH: stemcell/*.tgz
+        VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+        BWATS_BOSH_TIMEOUT: 3h
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
   - task: upload-stemcell-to-acceptance
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -1270,9 +1281,6 @@ jobs:
 - name: wuts-azure
   serial: true
   plan:
-  - put: azure-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
       - get: azstemcell
@@ -1300,32 +1308,36 @@ jobs:
         AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2012R2
         DESTINATION_DIR: heavy-stemcell
-    - task: run-wuts
-      attempts: 3
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping:
-        stemcell: heavy-stemcell
-        windows-utilities-release: windows-utilities
+    - put: azure-lock
       params:
-        AZ: z1
-        BOSH_CA_CERT: ((KOALA_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((KOALA_BOSH_CLIENT_ID))
-        BOSH_CLIENT_SECRET: ((KOALA_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((KOALA_BOSH_DIRECTOR_IP))
-        BOSH_GW_USER: ((KOALA_BOSH_GW_USER))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((KOALA_BOSH_DIRECTOR_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((KOALA_BOSH_GW_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((KOALA_BOSH_GW_USER))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/*.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: large
-        WUTS_BOSH_TIMEOUT: 3h
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+        acquire: true
+    - do:
+      - task: run-wuts
+        attempts: 3
+        file: ci/tasks/run-wuts/task.yml
+        input_mapping:
+          stemcell: heavy-stemcell
+          windows-utilities-release: windows-utilities
+        params:
+          AZ: ((AZURE_HEAVY_AZ))
+          BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
+          BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
+          BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
+          BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+          BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
+          NETWORK: ((AZURE_HEAVY_NETWORK))
+          SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
+          STEMCELL_OS: windows2012R2
+          STEMCELL_PATH: stemcell/*.tgz
+          VM_EXTENSIONS: ""
+          VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+          WUTS_BOSH_TIMEOUT: 3h
+      ensure:
+        put: azure-lock
+        params:
+          release: azure-lock
 
 - name: promote
   serial: true
@@ -1717,12 +1729,15 @@ jobs:
     params:
       ACCOUNT_JSON:
       AZ: z1
-      BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-      BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-      IAAS: azure
-      NETWORK: default
+      BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
+      BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
+      BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
+      BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
+      SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
+      NETWORK: ((AZURE_HEAVY_NETWORK))
       STEMCELL_OS: windows2012R2
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2012R2-go_agent.tgz
       VM_TYPE: default
