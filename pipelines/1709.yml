@@ -186,6 +186,13 @@ resources:
     pool: ((AZURE_LOCK))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: goose-lock
+  type: pool
+  source:
+    branch: master
+    pool: goose
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: mustang-lock
   type: pool
   source:
@@ -472,36 +479,44 @@ jobs:
 - name: test-aws
   serial: true
   plan:
-  - aggregate:
-    - get: bosh-windows-stemcell
-      resource: aws-2016-untested
-      passed: [create-aws]
-    - get: ci
-    - get: stemcell-builder
-      passed: [create-aws]
-    - get: version
-      resource: aws-build-number
-      passed: [create-aws]
-      trigger: true
-    - get: main-version
-      passed: [create-aws]
-    - get: packer-output-ami
-      passed: [create-aws]
-  - task: test-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
-    input_mapping: { stemcell: bosh-windows-stemcell }
-    params:
-      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-      IAAS: aws
-      JUMPBOX_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-      JUMPBOX_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-      JUMPBOX_USER: ((BOSH_CONCOURSE_GW_USER))
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+  - do:
+    - aggregate:
+      - get: bosh-windows-stemcell
+        resource: aws-2016-untested
+        passed: [create-aws]
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-aws]
+      - get: version
+        resource: aws-build-number
+        passed: [create-aws]
+        trigger: true
+      - get: main-version
+        passed: [create-aws]
+      - get: packer-output-ami
+        passed: [create-aws]
+    - put: aws-lock
+      params:
+        acquire: true
+    - do:
+      - task: test-stemcell
+        file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+        attempts: 5
+        input_mapping: { stemcell: bosh-windows-stemcell }
+        params:
+          BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+          BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+          BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+          SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+          STEMCELL_OS: windows2016
+          STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
   - put: aws-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
@@ -541,7 +556,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
         BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
         BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
-        IAAS: aws
         NETWORK: default
         SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
@@ -649,7 +663,6 @@ jobs:
       BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
       BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
       BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
-      IAAS: azure
       NETWORK: ((AZURE_HEAVY_NETWORK))
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/*.tgz
@@ -777,34 +790,45 @@ jobs:
 - name: test-gcp
   serial: true
   plan:
-  - aggregate:
-    - get: bosh-windows-stemcell
-      resource: gcp-2016-untested
-      passed: [create-gcp]
-    - get: ci
-    - get: stemcell-builder
-      passed: [create-gcp]
-    - get: version
-      resource: gcp-build-number
-      passed: [create-gcp]
-      trigger: true
-    - get: windows-stemcell-dependencies
-    - get: main-version
-      passed: [create-gcp]
-  - task: test-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    input_mapping: { stemcell: bosh-windows-stemcell }
-    params:
-      ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-      BOSH_CA_CERT: ((goose_ca_cert))
-      BOSH_CLIENT: ((goose_client))
-      BOSH_CLIENT_SECRET: ((goose_client_secret))
-      BOSH_TARGET: ((goose_environment))
-      IAAS: gcp
-      NETWORK: private
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-      VM_EXTENSIONS: "128GB_ephemeral_disk" # WARN: Cloud Config specific
+  - do:
+    - aggregate:
+      - get: bosh-windows-stemcell
+        resource: gcp-2016-untested
+        passed: [create-gcp]
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-gcp]
+      - get: version
+        resource: gcp-build-number
+        passed: [create-gcp]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [create-gcp]
+    - put: goose-lock
+      params:
+        acquire: true
+    - task: test-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CA_CERT: ((goose_ca_cert))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_TARGET: ((goose_environment))
+        IAAS: gcp
+        NETWORK: private
+        SSH_TUNNEL_IP: ((goose_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
+        SSH_TUNNEL_USER: ((goose_gw_user))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        VM_EXTENSIONS: "128GB_ephemeral_disk" # WARN: Cloud Config specific
+    ensure:
+      put: goose-lock
+      params:
+        release: goose-lock
   - put: gcp-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
@@ -839,7 +863,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
         BOSH_GW_USER: ((mustang_gw_user))
         BOSH_TARGET: ((mustang_environment))
-        IAAS: gcp
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -901,48 +924,59 @@ jobs:
   serial: true
   serial_groups: [vsphere]
   plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [create-vsphere-from-vmx]
-    - get: version
-      resource: vsphere-from-vmx-build-number
-      passed: [create-vsphere-from-vmx]
-      trigger: true
-    - get: main-version
-      passed: [create-vsphere-from-vmx]
-  - task: bosh-windows-stemcell
-    tags: [vsphere-linux-worker]
-    params:
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: version
-      outputs:
-        - name: stemcell
-      run:
-        path: /bin/bash
-        args:
-          - -c
-          - |
-            VERSION=$(cat version/number)
-            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
-            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
-  - task: test-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 1
-    tags: [vsphere-linux-worker]
-    params:
-      VM_TYPE: large # WARN: This is Cloud Config specific!!!
-      BOSH_CLIENT_SECRET: ((regina_client_secret))
-      BOSH_CLIENT: ((regina_client))
-      BOSH_TARGET: ((regina_environment))
-      BOSH_CA_CERT: ((regina_ca_cert))
-      STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
-      STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
+  - do:
+    - aggregate:
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-vsphere-from-vmx]
+      - get: version
+        resource: vsphere-from-vmx-build-number
+        passed: [create-vsphere-from-vmx]
+        trigger: true
+      - get: main-version
+        passed: [create-vsphere-from-vmx]
+    - put: vsphere-director-lock
+      params:
+        acquire: true
+    - task: bosh-windows-stemcell
+      tags: [vsphere-linux-worker]
+      params:
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      config:
+        platform: linux
+        image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+        inputs:
+          - name: version
+        outputs:
+          - name: stemcell
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              VERSION=$(cat version/number)
+              echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
+              aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
+    - task: test-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 1
+      tags: [vsphere-linux-worker]
+      params:
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_TARGET: ((regina_environment))
+        BOSH_CA_CERT: ((regina_ca_cert))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
   - put: vsphere-stemcell-release-candidate
     params:
       file: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
@@ -980,7 +1014,7 @@ jobs:
         BOSH_GW_USER: ((regina_gw_user))
         BOSH_TARGET: ((regina_environment))
         NETWORK: default
-        SSH_TUNNEL_IP: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
         STEMCELL_OS: windows2016
@@ -1072,18 +1106,29 @@ jobs:
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,eu-west-3,sa-east-1"
-  - task: test-aws-stemcell
-    attempts: 10
-    input_mapping: { stemcell: bosh-windows-stemcell }
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+  - put: aws-lock
     params:
-      BOSH_CA_CERT: ((BOSH_CONCOURSE_2_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((BOSH_CONCOURSE_2_BOSH_USER))
-      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_2_BOSH_PASSWORD))
-      BOSH_TARGET: ((BOSH_CONCOURSE_2_DIRECTOR_IP))
-      GINKGO_FOCUS: "is fully updated"
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+      acquire: true
+  - do:
+    - task: test-aws-stemcell
+      attempts: 10
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+        GINKGO_FOCUS: "is fully updated"
+        SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+        STEMCELL_OS: windows2016
+    ensure:
+      put: aws-lock
+      params:
+        release: aws-lock
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
@@ -1131,21 +1176,32 @@ jobs:
     - get: boshio-input
       resource: boshio
   - get: pivnet-public-stemcells
-  - task: test-gcp-stemcell
-    input_mapping: { stemcell: gcp-2016-tested }
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+  - put: goose-lock
     params:
-      ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-      BOSH_CA_CERT: ((goose_ca_cert))
-      BOSH_CLIENT: ((goose_client))
-      BOSH_CLIENT_SECRET: ((goose_client_secret))
-      BOSH_TARGET: ((goose_environment))
-      GINKGO_FOCUS: "is fully updated"
-      IAAS: gcp
-      NETWORK: private
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-      VM_EXTENSIONS: "128GB_ephemeral_disk"
+      acquire: true
+  - do:
+    - task: test-gcp-stemcell
+      input_mapping: { stemcell: gcp-2016-tested }
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
+        BOSH_CA_CERT: ((goose_ca_cert))
+        BOSH_CLIENT: ((goose_client))
+        BOSH_CLIENT_SECRET: ((goose_client_secret))
+        BOSH_TARGET: ((goose_environment))
+        GINKGO_FOCUS: "is fully updated"
+        IAAS: gcp
+        NETWORK: private
+        SSH_TUNNEL_IP: ((goose_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
+        SSH_TUNNEL_USER: ((goose_gw_user))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        VM_EXTENSIONS: "128GB_ephemeral_disk"
+    ensure:
+      put: goose-lock
+      params:
+        release: goose-lock
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-2016-tested }
     file: ci/tasks/set-stemcell-version/task.yml
@@ -1192,19 +1248,30 @@ jobs:
       resource: main-version
       passed: [promote]
     - get: pivnet-internal-stemcells
-  - task: test-vsphere-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    input_mapping: { stemcell: vsphere-stemcell-release-candidate }
-    tags: [vsphere-linux-worker]
+  - put: vsphere-director-lock
     params:
-      VM_TYPE: large # WARN: This is Cloud Config specific!!!
-      BOSH_CLIENT_SECRET: ((regina_client_secret))
-      BOSH_CLIENT: ((regina_client))
-      BOSH_TARGET: ((regina_environment))
-      BOSH_CA_CERT: ((regina_ca_cert))
-      GINKGO_FOCUS: "is fully updated"
-      STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
-      STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
+      acquire: true
+  - do:
+    - task: test-vsphere-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: vsphere-stemcell-release-candidate }
+      tags: [vsphere-linux-worker]
+      params:
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_TARGET: ((regina_environment))
+        GINKGO_FOCUS: "is fully updated"
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
   - task: vsphere-set-stemcell-filename-version
     tags: [vsphere-linux-worker]
     input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
