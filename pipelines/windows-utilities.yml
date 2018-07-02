@@ -278,9 +278,6 @@ jobs:
 - name: run-wuts-azure-2012R2
   serial: true
   plan:
-  - put: azure-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
       - get: azstemcell
@@ -304,29 +301,33 @@ jobs:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2012R2
         DESTINATION_DIR: heavy-stemcell
-    - task: run-wuts
-      attempts: 3
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: heavy-stemcell }
+    - put: azure-lock
       params:
-        AZ: z1
-        BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-        BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-        BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/*.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: large
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+        acquire: true
+    - do:
+      - task: run-wuts
+        attempts: 3
+        file: ci/tasks/run-wuts/task.yml
+        input_mapping: { stemcell: heavy-stemcell }
+        params:
+          AZ: z1
+          BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
+          BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
+          BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
+          BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
+          NETWORK: default
+          SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
+          STEMCELL_OS: windows2012R2
+          STEMCELL_PATH: stemcell/*.tgz
+          VM_EXTENSIONS: ""
+          VM_TYPE: large
+      ensure:
+        put: azure-lock
+        params:
+          release: azure-lock
 
 - name: run-wuts-gcp-1709
   serial: true
@@ -448,9 +449,6 @@ jobs:
 - name: run-wuts-azure-1709
   serial: true
   plan:
-  - put: azure-lock
-    params:
-      acquire: true
   - do:
     - aggregate:
       - get: azstemcell
@@ -474,29 +472,33 @@ jobs:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2016
         DESTINATION_DIR: heavy-stemcell
-    - task: run-wuts
-      attempts: 3
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: heavy-stemcell }
+    - put: azure-lock
       params:
-        AZ: z1
-        BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-        BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-        BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/*.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: default
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+        acquire: true
+    - do:
+      - task: run-wuts
+        attempts: 3
+        file: ci/tasks/run-wuts/task.yml
+        input_mapping: { stemcell: heavy-stemcell }
+        params:
+          AZ: z1
+          BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
+          BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
+          BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
+          BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
+          NETWORK: default
+          SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
+          STEMCELL_OS: windows2016
+          STEMCELL_PATH: stemcell/*.tgz
+          VM_EXTENSIONS: ""
+          VM_TYPE: default
+      ensure:
+        put: azure-lock
+        params:
+          release: azure-lock
 
 - name: release-final
   serial: true
