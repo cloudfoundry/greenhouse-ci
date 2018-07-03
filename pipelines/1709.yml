@@ -836,7 +836,7 @@ jobs:
         SSH_TUNNEL_USER: ((goose_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        VM_EXTENSIONS: "128GB_ephemeral_disk" # WARN: Cloud Config specific
+        VM_EXTENSIONS: "500GB_ephemeral_disk" # WARN: Cloud Config specific
     ensure:
       put: goose-lock
       params:
@@ -1209,7 +1209,7 @@ jobs:
         SSH_TUNNEL_USER: ((goose_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        VM_EXTENSIONS: "128GB_ephemeral_disk"
+        VM_EXTENSIONS: "500GB_ephemeral_disk"
     ensure:
       put: goose-lock
       params:
