@@ -50,6 +50,8 @@
   path: /resources/name=pivnet-internal-stemcells
 - type: remove
   path: /resources/name=midnight
+- type: remove
+  path: /resources/name=azure-lock
 
 # JOBS
 
@@ -80,6 +82,12 @@
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-vmx/plan/1/do/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
+
+# configure azure for dev
+- type: remove
+  path: /jobs/name=wuts-azure/plan/3/ensure
+- type: remove
+  path: /jobs/name=wuts-azure/plan/put=azure-lock
 
 # remove unnecessary jobs
 - type: remove
