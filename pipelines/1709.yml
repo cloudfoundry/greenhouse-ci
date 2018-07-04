@@ -183,7 +183,7 @@ resources:
   type: pool
   source:
     branch: master
-    pool: ((AZURE_LOCK))
+    pool: azure-wuts-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: goose-lock
@@ -654,32 +654,24 @@ jobs:
       AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
       STEMCELL_OS: ((AZURE_OS_VERSION))
       DESTINATION_DIR: heavy-stemcell
-  - put: azure-lock
+  - task: test-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: {stemcell: heavy-stemcell}
     params:
-      acquire: true
-  - do:
-    - task: test-stemcell
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      input_mapping: {stemcell: heavy-stemcell}
-      params:
-        AZ: ((AZURE_HEAVY_AZ))
-        BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
-        BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
-        BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
-        BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
-        SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
-        NETWORK: ((AZURE_HEAVY_NETWORK))
-        STEMCELL_OS: ((AZURE_OS_VERSION))
-        STEMCELL_PATH: stemcell/*.tgz
-        VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
-        BWATS_BOSH_TIMEOUT: 3h
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+      AZ: ((AZURE_HEAVY_AZ))
+      BOSH_CA_CERT: ((AZURE_BWATS_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AZURE_BWATS_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((AZURE_BWATS_BOSH_CLIENT_SECRET))
+      BOSH_GW_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
+      BOSH_TARGET: ((AZURE_BWATS_BOSH_DIRECTOR_IP))
+      BWATS_BOSH_TIMEOUT: 3h
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      SSH_TUNNEL_IP: ((AZURE_BWATS_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_BWATS_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/*.tgz
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: upload-stemcell-to-acceptance
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -721,26 +713,34 @@ jobs:
       AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
       STEMCELL_OS: windows2016
       DESTINATION_DIR: heavy-stemcell
-  - task: run-wuts
-    attempts: 3
-    file: ci/tasks/run-wuts/task.yml
-    input_mapping: { stemcell: heavy-stemcell }
+  - put: azure-lock
     params:
-      AZ: ((AZURE_HEAVY_AZ))
-      BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
-      BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-      BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
-      NETWORK: ((AZURE_HEAVY_NETWORK))
-      SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
-      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
-      SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-      STEMCELL_OS: ((AZURE_OS_VERSION))
-      STEMCELL_PATH: stemcell/*.tgz
-      VM_EXTENSIONS: ""
-      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
-      WUTS_BOSH_TIMEOUT: 3h
+      acquire: true
+  - do:
+    - task: run-wuts
+      attempts: 3
+      file: ci/tasks/run-wuts/task.yml
+      input_mapping: { stemcell: heavy-stemcell }
+      params:
+        AZ: ((AZURE_HEAVY_AZ))
+        BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
+        BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+        BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+        BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
+        NETWORK: ((AZURE_HEAVY_NETWORK))
+        SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        STEMCELL_PATH: stemcell/*.tgz
+        VM_EXTENSIONS: ""
+        VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+        WUTS_BOSH_TIMEOUT: 3h
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
 
 - name: create-gcp
   serial: true

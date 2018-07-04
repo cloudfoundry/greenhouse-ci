@@ -142,11 +142,18 @@ resources:
     pool: stemcells-aws
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: azure-lock
+- name: azure-2012R2-lock
   type: pool
   source:
     branch: master
-    pool: stemcells-azure
+    pool: azure-wuts-2012R2-lock
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: azure-1709-lock
+  type: pool
+  source:
+    branch: master
+    pool: azure-wuts-1709-lock
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
@@ -301,7 +308,7 @@ jobs:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2012R2
         DESTINATION_DIR: heavy-stemcell
-    - put: azure-lock
+    - put: azure-2012R2-lock
       params:
         acquire: true
     - do:
@@ -311,23 +318,24 @@ jobs:
         input_mapping: { stemcell: heavy-stemcell }
         params:
           AZ: z1
-          BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-          BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-          BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-          BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-          BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
+          BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
+          BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+          BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+          BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           NETWORK: default
-          SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
-          SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
-          SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
+          SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
           STEMCELL_OS: windows2012R2
           STEMCELL_PATH: stemcell/*.tgz
           VM_EXTENSIONS: ""
           VM_TYPE: large
+          WUTS_BOSH_TIMEOUT: 3h
       ensure:
-        put: azure-lock
+        put: azure-2012R2-lock
         params:
-          release: azure-lock
+          release: azure-2012R2-lock
 
 - name: run-wuts-gcp-1709
   serial: true
@@ -472,7 +480,7 @@ jobs:
         AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
         STEMCELL_OS: windows2016
         DESTINATION_DIR: heavy-stemcell
-    - put: azure-lock
+    - put: azure-1709-lock
       params:
         acquire: true
     - do:
@@ -482,23 +490,24 @@ jobs:
         input_mapping: { stemcell: heavy-stemcell }
         params:
           AZ: z1
-          BOSH_CA_CERT: ((DINGO_BOSH_TARGET_CERT))
-          BOSH_CLIENT: ((DINGO_BOSH_CLIENT_ID))
-          BOSH_CLIENT_SECRET: ((DINGO_BOSH_CLIENT_SECRET))
-          BOSH_TARGET: ((DINGO_BOSH_DIRECTOR_IP))
-          BOSH_GW_USER: ((DINGO_SSH_TUNNEL_USER))
+          BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
+          BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+          BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+          BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           NETWORK: default
-          SSH_TUNNEL_IP: ((DINGO_SSH_TUNNEL_IP))
-          SSH_TUNNEL_PRIVATE_KEY: ((DINGO_SSH_TUNNEL_PRIVATE_KEY))
-          SSH_TUNNEL_USER: ((DINGO_SSH_TUNNEL_USER))
+          SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
           STEMCELL_OS: windows2016
           STEMCELL_PATH: stemcell/*.tgz
           VM_EXTENSIONS: ""
           VM_TYPE: default
+          WUTS_BOSH_TIMEOUT: 3h
       ensure:
-        put: azure-lock
+        put: azure-1709-lock
         params:
-          release: azure-lock
+          release: azure-1709-lock
 
 - name: release-final
   serial: true
