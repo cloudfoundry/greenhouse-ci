@@ -696,60 +696,51 @@ jobs:
 - name: wuts-azure
   serial: true
   plan:
-  - do:
-    - aggregate:
-      - get: ci
-      - get: azstemcell
-      - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
-      - get: bosh-windows-stemcell
-        resource: azure-tested
-        passed: [test-azure]
-        trigger: true
-      - get: azure-base-vhd-uri
-        passed: [test-azure]
-      - get: azure-build-number
-        passed: [test-azure]
-      - get: stemcell-builder
-        passed: [test-azure]
-      - get: main-version
-        passed: [test-azure]
-    - task: download-heavy
-      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-      tags: [azure-linux-worker]
-      params:
-        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
-        STEMCELL_OS: windows2016
-        DESTINATION_DIR: heavy-stemcell
-    - put: azure-lock
-      params:
-        acquire: true
-    - do:
-      - task: run-wuts
-        attempts: 3
-        file: ci/tasks/run-wuts/task.yml
-        input_mapping: { stemcell: heavy-stemcell }
-        params:
-          AZ: z1
-          BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
-          BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
-          BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
-          BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
-          BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
-          NETWORK: default
-          SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
-          SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
-          SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
-          STEMCELL_OS: windows2016
-          STEMCELL_PATH: stemcell/*.tgz
-          VM_EXTENSIONS: ""
-          VM_TYPE: default
-          WUTS_BOSH_TIMEOUT: 3h
-      ensure:
-        put: azure-lock
-        params:
-          release: azure-lock
+  - aggregate:
+    - get: ci
+    - get: azstemcell
+    - get: windows-utilities-release
+    - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      resource: windows-utilities-tests
+    - get: bosh-windows-stemcell
+      resource: azure-tested
+      passed: [test-azure]
+      trigger: true
+    - get: azure-base-vhd-uri
+      passed: [test-azure]
+    - get: azure-build-number
+      passed: [test-azure]
+    - get: stemcell-builder
+      passed: [test-azure]
+    - get: main-version
+      passed: [test-azure]
+  - task: download-heavy
+    file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+    tags: [azure-linux-worker]
+    params:
+      AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+      STEMCELL_OS: windows2016
+      DESTINATION_DIR: heavy-stemcell
+  - task: run-wuts
+    attempts: 3
+    file: ci/tasks/run-wuts/task.yml
+    input_mapping: { stemcell: heavy-stemcell }
+    params:
+      AZ: ((AZURE_HEAVY_AZ))
+      BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+      BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+      BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/*.tgz
+      VM_EXTENSIONS: ""
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      WUTS_BOSH_TIMEOUT: 3h
 
 - name: create-gcp
   serial: true
@@ -1339,31 +1330,23 @@ jobs:
     - get: boshio-input
       resource: boshio
   - get: pivnet-public-stemcells
-  - put: azure-lock
+  - task: test-azure-stemcell
+    input_mapping: { stemcell: azure-tested }
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     params:
-      acquire: true
-  - do:
-    - task: test-azure-stemcell
-      input_mapping: { stemcell: azure-tested }
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      params:
-        AZ: ((AZURE_HEAVY_AZ))
-        BOSH_CA_CERT: ((AZURE_HEAVY_BOSH_CA_CERT))
-        BOSH_CLIENT: ((AZURE_HEAVY_BOSH_CLIENT))
-        BOSH_CLIENT_SECRET: ((AZURE_HEAVY_BOSH_CLIENT_SECRET))
-        BOSH_TARGET: ((AZURE_HEAVY_BOSH_TARGET))
-        BOSH_GW_USER: ((AZURE_HEAVY_GW_USER))
-        SSH_TUNNEL_IP: ((AZURE_HEAVY_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((AZURE_HEAVY_SSH_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((AZURE_HEAVY_GW_USER))
-        NETWORK: ((AZURE_HEAVY_NETWORK))
-        STEMCELL_OS: ((AZURE_OS_VERSION))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
-        VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
-    ensure:
-      put: azure-lock
-      params:
-        release: azure-lock
+      AZ: ((AZURE_HEAVY_AZ))
+      BOSH_CA_CERT: ((AZURE_PROMOTE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AZURE_PROMOTE_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((AZURE_PROMOTE_BOSH_CLIENT_SECRET))
+      BOSH_GW_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
+      BOSH_TARGET: ((AZURE_PROMOTE_BOSH_DIRECTOR_IP))
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      SSH_TUNNEL_IP: ((AZURE_PROMOTE_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_PROMOTE_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: azure-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: azure-tested }
     output_mapping: { final-stemcell: azure-stemcell-final }
