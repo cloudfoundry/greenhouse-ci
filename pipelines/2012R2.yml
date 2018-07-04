@@ -1435,29 +1435,21 @@ jobs:
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,eu-west-3,sa-east-1"
-  - put: aws-lock
+  - task: test-aws-stemcell
+    input_mapping: { stemcell: bosh-windows-stemcell }
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
     params:
-      acquire: true
-  - do:
-    - task: test-aws-stemcell
-      input_mapping: { stemcell: bosh-windows-stemcell }
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
-      params:
-        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        GINKGO_FOCUS: "is fully updated"
-        SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
-    ensure:
-      put: aws-lock
-      params:
-        release: aws-lock
+      BOSH_CA_CERT: ((AWS_PROMOTE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AWS_PROMOTE_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((AWS_PROMOTE_BOSH_PASSWORD))
+      BOSH_TARGET: ((AWS_PROMOTE_DIRECTOR_IP))
+      GINKGO_FOCUS: "is fully updated"
+      SSH_TUNNEL_IP: ((AWS_PROMOTE_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AWS_PROMOTE_SSH_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AWS_PROMOTE_SSH_TUNNEL_USER))
+      STEMCELL_OS: windows2012R2
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
