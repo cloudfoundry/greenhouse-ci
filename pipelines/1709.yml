@@ -176,7 +176,7 @@ resources:
   type: pool
   source:
     branch: master
-    pool: ((AWS_LOCK))
+    pool: aws-wuts-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
@@ -486,44 +486,35 @@ jobs:
 - name: test-aws
   serial: true
   plan:
-  - do:
-    - aggregate:
-      - get: bosh-windows-stemcell
-        resource: aws-2016-untested
-        passed: [create-aws]
-      - get: ci
-      - get: stemcell-builder
-        passed: [create-aws]
-      - get: version
-        resource: aws-build-number
-        passed: [create-aws]
-        trigger: true
-      - get: main-version
-        passed: [create-aws]
-      - get: packer-output-ami
-        passed: [create-aws]
-    - put: aws-lock
-      params:
-        acquire: true
-    - do:
-      - task: test-stemcell
-        file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-        attempts: 5
-        input_mapping: { stemcell: bosh-windows-stemcell }
-        params:
-          BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-          BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-          BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-          BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-          SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-          SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-          SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
-          STEMCELL_OS: windows2016
-          STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
-    ensure:
-      put: aws-lock
-      params:
-        release: aws-lock
+  - aggregate:
+    - get: bosh-windows-stemcell
+      resource: aws-2016-untested
+      passed: [create-aws]
+    - get: ci
+    - get: stemcell-builder
+      passed: [create-aws]
+    - get: version
+      resource: aws-build-number
+      passed: [create-aws]
+      trigger: true
+    - get: main-version
+      passed: [create-aws]
+    - get: packer-output-ami
+      passed: [create-aws]
+  - task: test-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    attempts: 5
+    input_mapping: { stemcell: bosh-windows-stemcell }
+    params:
+      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
+      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+      STEMCELL_OS: windows2016
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
   - put: aws-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
@@ -558,15 +549,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-        BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
-        BOSH_GW_USER: ((BOSH_CONCOURSE_GW_USER))
+        BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
+        BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
+        BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+        BOSH_TARGET: ((AWS_WUTS_DIRECTOR_IP))
         NETWORK: default
-        SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+        SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
