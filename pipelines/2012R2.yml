@@ -204,6 +204,13 @@ resources:
     pool: azure-wuts-2012R2
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: azure-download-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((AZURE_LOCK))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: goose-lock
   type: pool
   source:
@@ -1231,13 +1238,21 @@ jobs:
     - get: version
       resource: azure-build-number
       passed: [create-azure-stemcell]
-  - task: download-heavy
-    file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-    tags: [azure-linux-worker]
+  - put: azure-download-lock
     params:
-      AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      STEMCELL_OS: ((AZURE_OS_VERSION))
-      DESTINATION_DIR: heavy-stemcell
+      acquire: true
+  - do:
+    - task: download-heavy
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      tags: [azure-linux-worker]
+      params:
+        AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        DESTINATION_DIR: heavy-stemcell
+    ensure:
+      put: azure-download-lock
+      params:
+        release: azure-download-lock
   - task: test-stemcell
     attempts: 3
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
@@ -1295,13 +1310,21 @@ jobs:
     - get: version
       resource: main-version
       passed: [test-azure-stemcell]
-  - task: download-heavy
-    file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-    tags: [azure-linux-worker]
+  - put: azure-download-lock
     params:
-      AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      STEMCELL_OS: windows2012R2
-      DESTINATION_DIR: heavy-stemcell
+      acquire: true
+  - do:
+    - task: download-heavy
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      tags: [azure-linux-worker]
+      params:
+        AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        DESTINATION_DIR: heavy-stemcell
+    ensure:
+      put: azure-download-lock
+      params:
+        release: azure-download-lock
   - put: azure-lock
     params:
       acquire: true

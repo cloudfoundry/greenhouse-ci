@@ -85,7 +85,7 @@
 
 # configure azure for dev
 - type: remove
-  path: /jobs/name=wuts-azure/plan/3/ensure
+  path: /jobs/name=wuts-azure/plan/4/ensure
 - type: remove
   path: /jobs/name=wuts-azure/plan/put=azure-lock
 

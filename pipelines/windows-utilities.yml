@@ -156,6 +156,13 @@ resources:
     pool: azure-wuts-1709-lock
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: azure-download-lock
+  type: pool
+  source:
+    branch: master
+    pool: stemcells-azure
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 - name: windows-utilities-release-github
   type: github-release
@@ -298,16 +305,24 @@ jobs:
       - get: bosh-windows-stemcell
         resource: azure-2012R2-stemcell-release-candidate
       - get: azure-2012R2-stemcell-version
-    - task: download-heavy
-      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-      input_mapping:
-        azure-build-number: azure-2012R2-stemcell-version
-        azure-base-vhd-uri: azure-2012R2-base-vhd-uri
-      tags: [azure-linux-worker]
+    - put: azure-download-lock
       params:
-        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
-        STEMCELL_OS: windows2012R2
-        DESTINATION_DIR: heavy-stemcell
+        acquire: true
+    - do:
+      - task: download-heavy
+        file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+        input_mapping:
+          azure-build-number: azure-2012R2-stemcell-version
+          azure-base-vhd-uri: azure-2012R2-base-vhd-uri
+        tags: [azure-linux-worker]
+        params:
+          AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+          STEMCELL_OS: windows2012R2
+          DESTINATION_DIR: heavy-stemcell
+      ensure:
+        put: azure-download-lock
+        params:
+          release: azure-download-lock
     - put: azure-2012R2-lock
       params:
         acquire: true
@@ -470,16 +485,24 @@ jobs:
       - get: bosh-windows-stemcell
         resource: azure-1709-stemcell-release-candidate
       - get: azure-1709-stemcell-version
-    - task: download-heavy
-      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
-      input_mapping:
-        azure-build-number: azure-1709-stemcell-version
-        azure-base-vhd-uri: azure-1709-base-vhd-uri
-      tags: [azure-linux-worker]
+    - put: azure-download-lock
       params:
-        AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
-        STEMCELL_OS: windows2016
-        DESTINATION_DIR: heavy-stemcell
+        acquire: true
+    - do:
+      - task: download-heavy
+        file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+        input_mapping:
+          azure-build-number: azure-1709-stemcell-version
+          azure-base-vhd-uri: azure-1709-base-vhd-uri
+        tags: [azure-linux-worker]
+        params:
+          AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
+          STEMCELL_OS: windows2016
+          DESTINATION_DIR: heavy-stemcell
+      ensure:
+        put: azure-download-lock
+        params:
+          release: azure-download-lock
     - put: azure-1709-lock
       params:
         acquire: true
