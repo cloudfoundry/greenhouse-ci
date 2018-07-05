@@ -522,27 +522,27 @@ jobs:
 - name: wuts-aws
   serial: true
   plan:
+  - aggregate:
+    - get: ci
+    - get: windows-utilities-release
+    - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      resource: windows-utilities-tests
+    - get: bosh-windows-stemcell
+      resource: aws-2016-tested
+      passed: [test-aws]
+      trigger: true
+    - get: stemcell-builder
+      passed: [test-aws]
+    - get: main-version
+      passed: [test-aws]
+    - get: packer-output-ami
+      passed: [test-aws]
+    - get: aws-build-number
+      passed: [test-aws]
   - put: aws-lock
     params:
       acquire: true
   - do:
-    - aggregate:
-      - get: ci
-      - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
-      - get: bosh-windows-stemcell
-        resource: aws-2016-tested
-        passed: [test-aws]
-        trigger: true
-      - get: stemcell-builder
-        passed: [test-aws]
-      - get: main-version
-        passed: [test-aws]
-      - get: packer-output-ami
-        passed: [test-aws]
-      - get: aws-build-number
-        passed: [test-aws]
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       attempts: 5

@@ -36,6 +36,8 @@
 - type: remove
   path: /resources/name=midnight
 - type: remove
+  path: /resources/name=aws-lock
+- type: remove
   path: /resources/name=azure-lock
 
 # JOBS
@@ -70,6 +72,12 @@
   value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
 - type: remove
   path: /jobs/name=create-gcp/plan/task=publish-stemcell
+
+# configure aws for dev
+- type: remove
+  path: /jobs/name=wuts-aws/plan/2/ensure
+- type: remove
+  path: /jobs/name=wuts-aws/plan/put=aws-lock
 
 # configure azure for dev
 - type: remove
