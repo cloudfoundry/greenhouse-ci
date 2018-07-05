@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 
+set +x
+source ../common/setup_bosh_proxy.sh
+
+setup_bosh_proxy ${SSH_TUNNEL_USER} ${SSH_TUNNEL_IP} ${SSH_TUNNEL_PRIVATE_KEY}
+
 set -ex
 
 export STEMCELL_PATH=$(readlink -f ${STEMCELL_PATH})
-
-set +x
-export SSH_TUNNEL_PRIVATE_KEY_FILE="/tmp/bosh_jumpbox_private_key.key"
-prefix_pattern="-----BEGIN\|-----END\|RSA\|PRIVATE\|PUBLIC"
-echo ${SSH_TUNNEL_PRIVATE_KEY} \
-    | sed -e "s/\($prefix_pattern\) /\1\t/g" \
-    | sed -e "s/ /\n/g" \
-    | sed -e "s/\($prefix_pattern\)\t/\1 /g" > ${SSH_TUNNEL_PRIVATE_KEY_FILE}
-chmod 600 ${SSH_TUNNEL_PRIVATE_KEY_FILE}
-export BOSH_ALL_PROXY="ssh+socks5://${SSH_TUNNEL_USER}@${SSH_TUNNEL_IP}:22?private-key=${SSH_TUNNEL_PRIVATE_KEY_FILE}"
-set -x
 
 cd stemcell-builder
 bundle install --without test

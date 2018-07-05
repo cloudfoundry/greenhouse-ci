@@ -681,6 +681,9 @@ jobs:
       BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
       BOSH_CLIENT_SECRET: ((PM_ACCEPTANCE_BOSH_CLIENT_SECRET))
       BOSH_ENVIRONMENT: ((PM_ACCEPTANCE_BOSH_DIRECTOR))
+      SSH_TUNNEL_IP: ((PM_ACCEPTANCE_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((PM_ACCEPTANCE_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((PM_ACCEPTANCE_SSH_TUNNEL_USER))
   - put: azure-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
