@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source  ../common/setup_bosh_proxy.sh
+source  ./ci/tasks/common/setup_bosh_proxy.sh
 
 setup_bosh_proxy $SSH_TUNNEL_USER $SSH_TUNNEL_IP $SSH_TUNNEL_PRIVATE_KEY
 
