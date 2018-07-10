@@ -4,6 +4,8 @@ groups:
   - build
   - build-stembuild-windows
   - build-stembuild-linux
+  - build-stempatch-windows
+  - build-stempatch-linux
   - bump-stemcell-builder-submodules
   - create-vsphere-add-updates
   - post-draft-release
@@ -11,10 +13,13 @@ groups:
   - build-event-log-release
 - name: stembuild
   jobs:
-  - build
   - build-stembuild-windows
   - build-stembuild-linux
   - post-draft-release
+- name: stempatch
+  jobs:
+  - build-stempatch-windows
+  - build-stempatch-linux
 - name: stemcell-builder
   jobs:
   - bump-stemcell-builder-submodules
@@ -116,13 +121,13 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
-# - name: stempatch-untested-windows
-#   type: s3
-#   source:
-#     bucket: ((ROOT_BUCKET))
-#     regexp: stempatch/untested/stempatch-windows-x86_64-(.*).exe
-#     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-#     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stempatch-untested-windows
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stempatch/untested/stempatch-windows-x86_64-(.*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 - name: stembuild-untested-linux
   type: s3
@@ -174,7 +179,6 @@ resources:
     key: stempatch/version
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: "0.1.0"
 
 - name: updated-vmx-version
   type: semver
@@ -245,23 +249,23 @@ jobs:
     params:
       file: output/stembuild-linux-x86_64-*
 
-# - name: build-stempatch-windows
-#   serial: true
-#   plan:
-#   - aggregate:
-#     - get: librsync
-#     - get: stembuild
-#       passed: [ build ]
-#     - get: ci
-#     - get: stempatch-version
-#       passed: [ build ]
-#       trigger: true
-#   - task: build
-#     tags: [vsphere-stembuild-worker]
-#     file: ci/tasks/build-stempatch-windows/task.yml
-#   - put: stempatch-untested-windows
-#     params:
-#       file: output/stempatch-windows-x86_64-*.exe
+- name: build-stempatch-windows
+  serial: true
+  plan:
+  - aggregate:
+    - get: librsync
+    - get: stembuild
+      passed: [ build ]
+    - get: ci
+    - get: stempatch-version
+      passed: [ build ]
+      trigger: true
+  - task: build
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stempatch-windows/task.yml
+  - put: stempatch-untested-windows
+    params:
+      file: output/stempatch-windows-x86_64-*.exe
 
 - name: build-stempatch-linux
   serial: true

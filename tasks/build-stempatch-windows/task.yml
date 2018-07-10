@@ -1,0 +1,17 @@
+---
+platform: windows
+
+inputs:
+- name: librsync
+- name: stembuild
+- name: ci
+- name: stempatch-version
+
+outputs:
+- name: output
+
+run:
+  path: powershell
+  args:
+  - "-File"
+  - ci/tasks/build-stempatch-windows/run.ps1
