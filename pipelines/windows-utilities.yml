@@ -121,11 +121,18 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 # locks
-- name: mustang-lock
+- name: gcp-2012R2-lock
   type: pool
   source:
     branch: master
-    pool: mustang
+    pool: gcp-wuts-2012R2
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: gcp-1709-lock
+  type: pool
+  source:
+    branch: master
+    pool: gcp-wuts-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
@@ -182,7 +189,7 @@ jobs:
 - name: run-wuts-gcp-2012R2
   serial: true
   plan:
-  - put: mustang-lock
+  - put: gcp-2012R2-lock
     params:
       acquire: true
   - do:
@@ -214,9 +221,9 @@ jobs:
         VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
-      put: mustang-lock
+      put: gcp-2012R2-lock
       params:
-        release: mustang-lock
+        release: gcp-2012R2-lock
 - name: run-wuts-vsphere-2012R2
   serial: true
   plan:
@@ -362,7 +369,7 @@ jobs:
 - name: run-wuts-gcp-1709
   serial: true
   plan:
-  - put: mustang-lock
+  - put: gcp-1709-lock
     params:
       acquire: true
   - do:
@@ -394,9 +401,9 @@ jobs:
         VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
-      put: mustang-lock
+      put: gcp-1709-lock
       params:
-        release: mustang-lock
+        release: gcp-1709-lock
 - name: run-wuts-vsphere-1709
   serial: true
   plan:

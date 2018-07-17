@@ -203,7 +203,7 @@ resources:
   type: pool
   source:
     branch: master
-    pool: mustang
+    pool: gcp-wuts-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
