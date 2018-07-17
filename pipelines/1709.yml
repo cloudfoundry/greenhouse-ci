@@ -199,7 +199,7 @@ resources:
     pool: goose
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: mustang-lock
+- name: gcp-lock
   type: pool
   source:
     branch: master
@@ -855,7 +855,7 @@ jobs:
 - name: wuts-gcp
   serial: true
   plan:
-  - put: mustang-lock
+  - put: gcp-lock
     params:
       acquire: true
   - do:
@@ -891,9 +891,9 @@ jobs:
         VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
-      put: mustang-lock
+      put: gcp-lock
       params:
-        release: mustang-lock
+        release: gcp-lock
 
 - name: create-vsphere-from-vmx
   serial: true
