@@ -54,6 +54,8 @@
   path: /resources/name=aws-lock
 - type: remove
   path: /resources/name=azure-lock
+- type: remove
+  path: /resources/name=gcp-lock
 
 # JOBS
 
@@ -80,6 +82,10 @@
   value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 - type: remove
   path: /jobs/name=create-gcp-stemcell/plan/task=publish-stemcell
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/2/ensure
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/put=gcp-lock
 
 - type: replace
   path: /jobs/name=create-vsphere-stemcell-from-vmx/plan/1/do/task=create-stemcell/tags

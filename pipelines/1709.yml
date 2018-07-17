@@ -855,23 +855,23 @@ jobs:
 - name: wuts-gcp
   serial: true
   plan:
+  - aggregate:
+    - get: ci
+    - get: windows-utilities-release
+    - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      resource: windows-utilities-tests
+    - get: bosh-windows-stemcell
+      resource: gcp-2016-tested
+      passed: [test-gcp]
+      trigger: true
+    - get: stemcell-builder
+      passed: [test-gcp]
+    - get: main-version
+      passed: [test-gcp]
   - put: gcp-lock
     params:
       acquire: true
   - do:
-    - aggregate:
-      - get: ci
-      - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
-      - get: bosh-windows-stemcell
-        resource: gcp-2016-tested
-        passed: [test-gcp]
-        trigger: true
-      - get: stemcell-builder
-        passed: [test-gcp]
-      - get: main-version
-        passed: [test-gcp]
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }

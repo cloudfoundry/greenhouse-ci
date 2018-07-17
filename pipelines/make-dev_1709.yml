@@ -39,6 +39,8 @@
   path: /resources/name=aws-lock
 - type: remove
   path: /resources/name=azure-lock
+- type: remove
+  path: /resources/name=gcp-lock
 
 # JOBS
 # remove unnecessary jobs
@@ -72,6 +74,10 @@
   value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
 - type: remove
   path: /jobs/name=create-gcp/plan/task=publish-stemcell
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/2/ensure
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/put=gcp-lock
 
 # configure aws for dev
 - type: remove
