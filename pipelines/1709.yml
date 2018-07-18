@@ -809,24 +809,24 @@ jobs:
 - name: test-gcp
   serial: true
   plan:
+  - aggregate:
+    - get: bosh-windows-stemcell
+      resource: gcp-2016-untested
+      passed: [create-gcp]
+    - get: ci
+    - get: stemcell-builder
+      passed: [create-gcp]
+    - get: version
+      resource: gcp-build-number
+      passed: [create-gcp]
+      trigger: true
+    - get: windows-stemcell-dependencies
+    - get: main-version
+      passed: [create-gcp]
+  - put: goose-lock
+    params:
+      acquire: true
   - do:
-    - aggregate:
-      - get: bosh-windows-stemcell
-        resource: gcp-2016-untested
-        passed: [create-gcp]
-      - get: ci
-      - get: stemcell-builder
-        passed: [create-gcp]
-      - get: version
-        resource: gcp-build-number
-        passed: [create-gcp]
-        trigger: true
-      - get: windows-stemcell-dependencies
-      - get: main-version
-        passed: [create-gcp]
-    - put: goose-lock
-      params:
-        acquire: true
     - task: test-stemcell
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }

@@ -41,6 +41,8 @@
   path: /resources/name=azure-lock
 - type: remove
   path: /resources/name=gcp-lock
+- type: remove
+  path: /resources/name=goose-lock
 
 # JOBS
 # remove unnecessary jobs
@@ -78,6 +80,10 @@
   path: /jobs/name=wuts-gcp/plan/2/ensure
 - type: remove
   path: /jobs/name=wuts-gcp/plan/put=gcp-lock
+- type: remove
+  path: /jobs/name=test-gcp/plan/2/ensure
+- type: remove
+  path: /jobs/name=test-gcp/plan/put=goose-lock
 
 # configure aws for dev
 - type: remove
