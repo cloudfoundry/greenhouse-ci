@@ -8,6 +8,7 @@ setup_bosh_proxy "${SSH_TUNNEL_USER}" "${SSH_TUNNEL_IP}" "${SSH_TUNNEL_PRIVATE_K
 set -ex
 
 export STEMCELL_PATH=$(readlink -f ${STEMCELL_PATH})
+export BOSH_TARGET="${BOSH_ENVIRONMENT}"
 
 cd stemcell-builder
 bundle install --without test
