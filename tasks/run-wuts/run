@@ -13,31 +13,31 @@ export GOPATH=$(pwd)
 pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
-  cat > $CONFIG_JSON <<- EOL
+  cat > "${CONFIG_JSON}" <<- EOL
   {
     "bosh": {
       "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
-      "client": "$BOSH_CLIENT",
-      "client_secret": "$BOSH_CLIENT_SECRET",
-      "target": "$BOSH_TARGET",
-      "ssh_tunnel_ip": "$SSH_TUNNEL_IP",
-      "gw_user": "$SSH_TUNNEL_USER",
+      "client": "${BOSH_CLIENT}",
+      "client_secret": "${BOSH_CLIENT_SECRET}",
+      "target": "${BOSH_TARGET}",
+      "ssh_tunnel_ip": "${SSH_TUNNEL_IP}",
+      "gw_user": "${SSH_TUNNEL_USER}",
       "gw_private_key": "$(ruby -e "puts ENV['SSH_TUNNEL_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
-    "stemcell_path": "$GOPATH/$STEMCELL_PATH",
+    "stemcell_path": "${GOPATH}/${STEMCELL_PATH}",
     "windows_utilities_path": "../../../../windows-utilities-release",
-    "stemcell_os": "$STEMCELL_OS",
-    "az": "$AZ",
-    "vm_type": "$VM_TYPE",
-    "vm_extensions": "$VM_EXTENSIONS",
-    "network": "$NETWORK"
+    "stemcell_os": "${STEMCELL_OS}",
+    "az": "${AZ}",
+    "vm_type": "${VM_TYPE}",
+    "vm_extensions": "${VM_EXTENSIONS}",
+    "network": "${NETWORK}"
   }
 EOL
 
   echo "Build ginkgo"
   ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
-  go build -o ginkgo $ginkgo_dir
+  go build -o ginkgo "${ginkgo_dir}"
 
   echo "Run ginkgo"
-  ./ginkgo -v
+  ./ginkgo -v -nodes "${NODES}"
 popd
