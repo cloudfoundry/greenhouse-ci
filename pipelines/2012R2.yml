@@ -235,7 +235,7 @@ resources:
   type: pool
   source:
     branch: master
-    pool: vsphere-director-lock
+    pool: vsphere-2012R2
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 

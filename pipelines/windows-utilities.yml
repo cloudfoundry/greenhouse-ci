@@ -135,11 +135,18 @@ resources:
     pool: gcp-wuts-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: vsphere-director-lock
+- name: vsphere-2012R2-lock
   type: pool
   source:
     branch: master
-    pool: vsphere-director-lock
+    pool: vsphere-2012R2
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-1709-lock
+  type: pool
+  source:
+    branch: master
+    pool: vsphere-1709
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: aws-2012R2-lock
@@ -227,7 +234,7 @@ jobs:
 - name: run-wuts-vsphere-2012R2
   serial: true
   plan:
-  - put: vsphere-director-lock
+  - put: vsphere-2012R2-lock
     params:
       acquire: true
   - do:
@@ -260,9 +267,9 @@ jobs:
         VM_EXTENSIONS: ""
         VM_TYPE: default
     ensure:
-      put: vsphere-director-lock
+      put: vsphere-2012R2-lock
       params:
-        release: vsphere-director-lock
+        release: vsphere-2012R2-lock
 
 - name: run-wuts-aws-2012R2
   serial: true
@@ -407,7 +414,7 @@ jobs:
 - name: run-wuts-vsphere-1709
   serial: true
   plan:
-  - put: vsphere-director-lock
+  - put: vsphere-1709-lock
     params:
       acquire: true
   - do:
@@ -440,9 +447,9 @@ jobs:
         VM_EXTENSIONS: ""
         VM_TYPE: default
     ensure:
-      put: vsphere-director-lock
+      put: vsphere-1709-lock
       params:
-        release: vsphere-director-lock
+        release: vsphere-1709-lock
 
 - name: run-wuts-aws-1709
   serial: true
