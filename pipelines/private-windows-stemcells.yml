@@ -191,7 +191,7 @@ jobs:
         VM_TYPE: large
         BOSH_CLIENT_SECRET: {{regina_client_secret}}
         BOSH_CLIENT: {{regina_client}}
-        BOSH_TARGET: {{regina_environment}}
+        BOSH_ENVIRONMENT: {{regina_environment}}
         BOSH_CA_CERT: {{regina_ca_cert}}
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
         STEMCELL_OS: windows2012R2

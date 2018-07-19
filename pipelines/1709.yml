@@ -508,7 +508,7 @@ jobs:
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
       BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-      BOSH_TARGET: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      BOSH_ENVIRONMENT: ((BOSH_CONCOURSE_DIRECTOR_IP))
       SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
@@ -551,8 +551,8 @@ jobs:
         BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
         BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
         BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
+        BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
         BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
-        BOSH_TARGET: ((AWS_WUTS_DIRECTOR_IP))
         NETWORK: default
         SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
@@ -667,8 +667,8 @@ jobs:
       BOSH_CA_CERT: ((AZURE_BWATS_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((AZURE_BWATS_BOSH_CLIENT_ID))
       BOSH_CLIENT_SECRET: ((AZURE_BWATS_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((AZURE_BWATS_BOSH_DIRECTOR_IP))
       BOSH_GW_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
-      BOSH_TARGET: ((AZURE_BWATS_BOSH_DIRECTOR_IP))
       BWATS_BOSH_TIMEOUT: 3h
       NETWORK: ((AZURE_HEAVY_NETWORK))
       SSH_TUNNEL_IP: ((AZURE_BWATS_SSH_TUNNEL_IP))
@@ -742,8 +742,8 @@ jobs:
         BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
         BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
         BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+        BOSH_ENVIRONMENT: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
         BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-        BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
         NETWORK: ((AZURE_HEAVY_NETWORK))
         SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
@@ -835,7 +835,7 @@ jobs:
         BOSH_CA_CERT: ((goose_ca_cert))
         BOSH_CLIENT: ((goose_client))
         BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_TARGET: ((goose_environment))
+        BOSH_ENVIRONMENT: ((goose_environment))
         IAAS: gcp
         NETWORK: private
         SSH_TUNNEL_IP: ((goose_jumpbox_ip))
@@ -880,8 +880,8 @@ jobs:
         BOSH_CA_CERT: ((mustang_ca_cert))
         BOSH_CLIENT: ((mustang_client))
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_ENVIRONMENT: ((mustang_environment))
         BOSH_GW_USER: ((mustang_gw_user))
-        BOSH_TARGET: ((mustang_environment))
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -982,16 +982,16 @@ jobs:
       attempts: 1
       tags: [vsphere-linux-worker]
       params:
-        VM_TYPE: large # WARN: This is Cloud Config specific!!!
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_TARGET: ((regina_environment))
         BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
         STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
     ensure:
       put: vsphere-director-lock
       params:
@@ -1030,8 +1030,8 @@ jobs:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
         BOSH_GW_USER: ((regina_gw_user))
-        BOSH_TARGET: ((regina_environment))
         NETWORK: default
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
@@ -1133,7 +1133,7 @@ jobs:
       BOSH_CA_CERT: ((AWS_PROMOTE_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((AWS_PROMOTE_BOSH_USER))
       BOSH_CLIENT_SECRET: ((AWS_PROMOTE_BOSH_PASSWORD))
-      BOSH_TARGET: ((AWS_PROMOTE_DIRECTOR_IP))
+      BOSH_ENVIRONMENT: ((AWS_PROMOTE_DIRECTOR_IP))
       GINKGO_FOCUS: "is fully updated"
       SSH_TUNNEL_IP: ((AWS_PROMOTE_SSH_TUNNEL_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AWS_PROMOTE_SSH_PRIVATE_KEY))
@@ -1199,7 +1199,7 @@ jobs:
         BOSH_CA_CERT: ((goose_ca_cert))
         BOSH_CLIENT: ((goose_client))
         BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_TARGET: ((goose_environment))
+        BOSH_ENVIRONMENT: ((goose_environment))
         GINKGO_FOCUS: "is fully updated"
         IAAS: gcp
         NETWORK: private
@@ -1271,7 +1271,7 @@ jobs:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_TARGET: ((regina_environment))
+        BOSH_ENVIRONMENT: ((regina_environment))
         GINKGO_FOCUS: "is fully updated"
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
@@ -1354,8 +1354,8 @@ jobs:
       BOSH_CA_CERT: ((AZURE_PROMOTE_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((AZURE_PROMOTE_BOSH_CLIENT_ID))
       BOSH_CLIENT_SECRET: ((AZURE_PROMOTE_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((AZURE_PROMOTE_BOSH_DIRECTOR_IP))
       BOSH_GW_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
-      BOSH_TARGET: ((AZURE_PROMOTE_BOSH_DIRECTOR_IP))
       NETWORK: ((AZURE_HEAVY_NETWORK))
       SSH_TUNNEL_IP: ((AZURE_PROMOTE_SSH_TUNNEL_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AZURE_PROMOTE_SSH_TUNNEL_PRIVATE_KEY))

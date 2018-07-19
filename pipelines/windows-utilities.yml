@@ -217,8 +217,8 @@ jobs:
         BOSH_CA_CERT: ((mustang_ca_cert))
         BOSH_CLIENT: ((mustang_client))
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_ENVIRONMENT: ((mustang_environment))
         BOSH_GW_USER: ((mustang_gw_user))
-        BOSH_TARGET: ((mustang_environment))
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -256,7 +256,7 @@ jobs:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_TARGET: ((regina_environment))
+        BOSH_ENVIRONMENT: ((regina_environment))
         BOSH_GW_USER: ((regina_gw_user))
         NETWORK: default
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
@@ -295,8 +295,8 @@ jobs:
         BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
         BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
         BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
+        BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
         BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
-        BOSH_TARGET: ((AWS_WUTS_DIRECTOR_IP))
         NETWORK: default
         SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
@@ -357,8 +357,8 @@ jobs:
           BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
           BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
           BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+          BOSH_ENVIRONMENT: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-          BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           NETWORK: default
           SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
           SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
@@ -397,8 +397,8 @@ jobs:
         BOSH_CA_CERT: ((mustang_ca_cert))
         BOSH_CLIENT: ((mustang_client))
         BOSH_CLIENT_SECRET: ((mustang_client_secret))
+        BOSH_ENVIRONMENT: ((mustang_environment))
         BOSH_GW_USER: ((mustang_gw_user))
-        BOSH_TARGET: ((mustang_environment))
         NETWORK: default
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
@@ -436,8 +436,8 @@ jobs:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
         BOSH_GW_USER: ((regina_gw_user))
-        BOSH_TARGET: ((regina_environment))
         NETWORK: default
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
@@ -475,8 +475,8 @@ jobs:
         BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
         BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
         BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
+        BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
         BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
-        BOSH_TARGET: ((AWS_WUTS_DIRECTOR_IP))
         NETWORK: default
         SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
@@ -537,8 +537,8 @@ jobs:
           BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
           BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
           BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+          BOSH_ENVIRONMENT: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-          BOSH_TARGET: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
           NETWORK: default
           SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
           SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
