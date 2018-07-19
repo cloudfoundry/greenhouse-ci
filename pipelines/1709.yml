@@ -943,40 +943,40 @@ jobs:
   serial: true
   serial_groups: [vsphere]
   plan:
+  - aggregate:
+    - get: ci
+    - get: stemcell-builder
+      passed: [create-vsphere-from-vmx]
+    - get: version
+      resource: vsphere-from-vmx-build-number
+      passed: [create-vsphere-from-vmx]
+      trigger: true
+    - get: main-version
+      passed: [create-vsphere-from-vmx]
+  - task: bosh-windows-stemcell
+    tags: [vsphere-linux-worker]
+    params:
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: version
+      outputs:
+        - name: stemcell
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            VERSION=$(cat version/number)
+            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
+            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
+  - put: vsphere-director-lock
+    params:
+      acquire: true
   - do:
-    - aggregate:
-      - get: ci
-      - get: stemcell-builder
-        passed: [create-vsphere-from-vmx]
-      - get: version
-        resource: vsphere-from-vmx-build-number
-        passed: [create-vsphere-from-vmx]
-        trigger: true
-      - get: main-version
-        passed: [create-vsphere-from-vmx]
-    - put: vsphere-director-lock
-      params:
-        acquire: true
-    - task: bosh-windows-stemcell
-      tags: [vsphere-linux-worker]
-      params:
-        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      config:
-        platform: linux
-        image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-        inputs:
-          - name: version
-        outputs:
-          - name: stemcell
-        run:
-          path: /bin/bash
-          args:
-            - -c
-            - |
-              VERSION=$(cat version/number)
-              echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
-              aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
     - task: test-stemcell
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       attempts: 1
@@ -1004,23 +1004,23 @@ jobs:
   serial: true
   serial_groups: [vsphere]
   plan:
+  - aggregate:
+    - get: ci
+    - get: windows-utilities-release
+    - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      resource: windows-utilities-tests
+    - get: bosh-windows-stemcell
+      resource: vsphere-stemcell-release-candidate
+      passed: [test-vsphere-from-vmx]
+      trigger: true
+    - get: stemcell-builder
+      passed: [test-vsphere-from-vmx]
+    - get: main-version
+      passed: [test-vsphere-from-vmx]
   - put: vsphere-director-lock
     params:
       acquire: true
   - do:
-    - aggregate:
-      - get: ci
-      - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
-      - get: bosh-windows-stemcell
-        resource: vsphere-stemcell-release-candidate
-        passed: [test-vsphere-from-vmx]
-        trigger: true
-      - get: stemcell-builder
-        passed: [test-vsphere-from-vmx]
-      - get: main-version
-        passed: [test-vsphere-from-vmx]
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
