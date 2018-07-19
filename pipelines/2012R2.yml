@@ -214,7 +214,7 @@ resources:
   type: pool
   source:
     branch: master
-    pool: goose
+    pool: goose-2012R2
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
