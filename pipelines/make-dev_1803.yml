@@ -1,0 +1,110 @@
+#Configure promote
+- type: replace
+  path: /jobs/name=promote/plan/task=ensure-versions-match/config/run/path
+  value: /bin/bash
+- type: replace
+  path: /jobs/name=promote/plan/task=ensure-versions-match/config/run/args?
+  value: [ "-c", "echo Skipping test, dev environment" ]
+
+#configure promote-aws
+
+# GROUPS
+# remove unnecessary groups
+- type: remove
+  path: /groups
+
+# RESOURCES
+# remove unnecessary resources
+- type: remove
+  path: /resources/name=major-stemcell
+- type: remove
+  path: /resources/name=aws-stemcell-final
+- type: remove
+  path: /resources/name=gcp-stemcell-final
+- type: remove
+  path: /resources/name=azure-stemcell-final
+- type: remove
+  path: /resources/name=stemcell-builder-release
+- type: remove
+  path: /resources/name=vsphere-stemcell-final
+- type: remove
+  path: /resources/name=boshio
+- type: remove
+  path: /resources/name=pivnet-public-stemcells
+- type: remove
+  path: /resources/name=pivnet-internal-stemcells
+# - type: remove
+#   path: /resources/name=midnight
+- type: remove
+  path: /resources/name=aws-lock
+- type: remove
+  path: /resources/name=azure-lock
+- type: remove
+  path: /resources/name=gcp-lock
+- type: remove
+  path: /resources/name=goose-lock
+
+# JOBS
+# remove unnecessary jobs
+- type: remove
+  path: /jobs/name=create-aws/plan/0/aggregate/get=base-amis/passed
+- type: remove
+  path: /jobs/name=print-azure-publishing-instructions
+  # TODO: when create-azure is added back, ensure we don't override the stemcell in pm acceptance environment
+- type: remove
+  path: /jobs/name=promote-azure
+- type: remove
+  path: /jobs/name=promote-gcp
+- type: remove
+  path: /jobs/name=promote-vsphere
+- type: remove
+  path: /jobs/name=promote-aws
+- type: remove
+  path: /jobs/name=promote
+- type: remove
+  path: /jobs/name=ship-bosh-stemcell-builder
+
+# configure gcp for dev
+- type: replace
+  path: /jobs/name=create-gcp/plan/task=create-stemcell/params/ACCOUNT_JSON
+  value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+- type: replace
+  path: /jobs/name=create-gcp/plan/task=create-stemcell/ensure/params/ACCOUNT_JSON
+  value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
+- type: replace
+  path: /jobs/name=create-gcp/plan/put=gcp-2016-untested/params/file
+  value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+- type: remove
+  path: /jobs/name=create-gcp/plan/task=publish-stemcell
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/2/ensure
+- type: remove
+  path: /jobs/name=wuts-gcp/plan/put=gcp-lock
+- type: remove
+  path: /jobs/name=test-gcp/plan/2/ensure
+- type: remove
+  path: /jobs/name=test-gcp/plan/put=goose-lock
+
+# configure aws for dev
+- type: remove
+  path: /jobs/name=wuts-aws/plan/2/ensure
+- type: remove
+  path: /jobs/name=wuts-aws/plan/put=aws-lock
+
+# configure azure for dev
+- type: remove
+  path: /jobs/name=wuts-azure/plan/4/ensure
+- type: remove
+  path: /jobs/name=wuts-azure/plan/put=azure-lock
+
+# create-vsphere-from-vmx
+- type: replace
+  path: /jobs/name=create-vsphere-from-vmx/plan/task=create-stemcell/tags
+  value: [vsphere-windows-worker-dev]
+
+# build
+- type: replace
+  path: /jobs/name=build/plan/0/aggregate/get=version/params/bump
+  value: minor
+# - type: remove
+#   path: /jobs/name=build/plan/0/aggregate/get=midnight

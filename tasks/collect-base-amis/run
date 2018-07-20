@@ -24,7 +24,7 @@ end
 version = File.read('version/number').chomp
 
 base_ami = ENV['BASE_AMI']
-if base_ami != 'windows2012R2' && base_ami != 'windows2016' && base_ami != 'windows1709'
+if base_ami != 'windows2012R2' && base_ami != 'windows2016' && base_ami != 'windows1709' && base_ami != 'windows1803' #Is there a better way to check for this? Do we still need to do this?
   abort 'abort "Define BASE_AMI environment variable (e.g. windows2012R2, windows2016)'
 end
 

@@ -2,40 +2,40 @@
 #Common Variables
 AWS_LOCK: 'stemcells-aws'
 AZURE_LOCK: 'stemcells-azure'
-BASE_FOLDER_NAME: '1709'
-BASE_IMAGE_OS: 'windows1709'
+BASE_FOLDER_NAME: '1803'
+BASE_IMAGE_OS: 'windows1803'
 GCP_LOCK: 'stemcells-gcp'
 ROOT_BUCKET: 'all-bosh-windows'
-STEMCELL_INITIAL_VERSION: '1709.0.0'
-VM_PREFIX: 'packer-1709-prod'
+STEMCELL_INITIAL_VERSION: '1803.0.0'
+VM_PREFIX: 'packer-1803-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 
 #AWS Base Image Info
-BASE_AMI_NAME: 'Windows_Server-1709-English-Core-Base*'
+BASE_AMI_NAME: 'Windows_Server-1803-English-Core-Base-*'
 #AWS Output Info
-AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1803'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-1'
 
 #GCP Base Image Info
-BASE_IMAGE_REGEX: 'windows-server-1709-dc-core-v.*'
-IMAGE_FAMILY: 'windows-1709-core'
+BASE_IMAGE_REGEX: 'windows-server-1803-dc-core-v.*'
+IMAGE_FAMILY: 'windows-1803-core'
 #GCP Packer Info
 WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
 
 #Azure Create & Publish Variables
-AZURE_BASE_IMAGE: 'Datacenter-Core-1709-smalldisk'
+AZURE_BASE_IMAGE: 'Datacenter-Core-1803-with-Containers-smalldisk'
 AZURE_BASE_IMAGE_OFFER: 'WindowsServerSemiAnnual'
 AZURE_CLIENT_ID: ((KOALA_CLIENT_ID))
 AZURE_CLIENT_SECRET: ((KOALA_CLIENT_SECRET))
 AZURE_CONTAINER_NAME: 'system'
 AZURE_LOCATION: 'East US'
 AZURE_OBJECT_ID: ((KOALA_OBJECT_ID))
-AZURE_OFFER: 'bosh-windows-server-1709'
+AZURE_OFFER: 'bosh-windows-server-1803'
 AZURE_OS_VERSION: windows2016
 AZURE_PUBLISHER: 'pivotal'
 AZURE_RESOURCE_GROUP_NAME: ((KOALA_RESOURCE_GROUP_NAME))
-AZURE_SKU: '1709-9plus'
+AZURE_SKU: '1803'
 AZURE_STORAGE_ACCESS_KEY: ((KOALA_STORAGE_ACCESS_KEY))
 AZURE_STORAGE_ACCOUNT: ((KOALA_STORAGE_ACCOUNT))
 AZURE_SUBSCRIPTION_ID: ((KOALA_SUBSCRIPTION_ID))
@@ -48,5 +48,5 @@ AZURE_HEAVY_NETWORK: default
 AZURE_HEAVY_VM_TYPE: default
 
 # Promote Variables
-BOSHIO_OS_VERSION: '1709'
-PIVNET_OS_NAME: 'Windows 2016 Server Version 1709'
+BOSHIO_OS_VERSION: '1803'
+PIVNET_OS_NAME: 'Windows 2016 Server Version 1803'

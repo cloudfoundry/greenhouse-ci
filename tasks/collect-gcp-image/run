@@ -11,7 +11,7 @@ gcloud config set project $PROJECT_ID
 
 set -x
 
-if [[ "$BASE_OS" != "windows2012R2" ]] && [[ "$BASE_OS" != "windows2016" ]] && [[ "$BASE_OS" != "windows1709" ]]; then
+if [[ "$BASE_OS" != "windows2012R2" ]] && [[ "$BASE_OS" != "windows2016" ]] && [[ "$BASE_OS" != "windows1709" ]] && [[ "$BASE_OS" != "windows1803" ]]; then
     echo "Define BASE_OS environment variable (e.g. windows2012R2,windows2016)" 1>&2
 	exit 1
 fi
