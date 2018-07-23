@@ -1245,7 +1245,7 @@ jobs:
       params:
         release: azure-download-lock
   - task: test-stemcell
-    attempts: 3
+    attempts: 5
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: {stemcell: heavy-stemcell}
     params:
@@ -1267,6 +1267,7 @@ jobs:
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
     input_mapping: {heavy_stemcell_dir: heavy-stemcell}
+    attempts: 5
     params:
       BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
       BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
@@ -1321,7 +1322,7 @@ jobs:
       acquire: true
   - do:
     - task: run-wuts
-      attempts: 3
+      attempts: 5
       file: ci/tasks/run-wuts/task.yml
       input_mapping:
         stemcell: heavy-stemcell
