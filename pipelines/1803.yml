@@ -350,12 +350,12 @@ resources:
     product_version: 1709.*
 
 # time
-#- name: midnight
-#  type: time
-#  source:
-#    start: 12:00 AM
-#    stop: 1:00 AM
-#    location: America/New_York
+- name: midnight
+  type: time
+  source:
+    start: 12:00 AM
+    stop: 1:00 AM
+    location: America/New_York
 
 jobs:
 - name: build
@@ -372,8 +372,8 @@ jobs:
       resource: main-version
       params:
         bump: patch
-#    - get: midnight
-#      trigger: true
+    - get: midnight
+      trigger: true
   - put: main-version
     params:
       file: version/number
@@ -925,18 +925,19 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
     tags: [vsphere-windows-worker]
     params:
-      OS_VERSION: windows2016
       ADMINISTRATOR_PASSWORD: "Password123!"
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
+      MOUNT_EPHEMERAL_DISK: true
       NEW_PASSWORD: "Password123!"
       ORGANIZATION: Pivotal
-      OWNER: Pivotal
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      AWS_REGION: us-east-1
-      INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
+      OS_VERSION: windows2016
       OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
-      VMX_CACHE_DIR: "C:\\vmx-data-((BASE_IMAGE_OS))"
+      OWNER: Pivotal
       SKIP_WINDOWS_UPDATE: false
+      VMX_CACHE_DIR: "C:\\vmx-data-((BASE_IMAGE_OS))"
 
 - name: test-vsphere-from-vmx
   serial: true
@@ -985,6 +986,7 @@ jobs:
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
         BOSH_ENVIRONMENT: ((regina_environment))
+        MOUNT_EPHEMERAL_DISK: true
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))

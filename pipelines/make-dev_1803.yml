@@ -33,8 +33,8 @@
   path: /resources/name=pivnet-public-stemcells
 - type: remove
   path: /resources/name=pivnet-internal-stemcells
-# - type: remove
-#   path: /resources/name=midnight
+- type: remove
+  path: /resources/name=midnight
 - type: remove
   path: /resources/name=aws-lock
 - type: remove
@@ -106,5 +106,5 @@
 - type: replace
   path: /jobs/name=build/plan/0/aggregate/get=version/params/bump
   value: minor
-# - type: remove
-#   path: /jobs/name=build/plan/0/aggregate/get=midnight
+- type: remove
+  path: /jobs/name=build/plan/0/aggregate/get=midnight
