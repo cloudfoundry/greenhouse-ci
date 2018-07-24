@@ -30,7 +30,8 @@ pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
     "az": "${AZ}",
     "vm_type": "${VM_TYPE}",
     "vm_extensions": "${VM_EXTENSIONS}",
-    "network": "${NETWORK}"
+    "network": "${NETWORK}",
+    "skip_cleanup_on_rdp_fail": true
   }
 EOL
 
