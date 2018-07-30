@@ -302,7 +302,7 @@ jobs:
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
         SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
         STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent.tgz
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
     ensure:
@@ -482,7 +482,7 @@ jobs:
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
         SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
         STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
     ensure:
