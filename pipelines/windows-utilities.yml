@@ -41,7 +41,7 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent.tgz
+    regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-2012R2-stemcell-release-candidate
@@ -94,7 +94,7 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 1709/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
+    regexp: 1709/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-1709-stemcell-release-candidate
