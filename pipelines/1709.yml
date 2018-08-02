@@ -1166,6 +1166,7 @@ jobs:
         file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
+        override: true
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
@@ -1240,6 +1241,7 @@ jobs:
         file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
+        override: true
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
@@ -1299,6 +1301,7 @@ jobs:
   - aggregate:
     - put: pivnet-internal-stemcells
       params:
+        override: true
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
@@ -1395,6 +1398,7 @@ jobs:
         file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
+        override: true
         file_glob: 'pivnet-metadata/*.tgz'
         s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
