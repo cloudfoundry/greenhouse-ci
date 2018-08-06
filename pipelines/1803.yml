@@ -339,7 +339,7 @@ resources:
     product_slug: stemcells-windows-server
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
-    product_version: 1709.*
+    product_version: 1803.*
 - name: pivnet-internal-stemcells
   type: pivnet
   source:
@@ -347,7 +347,7 @@ resources:
     product_slug: stemcells-windows-server-internal
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
-    product_version: 1709.*
+    product_version: 1803.*
 
 # time
 - name: midnight
