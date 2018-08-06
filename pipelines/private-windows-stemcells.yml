@@ -188,13 +188,16 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       attempts: 5
       params:
-        VM_TYPE: large
-        BOSH_CLIENT_SECRET: {{regina_client_secret}}
-        BOSH_CLIENT: {{regina_client}}
-        BOSH_ENVIRONMENT: {{regina_environment}}
-        BOSH_CA_CERT: {{regina_ca_cert}}
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
         STEMCELL_OS: windows2012R2
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
+        VM_TYPE: large
     - task: vsphere-set-stemcell-version
       file: ci/tasks/set-stemcell-version/task.yml
     - put: private-stemcell-release-candidate
