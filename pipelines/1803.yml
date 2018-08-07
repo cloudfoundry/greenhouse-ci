@@ -930,7 +930,6 @@ jobs:
       AWS_REGION: us-east-1
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
-      MOUNT_EPHEMERAL_DISK: true
       NEW_PASSWORD: "Password123!"
       ORGANIZATION: Pivotal
       OS_VERSION: windows2016
@@ -986,7 +985,6 @@ jobs:
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
         BOSH_ENVIRONMENT: ((regina_environment))
-        MOUNT_EPHEMERAL_DISK: true
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
