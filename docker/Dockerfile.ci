@@ -89,3 +89,6 @@ RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.k
 RUN echo "deb http://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
 RUN apt-get update
 RUN apt-get install cf-cli
+
+RUN git clone https://github.com/portcullislabs/rdp-sec-check && mv rdp-sec-check/rdp-sec-check.pl /usr/local/bin && rm -rf rdp-sec-check
+RUN export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
