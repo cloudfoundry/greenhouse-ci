@@ -10,6 +10,6 @@ inputs:
   - name: lgpo
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-automation/bosh-windows-stemcell-automation/package.bash
+  path: ci/tasks/bosh-windows-stemcell-automation/bosh-windows-stemcell-automation/package/package.bash
 
 params: []
