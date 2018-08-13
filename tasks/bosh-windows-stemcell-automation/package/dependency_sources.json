@@ -1,0 +1,18 @@
+[
+  {
+    "file_source": "./open-ssh/OpenSSH-Win64.zip",
+    "version_source": "./open-ssh/version"
+  },
+  {
+    "file_source": "./stemcell-builder/bosh-psmodules.zip",
+    "version_source": "./stemcell-builder/version"
+  },
+  {
+    "file_source": "./stemcell-builder/agent.zip",
+    "version_source": "./stemcell-builder/version"
+  },
+  {
+    "file_source": "./lgpo/LGPO.zip",
+    "version_source": "./lgpo/version"
+  }
+]

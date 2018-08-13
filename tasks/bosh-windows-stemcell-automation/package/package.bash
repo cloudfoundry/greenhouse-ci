@@ -2,10 +2,7 @@
 
 set -euo pipefail
 
-cp ./open-ssh/OpenSSH-Win64.zip ./stemcell-automation
-cp ./stemcell-builder/bosh-psmodules.zip ./stemcell-automation
-cp ./stemcell-builder/agent.zip ./stemcell-automation
-cp ./lgpo/LGPO-*.zip ./stemcell-automation/LGPO.zip
+cp ./lgpo/LGPO-*.zip ./lgpo/LGPO.zip
 pushd ./stemcell-automation
-./mk-deps.sh
+ruby mk-deps.rb ./dependency_sources.json | jq . > deps.json
 cat deps.json
