@@ -1,9 +1,9 @@
 resources:
-#- name: ci
-#  type: git
-#  source:
-#    branch: master
-#    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 
 - name: stemcell-automation
   type: git
@@ -46,7 +46,7 @@ jobs:
   - aggregate:
     - get: stemcell-automation
       trigger: true
-#    - get: ci
+    # - get: ci
     - get: pester
   - task: test-stemcell-automation
     config:
@@ -78,30 +78,8 @@ jobs:
     - get: stemcell-builder
       resource: bosh-windows-stemcell-builder
     - get: lgpo
-#    - get: ci
+    - get: ci
   - task: generate-deps-file
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-      - name: stemcell-automation
-      - name: open-ssh
-      - name: stemcell-builder
-      - name: lgpo
-      run:
-        path: /bin/bash
-        args:
-          - -c
-          - |
-            cp ./open-ssh/OpenSSH-Win64.zip ./stemcell-automation
-            cp ./stemcell-builder/bosh-psmodules.zip ./stemcell-automation
-            cp ./stemcell-builder/agent.zip ./stemcell-automation
-            cp ./lgpo/LGPO-*.zip ./stemcell-automation/LGPO.zip
-            pushd ./stemcell-automation
-            ./mk-deps.sh
-            cat deps.json
-
-
-
+      file: ci/tasks/bosh-windows-stemcell-automation/package/package.yml
 
 #- name: post-draft-release
