@@ -9,6 +9,9 @@ inputs:
   - name: stemcell-builder
   - name: lgpo
 
+outputs:
+  - name: deps-file
+
 run:
   path: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.bash
 
