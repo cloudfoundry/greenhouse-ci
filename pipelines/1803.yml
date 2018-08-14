@@ -511,11 +511,11 @@ jobs:
       SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+      STEMCELL_OS: windows1803
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_PACKER_REGION)).tgz
   - put: aws-2016-tested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_PACKER_REGION)).tgz
 
 - name: wuts-aws
   serial: true
@@ -556,8 +556,8 @@ jobs:
         SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
         SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
     ensure:
@@ -617,7 +617,7 @@ jobs:
         VM_PREFIX: ((VM_PREFIX))
   - put: azure-untested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows1803-go_agent.tgz
   - put: azure-base-vhd-uri
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
@@ -690,7 +690,7 @@ jobs:
       SSH_TUNNEL_USER: ((PM_ACCEPTANCE_SSH_TUNNEL_USER))
   - put: azure-tested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-windows1803-go_agent.tgz
 
 - name: wuts-azure
   serial: true
@@ -786,7 +786,7 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
     attempts: 10
     params:
-      OS_VERSION: windows2016
+      OS_VERSION: windows1803
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
       VM_PREFIX: ((VM_PREFIX))
     ensure:
@@ -799,11 +799,11 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     attempts: 1
     params:
-      OS_VERSION: windows2016
+      OS_VERSION: windows1803
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
   - put: gcp-2016-untested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
 
 - name: test-gcp
   serial: true
@@ -840,8 +840,8 @@ jobs:
         SSH_TUNNEL_IP: ((goose_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
         SSH_TUNNEL_USER: ((goose_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
         VM_EXTENSIONS: "500GB_ephemeral_disk" # WARN: Cloud Config specific
     ensure:
       put: goose-lock
@@ -849,7 +849,7 @@ jobs:
         release: goose-lock
   - put: gcp-2016-tested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
 
 - name: wuts-gcp
   serial: true
@@ -885,8 +885,8 @@ jobs:
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
         SSH_TUNNEL_USER: ((mustang_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
         VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
@@ -932,7 +932,7 @@ jobs:
       INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
       NEW_PASSWORD: "Password123!"
       ORGANIZATION: Pivotal
-      OS_VERSION: windows2016
+      OS_VERSION: windows1803
       OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
       OWNER: Pivotal
       SKIP_WINDOWS_UPDATE: false
@@ -970,8 +970,8 @@ jobs:
           - -c
           - |
             VERSION=$(cat version/number)
-            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
-            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz stemcell
+            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
+            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz stemcell
   - put: vsphere-director-lock
     params:
       acquire: true
@@ -988,8 +988,8 @@ jobs:
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803 # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
     ensure:
       put: vsphere-director-lock
@@ -997,7 +997,7 @@ jobs:
         release: vsphere-director-lock
   - put: vsphere-stemcell-release-candidate
     params:
-      file: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+      file: stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
 
 - name: wuts-vsphere
   serial: true
@@ -1035,8 +1035,8 @@ jobs:
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: default
     ensure:
@@ -1119,7 +1119,7 @@ jobs:
     input_mapping: { version: aws-build-number, aws-regional: aws-2016-tested }
     file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
     params:
-      OS_VERSION: windows2016
+      OS_VERSION: windows1803
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
@@ -1137,8 +1137,8 @@ jobs:
       SSH_TUNNEL_IP: ((AWS_PROMOTE_SSH_TUNNEL_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AWS_PROMOTE_SSH_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((AWS_PROMOTE_SSH_TUNNEL_USER))
-      STEMCELL_OS: windows2016
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+      STEMCELL_OS: windows1803
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent.tgz
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
   - aggregate:
@@ -1158,7 +1158,7 @@ jobs:
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
-        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent.tgz
+        file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
         override: true
@@ -1206,8 +1206,8 @@ jobs:
         SSH_TUNNEL_IP: ((goose_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
         SSH_TUNNEL_USER: ((goose_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
         VM_EXTENSIONS: "500GB_ephemeral_disk"
     ensure:
       put: goose-lock
@@ -1233,7 +1233,7 @@ jobs:
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final
       params:
-        file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        file: final-stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
         override: true
@@ -1277,8 +1277,8 @@ jobs:
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803 # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
     ensure:
       put: vsphere-director-lock
@@ -1303,7 +1303,7 @@ jobs:
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
       params:
-        file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
 
 - name: print-azure-publishing-instructions
   serial: true
@@ -1363,7 +1363,7 @@ jobs:
       SSH_TUNNEL_PRIVATE_KEY: ((AZURE_PROMOTE_SSH_TUNNEL_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
       STEMCELL_OS: ((AZURE_OS_VERSION))
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-windows1803-go_agent.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
   - task: azure-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: azure-tested }
@@ -1386,7 +1386,7 @@ jobs:
     - put: azure-stemcell-final-s3
       resource: azure-stemcell-final
       params:
-        file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows2016-go_agent.tgz
+        file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-windows1803-go_agent.tgz
     - put: pivnet-public-stemcells
       params:
         override: true
