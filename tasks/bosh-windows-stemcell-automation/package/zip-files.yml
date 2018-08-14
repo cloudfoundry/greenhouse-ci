@@ -7,6 +7,7 @@ inputs:
   - name: stemcell-automation
   - name: open-ssh
   - name: stemcell-builder
+  - name: deps-file
 
 outputs:
   - name: zip-file
