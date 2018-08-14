@@ -13,6 +13,7 @@
   },
   {
     "file_source": "../lgpo/LGPO.zip",
-    "version_source": "../lgpo/version"
+    "version_source": "../lgpo/version",
+    "exclude_from_zip": true
   }
 ]
