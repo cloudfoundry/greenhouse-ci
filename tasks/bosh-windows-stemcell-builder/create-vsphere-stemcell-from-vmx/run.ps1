@@ -10,7 +10,7 @@ mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
 $env:PATH="${PWD}\bin;$env:PATH"
 
 cd "stemcell-builder"
-bundle install
+bundle install --without test
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not bundle install"
   Exit 1

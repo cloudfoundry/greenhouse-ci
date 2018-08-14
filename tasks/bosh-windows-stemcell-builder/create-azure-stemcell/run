@@ -3,7 +3,7 @@
 set -ex
 
 cd stemcell-builder
-bundle install
+bundle install --without test
 rake package:agent
 rake package:psmodules
 rake build:azure

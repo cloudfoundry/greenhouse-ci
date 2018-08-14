@@ -3,7 +3,7 @@ trap { $host.SetShouldExit(1) }
 
 pushd "stemcell-builder"
 
-bundle install
+bundle install --without test
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not bundle install"
   Exit 1

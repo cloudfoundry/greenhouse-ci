@@ -4,7 +4,7 @@ trap { $host.SetShouldExit(1) }
 New-Item -ItemType Directory -Force -Path $env:VMX_CACHE_DIR
 
 cd stemcell-builder
-bundle install
+bundle install --without test
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not bundle install"
   Exit 1
