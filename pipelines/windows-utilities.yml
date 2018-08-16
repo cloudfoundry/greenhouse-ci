@@ -423,6 +423,7 @@ jobs:
       - task: run-wuts
         attempts: 3
         file: ci/tasks/run-wuts/task.yml
+        tags: [azure-linux-worker]
         input_mapping: { stemcell: heavy-stemcell }
         params:
           AZ: z1
@@ -604,6 +605,7 @@ jobs:
         attempts: 3
         file: ci/tasks/run-wuts/task.yml
         input_mapping: { stemcell: heavy-stemcell }
+        tags: [azure-linux-worker]
         params:
           AZ: z1
           BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
@@ -783,6 +785,7 @@ jobs:
       - task: run-wuts
         attempts: 3
         file: ci/tasks/run-wuts/task.yml
+        tags: [azure-linux-worker]
         input_mapping: { stemcell: heavy-stemcell }
         params:
           AZ: z1
