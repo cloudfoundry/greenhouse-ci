@@ -531,7 +531,6 @@ jobs:
     - task: test-stemcell
       tags: [vsphere-linux-worker]
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
       params:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
@@ -771,7 +770,6 @@ jobs:
       tags: [vsphere-linux-worker]
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
-      attempts: 5
       params:
         BOSH_CA_CERT: ((regina_ca_cert))
         BOSH_CLIENT: ((regina_client))
@@ -829,7 +827,6 @@ jobs:
       - get: 2012-vhd
         passed: [test-vsphere-stemcell-from-patchfile]
     - task: run-wuts
-      attempts: 5
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
       input_mapping:
