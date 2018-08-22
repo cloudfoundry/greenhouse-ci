@@ -1435,4 +1435,4 @@ jobs:
   - put: major-stemcell-s3
     resource: major-stemcell
     params:
-      file: stemcell-info/1803-stemcell-*.json
+      file: stemcell-info/2016-stemcell-1803*.json
