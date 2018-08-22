@@ -6,14 +6,13 @@ dirs = %w(stemcell-builder
           stemcell-builder/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests)
 
 final_version = File.read("version/version")
-os_versions_2016 = [/1803/, /1709/]
-
 
 if final_version.match('1200')
   filename = "stemcell-#{final_version}.json"
-elsif os_versions_2016.find {|v| v =~ final_version }
-  # Use 2016 as a prefix so it doesn't match the 2012 regex
+elsif final_version.match('1709')
   filename = "2016-stemcell-#{final_version}.json"
+elsif final_version.match('1803')
+  filename = "1803-stemcell-#{final_version}.json"
 else
   throw "invalid stemcell version: #{final_version}"
 end
