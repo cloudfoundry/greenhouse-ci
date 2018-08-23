@@ -4,7 +4,7 @@
     "version_source": "../open-ssh/version"
   },
   {
-    "file_source": "../bosh-psmodule/bosh-psmodules.zip",
+    "file_source": "../bosh-psmodules/bosh-psmodules.zip",
     "version_source": "../version/version"
   },
   {
