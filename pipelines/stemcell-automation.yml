@@ -1,0 +1,157 @@
+resources:
+- name: ci
+  type: git
+  source:
+    branch: 159661654-stemcell-automation
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+
+- name: stemcell-automation
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-automation.git
+
+- name: pester
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pester/Pester.git
+    tag_filter: 4.4.0
+
+- name: stemcell-automation-github-release
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-automation
+    pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
+- name: stemcell-automation-zip-file
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: stemcell-automation-zip/StemcellAutomation-(.*).zip
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+- name: open-ssh
+  type: github-release
+  source:
+    owner: PowerShell
+    repository: Win32-OpenSSH
+
+- name: bosh-windows-stemcell-builder
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+
+- name: lgpo
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: external-dependencies/lgpo/LGPO-(.*).zip
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+
+jobs:
+- name: unit-test
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-automation
+      trigger: true
+    # - get: ci
+    - get: pester
+  - task: test-stemcell-automation
+    config:
+      platform: windows
+      inputs:
+      - name: stemcell-automation
+      - name: pester
+      run:
+        path: powershell
+        args:
+        - "-Command"
+        - "& {
+              Import-Module ./Pester/pester.psm1;
+              pushd stemcell-automation;
+              $result=Invoke-Pester -PassThru;
+              popd;
+              Write-Host \"Failed Tests:\"$result.FailedCount;
+              exit $result.FailedCount
+            }"
+
+- name: package
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-automation
+      passed: [ unit-test ]
+    - get: open-ssh
+      version: { tag: ((OPEN_SSH_VERSION)) }
+    - get: stemcell-builder
+      resource: bosh-windows-stemcell-builder
+    - get: lgpo
+    - get: ci
+  - task: set-dummy-version
+    config:
+      platform: linux
+      outputs:
+      - name: version
+      run:
+        path: sh
+        args:
+        - -c
+        - "echo -n v0.2 > version/version"
+  - task: build-agent
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+  - task: build-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+  - task: generate-deps-file
+    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+  - task: zip-files
+    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - put: stemcell-automation-zip-file
+    params:
+      file: zip-file/StemcellAutomation-*.zip
+
+- name: post-draft-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-automation
+      passed: [ package ]
+    - get: stemcell-automation-zip-file
+      passed: [ package ]
+    - get: ci
+  - task: rename_zip_file
+    config:
+      platform: linux
+      inputs:
+      - name: stemcell-automation-zip-file
+      outputs:
+      - name: renamed-zip-file
+      run:
+        path: sh
+        args:
+        - -c
+        - "cp stemcell-automation-zip-file/StemcellAutomation-*.zip renamed-zip-file/StemcellAutomation.zip"
+  - task: rename_zip_file
+    config:
+      platform: linux
+      outputs:
+      - name: version
+      run:
+        path: sh
+        args:
+        - -c
+        - "echo -n v0.2 > version/version"
+  - put: stemcell-automation-github-release
+    params:
+      name: version/version
+      tag: version/version
+      commitish: stemcell-automation/.git/ref
+      globs:
+      - renamed-zip-file/StemcellAutomation.zip
