@@ -8,6 +8,8 @@ inputs:
   - name: open-ssh
   - name: stemcell-builder
   - name: deps-file
+  - name: bosh-agent
+  - name: bosh-psmodules
 
 outputs:
   - name: zip-file
