@@ -41,10 +41,10 @@ resources:
     repository: Win32-OpenSSH
 
 - name: bosh-windows-stemcell-builder
-  type: github-release
+  type: git
   source:
-    owner: cloudfoundry-incubator
-    repository: bosh-windows-stemcell-builder
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-builder.git
 
 - name: lgpo
   type: s3
@@ -95,6 +95,20 @@ jobs:
       resource: bosh-windows-stemcell-builder
     - get: lgpo
     - get: ci
+  - task: set-dummy-version
+    config:
+      platform: linux
+      outputs:
+      - name: version
+      run:
+        path: sh
+        args:
+        - -c
+        - "echo -n v0.2 > version/version"
+  - task: build-agent
+    file: ci/tasks/ship-bosh-stemcell-builder/build-agent-zip.yml
+  - task: build-psmodules
+    file: ci/tasks/ship-bosh-stemcell-builder/build-psmodules-zip.yml
   - task: generate-deps-file
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
