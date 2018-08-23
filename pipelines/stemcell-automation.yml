@@ -106,9 +106,9 @@ jobs:
         - -c
         - "echo -n v0.2 > version/version"
   - task: build-agent
-    file: ci/tasks/ship-bosh-stemcell-builder/build-agent-zip.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
   - task: build-psmodules
-    file: ci/tasks/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
   - task: generate-deps-file
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
