@@ -54,6 +54,14 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
+- name: version
+  type: semver
+  source:
+    bucket: all-bosh-windows
+    key: stemcell-automation-zip/version
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: '0.3.0'
 
 jobs:
 - name: unit-test
@@ -62,7 +70,6 @@ jobs:
   - aggregate:
     - get: stemcell-automation
       trigger: true
-    # - get: ci
     - get: pester
   - task: test-stemcell-automation
     config:
@@ -95,16 +102,7 @@ jobs:
       resource: bosh-windows-stemcell-builder
     - get: lgpo
     - get: ci
-  - task: set-dummy-version
-    config:
-      platform: linux
-      outputs:
-      - name: version
-      run:
-        path: sh
-        args:
-        - -c
-        - "echo -n v0.2 > version/version"
+    - get: version
   - task: build-agent
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
   - task: build-psmodules
@@ -126,6 +124,7 @@ jobs:
     - get: stemcell-automation-zip-file
       passed: [ package ]
     - get: ci
+    - get: version
   - task: rename_zip_file
     config:
       platform: linux
@@ -138,20 +137,27 @@ jobs:
         args:
         - -c
         - "cp stemcell-automation-zip-file/StemcellAutomation-*.zip renamed-zip-file/StemcellAutomation.zip"
-  - task: rename_zip_file
+  - task: trim-build-from-version
     config:
       platform: linux
+      inputs:
+        - name: version
       outputs:
-      - name: version
+        - name: tag
       run:
         path: sh
         args:
         - -c
-        - "echo -n v0.2 > version/version"
+        - |
+          RELEASE_VERSION=$( cat version/version | cut -d '.' -f1-2 )
+          echo ${RELEASE_VERSION} > tag/tag
   - put: stemcell-automation-github-release
     params:
-      name: version/version
-      tag: version/version
+      name: tag/tag
+      tag: tag/tag
       commitish: stemcell-automation/.git/ref
       globs:
       - renamed-zip-file/StemcellAutomation.zip
+  - put: version
+    params:
+      bump: minor
