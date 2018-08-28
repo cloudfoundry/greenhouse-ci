@@ -467,6 +467,7 @@ jobs:
       OS_VERSION: windows2016
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       VM_PREFIX: ((VM_PREFIX))
+      MOUNT_EPHEMERAL_DISK: true
     ensure:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
@@ -514,6 +515,8 @@ jobs:
       SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
       STEMCELL_OS: windows2016
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
+      MOUNT_EPHEMERAL_DISK: true
+      VM_EXTENSIONS: 10GB_ephemeral_disk
   - put: aws-2016-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-((AWS_PACKER_REGION)).tgz
@@ -607,6 +610,7 @@ jobs:
       TENANT_ID: ((AZURE_TENANT_ID))
       VM_SIZE: ((AZURE_VM_SIZE))
       VM_PREFIX: ((VM_PREFIX))
+      MOUNT_EPHEMERAL_DISK: true
     ensure:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
@@ -679,6 +683,9 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      MOUNT_EPHEMERAL_DISK: true
+      VM_EXTENSIONS: "10GB_ephemeral_disk"
+
   - task: upload-stemcell-to-acceptance
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -794,6 +801,7 @@ jobs:
       OS_VERSION: windows2016
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
       VM_PREFIX: ((VM_PREFIX))
+      MOUNT_EPHEMERAL_DISK: true
     ensure:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
@@ -847,7 +855,8 @@ jobs:
         SSH_TUNNEL_USER: ((goose_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        VM_EXTENSIONS: "500GB_ephemeral_disk" # WARN: Cloud Config specific
+        VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
+        MOUNT_EPHEMERAL_DISK: true
     ensure:
       put: goose-lock
       params:
@@ -942,6 +951,7 @@ jobs:
       OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
       VMX_CACHE_DIR: "C:\\vmx-data-((BASE_IMAGE_OS))"
       SKIP_WINDOWS_UPDATE: false
+      MOUNT_EPHEMERAL_DISK: true
 
 - name: test-vsphere-from-vmx
   serial: true
@@ -996,6 +1006,8 @@ jobs:
         STEMCELL_OS: windows2016 # this should be whatever the os listed in stemcell.MF says
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        VM_EXTENSIONS: 10GB_ephemeral_disk
+        MOUNT_EPHEMERAL_DISK: true
     ensure:
       put: vsphere-director-lock
       params:
@@ -1213,7 +1225,7 @@ jobs:
         SSH_TUNNEL_USER: ((goose_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
-        VM_EXTENSIONS: "500GB_ephemeral_disk"
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
     ensure:
       put: goose-lock
       params:
