@@ -22,10 +22,7 @@ def update_stemcell_filename
 end
 
 def update_stemcell_version
-  system('gunzip', $stemcell[0])
-
-  unzipped_file = Dir.glob('bosh-windows-stemcell/*.tar')
-  system('tar', '-xf', unzipped_file[0], 'stemcell.MF')
+  system('tar', '-xzf', $stemcell[0])
 
   manifest = YAML.load_file('stemcell.MF')
   manifest['version'] = $final_version
@@ -34,11 +31,8 @@ def update_stemcell_version
     file.write(YAML.dump(manifest))
   end
 
-  system('tar', '-uf', unzipped_file[0], 'stemcell.MF')
-  system('gzip', unzipped_file[0])
-  FileUtils.mv unzipped_file[0] + '.gz', $stemcell[0], force: true
+  system('tar', '-czf', $stemcell[0], 'image', 'stemcell.MF')
 end
 
 update_stemcell_version
-
 update_stemcell_filename
