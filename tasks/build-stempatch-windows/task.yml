@@ -3,7 +3,7 @@ platform: windows
 
 inputs:
 - name: librsync
-- name: stembuild
+- name: stempatch
 - name: ci
 - name: stempatch-version
 

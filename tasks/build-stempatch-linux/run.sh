@@ -25,11 +25,11 @@ pushd ${LIBRSYNC_BUILD_DIR}
   make test
 popd
 
-echo ***Copying librsync sources into stembuild***
-STEMBUILD_DIR=${ROOT_DIR}/stembuild
-STEMBUILD_RDIFF_DIR=${STEMBUILD_DIR}/rdiff
+echo ***Copying librsync sources into stempatch***
+STEMPATCH_DIR=${ROOT_DIR}/stempatch
+STEMPATCH_RDIFF_DIR=${STEMPATCH_DIR}/rdiff
 
-pushd ${STEMBUILD_RDIFF_DIR}
+pushd ${STEMPATCH_RDIFF_DIR}
   # We add the true at the end because a non-recursive copy will fail if it cannot copy a subdirectory
   # when copying with wildstar. However, the files in the root directory does get copied.
   cp ${LIBRSYNC_DIR}/src/* . || true
@@ -42,25 +42,25 @@ echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
-CF_EXP_DIR=${GOPATH}/src/github.com/pivotal-cf-experimental
-mkdir -p ${CF_EXP_DIR}
-cp -r ${STEMBUILD_DIR} ${CF_EXP_DIR}
+CF_DIR=${GOPATH}/src/github.com/pivotal-cf
+mkdir -p ${CF_DIR}
+cp -r ${STEMPATCH_DIR} ${CF_DIR}
 
 # install ginkgo
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-GO_STEMBUILD_DIR=${CF_EXP_DIR}/stembuild
-pushd ${GO_STEMBUILD_DIR}
-  echo ***Test Stembuild Code***
+GO_STEMPATCH_DIR=${CF_DIR}/stempatch
+pushd ${GO_STEMPATCH_DIR}
+  echo ***Test Stempatch Code***
   make units
   make integration
 
-  echo ***Building Stembuild***
+  echo ***Building Stempatch***
   go build
 popd
 
-echo ***Copying stembuild to output directory***
-cp ${GO_STEMBUILD_DIR}/stembuild ${OUTPUT_DIR}/stempatch-linux-x86_64-${VERSION}
+echo ***Copying stempatch to output directory***
+cp ${GO_STEMPATCH_DIR}/stempatch ${OUTPUT_DIR}/stempatch-linux-x86_64-${VERSION}
 
 

@@ -4,7 +4,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
   - name: librsync
-  - name: stembuild
+  - name: stempatch
   - name: ci
   - name: stempatch-version
   - name: ovftool

@@ -55,6 +55,13 @@ resources:
     uri: https://github.com/librsync/librsync.git
     tag_filter: v*
 
+- name: stempatch
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/stempatch.git
+    private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
+
 - name: stembuild
   type: git
   source:
@@ -96,6 +103,14 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
+
+- name: stempatch-release
+  type: github-release
+  source:
+    owner: pivotal-cf
+    repository: stempatch
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
@@ -200,16 +215,23 @@ resources:
 
 
 jobs:
-- name: build
+- name: build-stembuild
   serial: true
   plan:
   - aggregate:
     - get: stembuild
       trigger: true
     - get: stembuild-version
-    - get: stempatch-version
   - put: stembuild-version
     params: {bump: patch}
+
+- name: build-stempatch
+  serial: true
+  plan:
+  - aggregate:
+    - get: stempatch
+      trigger: true
+    - get: stempatch-version
   - put: stempatch-version
     params: {bump: patch}
 
@@ -219,10 +241,10 @@ jobs:
   - aggregate:
     - get: librsync
     - get: stembuild
-      passed: [ build ]
+      passed: [ build-stembuild ]
     - get: ci
     - get: stembuild-version
-      passed: [ build ]
+      passed: [ build-stembuild ]
       trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
@@ -237,10 +259,10 @@ jobs:
   - aggregate:
     - get: librsync
     - get: stembuild
-      passed: [ build ]
+      passed: [ build-stembuild ]
     - get: ci
     - get: stembuild-version
-      passed: [ build ]
+      passed: [ build-stembuild ]
       trigger: true
     - get: ovftool
   - task: build
@@ -254,11 +276,11 @@ jobs:
   plan:
   - aggregate:
     - get: librsync
-    - get: stembuild
-      passed: [ build ]
+    - get: stempatch
+      passed: [ build-stempatch ]
     - get: ci
     - get: stempatch-version
-      passed: [ build ]
+      passed: [ build-stempatch ]
       trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
@@ -272,11 +294,11 @@ jobs:
   plan:
   - aggregate:
     - get: librsync
-    - get: stembuild
-      passed: [ build ]
+    - get: stempatch
+      passed: [ build-stempatch ]
     - get: ci
     - get: stempatch-version
-      passed: [ build ]
+      passed: [ build-stempatch ]
       trigger: true
     - get: ovftool
   - task: build
@@ -341,7 +363,7 @@ jobs:
       params:
         release: vsphere-worker-lock
 
-- name: post-draft-release
+- name: post-stembuild-draft-release
   serial: true
   plan:
   - aggregate:
@@ -361,6 +383,28 @@ jobs:
       globs:
       - output/stembuild-*-x86_64-*
   - put: stembuild-version
+    params: {bump: minor}
+
+- name: post-stempatch-draft-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: stembu-untested-windows
+      passed: [ build-stempatch-windows ]
+    - get: stempatch-untested-linux
+      passed: [ build-stempatch-linux ]
+    - get: stempatch-version
+      passed: [ build-stempatch-linux, build-stempatch-windows ]
+  - task: trim-version-from-binaries
+    file: ci/tasks/set-stempatch-version/task.yml
+  - put: stempatch-release
+    params:
+      name: output/tag
+      tag: output/tag
+      globs:
+      - output/stempatch-*-x86_64-*
+  - put: stempatch-version
     params: {bump: minor}
 
 - name: test-stemcell-builder

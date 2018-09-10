@@ -7,7 +7,7 @@ $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR stempatch-version) version)
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
-$STEMBUILD_DIR="$GO_DIR/src/github.com/pivotal-cf-experimental/stembuild"
+$STEMPATCH_DIR="$GO_DIR/src/github.com/pivotal-cf/stempatch"
 
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"
@@ -41,27 +41,27 @@ Write-Host "Reverting Path to original value"
 $env:Path = $orig_env_path
 Write-Host "Reverted Path: $env:Path"
 
-Write-Host ***Cloning stembuild***
+Write-Host ***Cloning stempatch***
 cd $ROOT_DIR
-Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
+Copy-Item stempatch $STEMPATCH_DIR -Recurse -Force
 
-Write-Host ***Copying librsync sources into stembuild***
-$STEMBUILD_RDIFF_DIR=Join-Path $STEMBUILD_DIR rdiff
-cd $STEMBUILD_RDIFF_DIR
+Write-Host ***Copying librsync sources into stempatch***
+$STEMPATCH_RDIFF_DIR=Join-Path $STEMPATCH_DIR rdiff
+cd $STEMPATCH_RDIFF_DIR
 
 copy $LIBRSYNC_DIR/src/* .
 copy $LIBRSYNC_BUILD_DIR/src/* .
 copy $LIBRSYNC_BLAKE2_DIR/* .
 del rdiff.c
 
-Write-Host ***Test Stembuild Code***
+Write-Host ***Test Stempatch Code***
 cd ..
 
 Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-Write-Host ***Building Stembuild***
+Write-Host ***Building Stempatch***
 go install
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
@@ -78,4 +78,4 @@ if ($lastexitcode -ne 0)
 }
 
 Write-Host ***Copying stempatch to output directory***
-copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stempatch-windows-x86_64-$VERSION.exe
+copy $GO_DIR/bin/stempatch.exe $OUTPUT_DIR/stempatch-windows-x86_64-$VERSION.exe
