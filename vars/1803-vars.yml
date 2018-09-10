@@ -6,7 +6,7 @@ BASE_FOLDER_NAME: '1803'
 BASE_IMAGE_OS: 'windows1803'
 GCP_LOCK: 'stemcells-gcp'
 ROOT_BUCKET: 'all-bosh-windows'
-STEMCELL_INITIAL_VERSION: '1803.1.0'
+STEMCELL_INITIAL_VERSION: '1803.2.0'
 VM_PREFIX: 'packer-1803-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 
