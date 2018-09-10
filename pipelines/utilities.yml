@@ -1,25 +1,28 @@
 groups:
 - name: all
   jobs:
-  - build
+  - build-stembuild
+  - build-stempatch
   - build-stembuild-windows
   - build-stembuild-linux
   - build-stempatch-windows
   - build-stempatch-linux
   - bump-stemcell-builder-submodules
   - create-vsphere-add-updates
-  - post-draft-release
+  - post-stembuild-draft-release
+  - post-stempatch-draft-release
   - test-stemcell-builder
   - build-event-log-release
 - name: stembuild
   jobs:
   - build-stembuild-windows
   - build-stembuild-linux
-  - post-draft-release
+  - post-stembuild-draft-release
 - name: stempatch
   jobs:
   - build-stempatch-windows
   - build-stempatch-linux
+  - post-stempatch-draft-release
 - name: stemcell-builder
   jobs:
   - bump-stemcell-builder-submodules
@@ -390,7 +393,7 @@ jobs:
   plan:
   - aggregate:
     - get: ci
-    - get: stembu-untested-windows
+    - get: stempatch-untested-windows
       passed: [ build-stempatch-windows ]
     - get: stempatch-untested-linux
       passed: [ build-stempatch-linux ]
