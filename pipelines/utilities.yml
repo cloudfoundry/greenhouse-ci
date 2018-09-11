@@ -106,16 +106,17 @@ resources:
     owner: pivotal-cf-experimental
     repository: stembuild
     pre_release: true
+    release: false
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 
 - name: stempatch-release
   type: github-release
   source:
     owner: pivotal-cf
     repository: stempatch
+    pre_release: true
+    release: false
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 
 - name: event-log-release-github
   type: github-release
