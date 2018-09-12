@@ -15,6 +15,7 @@ export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
 CF_EXP_DIR=${GOPATH}/src/github.com/pivotal-cf-experimental
+STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_EXP_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_EXP_DIR}
 
