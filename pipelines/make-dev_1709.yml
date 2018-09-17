@@ -64,6 +64,17 @@
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 
+# configure create-vsphere-stemcell-from-patchfile for dev
+- type: replace
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/tags
+  value: [diffcell-windows-worker-dev]
+- type: replace
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/VHD_VMDK_BUCKET
+  value: all-bosh-windows-dev/base images
+- type: replace
+  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/PATCH_OUTPUT_BUCKET
+  value: all-bosh-windows-dev/1709/untested/vsphere/diffcell/patchfiles
+
 # configure gcp for dev
 - type: replace
   path: /jobs/name=create-gcp/plan/task=create-stemcell/params/ACCOUNT_JSON
