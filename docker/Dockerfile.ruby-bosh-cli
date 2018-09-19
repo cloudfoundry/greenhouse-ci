@@ -1,5 +1,5 @@
 #docker pull pivotalgreenhouse/ci
-FROM ruby:2.1
+FROM ruby:2.5.1
 
 RUN gem install bosh_cli bundler
 
