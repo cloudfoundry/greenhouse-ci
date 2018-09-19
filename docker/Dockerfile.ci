@@ -30,6 +30,7 @@ RUN apt-get update -qq && \
     python-all \
     python-dev \
     python-pip \
+    python-setuptools \
     rlwrap \
     rsync \
     unzip \
