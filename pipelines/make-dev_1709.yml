@@ -70,7 +70,7 @@
   value: [diffcell-windows-worker-dev]
 - type: replace
   path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/VHD_VMDK_BUCKET
-  value: all-bosh-windows-dev/base images
+  value: all-bosh-windows-dev/1709/untested/vsphere/diffcell/inputs
 - type: replace
   path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/PATCH_OUTPUT_BUCKET
   value: all-bosh-windows-dev/1709/untested/vsphere/diffcell/patchfiles

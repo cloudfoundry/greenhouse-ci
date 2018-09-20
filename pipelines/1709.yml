@@ -393,7 +393,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: "base images/16299.492.amd64fre.rs3_release_svc_refresh.180619-1217_server_serverdatacenteracore_en-us_vl.vhd"
+    regexp: 1709/untested/vsphere/diffcell/inputs/Windows-Server-Datacenter-Core-1709-with-Containers-(.*)-en.us-30GB.vhd
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: ovftool
