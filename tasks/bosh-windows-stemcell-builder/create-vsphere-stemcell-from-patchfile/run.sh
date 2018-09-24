@@ -17,7 +17,7 @@ case "${OS_VERSION}" in
   VHD_VERSION=$(echo "${VHD_FILENAME}" | sed 's/en.2k12r2.serverdatacenter.rtm.fpp.patched-//g' | sed 's/.vhd//g')
   ;;
 1709|1803)
-  VHD_VERSION=$(echo "${VHD_FILENAME}" | sed -E 's/Windows-Server-Datacenter-Core-\d+-with-Containers-(.+)-en.*/\1/g')
+  VHD_VERSION=$(echo "${VHD_FILENAME}" | sed -E 's/Windows-Server-Datacenter-Core-.+-with-Containers-(.+)-en.*/\1/g')
   ;;
 *)
   echo "OS Version needs to be 2012R2, 1709, 1803, is: ${OS_VERSION}" >&2
