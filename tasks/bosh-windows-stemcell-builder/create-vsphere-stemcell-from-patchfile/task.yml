@@ -9,7 +9,7 @@ outputs:
 
 inputs:
 - name: patchfile-dir
-- name: 2012-vhd
+- name: vhd
 - name: version
 - name: stembuild
 - name: ovftool
