@@ -22,6 +22,7 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
+  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -1164,11 +1165,11 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-patchfile/task.yml
     tags: [diffcell-windows-worker]
     params:
-      ADMINISTRATOR_PASSWORD: ???
+      ADMINISTRATOR_PASSWORD: "Password123!"
       OS_VERSION: windows2016
-      PRODUCT_KEY: 2HXDN-KRXHB-GPYC7-YCKFJ-7FVDG
-      ORGANIZATION: ???
-      OWNER: ???
+      PRODUCT_KEY: 2HXDN-KRXHB-GPYC7-YCKFJ-7FVDG # Test key from https://docs.microsoft.com/en-us/windows-server/get-started/kmsclientkeys
+      ORGANIZATION: Pivotal
+      OWNER: Pivotal
       STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
@@ -1197,7 +1198,8 @@ jobs:
     - get: main-version
       passed: [create-vsphere-patchfile]
     - get: stembuild
-    - get: 1709-vhd
+    - get: vhd
+      resource: 1709-vhd
     - get: ovftool
     - get: stemcell-builder
       passed: [create-vsphere-patchfile]
@@ -1234,8 +1236,6 @@ jobs:
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: vsphere-stemcell-from-patchfile-untested
         passed: [create-vsphere-stemcell-from-patchfile]
-      - get: 1709-vhd
-        passed: [create-vsphere-stemcell-from-patchfile]
       - get: stemcell-builder
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: version
@@ -1259,6 +1259,8 @@ jobs:
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2016-go_agent.tgz
         VM_TYPE: large
+        VM_EXTENSIONS: 10GB_ephemeral_disk
+        MOUNT_EPHEMERAL_DISK: true
     - put: vsphere-stemcell-from-patchfile-tested
       params:
         file: bosh-windows-stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2016-go_agent.tgz
@@ -1302,14 +1304,11 @@ jobs:
         passed: [test-vsphere-stemcell-from-patchfile]
       - get: vsphere-from-patchfile-build-number
         passed: [test-vsphere-stemcell-from-patchfile]
-      - get: 1709-vhd
-        passed: [test-vsphere-stemcell-from-patchfile]
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
       input_mapping:
         stemcell: bosh-windows-stemcell
-        windows-utilities-release: windows-utilities
       params:
         AZ: z1
         BOSH_CA_CERT: ((regina_ca_cert))
@@ -1590,6 +1589,63 @@ jobs:
       resource: vsphere-stemcell-final
       params:
         file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+
+- name: promote-vsphere-patchfile
+  serial_groups: ["vsphere-director"]
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: vsphere-stemcell-from-patchfile-tested
+      passed: [promote]
+    - get: vsphere-from-patchfile-build-number
+      passed: [promote]
+      trigger: true
+    - get: vsphere-patchfile-tested
+      passed: [promote]
+    - get: vsphere-manifest-tested
+      passed: [promote]
+    - get: stemcell-builder
+      passed: [promote]
+    - get: version
+      resource: main-version
+      passed: [promote]
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - task: test-vsphere-stemcell
+      input_mapping: { stemcell: vsphere-stemcell-from-patchfile-tested }
+      tags: [vsphere-linux-worker]
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      attempts: 5
+      params:
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        GINKGO_FOCUS: "is fully updated"
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: windows2016
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2016-go_agent.tgz
+        VM_TYPE: large
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+  - task: vsphere-set-stemcell-filename-version
+    tags: [vsphere-linux-worker]
+    input_mapping: { bosh-windows-stemcell: vsphere-stemcell-from-patchfile-tested }
+    file: ci/tasks/set-stemcell-version/task.yml
+  - task: upload-patch-and-manifest-to-azure-blobstore
+    input_mapping:
+      manifest: vsphere-manifest-tested
+      patchfile: vsphere-patchfile-tested
+    file: ci/tasks/promote-vsphere-from-patchfile/task.yml
+    params:
+      STORAGE_ACCESS_KEY: ((KOALA_STANDARD_STORAGE_ACCESS_KEY))
 
 - name: print-azure-publishing-instructions
   serial: true

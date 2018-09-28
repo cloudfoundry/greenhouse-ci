@@ -17,9 +17,6 @@
   path: /resources/name=vsphere-from-vmx-build-number/source/initial_version
   value: 1200.5000.0
 - type: replace
-  path: /resources/name=vsphere-from-patchfile-build-number/source/initial_version
-  value: 1200.5000.0
-- type: replace
   path: /resources/name=main-version/source/initial_version
   value: 1200.5000.0
 - type: replace
@@ -59,17 +56,6 @@
 - type: remove
   path: /resources/name=goose-lock
 # JOBS
-
-# configure create-vsphere-stemcell-from-patchfile for dev
-- type: replace
-  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/tags
-  value: [diffcell-windows-worker-dev]
-- type: replace
-  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/VHD_VMDK_BUCKET
-  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell/inputs
-- type: replace
-  path: /jobs/name=create-vsphere-patchfile/plan/task=create-patchfile/params/PATCH_OUTPUT_BUCKET
-  value: all-bosh-windows-dev/2012R2/untested/vsphere/diffcell/patchfiles
 
 # configure gcp for dev
 - type: replace
@@ -113,15 +99,12 @@
   path: /jobs/name=promote-aws
 - type: remove
   path: /jobs/name=promote
-
 - type: remove
   path: /jobs/name=promote-vsphere
 - type: remove
   path: /jobs/name=promote-azure
 - type: remove
   path: /jobs/name=promote-gcp
-- type: remove
-  path: /jobs/name=promote-vsphere-patchfile
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
 - type: remove

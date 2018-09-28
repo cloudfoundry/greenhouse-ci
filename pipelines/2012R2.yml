@@ -14,24 +14,15 @@ groups:
   - create-vsphere-stemcell-from-vmx
   - test-vsphere-stemcell-from-vmx
   - wuts-vsphere
-  - create-vsphere-patchfile
-  - create-vsphere-stemcell-from-patchfile
-  - test-vsphere-stemcell-from-patchfile
-  - wuts-vsphere-from-patchfile
   - promote
   - promote-gcp
   - promote-aws
   - promote-vsphere
-  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
-  - create-vsphere-patchfile
-  - create-vsphere-stemcell-from-patchfile
-  - test-vsphere-stemcell-from-patchfile
-  - wuts-vsphere-from-patchfile
   - create-vsphere-stemcell-from-vmx
   - test-vsphere-stemcell-from-vmx
   - wuts-vsphere
@@ -56,7 +47,6 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
-  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -171,14 +161,6 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "1.0.0"
-- name: vsphere-from-patchfile-build-number
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: 2012R2/versions/vsphere-patchfile-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1200.0.0
 - name: vsphere-from-vmx-build-number
   type: semver
   source:
@@ -252,48 +234,6 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-patchfile-untested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/untested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-patchfile-tested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/tested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-manifest-untested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/untested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*.yml
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-manifest-tested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/tested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*.yml
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-from-patchfile-untested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/untested/vsphere/diffcell/bosh-stemcell-(.*)-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-stemcell-from-patchfile-tested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/tested/vsphere/diffcell/bosh-stemcell-(.*)-patch-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final
@@ -395,20 +335,6 @@ resources:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-azure-hyperv-windows2012R2-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: 2012-vhd
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: 2012R2/untested/vsphere/diffcell/inputs/en.2k12r2.serverdatacenter.rtm.fpp.patched-(.*).vhd
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: ovftool
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -601,7 +527,7 @@ jobs:
 
 - name: build
   serial: true
-  serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version, vsphere-patchfile-version]
+  serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version]
   plan:
   - aggregate:
     - get: ci
@@ -620,9 +546,6 @@ jobs:
       file: version/number
   - aggregate:
     - put: vsphere-from-vmx-build-number
-      params:
-        file: version/number
-    - put: vsphere-from-patchfile-build-number
       params:
         file: version/number
     - put: aws-build-number
@@ -658,199 +581,6 @@ jobs:
     - put: base-gcp-image-win2012r2
       params:
         file: win2012r2-gcp-image/base-gcp-image-windows2012R2-*.json
-
-- name: create-vsphere-patchfile
-  serial: true
-  serial_groups: [vsphere-patchfile-version]
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      passed: [build]
-    - get: windows-stemcell-dependencies
-    - get: version
-      resource: vsphere-from-patchfile-build-number
-      passed: [build]
-      trigger: true
-    - get: main-version
-      passed: [build]
-    - get: sshd
-      resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
-  - put: version
-    resource: vsphere-from-patchfile-build-number
-    params:
-      pre: build
-  - task: create-patchfile
-    privileged: true
-    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-patchfile/task.yml
-    tags: [diffcell-windows-worker]
-    params:
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      OS_VERSION: windows2012R2
-      PRODUCT_KEY: D2N9P-3P6X9-2R39C-7RTCD-MDVJX
-      ORGANIZATION: Pivotal
-      OWNER: Pivotal
-      STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      AWS_REGION: us-east-1
-      VHD_VMDK_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/diffcell/inputs"
-      PATCH_OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/diffcell/patchfiles"
-      CACHE_DIR: "C:\\image-data"
-  - task: pause-to-wait-for-concourse-resource-check
-    config:
-      platform: linux
-      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-      run:
-        path: sleep
-        args:
-        - 60
-
-- name: create-vsphere-stemcell-from-patchfile
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: version
-      passed: [create-vsphere-patchfile]
-      resource: vsphere-from-patchfile-build-number
-      trigger: true
-    - get: main-version
-      passed: [create-vsphere-patchfile]
-    - get: stembuild
-    - get: 2012-vhd
-    - get: ovftool
-    - get: stemcell-builder
-      passed: [create-vsphere-patchfile]
-    - get: vsphere-patchfile-untested
-  - task: build-stemcell
-    input_mapping: { patchfile-dir: vsphere-patchfile-untested }
-    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/task.yml
-    params:
-      OS_VERSION: 2012R2
-      OUTPUT_DIR: patchfile-stemcell
-  - put: vsphere-stemcell-from-patchfile-untested
-    params:
-      file: patchfile-stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-  - put: vsphere-manifest-untested
-    params:
-      file: patchfile-stemcell/*.yml
-
-- name: test-vsphere-stemcell-from-patchfile
-  serial_groups: ["vsphere-director"]
-  serial: true
-  plan:
-  - put: vsphere-director-lock
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: bosh-windows-stemcell
-        passed: [create-vsphere-stemcell-from-patchfile]
-        resource: vsphere-stemcell-from-patchfile-untested
-      - get: vsphere-manifest-untested
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: vsphere-patchfile-untested
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: vsphere-stemcell-from-patchfile-untested
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: 2012-vhd
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: stemcell-builder
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: version
-        resource: vsphere-from-patchfile-build-number
-        passed: [create-vsphere-stemcell-from-patchfile]
-        trigger: true
-      - get: main-version
-        passed: [create-vsphere-stemcell-from-patchfile]
-    - task: test-stemcell
-      tags: [vsphere-linux-worker]
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
-      params:
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-        VM_TYPE: large
-    - put: vsphere-stemcell-from-patchfile-tested
-      params:
-        file: bosh-windows-stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-    - put: vsphere-manifest-tested
-      params:
-        file: vsphere-manifest-untested/*.yml
-    - put: vsphere-patchfile-tested
-      params:
-        file: vsphere-patchfile-untested/patchfile-*
-    ensure:
-      put: vsphere-director-lock
-      params:
-        release: vsphere-director-lock
-
-- name: wuts-vsphere-from-patchfile
-  serial: true
-  plan:
-  - put: vsphere-director-lock
-    params:
-      acquire: true
-  - do:
-    - aggregate:
-      - get: ci
-      - get: windows-utilities
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
-      - get: bosh-windows-stemcell
-        resource: vsphere-stemcell-from-patchfile-tested
-        passed: [test-vsphere-stemcell-from-patchfile]
-        trigger: true
-      - get: manifest
-        passed: [test-vsphere-stemcell-from-patchfile]
-        resource: vsphere-manifest-tested
-      - get: patchfile
-        passed: [test-vsphere-stemcell-from-patchfile]
-        resource: vsphere-patchfile-tested
-      - get: stemcell-builder
-        passed: [test-vsphere-stemcell-from-patchfile]
-      - get: version
-        resource: main-version
-        passed: [test-vsphere-stemcell-from-patchfile]
-      - get: vsphere-from-patchfile-build-number
-        passed: [test-vsphere-stemcell-from-patchfile]
-      - get: 2012-vhd
-        passed: [test-vsphere-stemcell-from-patchfile]
-    - task: run-wuts
-      tags: [vsphere-linux-worker]
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping:
-        stemcell: bosh-windows-stemcell
-        windows-utilities-release: windows-utilities
-      params:
-        AZ: z1
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        BOSH_GW_USER: ((regina_gw_user))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: default
-    ensure:
-      put: vsphere-director-lock
-      params:
-        release: vsphere-director-lock
 
 - name: create-aws
   serial: true
@@ -1352,14 +1082,6 @@ jobs:
     - get: ci
     - get: vsphere-stemcell-tested
       passed: [wuts-vsphere]
-    - get: vsphere-stemcell-from-patchfile-tested
-      passed: [wuts-vsphere-from-patchfile]
-    - get: vsphere-patchfile-tested
-      passed: [wuts-vsphere-from-patchfile]
-    - get: vsphere-manifest-tested
-      passed: [wuts-vsphere-from-patchfile]
-    - get: vsphere-from-patchfile-build-number
-      passed: [wuts-vsphere-from-patchfile]
     - get: vsphere-from-vmx-build-number
       passed: [wuts-vsphere]
     - get: aws-2012-tested
@@ -1378,7 +1100,6 @@ jobs:
         - wuts-gcp
         - wuts-aws
         - wuts-vsphere
-        - wuts-vsphere-from-patchfile
         - wuts-azure
     - get: version
       resource: main-version
@@ -1386,7 +1107,6 @@ jobs:
         - wuts-gcp
         - wuts-aws
         - wuts-vsphere
-        - wuts-vsphere-from-patchfile
         - wuts-azure
     - get: aws-build-number
       passed: [wuts-aws]
@@ -1399,7 +1119,6 @@ jobs:
       inputs:
         - name: ci
         - name: vsphere-stemcell-tested
-        - name: vsphere-stemcell-from-patchfile-tested
         - name: aws-2012-tested
         - name: gcp-stemcell-tested
         - name: azure-stemcell-tested
@@ -1623,63 +1342,6 @@ jobs:
       resource: vsphere-stemcell-final
       params:
         file: final-stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-
-- name: promote-vsphere-patchfile
-  serial_groups: ["vsphere-director"]
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: vsphere-stemcell-from-patchfile-tested
-      passed: [promote]
-    - get: vsphere-from-patchfile-build-number
-      passed: [promote]
-      trigger: true
-    - get: vsphere-patchfile-tested
-      passed: [promote]
-    - get: vsphere-manifest-tested
-      passed: [promote]
-    - get: stemcell-builder
-      passed: [promote]
-    - get: version
-      resource: main-version
-      passed: [promote]
-  - put: vsphere-director-lock
-    params:
-      acquire: true
-  - do:
-    - task: test-vsphere-stemcell
-      input_mapping: { stemcell: vsphere-stemcell-from-patchfile-tested }
-      tags: [vsphere-linux-worker]
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 5
-      params:
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        GINKGO_FOCUS: "is fully updated"
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-patch-vsphere-esxi-windows2012R2-go_agent.tgz
-        VM_TYPE: large
-    ensure:
-      put: vsphere-director-lock
-      params:
-        release: vsphere-director-lock
-  - task: vsphere-set-stemcell-filename-version
-    tags: [vsphere-linux-worker]
-    input_mapping: { bosh-windows-stemcell: vsphere-stemcell-from-patchfile-tested }
-    file: ci/tasks/set-stemcell-version/task.yml
-  - task: upload-patch-and-manifest-to-azure-blobstore
-    input_mapping:
-      manifest: vsphere-manifest-tested
-      patchfile: vsphere-patchfile-tested
-    file: ci/tasks/promote-vsphere-from-patchfile/task.yml
-    params:
-      STORAGE_ACCESS_KEY: ((KOALA_STANDARD_STORAGE_ACCESS_KEY))
 
 - name: print-azure-publishing-instructions
   serial: true
