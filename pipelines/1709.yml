@@ -1336,6 +1336,14 @@ jobs:
     - get: ci
     - get: vsphere-stemcell-release-candidate
       passed: [wuts-vsphere]
+    - get: vsphere-stemcell-from-patchfile-tested
+      passed: [wuts-vsphere-from-patchfile]
+    - get: vsphere-patchfile-tested
+      passed: [wuts-vsphere-from-patchfile]
+    - get: vsphere-manifest-tested
+      passed: [wuts-vsphere-from-patchfile]
+    - get: vsphere-from-patchfile-build-number
+      passed: [wuts-vsphere-from-patchfile]
     - get: aws-2016-tested
       passed: [wuts-aws]
     - get: gcp-2016-tested
@@ -1351,12 +1359,14 @@ jobs:
       - wuts-gcp
       - wuts-aws
       - wuts-vsphere
+      - wuts-vsphere-from-patchfile
       - wuts-azure
     - get: main-version
       passed:
       - wuts-gcp
       - wuts-aws
       - wuts-vsphere
+      - wuts-vsphere-from-patchfile
       - wuts-azure
     - get: packer-output-ami
       passed: [wuts-aws]
@@ -1369,6 +1379,7 @@ jobs:
       inputs:
         - name: ci
         - name: vsphere-stemcell-release-candidate
+        - name: vsphere-stemcell-from-patchfile-tested
         - name: aws-2016-tested
         - name: gcp-2016-tested
         - name: azure-tested
