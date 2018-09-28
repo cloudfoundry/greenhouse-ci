@@ -477,6 +477,7 @@ jobs:
         BASE_AMI: ((BASE_IMAGE_OS))
         PREPPED_BASE_AMI: ami-1ed2d664
         BASE_AMI_NAME: ((BASE_AMI_NAME))
+        PACKER_REGION: ((AWS_PACKER_REGION))
     - task: collect-win2016-gcp-image
       file: ci/tasks/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win2016-gcp-image }
