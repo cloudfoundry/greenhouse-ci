@@ -2,106 +2,68 @@
 
 require 'json'
 
-PREPPED_BASE_AMI_NAME = "windows-1709-ena-prepped"
+supported_base_ami = %w[windows2012R2 windows1709 windows1803]
 
 # Helper method
 def get_ami_for(region, base_ami_name)
-  if base_ami_name == PREPPED_BASE_AMI_NAME
-    return ENV['PREPPED_BASE_AMI']
-  else
-    amis = JSON.parse(`aws ec2 describe-images \
+  amis = JSON.parse(`aws ec2 describe-images \
             --region #{region} \
             --owners amazon \
             --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
-    ami_id = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate']  }).map { |x| x['ImageId'] }.first
-    return ami_id
-  end
+  (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate'] }).map { |x| x['ImageId'] }.first
 end
 
-if !File.file?('version/number')
-  raise 'Error: no version number available'
-end
+abort 'Error: no version number available' unless File.file?('version/number')
 version = File.read('version/number').chomp
 
 base_ami = ENV['BASE_AMI']
-if base_ami != 'windows2012R2' && base_ami != 'windows2016' && base_ami != 'windows1709' && base_ami != 'windows1803' #Is there a better way to check for this? Do we still need to do this?
-  abort 'abort "Define BASE_AMI environment variable (i.e. windows2012R2, windows2016, windows1709, or windows1803)'
+unless supported_base_ami.include? base_ami
+  abort 'abort "Define BASE_AMI environment variable (i.e. windows2012R2, windows1709, or windows1803)'
 end
 
 base_ami_name = ENV['BASE_AMI_NAME']
-if base_ami_name == ''
-  abort 'Define BASE_AMI_NAME environment variable'
-end
+abort 'Define BASE_AMI_NAME environment variable' if base_ami_name == ''
 
-if (base_ami_name == PREPPED_BASE_AMI_NAME)
-  region_names = [
-    "us-east-1"
-  ]
-else
-  region_names = [
-    "us-east-1",
-    "us-east-2",
-    "us-west-1",
-    "us-west-2",
-    "ca-central-1",
-    "ap-south-1",
-    "ap-northeast-2",
-    "ap-southeast-1",
-    "ap-southeast-2",
-    "ap-northeast-1",
-    "eu-central-1",
-    "eu-west-1",
-    "eu-west-2",
-    "sa-east-1"
-  ]
-end
+region_name = ENV['PACKER_REGION']
+abort 'Error: No PACKER_REGION environment variable' if region_name == ''
 
-region_infos = []
-region_names.each do |region_name|
-  region_info = {}
-  region_info['name'] = region_name
+region_info = {}
+region_info['name'] = region_name
 
-  ami_id = get_ami_for(region_name, base_ami_name)
-  region_info['base_ami'] = ami_id
+ami_id = get_ami_for(region_name, base_ami_name)
+region_info['base_ami'] = ami_id
 
-  vpcs = JSON.parse(`aws ec2 describe-vpcs \
+vpcs = JSON.parse(`aws ec2 describe-vpcs \
               --region #{region_name}`)
-  vpc_id = vpcs['Vpcs'].first["VpcId"]
-  if vpc_id.nil? || vpc_id.empty?
-    raise "Error: no vpc id found for region '#{region_name}'"
-  end
-  region_info['vpc_id'] = vpc_id
+vpc_id = vpcs['Vpcs'].first['VpcId']
+if vpc_id.nil? || vpc_id.empty?
+  raise "Error: no vpc id found for region '#{region_name}'"
+end
+region_info['vpc_id'] = vpc_id
 
-  subnets = JSON.parse(`aws ec2 describe-subnets \
+subnets = JSON.parse(`aws ec2 describe-subnets \
                 --region #{region_name} \
                 --filters "Name=vpc-id,Values=#{vpc_id}"`)
-  subnet_id = subnets["Subnets"].first["SubnetId"]
-  if subnet_id.nil? || subnet_id.empty?
-    raise "Error: no subnet id found for vpc '#{vpc_id}' in region '#{region_name}'"
-  end
-  region_info['subnet_id'] = subnet_id
+subnet_id = subnets['Subnets'].first['SubnetId']
+if subnet_id.nil? || subnet_id.empty?
+  raise "Error: no subnet id found for vpc '#{vpc_id}' in region '#{region_name}'"
+end
+region_info['subnet_id'] = subnet_id
 
-  sg_name = 'packer-aws-stemcell'
-  sgs = JSON.parse(`aws ec2  describe-security-groups \
+sg_name = 'packer-aws-stemcell'
+sgs = JSON.parse(`aws ec2  describe-security-groups \
               --region #{region_name} \
               --group-names #{sg_name} \
               --filters "Name=vpc-id,Values=#{vpc_id}"`)
-  sg_id = sgs["SecurityGroups"].first["GroupId"]
-  if sg_id.nil? || sg_id.empty?
-    raise "Error: no security group found with name '#{sg_name}' for vpc '#{vpc_id}' in region '#{region_name}'"
-  end
-  region_info['security_group'] = sg_id
-
-  region_infos.push(region_info)
+sg_id = sgs['SecurityGroups'].first['GroupId']
+if sg_id.nil? || sg_id.empty?
+  raise "Error: no security group found with name '#{sg_name}' for vpc '#{vpc_id}' in region '#{region_name}'"
 end
+region_info['security_group'] = sg_id
 
-if region_infos.size != region_names.size
-  raise 'Error: unable to generate valid region information'
-end
-
-puts JSON.pretty_generate(region_infos)
+puts JSON.pretty_generate(region_info)
 
 File.open(File.join('base-amis', "base-amis-#{base_ami}-#{version}.json"), 'w') do |f|
-  f.write(region_infos.to_json)
+  f.write(region_info.to_json)
 end
 
