@@ -476,6 +476,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
         BASE_AMI: ((BASE_IMAGE_OS))
         BASE_AMI_NAME: ((BASE_AMI_NAME))
+        PACKER_REGION: ((AWS_PACKER_REGION))
     - task: collect-win1803-gcp-image
       file: ci/tasks/collect-gcp-image/task.yml
       output_mapping: { base-gcp-image: win1803-gcp-image }
