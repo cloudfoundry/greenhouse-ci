@@ -639,6 +639,7 @@ jobs:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
       params:
+        IAAS: aws
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         VM_PREFIX: ((VM_PREFIX))
@@ -777,6 +778,7 @@ jobs:
       params:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         VM_PREFIX: ((VM_PREFIX))
+        IAAS: gcp
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     attempts: 1
@@ -928,6 +930,7 @@ jobs:
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
+        IAAS: azure
         VM_PREFIX: ((VM_PREFIX))
   - put: azure-stemcell-untested
     params:

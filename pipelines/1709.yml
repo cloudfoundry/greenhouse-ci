@@ -552,6 +552,7 @@ jobs:
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        IASS: aws
         VM_PREFIX: ((VM_PREFIX))
   - aggregate:
     - put: aws-2016-untested
@@ -695,6 +696,7 @@ jobs:
       params:
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+        IAAS: azure
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
         VM_PREFIX: ((VM_PREFIX))
@@ -885,6 +887,7 @@ jobs:
       file: ci/tasks/delete-vms/task.yml
       params:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+        IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml

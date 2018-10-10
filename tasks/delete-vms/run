@@ -69,28 +69,18 @@ module DeleteVms
   end
 end
 
-def aws?
-  ENV.has_key?('AWS_ACCESS_KEY_ID') && ENV.has_key?('AWS_SECRET_ACCESS_KEY')
-end
-
-def azure?
-  ENV.has_key?('TENANT_ID') && ENV.has_key?('CLIENT_ID') && ENV.has_key?('CLIENT_SECRET') && ENV.has_key?('SUBSCRIPTION_ID')
-end
-
-def gcp?
-  ENV.has_key?('ACCOUNT_JSON')
-end
 
 if ENV['VM_PREFIX'] == ''
   throw 'Must specify a prefix for VMs to delete'
 end
 
-if aws?
-  DeleteVms::Aws.delete(ENV['VM_PREFIX'])
-elsif azure?
-  DeleteVms::Azure.delete(ENV['VM_PREFIX'])
-elsif gcp?
-  DeleteVms::Gcp.delete(ENV['VM_PREFIX'])
-else
-  throw "Could not find an environment to run delete"
+case ENV['IAAS']
+  when 'aws'
+    DeleteVms::Aws.delete(ENV['VM_PREFIX'])
+  when 'gcp'
+    DeleteVms::Gcp.delete(ENV['VM_PREFIX'])
+  when 'azure'
+    DeleteVms::Azure.delete(ENV['VM_PREFIX'])
+  else
+    throw "Could not find an environment to run delete"
 end
