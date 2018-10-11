@@ -58,7 +58,7 @@ RUN AZ_REPO=$(lsb_release -cs) && \
 RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
 
 RUN pip install wheel --upgrade --user
-RUN pip install awscli --upgrade --user
+RUN pip install awscli
 RUN gem install aws-sdk
 RUN gem install azure_mgmt_resources
 
