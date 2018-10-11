@@ -552,7 +552,7 @@ jobs:
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-        IASS: aws
+        IAAS: aws
         VM_PREFIX: ((VM_PREFIX))
   - aggregate:
     - put: aws-2016-untested
