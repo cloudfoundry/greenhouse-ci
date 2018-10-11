@@ -170,7 +170,7 @@ resources:
     key: ((BASE_FOLDER_NAME))/versions/vsphere-updated-vmx
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 5.0.0
+    initial_version: 1.0.0
 - name: vsphere-from-vmx-build-number
   type: semver
   source:
