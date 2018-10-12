@@ -16,12 +16,18 @@ run:
   - "-File"
   - ci/tasks/bosh-windows-stemcell-builder/create-vsphere-patchfile/run.ps1
 params:
+  ADMINISTRATOR_PASSWORD:
   AWS_ACCESS_KEY_ID:
   AWS_REGION:
   AWS_SECRET_ACCESS_KEY:
   CACHE_DIR:
+  ORGANIZATION:
   OS_VERSION: windows2012R2
   OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
+  OWNER:
+  PATCH_OUTPUT_BUCKET:
+  PRODUCT_KEY:
+  STEMCELL_DEPS_DIR:
   UPDATES_HTTPS_PROXY:
   UPDATES_HTTP_PROXY:
   UPDATES_PROXY_BYPASS_LIST:
