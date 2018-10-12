@@ -107,6 +107,7 @@ resources:
     repository: stembuild
     pre_release: true
     release: false
+    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: stempatch-release
@@ -116,6 +117,7 @@ resources:
     repository: stempatch
     pre_release: true
     release: false
+    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: event-log-release-github
@@ -124,6 +126,7 @@ resources:
     owner: cloudfoundry-incubator
     repository: event-log-release
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
 
 # time
 - name: monthly-updates-trigger

@@ -24,6 +24,7 @@ resources:
     owner: cloudfoundry-incubator
     repository: bosh-windows-stemcell-automation
     pre_release: true
+    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: stemcell-automation-zip-file
