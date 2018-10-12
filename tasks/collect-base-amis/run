@@ -10,9 +10,11 @@ def get_ami_for(region, base_ami_name)
             --region #{region} \
             --owners amazon \
             --filters "Name=name,Values=#{base_ami_name}" "Name=state,Values=available"`)
-  base_ami = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate'] }).map { |x| x['ImageId'] }.first
+  base_ami = (amis['Images'].sort { |a, b| b['CreationDate'] <=> a['CreationDate'] }).first
   puts "Base AMI Information:"
-  puts JSON.pretty_generate({name: base_ami.Name, description: base_ami.Description, creation_date: base_ami.CreationDate})
+  puts JSON.pretty_generate({name: base_ami['Name'], description: base_ami['Description'], creation_date: base_ami['CreationDate']})
+
+  base_ami['ImageId']
 end
 
 abort 'Error: no version number available' unless File.file?('version/number')
