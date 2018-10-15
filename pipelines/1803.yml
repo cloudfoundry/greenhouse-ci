@@ -22,7 +22,7 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
-#  - promote-vsphere-patchfile
+  #  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -56,7 +56,7 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
-#  - promote-vsphere-patchfile
+  #  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -1054,17 +1054,17 @@ jobs:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
-        - name: version
+      - name: version
       outputs:
-        - name: stemcell
+      - name: stemcell
       run:
         path: /bin/bash
         args:
-          - -c
-          - |
-            VERSION=$(cat version/number)
-            echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
-            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz stemcell
+        - -c
+        - |
+          VERSION=$(cat version/number)
+          echo "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
+          aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz stemcell
   - put: vsphere-director-lock
     params:
       acquire: true
@@ -1372,11 +1372,11 @@ jobs:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
-        - name: ci
-        - name: vsphere-stemcell-release-candidate
-        - name: aws-1803-tested
-        - name: gcp-1803-tested
-        - name: azure-tested
+      - name: ci
+      - name: vsphere-stemcell-release-candidate
+      - name: aws-1803-tested
+      - name: gcp-1803-tested
+      - name: azure-tested
       run:
         path: ci/tasks/match-stemcell-versions/run
 
