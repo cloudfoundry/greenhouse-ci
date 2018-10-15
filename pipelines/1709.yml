@@ -5,6 +5,9 @@ groups:
   - create-aws
   - test-aws
   - wuts-aws
+  - create-aws-china
+  - test-aws-china
+  - wuts-aws-china
   - create-azure
   - test-azure
   - wuts-azure
@@ -31,6 +34,11 @@ groups:
   - create-aws
   - test-aws
   - wuts-aws
+- name: aws-china
+  jobs:
+  - create-aws-china
+  - test-aws-china
+  - wuts-aws-china
 - name: azure
   jobs:
   - create-azure
