@@ -762,6 +762,7 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/*.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      ROOT_EPHEMERAL_VM_TYPE: ((ROOT_EPHEMERAL_VM_TYPE))
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: "10GB_ephemeral_disk"
   - task: upload-stemcell-to-acceptance
