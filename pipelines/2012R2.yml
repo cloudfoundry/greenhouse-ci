@@ -401,7 +401,7 @@ jobs:
       timeout: 2h
       attempts: 3
       privileged: true
-      file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-from-vmx/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
       tags: [vsphere-windows-worker]
       params:
         ADMINISTRATOR_PASSWORD: "Password123!"
@@ -768,7 +768,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
     timeout: 60m
     attempts: 10
     params:
@@ -907,7 +907,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-azure/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
