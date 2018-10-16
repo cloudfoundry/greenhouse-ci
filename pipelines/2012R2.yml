@@ -5,14 +5,14 @@ groups:
   - create-aws
   - test-aws
   - wuts-aws
-  - create-azure-stemcell
-  - test-azure-stemcell
+  - create-azure
+  - test-azure
   - wuts-azure
-  - create-gcp-stemcell
-  - test-gcp-stemcell
+  - create-gcp
+  - test-gcp
   - wuts-gcp
-  - create-vsphere-stemcell-from-vmx
-  - test-vsphere-stemcell-from-vmx
+  - create-vsphere-from-vmx
+  - test-vsphere-from-vmx
   - wuts-vsphere
   - promote
   - promote-gcp
@@ -23,8 +23,8 @@ groups:
   - ship-bosh-stemcell-builder
 - name: vsphere
   jobs:
-  - create-vsphere-stemcell-from-vmx
-  - test-vsphere-stemcell-from-vmx
+  - create-vsphere-from-vmx
+  - test-vsphere-from-vmx
   - wuts-vsphere
 - name: aws
   jobs:
@@ -33,13 +33,13 @@ groups:
   - wuts-aws
 - name: gcp
   jobs:
-  - create-gcp-stemcell
-  - test-gcp-stemcell
+  - create-gcp
+  - test-gcp
   - wuts-gcp
 - name: azure
   jobs:
-  - create-azure-stemcell
-  - test-azure-stemcell
+  - create-azure
+  - test-azure
   - wuts-azure
 - name: promote
   jobs:
@@ -367,7 +367,7 @@ resources:
     location: America/New_York
 
 jobs:
-- name: create-vsphere-stemcell-from-vmx
+- name: create-vsphere-from-vmx
   serial: true
   serial_groups: [vsphere-vmx-version]
   plan:
@@ -401,7 +401,7 @@ jobs:
       timeout: 2h
       attempts: 3
       privileged: true
-      file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+      file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-from-vmx/task.yml
       tags: [vsphere-windows-worker]
       params:
         ADMINISTRATOR_PASSWORD: "Password123!"
@@ -418,7 +418,7 @@ jobs:
       params:
         release: vsphere-worker-lock
 
-- name: test-vsphere-stemcell-from-vmx
+- name: test-vsphere-from-vmx
   serial_groups: ["vsphere-director"]
   serial: true
   plan:
@@ -429,13 +429,13 @@ jobs:
     - aggregate:
       - get: ci
       - get: stemcell-builder
-        passed: [create-vsphere-stemcell-from-vmx]
+        passed: [create-vsphere-from-vmx]
       - get: version
         resource: vsphere-from-vmx-build-number
-        passed: [create-vsphere-stemcell-from-vmx]
+        passed: [create-vsphere-from-vmx]
         trigger: true
       - get: main-version
-        passed: [create-vsphere-stemcell-from-vmx]
+        passed: [create-vsphere-from-vmx]
     - task: bosh-windows-stemcell
       tags: [vsphere-linux-worker]
       params:
@@ -492,15 +492,15 @@ jobs:
         resource: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: vsphere-stemcell-tested
-        passed: [test-vsphere-stemcell-from-vmx]
+        passed: [test-vsphere-from-vmx]
         trigger: true
       - get: stemcell-builder
-        passed: [test-vsphere-stemcell-from-vmx]
+        passed: [test-vsphere-from-vmx]
       - get: version
         resource: main-version
-        passed: [test-vsphere-stemcell-from-vmx]
+        passed: [test-vsphere-from-vmx]
       - get: vsphere-from-vmx-build-number
-        passed: [test-vsphere-stemcell-from-vmx]
+        passed: [test-vsphere-from-vmx]
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -741,7 +741,7 @@ jobs:
       params:
         release: aws-lock
 
-- name: create-gcp-stemcell
+- name: create-gcp
   serial: true
   serial_groups: [gcp-version]
   plan:
@@ -767,7 +767,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp/task.yml
     timeout: 60m
     attempts: 10
     params:
@@ -791,23 +791,23 @@ jobs:
     params:
       file: untested-stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
 
-- name: test-gcp-stemcell
+- name: test-gcp
   serial: true
   plan:
   - aggregate:
     - get: bosh-windows-stemcell
       resource: gcp-2012R2-untested
-      passed: [create-gcp-stemcell]
+      passed: [create-gcp]
     - get: ci
     - get: stemcell-builder
-      passed: [create-gcp-stemcell]
+      passed: [create-gcp]
     - get: version
       resource: gcp-build-number
-      passed: [create-gcp-stemcell]
+      passed: [create-gcp]
       trigger: true
     - get: windows-stemcell-dependencies
     - get: main-version
-      passed: [create-gcp-stemcell]
+      passed: [create-gcp]
   - put: goose-lock
     params:
       acquire: true
@@ -848,12 +848,12 @@ jobs:
     - get: bosh-windows-stemcell
       resource: gcp-2012R2-tested
       trigger: true
-      passed: [test-gcp-stemcell]
+      passed: [test-gcp]
     - get: stemcell-builder
-      passed: [test-gcp-stemcell]
+      passed: [test-gcp]
     - get: version
       resource: main-version
-      passed: [test-gcp-stemcell]
+      passed: [test-gcp]
   - put: gcp-lock
     params:
       acquire: true
@@ -883,7 +883,7 @@ jobs:
       params:
         release: gcp-lock
 
-- name: create-azure-stemcell
+- name: create-azure
   serial: true
   serial_groups: [azure-version]
   plan:
@@ -906,7 +906,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/create-azure/task.yml
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
@@ -941,27 +941,27 @@ jobs:
     params:
       file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
 
-- name: test-azure-stemcell
+- name: test-azure
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: azstemcell
     - get: stemcell-builder
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
     - get: azure-build-number
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
       trigger: true
     - get: main-version
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
     - get: bosh-windows-stemcell
       resource: azure-stemcell-untested
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
     - get: azure-base-vhd-uri
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
     - get: version
       resource: azure-build-number
-      passed: [create-azure-stemcell]
+      passed: [create-azure]
   - put: azure-download-lock
     params:
       acquire: true
@@ -1020,21 +1020,21 @@ jobs:
     - get: azstemcell
     - get: ci
     - get: azure-base-vhd-uri
-      passed: [test-azure-stemcell]
+      passed: [test-azure]
     - get: windows-utilities
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
       resource: windows-utilities-tests
     - get: bosh-windows-stemcell
       resource: azure-stemcell-tested
-      passed: [test-azure-stemcell]
+      passed: [test-azure]
       trigger: true
     - get: azure-build-number
-      passed: [test-azure-stemcell]
+      passed: [test-azure]
     - get: stemcell-builder
-      passed: [test-azure-stemcell]
+      passed: [test-azure]
     - get: version
       resource: main-version
-      passed: [test-azure-stemcell]
+      passed: [test-azure]
   - put: azure-download-lock
     params:
       acquire: true
@@ -1234,7 +1234,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - task: test-gcp-stemcell
+    - task: test-gcp
       input_mapping: { stemcell: gcp-stemcell-tested }
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       params:
@@ -1394,7 +1394,7 @@ jobs:
     - get: boshio-input
       resource: boshio
   - get: pivnet-public-stemcells
-  - task: test-azure-stemcell
+  - task: test-azure
     input_mapping: { stemcell: azure-stemcell-tested }
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     params:
