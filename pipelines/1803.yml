@@ -25,7 +25,6 @@ groups:
   - promote-gcp
   - promote-aws
   - promote-vsphere
-  #  - promote-vsphere-patchfile
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
@@ -830,9 +829,6 @@ jobs:
       passed: [test-aws-china]
     - get: aws-build-number
       passed: [test-aws-china]
-  # - put: aws-lock #china??
-  #   params:
-  #     acquire: true
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -853,10 +849,6 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
-    # ensure:
-    #   put: aws-lock
-    #   params:
-    #     release: aws-lock
 
 - name: create-azure
   serial: true
