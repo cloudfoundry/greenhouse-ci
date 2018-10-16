@@ -1481,6 +1481,7 @@ jobs:
         VM_TYPE: large
         VM_EXTENSIONS: 10GB_ephemeral_disk
         MOUNT_EPHEMERAL_DISK: true
+        SKIP_MS_UPDATES: true
     - put: vsphere-stemcell-from-patchfile-tested
       params:
         file: bosh-windows-stemcell/bosh-stemcell-*-patch-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
