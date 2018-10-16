@@ -331,7 +331,7 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-((STEMCELL_OS_NAME))-(.*).json
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: base-china-ami-win1803
+- name: base-china-ami
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
@@ -518,9 +518,9 @@ jobs:
         BASE_AMI: ((BASE_IMAGE_OS))
         BASE_AMI_NAME: ((BASE_AMI_NAME))
         PACKER_REGION: ((AWS_PACKER_REGION))
-    - task: collect-china-win1803-amis
+    - task: collect-china-amis
       file: ci/tasks/collect-base-amis/task.yml
-      output_mapping: { base-amis: win1803-china-amis }
+      output_mapping: { base-amis: china-amis }
       params:
         AWS_ACCESS_KEY_ID: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
@@ -539,9 +539,9 @@ jobs:
     - put: windows-base-amis
       params:
         file: windows-amis/base-amis-((BASE_IMAGE_OS))-*.json
-    - put: base-china-ami-win1803
+    - put: base-china-ami
       params:
-        file: win1803-china-amis/base-amis-((BASE_IMAGE_OS))-*.json
+        file: china-amis/base-amis-((BASE_IMAGE_OS))-*.json
     - put: base-gcp-image
       params:
         file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
@@ -710,7 +710,7 @@ jobs:
     - get: stemcell-builder
       passed: [wuts-aws]
     - get: base-amis
-      resource: base-china-ami-win1803
+      resource: base-china-ami
       passed: [build]
     - get: version
       passed: [wuts-aws]
