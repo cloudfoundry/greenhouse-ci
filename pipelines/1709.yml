@@ -510,9 +510,9 @@ jobs:
       params:
         file: version/number
   - aggregate:
-    - task: collect-win2016-amis
+    - task: collect-amis
       file: ci/tasks/collect-base-amis/task.yml
-      output_mapping: { base-amis: win2016-amis }
+      output_mapping: { base-amis: windows-amis }
       params:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
@@ -520,18 +520,18 @@ jobs:
         PREPPED_BASE_AMI: ami-1ed2d664
         BASE_AMI_NAME: ((BASE_AMI_NAME))
         PACKER_REGION: ((AWS_PACKER_REGION))
-    - task: collect-china-win2016-amis
+    - task: collect-china-amis
       file: ci/tasks/collect-base-amis/task.yml
-      output_mapping: { base-amis: win2016-china-amis }
+      output_mapping: { base-amis: windows-china-amis }
       params:
         AWS_ACCESS_KEY_ID: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         BASE_AMI: ((BASE_IMAGE_OS))
         BASE_AMI_NAME: ((BASE_AMI_NAME))
         PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
-    - task: collect-win2016-gcp-image
+    - task: collect-gcp-image
       file: ci/tasks/collect-gcp-image/task.yml
-      output_mapping: { base-gcp-image: win2016-gcp-image }
+      output_mapping: { base-gcp-image: windows-gcp-image }
       params:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
         BASE_OS: ((BASE_IMAGE_OS))
@@ -540,13 +540,13 @@ jobs:
   - aggregate:
     - put: base-amis-win2016
       params:
-        file: win2016-amis/base-amis-((BASE_IMAGE_OS))-*.json
+        file: windows-amis/base-amis-((BASE_IMAGE_OS))-*.json
     - put: base-china-ami-win2016
       params:
-        file: win2016-china-amis/base-amis-((BASE_IMAGE_OS))-*.json
+        file: windows-china-amis/base-amis-((BASE_IMAGE_OS))-*.json
     - put: base-gcp-image-win2016
       params:
-        file: win2016-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
+        file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
 
 - name: create-aws
   serial: true
