@@ -74,12 +74,12 @@
 - type: remove
   path: /jobs/name=wuts-gcp/plan/put=gcp-lock
 - type: remove
-  path: /jobs/name=test-gcp-stemcell/plan/2/ensure
+  path: /jobs/name=test-gcp/plan/2/ensure
 - type: remove
-  path: /jobs/name=test-gcp-stemcell/plan/put=goose-lock
+  path: /jobs/name=test-gcp/plan/put=goose-lock
 
 - type: replace
-  path: /jobs/name=create-vsphere-stemcell-from-vmx/plan/1/do/task=create-stemcell/tags
+  path: /jobs/name=create-vsphere-from-vmx/plan/1/do/task=create-stemcell/tags
   value: [vsphere-windows-worker-dev]
 
 # configure aws for dev
