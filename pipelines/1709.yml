@@ -1,4 +1,4 @@
-groups:
+((BASE_IMAGE_OS)):
 - name: all
   jobs:
   - build
@@ -325,7 +325,7 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: base-amis-win2016
+- name: windows-base-amis
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
@@ -340,7 +340,7 @@ resources:
     access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     region_name: ((AWS_CHINA_PACKER_REGION))
-- name: base-gcp-image-win2016
+- name: base-gcp-image
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
@@ -538,13 +538,13 @@ jobs:
         BASE_IMAGE_REGEX: ((BASE_IMAGE_REGEX))
         IMAGE_FAMILY: ((IMAGE_FAMILY))
   - aggregate:
-    - put: base-amis-win2016
+    - put: windows-base-amis
       params:
         file: windows-amis/base-amis-((BASE_IMAGE_OS))-*.json
     - put: base-china-ami-win2016
       params:
         file: windows-china-amis/base-amis-((BASE_IMAGE_OS))-*.json
-    - put: base-gcp-image-win2016
+    - put: base-gcp-image
       params:
         file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
 
@@ -557,7 +557,7 @@ jobs:
     - get: stemcell-builder
       passed: [build]
     - get: base-amis
-      resource: base-amis-win2016
+      resource: windows-base-amis
       passed: [build]
     - get: version
       resource: aws-build-number
@@ -1073,7 +1073,7 @@ jobs:
     - get: stemcell-builder
       passed: [build]
     - get: base-gcp-image
-      resource: base-gcp-image-win2016
+      resource: base-gcp-image 
       passed: [build]
     - get: version
       resource: gcp-build-number
