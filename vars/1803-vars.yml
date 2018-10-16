@@ -12,6 +12,9 @@ VM_PREFIX: 'packer-1803-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 PATCHFILE_OS_VERSION: 1803
 
+VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
+PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"
+
 # concourse pool resources
 AWS_POOL_NAME: 'aws-wuts-1803'
 AZURE_POOL_NAME: 'azure-wuts-1803'

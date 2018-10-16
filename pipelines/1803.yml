@@ -431,11 +431,11 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/tested/vsphere/diffcell/bosh-stemcell-(.*)-patch-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: 1803-vhd
+- name: vhd
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/diffcell/inputs/Windows-Server-Datacenter-Core-1803-with-Containers-(.*)-en.us-30GB.vhd
+    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/diffcell/inputs/Windows-Server-Datacenter-Core-((BASE_FOLDER_NAME))-with-Containers-(.*)-en.us-30GB.vhd
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: ovftool
@@ -454,7 +454,7 @@ resources:
     product_slug: stemcells-windows-server
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
-    product_version: 1803.*
+    product_version: ((BOSHIO_OS_VERSION)).*
 - name: pivnet-internal-stemcells
   type: pivnet
   source:
@@ -462,7 +462,7 @@ resources:
     product_slug: stemcells-windows-server-internal
     access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
     secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
-    product_version: 1803.*
+    product_version: ((BOSHIO_OS_VERSION)).*
 
 # time
 - name: midnight
@@ -1376,8 +1376,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
-      VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
-      PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"
+      VHD_VMDK_BUCKET: ((VHD_VMDK_BUCKET))
+      PATCH_OUTPUT_BUCKET: ((PATCH_OUTPUT_BUCKET))
       CACHE_DIR: "C:\\image-data"
   - task: pause-to-wait-for-concourse-resource-check
     config:
@@ -1401,7 +1401,7 @@ jobs:
       passed: [create-vsphere-patchfile]
     - get: stembuild
     - get: vhd
-      resource: 1803-vhd
+      resource: vhd
     - get: ovftool
     - get: stemcell-builder
       passed: [create-vsphere-patchfile]
@@ -1438,7 +1438,7 @@ jobs:
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: vsphere-stemcell-from-patchfile-untested
         passed: [create-vsphere-stemcell-from-patchfile]
-      - get: 1803-vhd
+      - get: vhd
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: stemcell-builder
         passed: [create-vsphere-stemcell-from-patchfile]
@@ -1508,7 +1508,7 @@ jobs:
         passed: [test-vsphere-stemcell-from-patchfile]
       - get: vsphere-from-patchfile-build-number
         passed: [test-vsphere-stemcell-from-patchfile]
-      - get: 1803-vhd
+      - get: vhd
         passed: [test-vsphere-stemcell-from-patchfile]
     - task: run-wuts
       tags: [vsphere-linux-worker]

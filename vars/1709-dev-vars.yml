@@ -11,6 +11,8 @@ STEMCELL_INITIAL_VERSION: '1709.4000.0'
 VM_PREFIX: 'packer-1709-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 PATCHFILE_OS_VERSION: 1709
+VHD_VMDK_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/inputs"
+PATCH_OUTPUT_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/patchfiles"
 
 AWS_POOL_NAME: 'aws-wuts-1709'
 AZURE_POOL_NAME: 'azure-wuts-1709'
