@@ -761,6 +761,7 @@ jobs:
       params:
         AWS_ACCESS_KEY_ID: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        IAAS: aws
         REGIONS: "cn-north-1"
         VM_PREFIX: ((VM_PREFIX))
   - aggregate:
