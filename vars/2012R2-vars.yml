@@ -3,6 +3,7 @@
 BASE_FOLDER_NAME: '2012R2'
 STEMCELL_INITIAL_VERSION: '1200.0.0'
 BASE_IMAGE_OS: 'windows2012R2'
+STEMCELL_OS_NAME: 'windows2012R2'
 ROOT_BUCKET: 'all-bosh-windows'
 AWS_LOCK: 'stemcells-aws'
 GCP_LOCK: 'stemcells-gcp'

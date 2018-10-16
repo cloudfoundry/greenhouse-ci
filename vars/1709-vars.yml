@@ -8,8 +8,10 @@ AZURE_POOL_NAME: 'azure-wuts-1709'
 GOOSE_POOL_NAME: 'goose-1709'
 GCP_POOL_NAME: 'gcp-wuts-1709'
 VSPHERE_POOL_NAME: 'vsphere-wuts-1709'
+PATCHFILE_OS_VERSION: 1709
 
 BASE_IMAGE_OS: 'windows1709'
+STEMCELL_OS_NAME: 'windows2016'
 GCP_LOCK: 'stemcells-gcp'
 ROOT_BUCKET: 'all-bosh-windows'
 DEV_BUCKET: 'all-bosh-windows-dev'

@@ -3,12 +3,14 @@
 AWS_LOCK: 'stemcells-aws-dev'
 AZURE_LOCK: 'stemcells-azure-dev'
 BASE_FOLDER_NAME: '1803'
+STEMCELL_OS_NAME: 'windows1803'
 BASE_IMAGE_OS: 'windows1803'
 GCP_LOCK: 'stemcells-gcp-dev'
 ROOT_BUCKET: 'all-bosh-windows-dev'
 STEMCELL_INITIAL_VERSION: '1803.3000.0'
 VM_PREFIX: 'packer-1803-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
+PATCHFILE_OS_VERSION: 1803
 
 # concourse pool resources
 AWS_POOL_NAME: 'aws-wuts-1803'

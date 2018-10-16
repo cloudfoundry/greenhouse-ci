@@ -4,11 +4,13 @@ AWS_LOCK: 'stemcells-aws-dev'
 AZURE_LOCK: 'stemcells-azure-dev'
 BASE_FOLDER_NAME: '1709'
 BASE_IMAGE_OS: 'windows1709'
+STEMCELL_OS_NAME: 'windows2016'
 GCP_LOCK: 'stemcells-gcp-dev'
 ROOT_BUCKET: 'all-bosh-windows-dev'
 STEMCELL_INITIAL_VERSION: '1709.4000.0'
 VM_PREFIX: 'packer-1709-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
+PATCHFILE_OS_VERSION: 1709
 
 AWS_POOL_NAME: 'aws-wuts-1709'
 AZURE_POOL_NAME: 'azure-wuts-1709'
