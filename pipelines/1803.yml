@@ -297,7 +297,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELl_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     region_name: ((AWS_CHINA_PACKER_REGION))
@@ -312,7 +312,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELl_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     region_name: ((AWS_CHINA_PACKER_REGION))
     access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
