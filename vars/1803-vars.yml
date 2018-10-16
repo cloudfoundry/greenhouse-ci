@@ -10,6 +10,13 @@ STEMCELL_INITIAL_VERSION: '1803.2.0'
 VM_PREFIX: 'packer-1803-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 
+# concourse pool resources
+AWS_POOL_NAME: 'aws-wuts-1803'
+AZURE_POOL_NAME: 'azure-wuts-1803'
+GOOSE_POOL_NAME: 'goose-1803'
+GCP_POOL_NAME: 'gcp-wuts-1803'
+VSPHERE_POOL_NAME: 'vsphere-wuts-1803'
+
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-1803-English-Core-Base-*'
 #AWS Output Info

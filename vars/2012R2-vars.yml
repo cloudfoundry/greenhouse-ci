@@ -10,6 +10,13 @@ AZURE_LOCK: 'stemcells-azure'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 VM_PREFIX: 'packer-2012R2-prod'
 
+# concourse pool resources
+AWS_POOL_NAME: 'aws-wuts-2012R2'
+AZURE_POOL_NAME: 'azure-wuts-2012R2'
+GOOSE_POOL_NAME: 'goose-2012R2'
+GCP_POOL_NAME: 'gcp-wuts-2012R2'
+VSPHERE_POOL_NAME: 'vsphere-wuts-2012R2'
+
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-2012-R2_RTM-English-64Bit-Base*'
 #AWS Output Info

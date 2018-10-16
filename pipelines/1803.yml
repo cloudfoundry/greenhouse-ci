@@ -202,14 +202,14 @@ resources:
   type: pool
   source:
     branch: master
-    pool: aws-wuts-1803
+    pool: ((AWS_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
-    pool: azure-wuts-1803
+    pool: ((AZURE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-download-lock
@@ -223,21 +223,21 @@ resources:
   type: pool
   source:
     branch: master
-    pool: goose-1803
+    pool: ((GOOSE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
     branch: master
-    pool: gcp-wuts-1803
+    pool: ((GCP_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
   type: pool
   source:
     branch: master
-    pool: vsphere-1803
+    pool: ((VSPHERE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 

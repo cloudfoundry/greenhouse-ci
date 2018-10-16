@@ -10,6 +10,12 @@ STEMCELL_INITIAL_VERSION: '1709.4000.0'
 VM_PREFIX: 'packer-1709-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 
+AWS_POOL_NAME: 'aws-wuts-1709'
+AZURE_POOL_NAME: 'azure-wuts-1709'
+GOOSE_POOL_NAME: 'goose-1709'
+GCP_POOL_NAME: 'gcp-wuts-1709'
+VSPHERE_POOL_NAME: 'vsphere-wuts-1709'
+
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-1709-English-Core-Base*'
 #AWS Output Info
