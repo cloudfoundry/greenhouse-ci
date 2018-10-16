@@ -16,6 +16,7 @@ BASE_AMI_NAME: 'Windows_Server-1803-English-Core-Base-*'
 AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1803'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-1'
+AWS_CHINA_PACKER_REGION: 'cn-north-1'
 
 #GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-1803-dc-core-v.*'
