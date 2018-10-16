@@ -23,6 +23,8 @@ STEMCELL_INITIAL_VERSION: '1709.0.0'
 VM_PREFIX: 'packer-1709-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
 
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
+
 #AWS Base Image Info
 BASE_AMI_NAME: 'Windows_Server-1709-English-Core-Base*'
 #AWS Output Info

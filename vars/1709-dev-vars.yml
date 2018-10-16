@@ -15,6 +15,7 @@ VHD_VMDK_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/patchfiles"
 MAJOR_STEMCELL_FILE: '2016-stemcell-(.*).json'
 JSON_REGEX: '2016-stemcell-*.json'
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
 
 AWS_POOL_NAME: 'aws-wuts-1709'
 AZURE_POOL_NAME: 'azure-wuts-1709'

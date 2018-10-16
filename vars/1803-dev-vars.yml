@@ -13,6 +13,7 @@ VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 PATCHFILE_OS_VERSION: 1803
 MAJOR_STEMCELL_FILE: '1803-stemcell-(.*).json'
 JSON_REGEX: '1803-stemcell-*.json'
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
 
 VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"

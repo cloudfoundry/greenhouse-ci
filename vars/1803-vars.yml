@@ -16,6 +16,7 @@ JSON_REGEX: '1803-stemcell-*.json'
 
 VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
 
 # concourse pool resources
 AWS_POOL_NAME: 'aws-wuts-1803'
