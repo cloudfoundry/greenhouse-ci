@@ -293,11 +293,11 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-china-1803-untested
+- name: aws-china-untested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELl_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
     region_name: ((AWS_CHINA_PACKER_REGION))
@@ -308,11 +308,11 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-china-1803-tested
+- name: aws-china-tested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELl_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     region_name: ((AWS_CHINA_PACKER_REGION))
     access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
@@ -749,7 +749,7 @@ jobs:
       AWS_REGION: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_REGION))
       AWS_SECRET_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
-      OS_VERSION: windows1803
+      OS_VERSION: ((BASE_IMAGE_OS))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       VM_PREFIX: ((VM_PREFIX))
       MOUNT_EPHEMERAL_DISK: true
@@ -762,9 +762,9 @@ jobs:
         REGIONS: "cn-north-1"
         VM_PREFIX: ((VM_PREFIX))
   - aggregate:
-    - put: aws-china-1803-untested
+    - put: aws-china-untested
       params:
-        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+        file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     - put: packer-output-china-ami
       params:
         file: amis/packer-output-ami-*.txt
@@ -775,7 +775,7 @@ jobs:
   plan:
   - aggregate:
     - get: bosh-windows-stemcell
-      resource: aws-china-1803-untested
+      resource: aws-china-untested
       passed: [create-aws-china]
     - get: ci
     - get: stemcell-builder
@@ -801,13 +801,13 @@ jobs:
       SSH_TUNNEL_IP: ((AWS_CHINA_JUMPBOX_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AWS_CHINA_GW_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((AWS_CHINA_GW_USER))
-      STEMCELL_OS: windows1803
-      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+      STEMCELL_OS: ((STEMCELL_OS_NAME))
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
-  - put: aws-china-1803-tested
+  - put: aws-china-tested
     params:
-      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
 
 - name: wuts-aws-china
   serial: true
@@ -818,7 +818,7 @@ jobs:
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
       resource: windows-utilities-tests
     - get: bosh-windows-stemcell
-      resource: aws-china-1803-tested
+      resource: aws-china-tested
       passed: [test-aws-china]
       trigger: true
     - get: stemcell-builder
@@ -845,8 +845,8 @@ jobs:
         SSH_TUNNEL_USER: ((AWS_CHINA_GW_USER))
         BOSH_GW_USER: ((AWS_CHINA_GW_USER))
         NETWORK: default
-        STEMCELL_OS: windows1803
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
 
