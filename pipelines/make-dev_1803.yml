@@ -85,7 +85,7 @@
   path: /jobs/name=create-gcp/plan/task=create-stemcell/ensure/params/ACCOUNT_JSON
   value: ((MUSTANG-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
 - type: replace
-  path: /jobs/name=create-gcp/plan/put=gcp-1803-untested/params/file
+  path: /jobs/name=create-gcp/plan/put=gcp-untested/params/file
   value: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
 - type: remove
   path: /jobs/name=create-gcp/plan/task=publish-stemcell

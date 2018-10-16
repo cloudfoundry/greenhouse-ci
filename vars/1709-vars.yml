@@ -9,6 +9,8 @@ GOOSE_POOL_NAME: 'goose-1709'
 GCP_POOL_NAME: 'gcp-wuts-1709'
 VSPHERE_POOL_NAME: 'vsphere-wuts-1709'
 PATCHFILE_OS_VERSION: 1709
+MAJOR_STEMCELL_FILE: '2016-stemcell-(.*).json'
+JSON_REGEX: '2016-stemcell-*.json'
 
 VHD_VMDK_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/patchfiles"

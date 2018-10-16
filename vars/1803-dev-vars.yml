@@ -11,6 +11,8 @@ STEMCELL_INITIAL_VERSION: '1803.3000.0'
 VM_PREFIX: 'packer-1803-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 PATCHFILE_OS_VERSION: 1803
+MAJOR_STEMCELL_FILE: '1803-stemcell-(.*).json'
+JSON_REGEX: '1803-stemcell-*.json'
 
 VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"

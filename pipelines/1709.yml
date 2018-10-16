@@ -247,7 +247,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/metadata/2016-stemcell-(.*).json
+    regexp: ((BASE_FOLDER_NAME))/metadata/((MAJOR_STEMCELL_FILE))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-release-candidate
@@ -2003,4 +2003,4 @@ jobs:
   - put: major-stemcell-s3
     resource: major-stemcell
     params:
-      file: stemcell-info/2016-stemcell-*.json
+      file: stemcell-info/((JSON_REGEX))
