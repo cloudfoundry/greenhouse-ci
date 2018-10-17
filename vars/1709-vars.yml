@@ -7,7 +7,7 @@ AWS_POOL_NAME: 'aws-wuts-1709'
 AZURE_POOL_NAME: 'azure-wuts-1709'
 GOOSE_POOL_NAME: 'goose-1709'
 GCP_POOL_NAME: 'gcp-wuts-1709'
-VSPHERE_POOL_NAME: 'vsphere-wuts-1709'
+VSPHERE_POOL_NAME: 'vsphere-1709'
 PATCHFILE_OS_VERSION: 1709
 MAJOR_STEMCELL_FILE: '2016-stemcell-(.*).json'
 JSON_REGEX: '2016-stemcell-*.json'
