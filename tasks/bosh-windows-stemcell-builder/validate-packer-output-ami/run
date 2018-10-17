@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cd stemcell-builder
+bundle install --without test
+rake package:agent
+rake package:psmodules
+rake build:validate_ami
