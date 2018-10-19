@@ -646,6 +646,12 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         VM_PREFIX: ((VM_PREFIX))
+  - task: wait-for-ami-availability
+    file: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/task.yml
+    params:
+      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
   - aggregate:
     - put: aws-untested
       params:
