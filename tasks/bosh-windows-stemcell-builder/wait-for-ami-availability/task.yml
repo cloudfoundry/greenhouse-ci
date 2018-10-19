@@ -6,14 +6,11 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
   - name: ci
   - name: stemcell-builder
-  - name: base-amis
   - name: version
-  - name: windows-stemcell-dependencies
-  - name: sshd
-  - name: packer-ci-private-key
+  - name: amis
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/validate-packer-output-ami/run
+  path: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/run
 
 params:
   AWS_ACCESS_KEY:
