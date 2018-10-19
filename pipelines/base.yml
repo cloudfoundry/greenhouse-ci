@@ -606,6 +606,12 @@ jobs:
         IAAS: aws
         REGIONS: "us-east-1,us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
         VM_PREFIX: ((VM_PREFIX))
+  - task: wait-for-ami-availability
+    file: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/task.yml
+    params:
+      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
   - aggregate:
     - put: aws-untested
       params:
@@ -614,49 +620,24 @@ jobs:
       params:
         file: amis/packer-output-ami-*.txt
 
-- name: check-ami
-  serial: true
-  plan:
-  - aggregate:
-    - get: bosh-windows-stemcell
-      resource: aws-untested
-      passed: [create-aws]
-    - get: ci
-    - get: stemcell-builder
-      passed: [create-aws]
-    - get: version
-      resource: aws-build-number
-      passed: [create-aws]
-      trigger: true
-    - get: main-version
-      passed: [create-aws]
-    - get: packer-output-ami
-      passed: [create-aws]
-  - task: test-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/validate-packer-output-ami/task.yml
-    input_mapping: { stemcell: bosh-windows-stemcell }
-    params:
-      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 - name: test-aws
   serial: true
   plan:
   - aggregate:
     - get: bosh-windows-stemcell
       resource: aws-untested
-      passed: [check-ami]
+      passed: [create-aws]
     - get: ci
     - get: stemcell-builder
-      passed: [check-ami]
+      passed: [create-aws]
     - get: version
       resource: aws-build-number
-      passed: [check-ami]
+      passed: [create-aws]
       trigger: true
     - get: main-version
-      passed: [check-ami]
+      passed: [create-aws]
     - get: packer-output-ami
-      passed: [check-ami]
+      passed: [create-aws]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     attempts: 5
