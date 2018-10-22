@@ -585,8 +585,7 @@ jobs:
       params:
         PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
   - task: create-stemcell
-    timeout: 1h30m
-    attempts: 3
+    timeout: 2h
     file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
@@ -640,7 +639,6 @@ jobs:
       passed: [create-aws]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 5
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
@@ -684,7 +682,6 @@ jobs:
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
-      attempts: 5
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
@@ -747,7 +744,6 @@ jobs:
         PACKER_CI: ((CHINA_PACKER_CI_PRIVATE_KEY))
   - task: create-stemcell
     timeout: 1h30m
-    attempts: 1
     file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
       AWS_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
@@ -796,7 +792,6 @@ jobs:
       passed: [create-aws-china]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-    attempts: 1
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       BOSH_CA_CERT: ((AWS_CHINA_BOSH_TARGET_CERT))
@@ -838,7 +833,6 @@ jobs:
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
-      attempts: 1
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
@@ -1028,7 +1022,6 @@ jobs:
       acquire: true
   - do:
     - task: run-wuts
-      attempts: 3
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: heavy-stemcell }
       params:
@@ -1078,7 +1071,6 @@ jobs:
       pre: build
   - task: create-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
-    attempts: 10
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
@@ -1093,7 +1085,6 @@ jobs:
         VM_PREFIX: ((VM_PREFIX))
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
-    attempts: 1
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
@@ -1276,7 +1267,6 @@ jobs:
   - do:
     - task: test-stemcell
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      attempts: 1
       tags: [vsphere-linux-worker]
       params:
         BOSH_CA_CERT: ((regina_ca_cert))
