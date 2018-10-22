@@ -73,6 +73,10 @@ resource_types:
   source:
     repository: pivotalcf/pivnet-resource
     tag: latest-final
+- name: azure-blobstore
+  type: docker-image
+  source:
+    repository: pcfabr/azure-blobstore-resource
 
 resources:
 # repos
@@ -239,7 +243,24 @@ resources:
     pool: ((VSPHERE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
- 
+
+
+# azure blobstores
+- name: vsphere-patchfile-untested
+  type: azure-blobstore
+  source:
+    storage_account_name: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
+    storage_account_key: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
+    container: ((AZURE_PATCHFILE_CONTAINER_NAME))
+    versioned_file: ((PATCHFILE_OS_VERSION))/untested/patchfile-(.*)-.*
+- name: vsphere-patchfile-tested
+  type: azure-blobstore
+  source:
+    storage_account_name: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
+    storage_account_key: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
+    container: ((AZURE_PATCHFILE_CONTAINER_NAME))
+    versioned_file: ((PATCHFILE_OS_VERSION))/tested/patchfile-(.*)-.*
+
 # s3 buckets
 - name: major-stemcell
   type: s3
@@ -386,20 +407,6 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-patchfile-untested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-patchfile-tested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-manifest-untested
@@ -1370,7 +1377,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       AWS_REGION: us-east-1
       VHD_VMDK_BUCKET: ((VHD_VMDK_BUCKET))
-      PATCH_OUTPUT_BUCKET: ((PATCH_OUTPUT_BUCKET))
+      AZURE_CONTAINER_NAME: ((AZURE_PATCHFILE_CONTAINER_NAME))
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCOUNT_NAME: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
       CACHE_DIR: "C:\\image-data"
   - task: pause-to-wait-for-concourse-resource-check
     config:
