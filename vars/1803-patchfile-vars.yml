@@ -1,0 +1,29 @@
+---
+#Common Variables
+BASE_FOLDER_NAME: '1803'
+VSPHERE_POOL_NAME: 'vsphere-1803'
+PATCHFILE_OS_VERSION: 1803
+JSON_REGEX: '1803-stemcell-*.json'
+
+VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
+BASE_IMAGE_OS: 'windows1803'
+STEMCELL_OS_NAME: 'windows1803'
+ROOT_BUCKET: 'all-bosh-windows'
+DEV_BUCKET: 'all-bosh-windows-dev'
+STEMCELL_INITIAL_VERSION: '1803.0.0'
+VM_PREFIX: 'packer-1803-prod'
+VSPHERE_LOCK: 'vsphere-worker-lock'
+
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
+
+BASE_IMAGE_REGEX: 'windows-server-1803-dc-core-v.*'
+IMAGE_FAMILY: 'windows-1803-core'
+#GCP Packer Info
+WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
+
+#Azure Create & Publish Variables
+AZURE_PATCHFILE_CONTAINER_NAME: ((KOALA_PATCHFILE_CONTAINER_NAME))
+AZURE_PATCHFILE_STORAGE_ACCESS_KEY: ((KOALA_PATCHFILE_STORAGE_ACCESS_KEY))
+AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME: ((KOALA_PATCHFILE_STORAGE_ACCOUNT_NAME))
+
+PIVNET_OS_NAME: 'Windows 2016 Server Version 1803'
