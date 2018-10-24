@@ -40,9 +40,9 @@ ovftool/ovftool.bundle --eulas-agreed --required
 echo ".. done installing OVFTool"
 echo -e "\n\n"
 
-echo "Updating stembuild to be executable"
-cp stembuild/stembuild-linux-x86_64-* stembuild/stembuild
-chmod a+x stembuild/stembuild
+echo "Updating stempatch to be executable"
+cp stempatch/stempatch-linux-x86_64-* stempatch/stempatch
+chmod a+x stempatch/stempatch
 echo -e "\n\n"
 
 MANIFEST_FILE=patchfile-${VERSION}-${VHD_VERSION}.yml
@@ -65,7 +65,7 @@ cat $MANIFEST_FILE
 echo -e "\n\n"
 
 echo "Building stemcell from patch file ..."
-stembuild/stembuild -output $OUTPUT_DIR apply-patch $MANIFEST_FILE
+stempatch/stempatch -output $OUTPUT_DIR apply-patch $MANIFEST_FILE
 mv $OUTPUT_DIR/*.tgz $OUTPUT_DIR/bosh-stemcell-$(cat version/version)-patch-vsphere-esxi-windows${PUBLISH_OS_VERSION}-go_agent.tgz
 mv $MANIFEST_FILE $OUTPUT_DIR
 echo "... done building stemcell from patch file"

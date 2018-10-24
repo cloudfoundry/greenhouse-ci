@@ -11,7 +11,7 @@ inputs:
 - name: patchfile-dir
 - name: vhd
 - name: version
-- name: stembuild
+- name: stempatch
 - name: ovftool
 - name: ci
 

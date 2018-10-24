@@ -42,11 +42,12 @@ resources:
     user: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-- name: stembuild
+
+- name: stempatch
   type: github-release
   source:
-    owner: pivotal-cf-experimental
-    repository: stembuild
+    owner: pivotal-cf
+    repository: stempatch
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
@@ -214,7 +215,7 @@ jobs:
       trigger: true
     - get: main-version
       passed: [create-vsphere-patchfile]
-    - get: stembuild
+    - get: stempatch
     - get: vhd
       resource: vhd
     - get: ovftool
