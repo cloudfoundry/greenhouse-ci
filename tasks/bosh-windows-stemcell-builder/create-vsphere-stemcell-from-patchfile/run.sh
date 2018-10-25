@@ -45,8 +45,6 @@ cp stempatch/stempatch-linux-x86_64-* stempatch/stempatch
 chmod a+x stempatch/stempatch
 echo -e "\n\n"
 
-MANIFEST_FILE=patchfile-${VERSION}-${VHD_VERSION}.yml
-
 PUBLISH_OS_VERSION="${OS_VERSION}"
 if [ "${PUBLISH_OS_VERSION}" == "1709" ]
 then
@@ -54,18 +52,9 @@ then
 fi
 
 mv patchfile-dir/patchfile-$VERSION-$VHD_VERSION .
-echo "---" > $MANIFEST_FILE
-echo "patch_file: patchfile-$VERSION-$VHD_VERSION" >> $MANIFEST_FILE
-echo "os_version: ${PUBLISH_OS_VERSION}" >> $MANIFEST_FILE
-echo "output_dir: $OUTPUT_DIR" >> $MANIFEST_FILE
-echo "vhd_file: ${VHD_DIR}/${VHD_FILENAME}" >> $MANIFEST_FILE
-echo "version: $(cat version/version)" >> $MANIFEST_FILE
-echo "Using following patchfile: "
-cat $MANIFEST_FILE
-echo -e "\n\n"
+MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
 echo "Building stemcell from patch file ..."
 stempatch/stempatch -output $OUTPUT_DIR apply-patch $MANIFEST_FILE
 mv $OUTPUT_DIR/*.tgz $OUTPUT_DIR/bosh-stemcell-$(cat version/version)-patch-vsphere-esxi-windows${PUBLISH_OS_VERSION}-go_agent.tgz
-mv $MANIFEST_FILE $OUTPUT_DIR
 echo "... done building stemcell from patch file"
