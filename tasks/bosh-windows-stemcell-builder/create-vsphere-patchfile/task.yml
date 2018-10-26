@@ -35,3 +35,6 @@ params:
   UPDATES_PROXY_BYPASS_LIST:
   VERSION_DIR: ../version
   VHD_VMDK_BUCKET:
+
+outputs:
+  - name: patchfile-manifest
