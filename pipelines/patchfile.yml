@@ -50,7 +50,6 @@ resources:
     repository: stempatch
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 
 # semvers
 - name: main-version
