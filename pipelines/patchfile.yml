@@ -113,22 +113,6 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
-# azure blobstores
-- name: vsphere-patchfile-untested
-  type: azure-blobstore
-  source:
-    storage_account_name: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
-    storage_account_key: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
-    container: ((AZURE_PATCHFILE_CONTAINER_NAME))
-    versioned_file: ((PATCHFILE_OS_VERSION))/untested/patchfile-(.*)-.*
-- name: vsphere-patchfile-tested
-  type: azure-blobstore
-  source:
-    storage_account_name: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
-    storage_account_key: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
-    container: ((AZURE_PATCHFILE_CONTAINER_NAME))
-    versioned_file: ((PATCHFILE_OS_VERSION))/tested/patchfile-(.*)-.*
-
 # locks
 - name: vsphere-director-lock
   type: pool
@@ -196,6 +180,9 @@ jobs:
       AZURE_STORAGE_ACCESS_KEY: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
       AZURE_STORAGE_ACCOUNT_NAME: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
       CACHE_DIR: "C:\\image-data"
+  - put: vsphere-manifest-untested
+    params:
+      file: manifest/*.yml
   - task: pause-to-wait-for-concourse-resource-check
     config:
       platform: linux
@@ -204,9 +191,6 @@ jobs:
         path: sleep
         args:
         - 60
-  - put: vsphere-manifest-untested
-    params:
-      file: manifest/*.yml
 
 - name: create-vsphere-stemcell-from-patchfile
   serial: true
@@ -225,12 +209,10 @@ jobs:
     - get: ovftool
     - get: stemcell-builder
       passed: [create-vsphere-patchfile]
-    - get: vsphere-patchfile-untested
     - get: patchfile-manifest
       resource: vsphere-manifest-untested
       passed: [create-vsphere-patchfile]
   - task: build-stemcell
-    input_mapping: { patchfile-dir: vsphere-patchfile-untested }
     file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/task.yml
     params:
       OS_VERSION: ((PATCHFILE_OS_VERSION))
@@ -256,8 +238,6 @@ jobs:
       - get: vsphere-manifest-untested
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: vhd
-        passed: [create-vsphere-stemcell-from-patchfile]
-      - get: vsphere-patchfile-untested
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: vsphere-stemcell-from-patchfile-untested
         passed: [create-vsphere-stemcell-from-patchfile]
@@ -293,9 +273,6 @@ jobs:
     - put: vsphere-manifest-tested
       params:
         file: vsphere-manifest-untested/*.yml
-    - put: vsphere-patchfile-tested
-      params:
-        file: vsphere-patchfile-untested/patchfile-*
     ensure:
       put: vsphere-director-lock
       params:
@@ -322,9 +299,6 @@ jobs:
       - get: manifest
         passed: [test-vsphere-stemcell-from-patchfile]
         resource: vsphere-manifest-tested
-      - get: patchfile
-        passed: [test-vsphere-stemcell-from-patchfile]
-        resource: vsphere-patchfile-tested
       - get: stemcell-builder
         passed: [test-vsphere-stemcell-from-patchfile]
       - get: version

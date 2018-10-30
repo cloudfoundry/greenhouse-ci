@@ -51,7 +51,6 @@ then
   PUBLISH_OS_VERSION="2016"
 fi
 
-mv patchfile-dir/patchfile-$VERSION-$VHD_VERSION .
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
 echo "Building stemcell from patch file ..."
