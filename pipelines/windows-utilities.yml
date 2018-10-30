@@ -23,28 +23,28 @@ resources:
     uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 
 # s3
-- name: gcp-2012R2-stemcell-release-candidate
+- name: gcp-2012R2-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 2012R2/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-2012R2-stemcell-release-candidate
+- name: vsphere-2012R2-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-2012R2-stemcell-release-candidate
+- name: aws-2012R2-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 2012R2/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: azure-2012R2-stemcell-release-candidate
+- name: azure-2012R2-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
@@ -76,28 +76,28 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 0.9.0
 
-- name: gcp-1709-stemcell-release-candidate
+- name: gcp-1709-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 1709/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-1709-stemcell-release-candidate
+- name: vsphere-1709-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 1709/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-1709-stemcell-release-candidate
+- name: aws-1709-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 1709/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: azure-1709-stemcell-release-candidate
+- name: azure-1709-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
@@ -120,21 +120,21 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
-- name: gcp-1803-stemcell-release-candidate
+- name: gcp-1803-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 1803/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows1803-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-1803-stemcell-release-candidate
+- name: vsphere-1803-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
     regexp: 1803/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows1803-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: aws-1803-stemcell-release-candidate
+- name: aws-1803-stemcell-rc
   type: s3
   source:
     bucket: all-bosh-windows
@@ -280,7 +280,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: gcp-2012R2-stemcell-release-candidate
+        resource: gcp-2012R2-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -318,7 +318,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: vsphere-2012R2-stemcell-release-candidate
+        resource: vsphere-2012R2-stemcell-rc
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -358,7 +358,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: aws-2012R2-stemcell-release-candidate
+        resource: aws-2012R2-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -396,7 +396,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: azure-2012R2-stemcell-release-candidate
+        resource: azure-2012R2-stemcell-rc
       - get: azure-2012R2-stemcell-version
     - put: azure-download-lock
       params:
@@ -461,7 +461,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: gcp-1709-stemcell-release-candidate
+        resource: gcp-1709-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -499,7 +499,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: vsphere-1709-stemcell-release-candidate
+        resource: vsphere-1709-stemcell-rc
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -539,7 +539,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: aws-1709-stemcell-release-candidate
+        resource: aws-1709-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -577,7 +577,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: azure-1709-stemcell-release-candidate
+        resource: azure-1709-stemcell-rc
       - get: azure-1709-stemcell-version
     - put: azure-download-lock
       params:
@@ -642,7 +642,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: gcp-1803-stemcell-release-candidate
+        resource: gcp-1803-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -680,7 +680,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: vsphere-1803-stemcell-release-candidate
+        resource: vsphere-1803-stemcell-rc
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -720,7 +720,7 @@ jobs:
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: aws-1803-stemcell-release-candidate
+        resource: aws-1803-stemcell-rc
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
