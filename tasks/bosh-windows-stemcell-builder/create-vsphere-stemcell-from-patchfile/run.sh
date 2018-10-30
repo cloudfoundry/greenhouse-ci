@@ -50,6 +50,8 @@ if [ "${PUBLISH_OS_VERSION}" == "1709" ]
 then
   PUBLISH_OS_VERSION="2016"
 fi
+echo "Moving VHD into run directory"
+mv vhd/*.vhd .
 
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
