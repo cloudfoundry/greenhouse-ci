@@ -141,7 +141,7 @@ resources:
     regexp: 1803/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows1803-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: azure-1803-stemcell-release-candidate
+- name: azure-1803-rc
   type: s3
   source:
     bucket: all-bosh-windows
@@ -156,7 +156,7 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: 1803.0.0
-- name: azure-1803-base-vhd-uri
+- name: azure-1803-vhd-uri
   type: s3
   source:
     bucket: all-bosh-windows
@@ -751,14 +751,14 @@ jobs:
     - aggregate:
       - get: azstemcell
       - get: ci
-      - get: azure-1803-base-vhd-uri
+      - get: azure-1803-vhd-uri
       - get: windows-utilities-release
         trigger: true
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         trigger: true
       - get: bosh-windows-stemcell
-        resource: azure-1803-stemcell-release-candidate
+        resource: azure-1803-rc
       - get: azure-1803-stemcell-version
     - put: azure-download-lock
       params:
@@ -768,7 +768,7 @@ jobs:
         file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
         input_mapping:
           azure-build-number: azure-1803-stemcell-version
-          azure-base-vhd-uri: azure-1803-base-vhd-uri
+          azure-base-vhd-uri: azure-1803-vhd-uri
         tags: [azure-linux-worker]
         params:
           AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
