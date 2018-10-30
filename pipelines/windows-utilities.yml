@@ -124,28 +124,28 @@ resources:
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 1803/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows2016-go_agent.tgz
+    regexp: 1803/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-windows1803-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-1803-stemcell-release-candidate
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 1803/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2016-go_agent.tgz
+    regexp: 1803/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows1803-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: aws-1803-stemcell-release-candidate
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 1803/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
+    regexp: 1803/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-windows1803-go_agent-us-east-1.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-1803-stemcell-release-candidate
   type: s3
   source:
     bucket: all-bosh-windows
-    regexp: 1803/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows2016-go_agent.tgz
+    regexp: 1803/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-windows1803-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: azure-1803-stemcell-version
@@ -657,8 +657,8 @@ jobs:
         SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
         SSH_TUNNEL_USER: ((mustang_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
         VM_EXTENSIONS: "100GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
@@ -696,8 +696,8 @@ jobs:
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
         SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2016-go_agent.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows1803-go_agent.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: default
     ensure:
@@ -735,8 +735,8 @@ jobs:
         SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
         SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
         SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
-        STEMCELL_OS: windows2016
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2016-go_agent-us-east-1.tgz
+        STEMCELL_OS: windows1803
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-us-east-1.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
     ensure:
@@ -772,7 +772,7 @@ jobs:
         tags: [azure-linux-worker]
         params:
           AZURE_SOURCE_KEY: ((KOALA_STORAGE_ACCESS_KEY))
-          STEMCELL_OS: windows2016
+          STEMCELL_OS: windows1803
           DESTINATION_DIR: heavy-stemcell
       ensure:
         put: azure-download-lock
@@ -798,7 +798,7 @@ jobs:
           SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
           SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
           SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
-          STEMCELL_OS: windows2016
+          STEMCELL_OS: windows1803
           STEMCELL_PATH: stemcell/*.tgz
           VM_EXTENSIONS: ""
           VM_TYPE: default
