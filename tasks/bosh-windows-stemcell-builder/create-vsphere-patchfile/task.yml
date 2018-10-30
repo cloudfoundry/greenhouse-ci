@@ -38,3 +38,4 @@ params:
 
 outputs:
   - name: patchfile-manifest
+  - name: manifest

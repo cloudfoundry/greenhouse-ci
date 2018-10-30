@@ -185,7 +185,8 @@ jobs:
       PRODUCT_KEY: 2HXDN-KRXHB-GPYC7-YCKFJ-7FVDG # Test key from https://docs.microsoft.com/en-us/windows-server/get-started/kmsclientkeys
       ORGANIZATION: Pivotal
       OWNER: Pivotal
-      OUTPUT_DIR: patchfile-manifest
+      OUTPUT_DIR: ../patchfile-manifest
+      MANIFEST_DIRECTORY: ../manifest
       STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
@@ -205,7 +206,7 @@ jobs:
         - 60
   - put: vsphere-manifest-untested
     params:
-      file: patchfile-manifest/*.yml
+      file: manifest/*.yml
 
 - name: create-vsphere-stemcell-from-patchfile
   serial: true
