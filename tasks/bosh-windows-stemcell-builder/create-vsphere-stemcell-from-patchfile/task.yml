@@ -5,7 +5,6 @@ image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci 
 
 outputs:
 - name: patchfile-stemcell
-- name: patchfile-manifest
 
 inputs:
 - name: vhd
@@ -13,6 +12,7 @@ inputs:
 - name: stempatch
 - name: ovftool
 - name: ci
+- name: patchfile-manifest
 
 run:
   path: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/run.sh
