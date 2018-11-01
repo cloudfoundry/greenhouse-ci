@@ -50,12 +50,10 @@ if [ "${PUBLISH_OS_VERSION}" == "1709" ]
 then
   PUBLISH_OS_VERSION="2016"
 fi
-echo "Moving VHD into run directory"
-mv vhd/*.vhd .
 
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
 echo "Building stemcell from patch file ..."
-stempatch/stempatch -output $OUTPUT_DIR apply-patch $MANIFEST_FILE
+stempatch/stempatch -output $OUTPUT_DIR -vhd vhd/${VHD_FILENAME} apply-patch $MANIFEST_FILE
 mv $OUTPUT_DIR/*.tgz $OUTPUT_DIR/bosh-stemcell-$(cat version/version)-patch-vsphere-esxi-windows${PUBLISH_OS_VERSION}-go_agent.tgz
 echo "... done building stemcell from patch file"
