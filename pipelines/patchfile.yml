@@ -52,15 +52,7 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # semvers
-- name: main-version
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/main
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
-- name: vsphere-from-patchfile-build-number
+- name: patchfile-version
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
@@ -132,11 +124,12 @@ jobs:
       trigger: true
     - get: windows-stemcell-dependencies
     - get: version
-      resource: main-version
-  - aggregate:
-    - put: vsphere-from-patchfile-build-number
+      resource: patchfile-version
       params:
-        file: version/number
+        bump: patch
+  - put: patchfile-version
+    params:
+      file: version/number
 
 - name: create-vsphere-patchfile
   serial: true
@@ -147,16 +140,14 @@ jobs:
       passed: [build]
     - get: windows-stemcell-dependencies
     - get: version
-      resource: vsphere-from-patchfile-build-number
+      resource: patchfile-version
       passed: [build]
       trigger: true
-    - get: main-version
-      passed: [build]
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
-    resource: vsphere-from-patchfile-build-number
+    resource: patchfile-version
     params:
       pre: build
   - task: create-patchfile
@@ -199,10 +190,8 @@ jobs:
     - get: ci
     - get: version
       passed: [create-vsphere-patchfile]
-      resource: vsphere-from-patchfile-build-number
+      resource: patchfile-version
       trigger: true
-    - get: main-version
-      passed: [create-vsphere-patchfile]
     - get: stempatch
     - get: vhd
       resource: vhd
@@ -244,11 +233,9 @@ jobs:
       - get: stemcell-builder
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: version
-        resource: vsphere-from-patchfile-build-number
+        resource: patchfile-version
         passed: [create-vsphere-stemcell-from-patchfile]
         trigger: true
-      - get: main-version
-        passed: [create-vsphere-stemcell-from-patchfile]
     - task: test-stemcell
       tags: [vsphere-linux-worker]
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
@@ -302,9 +289,7 @@ jobs:
       - get: stemcell-builder
         passed: [test-vsphere-stemcell-from-patchfile]
       - get: version
-        resource: main-version
-        passed: [test-vsphere-stemcell-from-patchfile]
-      - get: vsphere-from-patchfile-build-number
+        resource: patchfile-version
         passed: [test-vsphere-stemcell-from-patchfile]
     - task: run-wuts
       tags: [vsphere-linux-worker]
