@@ -76,18 +76,11 @@ resources:
     regexp: VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-manifest-untested
+- name: vsphere-manifest
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/untested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*.yml
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: vsphere-manifest-tested
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/vsphere/diffcell/patchfiles/patchfile-(.*)-.*.yml
+    regexp: ((BASE_FOLDER_NAME))/manifests/vsphere/diffcell/patchfile-(.*)-.*.yml
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-from-patchfile-untested
@@ -171,7 +164,7 @@ jobs:
       AZURE_STORAGE_ACCESS_KEY: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
       AZURE_STORAGE_ACCOUNT_NAME: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
       CACHE_DIR: "C:\\image-data"
-  - put: vsphere-manifest-untested
+  - put: vsphere-manifest
     params:
       file: manifest/*.yml
   - task: pause-to-wait-for-concourse-resource-check
@@ -199,7 +192,7 @@ jobs:
     - get: stemcell-builder
       passed: [create-vsphere-patchfile]
     - get: patchfile-manifest
-      resource: vsphere-manifest-untested
+      resource: vsphere-manifest
       passed: [create-vsphere-patchfile]
   - task: build-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-patchfile/task.yml
@@ -224,7 +217,7 @@ jobs:
       - get: bosh-windows-stemcell
         passed: [create-vsphere-stemcell-from-patchfile]
         resource: vsphere-stemcell-from-patchfile-untested
-      - get: vsphere-manifest-untested
+      - get: vsphere-manifest
         passed: [create-vsphere-stemcell-from-patchfile]
       - get: vhd
         passed: [create-vsphere-stemcell-from-patchfile]
@@ -257,9 +250,9 @@ jobs:
     - put: vsphere-stemcell-from-patchfile-tested
       params:
         file: bosh-windows-stemcell/bosh-stemcell-*-patch-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-    - put: vsphere-manifest-tested
+    - put: vsphere-manifest
       params:
-        file: vsphere-manifest-untested/*.yml
+        file: vsphere-manifest/*.yml
     ensure:
       put: vsphere-director-lock
       params:
@@ -285,7 +278,7 @@ jobs:
         trigger: true
       - get: manifest
         passed: [test-vsphere-stemcell-from-patchfile]
-        resource: vsphere-manifest-tested
+        resource: vsphere-manifest
       - get: stemcell-builder
         passed: [test-vsphere-stemcell-from-patchfile]
       - get: version
