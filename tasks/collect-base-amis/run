@@ -38,7 +38,8 @@ ami_id = get_ami_for(region_name, base_ami_name)
 region_info['base_ami'] = ami_id
 
 vpcs = JSON.parse(`aws ec2 describe-vpcs \
-              --region #{region_name}`)
+              --region #{region_name} \
+              --filters "Name=is-default, Values=true"`)
 vpc_id = vpcs['Vpcs'].first['VpcId']
 if vpc_id.nil? || vpc_id.empty?
   raise "Error: no vpc id found for region '#{region_name}'"
