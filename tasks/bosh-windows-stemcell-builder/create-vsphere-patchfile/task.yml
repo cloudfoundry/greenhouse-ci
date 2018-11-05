@@ -25,6 +25,7 @@ params:
   AZURE_STORAGE_ACCESS_KEY:
   AZURE_STORAGE_ACCOUNT_NAME:
   CACHE_DIR:
+  MANIFEST_DIRECTORY:
   ORGANIZATION:
   OS_VERSION: windows2012R2
   OUTPUT_DIR: ../bosh-windows-stemcell/packer-output
