@@ -30,6 +30,7 @@ AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709-dev'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-1'
 AWS_CHINA_PACKER_REGION: 'cn-north-1'
+AWS_GOVCLOUD_PACKER_REGION: 'us-gov-west-1'
 
 #GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-1709-dc-core-v.*'
