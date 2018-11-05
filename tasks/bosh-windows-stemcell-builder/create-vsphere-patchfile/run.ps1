@@ -1,9 +1,9 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
-New-Item -ItemType "directory" -Name "build" -Force
-cp stemcell-builder-release/agent.zip build/
-cp stemcell-builder-release/bosh-psmodules.zip build/
+New-Item -Path "stemcell-builder" -ItemType "directory" -Name "build" -Force
+cp stemcell-builder-release/agent.zip stemcell-builder/build/
+cp stemcell-builder-release/bosh-psmodules.zip stemcell-builder/build/
 
 pushd "stemcell-builder"
 
