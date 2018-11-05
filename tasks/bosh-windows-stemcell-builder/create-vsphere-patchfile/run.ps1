@@ -1,6 +1,10 @@
 ﻿$ErrorActionPreference = "Stop";
 trap { $host.SetShouldExit(1) }
 
+New-Item -ItemType "directory" -Name "build" -Force
+cp stemcell-builder-release/agent.zip build/
+cp stemcell-builder-release/bosh-psmodules.zip build/
+
 pushd "stemcell-builder"
 
 bundle install --without test
@@ -16,6 +20,3 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 popd
-
-cp stemcell-builder-release/agent.zip build/
-cp stemcell-builder-release/bosh-psmodules.zip build/
