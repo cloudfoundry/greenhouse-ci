@@ -5,6 +5,7 @@ inputs:
   - name: ci
   - name: version
   - name: stemcell-builder
+  - name: stemcell-builder-release
   - name: windows-stemcell-dependencies
   - name: sshd
 
