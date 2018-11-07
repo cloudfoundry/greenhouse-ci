@@ -43,6 +43,14 @@ resources:
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
+- name: stemcell-builder-release
+  type: github-release
+  source:
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    owner: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-builder
+    tag_filter: 1709.*
+
 - name: stempatch
   type: github-release
   source:
@@ -108,41 +116,25 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 jobs:
-- name: build
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stemcell-builder
-      trigger: true
-    - get: windows-stemcell-dependencies
-    - get: version
-      resource: patchfile-version
-      params:
-        bump: patch
-  - put: patchfile-version
-    params:
-      file: version/number
-
 - name: create-vsphere-patchfile
   serial: true
   plan:
   - aggregate:
     - get: ci
     - get: stemcell-builder
-      passed: [build]
+    - get: stemcell-builder-release
     - get: windows-stemcell-dependencies
     - get: version
       resource: patchfile-version
-      passed: [build]
-      trigger: true
+      params:
+        bump: patch
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: patchfile-version
     params:
-      pre: build
+      file: version/number
   - task: create-patchfile
     privileged: true
     file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-patchfile/task.yml
