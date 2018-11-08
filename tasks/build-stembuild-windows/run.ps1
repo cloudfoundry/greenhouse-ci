@@ -26,7 +26,7 @@ go install github.com/onsi/ginkgo/ginkgo
 Write-Host ***Building Stembuild***
 cd $STEMBUILD_DIR
 go install
-go build -o out/stembuild
+go build -o out/stembuild.exe
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
 # run tests
