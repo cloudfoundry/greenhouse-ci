@@ -27,6 +27,7 @@ Write-Host ***Building Stembuild***
 cd $STEMBUILD_DIR
 go install
 go build -o out/stembuild.exe
+go build -o out/stembuild
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
 # run tests
