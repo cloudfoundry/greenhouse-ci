@@ -8,18 +8,22 @@ inputs:
   - name: stemcell-builder
   - name: version
   - name: amis
+  - name: aws-tested
+  - name: aws-public-stemcells
 
 outputs:
-  - name: copied-regional-stemcells
+  - name: bosh-windows-stemcell
+  - name: sha
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/run
+  path: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/run
 
 params:
   OS_VERSION:
   AWS_ACCESS_KEY:
   AWS_SECRET_KEY:
-  REGIONS:
+  COPIED_STEMCELL_DIRECTORIES:
   VERSION_DIR: ../version
   AMIS_DIR: ../amis
+  DEFAULT_STEMCELL_DIR: ../aws-tested
 
