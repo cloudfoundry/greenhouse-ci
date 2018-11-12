@@ -1470,6 +1470,8 @@ jobs:
       passed: [wuts-vsphere]
     - get: aws-tested
       passed: [wuts-aws]
+    - get: aws-govcloud-tested
+      passed: [wuts-aws-govcloud]
     - get: gcp-tested
       passed: [wuts-gcp]
     - get: azure-tested
@@ -1492,6 +1494,8 @@ jobs:
       - wuts-azure
     - get: packer-output-ami
       passed: [wuts-aws]
+    - get: packer-output-govcloud-ami
+      passed: [wuts-aws-govcloud]
     - get: aws-build-number
       passed: [wuts-aws]
   - task: ensure-versions-match
@@ -1502,6 +1506,7 @@ jobs:
         - name: ci
         - name: vsphere-stemcell-release-candidate
         - name: aws-tested
+        - name: aws-govcloud-tested
         - name: gcp-tested
         - name: azure-tested
       run:
@@ -1515,7 +1520,8 @@ jobs:
     - get: ci
     - get: aws-tested
       passed: [promote]
-      trigger: true
+    - get: aws-govcloud-tested
+      passed: [promote]
     - get: stemcell-builder
       passed: [promote]
     - get: version
@@ -1526,29 +1532,43 @@ jobs:
     - get: aws-build-number
       passed: [promote]
       trigger: true
-    - get: amis
+    - get: default-ami
       resource: packer-output-ami
       passed: [promote]
+    - get: govcloud-ami
+      resource: packer-output-govcloud-ami
+      passed: [promote]
   - get: pivnet-public-stemcells
-  - task: copy-stemcells
+  - task: copy-public-stemcells
     timeout: 1h30m
     attempts: 3
-    input_mapping: { version: aws-build-number }
+    input_mapping: { version: aws-build-number, default-stemcell: aws-tested }
     output_mapping: {copied-regional-stemcells: aws-public-stemcells}
     file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
     params:
+      AMIS_DIR: ../default-ami
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,eu-west-3,sa-east-1"
+  - task: copy-govcloud-stemcells
+    timeout: 1h30m
+    attempts: 3
+    input_mapping: { version: aws-build-number, default-stemcell: aws-govcloud-tested }
+    output_mapping: {copied-regional-stemcells: aws-govcloud-stemcells}
+    file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    params:
+      AMIS_DIR: ../govcloud-ami
+      OS_VERSION: ((STEMCELL_OS_NAME))
+      AWS_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      REGIONS: "" # the only supported region (us-gov-west-1) already has the ami because it's where packer built it
   - task: aggregate-stemcells
     file: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number }
     params:
-      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells'
+      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells'
       OS_VERSION: ((STEMCELL_OS_NAME))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
   - task: test-aws-stemcell

@@ -8,6 +8,7 @@ inputs:
   - name: stemcell-builder
   - name: version
   - name: amis
+  - name: default-stemcell
 
 outputs:
   - name: copied-regional-stemcells
@@ -21,5 +22,6 @@ params:
   AWS_SECRET_KEY:
   REGIONS:
   VERSION_DIR: ../version
-  AMIS_DIR: ../amis
+  AMIS_DIR:
+  DEFAULT_STEMCELL_DIR: ../default-stemcell
 
