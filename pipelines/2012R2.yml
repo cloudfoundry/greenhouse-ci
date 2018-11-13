@@ -346,16 +346,12 @@ resources:
   source:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server
-    access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
-    secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
     product_version: 1200.*
 - name: pivnet-internal-stemcells
   type: pivnet
   source:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server-internal
-    access_key_id: ((PIVNET_STEMCELL_WINDOWS_ACCESS_KEY))
-    secret_access_key: ((PIVNET_STEMCELL_WINDOWS_SECRET_ACCESS_KEY))
     product_version: 1200.*
 
 # time
@@ -1203,7 +1199,6 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*.tgz'
-        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
@@ -1279,7 +1274,6 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*.tgz'
-        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
@@ -1339,7 +1333,6 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*.tgz'
-        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_INTERNAL_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
@@ -1435,7 +1428,6 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*.tgz'
-        s3_filepath_prefix: ((PIVNET_STEMCELL_WINDOWS_FILEPATH_PREFIX))
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
