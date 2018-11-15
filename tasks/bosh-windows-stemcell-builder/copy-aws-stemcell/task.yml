@@ -22,6 +22,6 @@ params:
   AWS_SECRET_KEY:
   REGIONS:
   VERSION_DIR: ../version
-  AMIS_DIR:
+  AMIS_DIR: ../amis
   DEFAULT_STEMCELL_DIR: ../default-stemcell
 
