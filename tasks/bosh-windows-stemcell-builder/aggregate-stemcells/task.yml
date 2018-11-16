@@ -9,6 +9,7 @@ inputs:
   - name: version
   - name: amis
   - name: aws-public-stemcells
+  - name: aws-govcloud-stemcells
 
 outputs:
   - name: bosh-windows-stemcell

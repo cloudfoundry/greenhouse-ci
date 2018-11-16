@@ -1509,7 +1509,6 @@ jobs:
     - get: aws-tested
       passed: [promote]
     - get: aws-govcloud-tested
-      passed: [promote]
     - get: stemcell-builder
       passed: [promote]
     - get: version
@@ -1525,7 +1524,6 @@ jobs:
       passed: [promote]
     - get: govcloud-ami
       resource: packer-output-govcloud-ami
-      passed: [promote]
   - get: pivnet-public-stemcells
   - task: copy-public-stemcells
     timeout: 1h30m
@@ -1548,10 +1546,10 @@ jobs:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-      REGIONS: "" # the only supported region (us-gov-west-1) already has the ami because it's where packer built it
+      REGIONS: "us-gov-east-1"
   - task: aggregate-stemcells
     file: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/task.yml
-    input_mapping: { version: aws-build-number }
+    input_mapping: { version: aws-build-number, amis: default-ami }
     params:
       COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells'
       OS_VERSION: ((STEMCELL_OS_NAME))
