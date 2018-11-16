@@ -701,10 +701,6 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
-  - put: version
-    resource: aws-build-number
-    params:
-      pre: build
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -848,10 +844,6 @@ jobs:
     - get: sshd
       resource: openssh-release
       version: { tag: ((OPEN_SSH_VERSION)) }
-  - put: version
-    resource: aws-build-number
-    params:
-      pre: build
   - task: create-packer-ci-key
     privileged: true
     config:
