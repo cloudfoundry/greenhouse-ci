@@ -1146,7 +1146,7 @@ jobs:
       resource: aws-build-number
       passed: [promote]
       trigger: true
-    - get: amis
+    - get: default-ami
       resource: packer-output-ami
       passed: [promote]
   - get: pivnet-public-stemcells
@@ -1154,13 +1154,19 @@ jobs:
     timeout: 1h30m
     attempts: 3
     file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
-    input_mapping: { version: aws-build-number, aws-regional: aws-tested }
+    input_mapping: { version: aws-build-number, default-stemcell: aws-tested, amis: default-ami}
+    output_mapping: {copied-regional-stemcells: aws-public-stemcells}
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,eu-west-3,sa-east-1"
+  - task: aggregate-stemcells
+    file: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/task.yml
+    input_mapping: { version: aws-build-number, amis: default-ami }
+    params:
+      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells'
+      OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
   - task: test-aws-stemcell

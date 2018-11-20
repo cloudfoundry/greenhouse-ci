@@ -1509,6 +1509,7 @@ jobs:
     - get: aws-tested
       passed: [promote]
     - get: aws-govcloud-tested
+      passed: [promote]
     - get: stemcell-builder
       passed: [promote]
     - get: version
@@ -1523,6 +1524,7 @@ jobs:
       resource: packer-output-ami
       passed: [promote]
     - get: govcloud-ami
+      passed: [promote]
       resource: packer-output-govcloud-ami
   - get: pivnet-public-stemcells
   - task: copy-public-stemcells
