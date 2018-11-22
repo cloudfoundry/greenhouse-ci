@@ -69,7 +69,8 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/pivotal-cf-experimental/stembuild.git
+    uri: https://github.com/cloudfoundry-incubator/stembuild.git
+    ignore_paths: [version/version]
 
 - name: stemcell-builder-develop
   type: git
@@ -188,10 +189,11 @@ resources:
 - name: stembuild-version
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: stembuild/version
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    driver: git
+    uri: git@github.com:cloudfoundry-incubator/stembuild.git
+    private_key: ((CLOUDFOUNDRY_STEMBUILD_DEPLOY_KEY))
+    branch: master
+    file: version/version
     initial_version: "0.14.0"
 
 - name: stempatch-version
