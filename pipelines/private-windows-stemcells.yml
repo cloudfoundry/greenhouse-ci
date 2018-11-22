@@ -22,7 +22,6 @@ resources:
   type: semver
   source:
     bucket: private-windows-stemcells-semver
-    initial_version: 1.0.0
     key: versions/updated-vmx-version
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
@@ -30,7 +29,6 @@ resources:
 - name: stemcell-version
   type: semver
   source:
-    bucket: {{private_windows_stemcells_semver}}
     key: versions/stemcell-version-private
     access_key_id: {{BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID}}
     secret_access_key: {{BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY}}
@@ -74,7 +72,7 @@ resources:
 - name: stembuild
   type: github-release
   source:
-    owner: pivotal-cf-experimental
+    owner: cloudfoundry-incubator
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
