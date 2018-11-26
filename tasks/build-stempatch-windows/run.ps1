@@ -62,6 +62,7 @@ go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
 Write-Host ***Building Stempatch***
+go generate
 go install
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
