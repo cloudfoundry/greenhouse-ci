@@ -14,16 +14,16 @@ echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
-CF_EXP_DIR=${GOPATH}/src/github.com/pivotal-cf-experimental
+CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
 STEMBUILD_DIR=${ROOT_DIR}/stembuild
-mkdir -p ${CF_EXP_DIR}
-cp -r ${STEMBUILD_DIR} ${CF_EXP_DIR}
+mkdir -p ${CF_INC_DIR}
+cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
 # install ginkgo
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-GO_STEMBUILD_DIR=${CF_EXP_DIR}/stembuild
+GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
   make units
