@@ -64,6 +64,7 @@ resources:
     branch: master
     uri: git@github.com:pivotal-cf/stempatch.git
     private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
+    ignore_paths: [version/version]
 
 - name: stembuild
   type: git
@@ -199,10 +200,12 @@ resources:
 - name: stempatch-version
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: stempatch/version
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    driver: git
+    uri: git@github.com:pivotal-cf/stempatch.git
+    private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
+    branch: master
+    file: version/version
+    initial_version: "0.3.6"
 
 - name: updated-vmx-version
   type: semver
