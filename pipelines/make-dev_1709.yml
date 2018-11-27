@@ -43,6 +43,14 @@
   path: /resources/name=gcp-lock
 - type: remove
   path: /resources/name=goose-lock
+- type: remove
+  path: /resources/name=base-govcloud-ami
+- type: remove
+  path: /resources/name=packer-output-govcloud-ami
+- type: remove
+  path: /resources/name=aws-govcloud-untested
+- type: remove
+  path: /resources/name=aws-govcloud-tested
 
 # JOBS
 # remove unnecessary jobs
@@ -63,6 +71,12 @@
   path: /jobs/name=promote
 - type: remove
   path: /jobs/name=ship-bosh-stemcell-builder
+- type: remove
+  path: /jobs/name=create-aws-govcloud
+- type: remove
+  path: /jobs/name=test-aws-govcloud
+- type: remove
+  path: /jobs/name=wuts-aws-govcloud
 
 # configure gcp for dev
 - type: replace
@@ -108,3 +122,5 @@
   value: minor
 - type: remove
   path: /jobs/name=build/plan/0/aggregate/get=midnight
+- type: remove
+  path: /jobs/name=build/plan/4/aggregate/put=base-govcloud-ami
