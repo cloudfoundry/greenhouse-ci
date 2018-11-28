@@ -129,11 +129,10 @@ resources:
 - name: stembuild
   type: github-release
   source:
-    owner: pivotal-cf-experimental
+    owner: cloudfoundry-incubator
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 - name: stemcell-builder-release
   type: github-release
   source:
