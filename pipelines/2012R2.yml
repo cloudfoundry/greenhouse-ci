@@ -768,7 +768,6 @@ jobs:
       pre: build
   - task: create-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
-    timeout: 60m
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
