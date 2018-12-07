@@ -1339,7 +1339,7 @@ jobs:
       OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
       OWNER: Pivotal
       SKIP_WINDOWS_UPDATE: false
-      VMX_CACHE_DIR: "C:\\vmx-data-((BASE_IMAGE_OS))"
+      VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data-((BASE_IMAGE_OS))"
 
 - name: test-vsphere-from-vmx
   serial: true

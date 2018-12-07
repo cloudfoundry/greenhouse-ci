@@ -155,7 +155,7 @@ jobs:
       AZURE_CONTAINER_NAME: ((AZURE_PATCHFILE_CONTAINER_NAME))
       AZURE_STORAGE_ACCESS_KEY: ((AZURE_PATCHFILE_STORAGE_ACCESS_KEY))
       AZURE_STORAGE_ACCOUNT_NAME: ((AZURE_PATCHFILE_STORAGE_ACCOUNT_NAME))
-      CACHE_DIR: "C:\\image-data"
+      CACHE_DIR: "C:\\var\\vcap\\data\\image-data"
   - put: vsphere-manifest
     params:
       file: manifest/*.yml

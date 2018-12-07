@@ -36,5 +36,5 @@ params:
   UPDATES_HTTP_PROXY:
   UPDATES_PROXY_BYPASS_LIST:
   VERSION_DIR: ../version
-  VMX_CACHE_DIR: "C:\\vmx-data"
+  VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data"
   VMX_VERSION_DIR: ../vmx-version
