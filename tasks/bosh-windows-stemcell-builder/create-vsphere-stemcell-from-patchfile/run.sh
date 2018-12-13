@@ -53,7 +53,10 @@ fi
 
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
+-output $OUTPUT_DIR -vhd vhd/${VHD_FILENAME}
+ln "vhd/${VHD_FILENAME}" "${VHD_FILENAME}"
+
 echo "Building stemcell from patch file ..."
-stempatch/stempatch -output $OUTPUT_DIR -vhd vhd/${VHD_FILENAME} apply-patch $MANIFEST_FILE
-mv $OUTPUT_DIR/*.tgz $OUTPUT_DIR/bosh-stemcell-$(cat version/version)-patch-vsphere-esxi-windows${PUBLISH_OS_VERSION}-go_agent.tgz
+stempatch/stempatch apply-patch "${MANIFEST_FILE}"
+mv *.tgz $OUTPUT_DIR/bosh-stemcell-$(cat version/version)-patch-vsphere-esxi-windows${PUBLISH_OS_VERSION}-go_agent.tgz
 echo "... done building stemcell from patch file"
