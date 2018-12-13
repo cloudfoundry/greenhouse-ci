@@ -53,7 +53,7 @@ fi
 
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
-ln "vhd/${VHD_FILENAME}" "${VHD_FILENAME}"
+ln -s "vhd/${VHD_FILENAME}" "${VHD_FILENAME}"
 
 echo "Building stemcell from patch file ..."
 stempatch/stempatch apply-patch "${MANIFEST_FILE}"
