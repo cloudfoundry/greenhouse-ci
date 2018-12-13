@@ -53,7 +53,6 @@ fi
 
 MANIFEST_FILE=patchfile-manifest/patchfile-${VERSION}-${VHD_VERSION}.yml
 
--output $OUTPUT_DIR -vhd vhd/${VHD_FILENAME}
 ln "vhd/${VHD_FILENAME}" "${VHD_FILENAME}"
 
 echo "Building stemcell from patch file ..."
