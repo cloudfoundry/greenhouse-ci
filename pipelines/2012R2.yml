@@ -393,7 +393,6 @@ jobs:
       params:
         pre: build
     - task: create-stemcell
-      timeout: 2h
       privileged: true
       file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
       tags: [vsphere-windows-worker]
