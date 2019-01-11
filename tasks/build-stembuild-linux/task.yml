@@ -7,7 +7,6 @@ inputs:
   - name: stembuild
   - name: ci
   - name: stembuild-version
-  - name: ovftool
 
 outputs:
   - name: output
@@ -16,4 +15,4 @@ run:
   path: /bin/bash
   args:
     - -c
-    - ci/tasks/build-stembuild-linux/run.sh
+    - ci/tasks/stembuild-linux-unit/run.sh
