@@ -21,9 +21,9 @@ go get github.com/onsi/ginkgo/ginkgo
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Building Stembuild***
-  go build
+  make build
 popd
 
 echo ***Copying stembuild to output directory***
-cp ${GO_STEMBUILD_DIR}/stembuild ${OUTPUT_DIR}/stembuild-linux-x86_64-${VERSION}
+cp ${GO_STEMBUILD_DIR}/out/stembuild ${OUTPUT_DIR}/stembuild-linux-x86_64-${VERSION}
 
