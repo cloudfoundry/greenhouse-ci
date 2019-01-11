@@ -16,6 +16,11 @@ echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
+export AWS_ACCESS_KEY_ID= ${AWS_ACCESS_KEY}
+export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+
+aws s3 cp "s3://${ROOT_BUCKET}/ova-for-stembuild-test/${OVA_FILE}" test.ova
+
 CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
 STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_INC_DIR}
@@ -25,13 +30,11 @@ cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 go get github.com/onsi/ginkgo/ginkgo
 go get -u github.com/vmware/govmomi/govc
 
-ova=$(ls test-ova/*.ova)
-
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
 
-  govc import.ova --options=<(echo ${JSON_TEMPLATE}) --name=stembuild_linux --folder=${VCENTER_VM_FOLDER} ${ova}
+  govc import.ova --options=<(echo ${JSON_TEMPLATE}) --name=stembuild_linux --folder=${VCENTER_VM_FOLDER} ../test.ova
   make integration
   govc vm.destroy --vm.ip=${EXISTING_VM_IP}
 
