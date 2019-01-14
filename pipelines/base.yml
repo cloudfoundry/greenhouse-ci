@@ -1052,7 +1052,6 @@ jobs:
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
       params:
-        AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
         STEMCELL_OS: ((AZURE_OS_VERSION))
         DESTINATION_DIR: heavy-stemcell
     ensure:
@@ -1124,7 +1123,6 @@ jobs:
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
       params:
-        AZURE_SOURCE_KEY: ((AZURE_STORAGE_ACCESS_KEY))
         STEMCELL_OS: ((AZURE_OS_VERSION))
         DESTINATION_DIR: heavy-stemcell
     ensure:

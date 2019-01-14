@@ -80,7 +80,6 @@ if ($LASTEXITCODE -ne 0) {
 # Create Stemcell
 azstemcell `
     -vhdfile $VhdFile `
-    -key $env:AZURE_SOURCE_KEY `
     -versionfile $VersionFile `
     -os $env:STEMCELL_OS `
     -dest $DestDir `

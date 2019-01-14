@@ -22,6 +22,5 @@ run:
 
 params:
   STEMCELL_OS:
-  AZURE_SOURCE_KEY:
   WORKING_DIR: '/'
   DESTINATION_DIR:
