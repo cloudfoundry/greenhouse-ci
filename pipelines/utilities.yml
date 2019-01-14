@@ -294,6 +294,7 @@ jobs:
       OVA_FILE: "1709_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
       EXISTING_VM_IP: "10.74.35.101"
+      VCENTER_WINNIPEG_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
   - task: 1803-integration
     file: ci/tasks/stembuild-linux-integration/task.yml
     tags: [vsphere-linux-worker]
@@ -310,6 +311,7 @@ jobs:
       OVA_FILE: "1803_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
       EXISTING_VM_IP: "10.74.35.101"
+      VCENTER_WINNIPEG_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux
@@ -468,6 +470,8 @@ jobs:
     - task: test-bosh-psmodules
       file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
       input_mapping: {stemcell-builder: stemcell-builder-develop}
+      tags:
+      - vsphere-stembuild-worker
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
     file: ci/tasks/merge-repo/task.yml
