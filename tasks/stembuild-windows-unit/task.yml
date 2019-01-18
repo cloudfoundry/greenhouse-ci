@@ -11,4 +11,4 @@ run:
   path: powershell
   args:
     - "-File"
-    - ci/tasks/stembuild-linux-unit/run.ps1
+    - ci/tasks/stembuild-windows-unit/run.ps1
