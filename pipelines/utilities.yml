@@ -503,6 +503,8 @@ jobs:
     - task: test-bosh-psmodules
       file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
       input_mapping: {stemcell-builder: stemcell-builder-develop}
+      tags:
+      - vsphere-stembuild-worker
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
     file: ci/tasks/merge-repo/task.yml
