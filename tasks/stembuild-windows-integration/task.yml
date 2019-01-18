@@ -14,4 +14,18 @@ run:
   path: powershell
   args:
   - "-File"
-  - ci/tasks/build-stembuild-windows/run.ps1
+  - ci/tasks/stembuild-windows-integration/run.ps1
+
+params:
+  GOVC_INSECURE: 1
+  GOVC_URL:
+  GOVC_DATASTORE:
+  GOVC_NETWORK:
+  GOVC_RESOURCE_POOL:
+  VM_USERNAME:
+  VM_PASSWORD:
+  VCENTER_VM_FOLDER:
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:
+  OVA_FILE:
+  ROOT_BUCKET:

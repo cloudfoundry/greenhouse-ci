@@ -39,13 +39,13 @@ $env:PATH="${GO_DIR}/bin;$env:PATH"
 # run tests
 Write-Host ***Runninng integration tests***
 govc import.ova --options=<(echo ${JSON_TEMPLATE}) --name=stembuild_linux --folder=${VCENTER_VM_FOLDER} ${ROOT_DIR}/test.ova
-ginkgo -r -randomizeAllSpecs integration
+
+ginkgo -r -randomizeAllSpecs integration/construct
 if ($lastexitcode -ne 0)
 {
   throw "integration specs failed"
 }
 
-# while loop to see if the vm is ready to be destroyed; will EAP need to be unset?
 $ErrorActionPreference = "silentlycontinue"
 $val=1
 while($val -ne 0) { govc vm.info --vm.ip=${EXISTING_VM_IP} ; $val=$LASTEXISTCODE }
