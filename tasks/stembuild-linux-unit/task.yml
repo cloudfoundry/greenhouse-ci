@@ -14,15 +14,3 @@ run:
   args:
     - -c
     - ci/tasks/stembuild-linux-unit/run.sh
-
-params:
-  GOVC_INSECURE: 1
-  GOVC_URL:
-  GOVC_DATASTORE:
-  GOVC_NETWORK:
-  GOVC_RESOURCE_POOL:
-  VM_USERNAME:
-  VM_PASSWORD:
-  OS_VERSION:
-  VCENTER_VM_FOLDER:
-  EXISTING_VM_IP:

@@ -1,0 +1,15 @@
+---
+platform: windows
+
+inputs:
+  - name: librsync
+  - name: stembuild
+  - name: ci
+  - name: stembuild-version
+  - name: ovftool
+
+run:
+  path: powershell
+  args:
+    - "-File"
+    - ci/tasks/stembuild-linux-unit/run.ps1

@@ -257,6 +257,41 @@ jobs:
     - get: stembuild-version
       passed: [ build-stembuild ]
       trigger: true
+  - task: unit-test
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stembuild-windows/task.yml
+  - task: 1709-integration
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stembuild-windows/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
+      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
+      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
+      VM_USERNAME: ((WINRM_VM_USERNAME))
+      VM_PASSWORD: ((WINRM_VM_PASSWORD))
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_FILE: "1709_iso_v1.ova"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+      EXISTING_VM_IP: "10.74.35.101"
+  - task: 1803-integration
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stembuild-windows/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
+      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
+      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
+      VM_USERNAME: ((WINRM_VM_USERNAME))
+      VM_PASSWORD: ((WINRM_VM_PASSWORD))
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_FILE: "1803_iso_v1.ova"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+      EXISTING_VM_IP: "10.74.35.101"
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stembuild-windows/task.yml
