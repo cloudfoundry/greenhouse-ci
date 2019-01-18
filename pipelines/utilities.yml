@@ -259,7 +259,7 @@ jobs:
       trigger: true
   - task: unit-test
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/build-stembuild-windows/task.yml
+    file: ci/tasks/stembuild-windows-unit/task.yml
   - task: 1709-integration
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stembuild-windows/task.yml
