@@ -48,6 +48,7 @@ if ($lastexitcode -ne 0)
 
 $ErrorActionPreference = "silentlycontinue"
 $val=1
-while($val -ne 0) { govc vm.info --vm.ip=$ENV:EXISTING_VM_IP ; $val=$LASTEXISTCODE }
+# ADD SOME SORT OF WAIT????
+while($val -ne 0) { govc vm.info --vm.ip=$ENV:EXISTING_VM_IP ; $val=$LASTEXITCODE }
 $ErrorActionPreference = "Stop";
 govc vm.destroy --vm.ip=$ENV:EXISTING_VM_IP
