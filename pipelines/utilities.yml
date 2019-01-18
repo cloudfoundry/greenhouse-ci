@@ -262,7 +262,7 @@ jobs:
     file: ci/tasks/stembuild-windows-unit/task.yml
   - task: 1709-integration
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/build-stembuild-windows/task.yml
+    file: ci/tasks/stembuild-windows-integration/task.yml
     params:
       GOVC_URL: ((VCENTER_URL))
       GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
@@ -278,7 +278,7 @@ jobs:
       EXISTING_VM_IP: "10.74.35.101"
   - task: 1803-integration
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/build-stembuild-windows/task.yml
+    file: ci/tasks/stembuild-windows-integration/task.yml
     params:
       GOVC_URL: ((VCENTER_URL))
       GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
