@@ -191,7 +191,7 @@ resources:
   source:
     branch: master
     pool: "vcenter-ips"
-    private_key: ((BOSH-WINDOWS-LOCK-CI_KEY))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # versions
