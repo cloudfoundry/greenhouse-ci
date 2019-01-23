@@ -2,7 +2,7 @@
 
 require 'json'
 
-supported_base_ami = %w[windows2012R2 windows1709 windows1803]
+supported_base_ami = %w[windows2012R2 windows1709 windows1803 windows2019]
 
 # Helper method
 def get_ami_for(region, base_ami_name)
@@ -22,7 +22,7 @@ version = File.read('version/number').chomp
 
 base_ami = ENV['BASE_AMI']
 unless supported_base_ami.include? base_ami
-  abort 'abort "Define BASE_AMI environment variable (i.e. windows2012R2, windows1709, or windows1803)'
+  abort 'abort "Define BASE_AMI environment variable (i.e. windows2012R2, windows1709, windows1803 or windows2019)'
 end
 
 base_ami_name = ENV['BASE_AMI_NAME']

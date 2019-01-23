@@ -13,6 +13,8 @@ elsif final_version.match('1709')
   filename = "2016-stemcell-#{final_version}.json"
 elsif final_version.match('1803')
   filename = "1803-stemcell-#{final_version}.json"
+elsif final_version.match('2019')
+  filename = "2019-stemcell-#{final_version}.json"
 else
   throw "invalid stemcell version: #{final_version}"
 end
