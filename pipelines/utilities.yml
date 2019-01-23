@@ -186,6 +186,14 @@ resources:
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
+- name: vcenter-ips
+  type: pool
+  source:
+    branch: master
+    pool: "vcenter-ips"
+    private_key: ((BOSH-WINDOWS-LOCK-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
 # versions
 - name: stembuild-version
   type: semver
@@ -260,38 +268,44 @@ jobs:
   - task: unit-test
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild-windows-unit/task.yml
+  - put: vcenter-ips
+    params: { acquire: true }
   - task: 1709-integration
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild-windows-integration/task.yml
     params:
       GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
-      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
-      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
-      VM_USERNAME: ((WINRM_VM_USERNAME))
-      VM_PASSWORD: ((WINRM_VM_PASSWORD))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_FILE: "1709_iso_v1.ova"
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
-      EXISTING_VM_IP: "10.74.35.101"
   - task: 1803-integration
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild-windows-integration/task.yml
     params:
       GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
-      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
-      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
-      VM_USERNAME: ((WINRM_VM_USERNAME))
-      VM_PASSWORD: ((WINRM_VM_PASSWORD))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_FILE: "1803_iso_v1.ova"
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
-      EXISTING_VM_IP: "10.74.35.101"
+  - put: vcenter-ips
+    params: { release: vcenter-ips }
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stembuild-windows/task.yml
@@ -313,38 +327,44 @@ jobs:
     - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild-linux-unit/task.yml
+  - put: vcenter-ips
+    params: { acquire: true }
   - task: 1709-integration
     file: ci/tasks/stembuild-linux-integration/task.yml
     tags: [vsphere-linux-worker]
     params:
       GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
-      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
-      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
-      VM_USERNAME: ((WINRM_VM_USERNAME))
-      VM_PASSWORD: ((WINRM_VM_PASSWORD))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_FILE: "1709_iso_v1.ova"
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
-      EXISTING_VM_IP: "10.74.35.101"
   - task: 1803-integration
     file: ci/tasks/stembuild-linux-integration/task.yml
     tags: [vsphere-linux-worker]
     params:
       GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((VCENTER_DATASTORE_1))
-      GOVC_NETWORK: ((VCENTER_WINNIPEG_NETWORK))
-      GOVC_RESOURCE_POOL: ((VCENTER_WINNIPEG_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_WINNIPEG_VM_FOLDER))
-      VM_USERNAME: ((WINRM_VM_USERNAME))
-      VM_PASSWORD: ((WINRM_VM_PASSWORD))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_FILE: "1803_iso_v1.ova"
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
-      EXISTING_VM_IP: "10.74.35.101"
+  - put: vcenter-ips
+    params: { release: vcenter-ips }
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux
