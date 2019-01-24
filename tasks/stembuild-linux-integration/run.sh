@@ -16,9 +16,6 @@ echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
-export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
-export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
-
 aws s3 cp "s3://${ROOT_BUCKET}/ova-for-stembuild-test/${OVA_FILE}" test.ova
 
 CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
