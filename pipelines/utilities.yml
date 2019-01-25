@@ -286,7 +286,7 @@ jobs:
       OVA_SOURCE_S3_REGION: "us-east-1"
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
-      VM_NAME_PREFIX: "construct-integration-ci-1709"
+      VM_NAME_PREFIX: "construct-windows-integration-ci-1709"
       NETWORK_GATEWAY: "10.74.35.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
@@ -306,7 +306,7 @@ jobs:
       OVA_SOURCE_S3_REGION: "us-east-1"
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
-      VM_NAME_PREFIX: "construct-integration-ci-1803"
+      VM_NAME_PREFIX: "construct-windows-integration-ci-1803"
       NETWORK_GATEWAY: "10.74.35.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
@@ -343,7 +343,7 @@ jobs:
       GOVC_DATASTORE: ((GOVC_DATASTORE))
       GOVC_NETWORK: ((GOVC_NETWORK))
       GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
       VM_USERNAME: ((VM_USERNAME))
       VM_PASSWORD: ((VM_PASSWORD))
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
@@ -351,26 +351,30 @@ jobs:
       OVA_SOURCE_S3_REGION: "us-east-1"
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
+      VM_NAME_PREFIX: "construct-linux-integration-ci-1709"
+      NETWORK_GATEWAY: "10.74.35.1"
+      SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
-      OVA_FILE: "1709_iso_v1.ova"
   - task: 1803-integration
     file: ci/tasks/stembuild-linux-integration/task.yml
     tags: [vsphere-linux-worker]
     params:
       GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((GOVC_DATASTORE))
-      GOVC_NETWORK: ((GOVC_NETWORK))
-      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_USERNAME: ((VM_USERNAME))
-      VM_PASSWORD: ((VM_PASSWORD))
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_SOURCE_S3_REGION: "us-east-1"
-      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
-      ROOT_BUCKET: ((ROOT_BUCKET))
-      OVA_FILE: "1803_iso_v1.ova"
+        GOVC_DATASTORE: ((GOVC_DATASTORE))
+        GOVC_NETWORK: ((GOVC_NETWORK))
+        GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+        VM_FOLDER: ((VCENTER_VM_FOLDER))
+        VM_USERNAME: ((VM_USERNAME))
+        VM_PASSWORD: ((VM_PASSWORD))
+        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+        OVA_SOURCE_S3_REGION: "us-east-1"
+        OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+        OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
+        VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
+        NETWORK_GATEWAY: "10.74.35.1"
+        SUBNET_MASK: "25"
+        ROOT_BUCKET: ((ROOT_BUCKET))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux

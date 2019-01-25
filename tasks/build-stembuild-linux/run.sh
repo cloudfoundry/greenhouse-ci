@@ -15,9 +15,6 @@ STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_INC_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
-# install ginkgo, govc
-go get github.com/onsi/ginkgo/ginkgo
-
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Building Stembuild***
