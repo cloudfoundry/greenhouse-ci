@@ -24,6 +24,8 @@ $env:USER_PROVIDED_IP = cat $ROOT_DIR/vcenter-ips/name
 $env:PATH="$env:GOPATH\bin;$env:PATH"
 cd $STEMBUILD_DIR
 
+go generate .
+
 # run tests
 Write-Host ***Runninng integration tests***
 
