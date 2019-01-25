@@ -22,6 +22,9 @@ go get -u github.com/vmware/govmomi/govc
 
 $env:USER_PROVIDED_IP = cat $ROOT_DIR/../vcenter-ips/*
 
+$env:PATH="$env:GOPATH\bin;$env:PATH"
+cd $STEMBUILD_DIR
+
 # run tests
 Write-Host ***Runninng integration tests***
 

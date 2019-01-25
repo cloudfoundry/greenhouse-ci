@@ -346,6 +346,7 @@ jobs:
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
+      OVA_FILE: "1709_iso_v1.ova"
   - task: 1803-integration
     file: ci/tasks/stembuild-linux-integration/task.yml
     tags: [vsphere-linux-worker]
@@ -363,13 +364,15 @@ jobs:
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
       ROOT_BUCKET: ((ROOT_BUCKET))
-  - put: vcenter-ips
-    params: { release: vcenter-ips }
+      OVA_FILE: "1803_iso_v1.ova"
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
   - put: stembuild-untested-linux
     params:
       file: output/stembuild-linux-x86_64-*
+  ensure:
+    put: vcenter-ips
+    params: { release: vcenter-ips }
 
 - name: build-stempatch-windows
   serial: true

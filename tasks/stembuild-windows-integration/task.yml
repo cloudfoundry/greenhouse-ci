@@ -6,6 +6,7 @@ inputs:
 - name: stembuild
 - name: ci
 - name: stembuild-version
+- name: vcenter-ips
 
 outputs:
 - name: output
