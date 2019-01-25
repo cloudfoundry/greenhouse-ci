@@ -6,6 +6,9 @@ VERSION=`cat stembuild-version/version`
 ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../.. && pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
+export EXISTING_VM_IP=`ls vcenter-ips/10.74.35.*`
+echo "Using Exiting VM IP: ${EXISTING_VM_IP}"
+
 JSON_TEMPLATE="{\"DiskProvisioning\": \"thin\",\"MarkAsTemplate\": false,\"Name\": \"stembuild_linux\",\"IPAllocationPolicy\": \"fixedPolicy\",\"IPProtocol\": \"IPv4\",\"NetworkMapping\": [{\"Name\": \"custom\",\"Network\": \"${GOVC_NETWORK}\"}],\"PropertyMapping\": [{\"Key\": \"ip0\",\"Value\": \"${EXISTING_VM_IP}\"},{\"Key\": \"cidr\",\"Value\": \"25\"},{\"Key\": \"gateway\",\"Value\": \"10.74.35.1\"},{\"Key\": \"DNS\",\"Value\": \"8.8.8.8\"}],\"PowerOn\": true,\"InjectOvfEnv\": false,\"WaitForIP\": false}"
 
 echo ***Installing VMWare OVF Tools***
@@ -32,10 +35,13 @@ pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
 
   govc import.ova --options=<(echo ${JSON_TEMPLATE}) --name=stembuild_linux --folder=${VCENTER_VM_FOLDER} ${ROOT_DIR}/test.ova
-  make integration
 
   set +ex
   stat=1
+
+  make integration
+  stat=$?
+
   while [ $stat -ne 0 ]
   do
     govc vm.info --vm.ip=${EXISTING_VM_IP}

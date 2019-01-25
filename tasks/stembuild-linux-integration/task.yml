@@ -8,6 +8,7 @@ inputs:
   - name: ci
   - name: stembuild-version
   - name: ovftool
+  - name: vcenter-ips
 
 run:
   path: /bin/bash
