@@ -27,7 +27,7 @@ cd $STEMBUILD_DIR
 # run tests
 Write-Host ***Runninng integration tests***
 
-ginkgo -r -randomizeAllSpecs integration/construct
+ginkgo -r -randomizeAllSpecs integration
 if ($lastexitcode -ne 0)
 {
     throw "integration specs failed"

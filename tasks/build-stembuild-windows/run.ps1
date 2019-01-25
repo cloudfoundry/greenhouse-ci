@@ -17,30 +17,12 @@ Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
-Write-Host ***Test Stembuild Code***
-
-Write-Host ***Building ginkgo***
-go get github.com/onsi/ginkgo/ginkgo
-go install github.com/onsi/ginkgo/ginkgo
-
 Write-Host ***Building Stembuild***
 cd $STEMBUILD_DIR
 go generate
 go install
 go build -o out/stembuild.exe
 $env:PATH="${GO_DIR}/bin;$env:PATH"
-
-# run tests
-ginkgo -r -randomizeAllSpecs integration
-if ($lastexitcode -ne 0)
-{
-  throw "integration specs failed"
-}
-ginkgo -r -randomizeAllSpecs -randomizeSuites -skipPackage integration
-if ($lastexitcode -ne 0)
-{
-  throw "unit tests failed"
-}
 
 Write-Host ***Copying stembuild to output directory***
 copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild-windows-x86_64-$VERSION.exe
