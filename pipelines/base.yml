@@ -132,7 +132,10 @@ resources:
     owner: cloudfoundry-incubator
     repository: stembuild
     pre_release: true
+    release: false
+    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
 - name: stemcell-builder-release
   type: github-release
   source:
@@ -1054,6 +1057,7 @@ jobs:
       params:
         STEMCELL_OS: ((AZURE_OS_VERSION))
         DESTINATION_DIR: heavy-stemcell
+        WORKING_DIR: '.'
     ensure:
       put: azure-download-lock
       params:
