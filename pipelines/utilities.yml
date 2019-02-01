@@ -352,7 +352,7 @@ jobs:
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1709_iso_v1.ova"
       VM_NAME_PREFIX: "construct-linux-integration-ci-1709"
-      NETWORK_GATEWAY: "10.74.35.1"
+      NETWORK_GATEWAY: "10.74.34.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
   - task: 1803-integration
@@ -372,7 +372,7 @@ jobs:
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
       OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
       VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
-      NETWORK_GATEWAY: "10.74.35.1"
+      NETWORK_GATEWAY: "10.74.34.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
   - task: build
