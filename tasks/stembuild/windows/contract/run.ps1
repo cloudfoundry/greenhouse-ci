@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
-$ROOT_DIR= (Get-Item "$PSScriptRoot/../../..").FullName
+$ROOT_DIR= (Get-Item "$PSScriptRoot/../../../../..").FullName
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
@@ -21,7 +21,6 @@ Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-Write-Host ***Building Stembuild***
 cd $STEMBUILD_DIR
 
 # run tests
