@@ -21,6 +21,8 @@ Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
+$env:PATH="${GO_DIR}/bin;$env:PATH"
+
 cd $STEMBUILD_DIR
 
 # run tests
