@@ -268,6 +268,13 @@ jobs:
   - task: unit-test
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild-windows-unit/task.yml
+  - task: contract-test
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/stembuild/windows/contract/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
   - put: vcenter-ips
     params: { acquire: true }
   - task: 1709-integration
@@ -333,6 +340,12 @@ jobs:
     - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild-linux-unit/task.yml
+  - task: contract-test
+    file: ci/tasks/stembuild/linux/contract/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
   - put: vcenter-ips
     params: { acquire: true }
   - task: 1709-integration

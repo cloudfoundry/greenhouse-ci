@@ -3,18 +3,18 @@ platform: linux
 image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
-  - name: librsync
-  - name: stembuild
-  - name: ci
-  - name: stembuild-version
-  - name: ovftool
-  - name: vcenter-ips
+- name: librsync
+- name: stembuild
+- name: ci
+- name: stembuild-version
+- name: ovftool
+- name: vcenter-ips
 
 run:
   path: /bin/bash
   args:
-    - -c
-    - ci/tasks/stembuild-linux-integration/run.sh
+  - -c
+  - ci/tasks/stembuild-linux-integration/run.sh
 
 params:
   GOVC_INSECURE: 1
