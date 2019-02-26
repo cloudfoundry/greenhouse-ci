@@ -3,7 +3,7 @@
 set -ex
 
 VERSION=`cat stembuild-version/version`
-ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../.. && pwd)
+ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../../../.. && pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
 export USER_PROVIDED_IP=`cat vcenter-ips/name`

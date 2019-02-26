@@ -267,7 +267,7 @@ jobs:
       trigger: true
   - task: unit-test
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild-windows-unit/task.yml
+    file: ci/tasks/stembuild/windows/unit/task.yml
   - task: contract-test
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild/windows/contract/task.yml
@@ -279,7 +279,7 @@ jobs:
     params: { acquire: true }
   - task: integration
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild-windows-integration/task.yml
+    file: ci/tasks/stembuild/windows/integration/task.yml
     params:
       GOVC_URL: ((VCENTER_URL))
       GOVC_DATASTORE: ((GOVC_DATASTORE))
@@ -323,7 +323,7 @@ jobs:
       trigger: true
     - get: ovftool
   - task: unit-test
-    file: ci/tasks/stembuild-linux-unit/task.yml
+    file: ci/tasks/stembuild/linux/unit/task.yml
   - task: contract-test
     file: ci/tasks/stembuild/linux/contract/task.yml
     tags: [vsphere-linux-worker]
@@ -334,7 +334,7 @@ jobs:
   - put: vcenter-ips
     params: { acquire: true }
   - task: integration
-    file: ci/tasks/stembuild-linux-integration/task.yml
+    file: ci/tasks/stembuild/linux/integration/task.yml
     tags: [vsphere-linux-worker]
     params:
       GOVC_URL: ((VCENTER_URL))

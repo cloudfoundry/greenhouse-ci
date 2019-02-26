@@ -1,9 +1,8 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
-$ROOT_DIR= (Get-Item "$PSScriptRoot/../../..").FullName
+$ROOT_DIR= (Get-Item "$PSScriptRoot/../../../../..").FullName
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
-$VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR stembuild-version) version)
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
@@ -17,22 +16,21 @@ Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
-Write-Host ***Test Stembuild Code***
-
 Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
-go install github.com/onsi/ginkgo/ginkgo
 
-Write-Host ***Building Stembuild***
+$env:USER_PROVIDED_IP = cat $ROOT_DIR/vcenter-ips/name
+
+$env:PATH="$env:GOPATH\bin;$env:PATH"
 cd $STEMBUILD_DIR
-go generate
-go install
-go build -o out/stembuild.exe
-$env:PATH="${GO_DIR}/bin;$env:PATH"
+
+go generate .
 
 # run tests
-ginkgo -r -randomizeAllSpecs -randomizeSuites -skipPackage integration,iaas_cli
+Write-Host ***Runninng integration tests***
+
+ginkgo -r -randomizeAllSpecs integration
 if ($lastexitcode -ne 0)
 {
-  throw "unit tests failed"
+    throw "integration specs failed"
 }

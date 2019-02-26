@@ -13,4 +13,4 @@ run:
   path: /bin/bash
   args:
     - -c
-    - ci/tasks/stembuild-linux-unit/run.sh
+    - ci/tasks/stembuild/linux/unit/run.sh
