@@ -12,6 +12,14 @@ Write-Host "GOPATH: $env:GOPATH"
 
 New-Item $GO_DIR -ItemType Directory
 
+$TMP_DIR=Join-Path $ROOT_DIR tmp
+
+Write-Host *** creating and setting temp environment variable to $TMP_DIR***
+New-Item $TMP_DIR -ItemType Directory
+
+$env:TMP=$TMP_DIR
+$env:TEMP=$TMP_DIR
+
 Write-Host ***Cloning stembuild***
 cd $ROOT_DIR
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
