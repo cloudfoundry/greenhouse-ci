@@ -339,6 +339,14 @@ resources:
     repository: windows-utilities-release
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
+# time
+- name: sunday
+  type: time
+  source:
+    days: [Sunday]
+    start: 4:00 AM
+    stop: 5:00 AM
+    location: America/New_York
 jobs:
 - name: run-wuts-gcp-2012R2
   serial: true
@@ -356,6 +364,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-2012R2-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -394,6 +404,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: vsphere-2012R2-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -434,6 +446,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: aws-2012R2-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -473,6 +487,8 @@ jobs:
       - get: bosh-windows-stemcell
         resource: azure-2012R2-stemcell-rc
       - get: azure-2012R2-stemcell-version
+      - get: sunday
+        trigger: true
     - put: azure-download-lock
       params:
         acquire: true
@@ -537,6 +553,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-1709-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -575,6 +593,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: vsphere-1709-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -615,6 +635,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: aws-1709-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -654,6 +676,8 @@ jobs:
       - get: bosh-windows-stemcell
         resource: azure-1709-stemcell-rc
       - get: azure-1709-stemcell-version
+      - get: sunday
+        trigger: true
     - put: azure-download-lock
       params:
         acquire: true
@@ -718,6 +742,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: gcp-1803-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -756,6 +782,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: vsphere-1803-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       tags: [vsphere-linux-worker]
       file: ci/tasks/run-wuts/task.yml
@@ -796,6 +824,8 @@ jobs:
         trigger: true
       - get: bosh-windows-stemcell
         resource: aws-1803-stemcell-rc
+      - get: sunday
+        trigger: true
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
@@ -835,6 +865,8 @@ jobs:
       - get: bosh-windows-stemcell
         resource: azure-1803-rc
       - get: azure-1803-stemcell-version
+      - get: sunday
+        trigger: true
     - put: azure-download-lock
       params:
         acquire: true
@@ -900,6 +932,8 @@ jobs:
               trigger: true
             - get: bosh-windows-stemcell
               resource: gcp-2019-stemcell-rc
+            - get: sunday
+              trigger: true
         - task: run-wuts
           file: ci/tasks/run-wuts/task.yml
           input_mapping: { stemcell: bosh-windows-stemcell }
@@ -938,6 +972,8 @@ jobs:
               trigger: true
             - get: bosh-windows-stemcell
               resource: vsphere-2019-stemcell-rc
+            - get: sunday
+              trigger: true
         - task: run-wuts
           tags: [vsphere-linux-worker]
           file: ci/tasks/run-wuts/task.yml
@@ -978,6 +1014,8 @@ jobs:
               trigger: true
             - get: bosh-windows-stemcell
               resource: aws-2019-stemcell-rc
+            - get: sunday
+              trigger: true
         - task: run-wuts
           file: ci/tasks/run-wuts/task.yml
           input_mapping: { stemcell: bosh-windows-stemcell }
@@ -1017,6 +1055,8 @@ jobs:
             - get: bosh-windows-stemcell
               resource: azure-2019-rc
             - get: azure-2019-stemcell-version
+            - get: sunday
+              trigger: true
         - put: azure-download-lock
           params:
             acquire: true
