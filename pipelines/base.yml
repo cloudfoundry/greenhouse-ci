@@ -726,7 +726,7 @@ jobs:
       AWS_SECRET_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
       OS_VERSION: ((STEMCELL_OS_NAME))
-      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
+      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))            # TODO: IS THIS RIGHT????
       VM_PREFIX: ((VM_PREFIX))
       MOUNT_EPHEMERAL_DISK: true
     ensure:
@@ -1487,6 +1487,10 @@ jobs:
       passed: [wuts-aws-govcloud]
     - get: aws-build-number
       passed: [wuts-aws]
+    - get: aws-china-tested
+      passed: [wuts-aws-china]
+    - get: packer-output-china-ami
+      passed: [wuts-aws-china]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -1511,6 +1515,8 @@ jobs:
       passed: [promote]
     - get: aws-govcloud-tested
       passed: [promote]
+    - get: aws-china-tested
+      passed: [promote]
     - get: stemcell-builder
       passed: [promote]
     - get: version
@@ -1527,6 +1533,9 @@ jobs:
     - get: govcloud-ami
       passed: [promote]
       resource: packer-output-govcloud-ami
+    - get: china-ami
+      passed: [promote]
+      resource: packer-output-china-ami
   - get: pivnet-public-stemcells
   - task: copy-public-stemcells
     timeout: 1h30m
@@ -1550,11 +1559,22 @@ jobs:
       AWS_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       REGIONS: "us-gov-east-1"
+  - task: copy-china-stemcells
+    timeout: 1h30m
+    attempts: 3
+    input_mapping: { version: aws-build-number, default-stemcell: aws-china-tested, amis: china-ami}
+    output_mapping: {copied-regional-stemcells: aws-china-stemcells}
+    file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    params:
+      OS_VERSION: ((STEMCELL_OS_NAME))
+      AWS_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      REGIONS: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_REGION))
   - task: aggregate-stemcells
     file: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number, amis: default-ami }
     params:
-      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells'
+      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells,../aws-china-stemcells'
       OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
