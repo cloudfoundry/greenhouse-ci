@@ -122,6 +122,16 @@ resources:
     drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
+- name: stemcell-automation-release
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-automation
+    pre_release: true
+    release: false
+    drafts: false
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
 - name: event-log-release-github
   type: github-release
   source:
@@ -258,13 +268,13 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: librsync
     - get: stembuild
       passed: [ build-stembuild ]
     - get: ci
     - get: stembuild-version
       passed: [ build-stembuild ]
       trigger: true
+    - get: stemcell-automation-release
   - task: unit-test
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild/windows/unit/task.yml
@@ -306,6 +316,8 @@ jobs:
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stembuild-windows/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: stemcell-automation-release/StemcellAutomation.zip
   - put: stembuild-untested-windows
     params:
       file: output/stembuild-windows-x86_64-*.exe
@@ -314,7 +326,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: librsync
     - get: stembuild
       passed: [ build-stembuild ]
     - get: ci
@@ -322,6 +333,7 @@ jobs:
       passed: [ build-stembuild ]
       trigger: true
     - get: ovftool
+    - get: stemcell-automation-release
   - task: unit-test
     file: ci/tasks/stembuild/linux/unit/task.yml
   - task: contract-test
@@ -359,6 +371,8 @@ jobs:
       ROOT_BUCKET: ((ROOT_BUCKET))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: stemcell-automation-release/StemcellAutomation.zip
   - put: stembuild-untested-linux
     params:
       file: output/stembuild-linux-x86_64-*

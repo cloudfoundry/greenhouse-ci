@@ -15,10 +15,11 @@ STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_INC_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
+STEMCELL_AUTOMATION_ZIP=${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP}
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Building Stembuild***
-  make build
+  make AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
 popd
 
 echo ***Copying stembuild to output directory***

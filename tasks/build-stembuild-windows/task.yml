@@ -2,13 +2,16 @@
 platform: windows
 
 inputs:
-- name: librsync
 - name: stembuild
 - name: ci
 - name: stembuild-version
+- name: stemcell-automation-release
 
 outputs:
 - name: output
+
+params:
+  STEMCELL_AUTOMATION_ZIP:
 
 run:
   path: powershell

@@ -14,15 +14,15 @@ Write-Host "GOPATH: $env:GOPATH"
 New-Item $GO_DIR -ItemType Directory
 
 Write-Host ***Cloning stembuild***
-cd $ROOT_DIR
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
-Write-Host ***Building Stembuild***
-cd $STEMBUILD_DIR
-go generate
-go install
-go build -o out/stembuild.exe
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
+Write-Host ***Building Stembuild***
+Set-Location $STEMBUILD_DIR
+$STEMCELL_AUTOMATION_ZIP=Join-Path $ROOT_DIR $env:STEMCELL_AUTOMATION_ZIP
+Write-Host "Using stemcell automation script: $STEMCELL_AUTOMATION_ZIP"
+make COMMAND=out/stembuild.exe AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
+
 Write-Host ***Copying stembuild to output directory***
-copy $GO_DIR/bin/stembuild.exe $OUTPUT_DIR/stembuild-windows-x86_64-$VERSION.exe
+Copy-Item out/stembuild.exe $OUTPUT_DIR/stembuild-windows-x86_64-$VERSION.exe
