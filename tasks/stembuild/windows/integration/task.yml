@@ -2,7 +2,6 @@
 platform: windows
 
 inputs:
-- name: librsync
 - name: stembuild
 - name: ci
 - name: stembuild-version
