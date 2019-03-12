@@ -1060,6 +1060,7 @@ jobs:
         WORKING_DIR: '.'
     ensure:
       put: azure-download-lock
+      inputs: []
       params:
         release: azure-download-lock
   - task: test-stemcell
