@@ -371,15 +371,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((mustang_ca_cert))
-        BOSH_CLIENT: ((mustang_client))
-        BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_ENVIRONMENT: ((mustang_environment))
-        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
+        BOSH_CLIENT: ((gcp_wuts_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
+        BOSH_GW_USER: ((gcp_wuts_1_gw_user))
         NETWORK: default
-        SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
-        SSH_TUNNEL_USER: ((mustang_gw_user))
+        SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
         STEMCELL_OS: windows2012R2
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2012R2-go_agent.tgz
         VM_EXTENSIONS: "100GB_ephemeral_disk"
@@ -560,15 +560,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((mustang_ca_cert))
-        BOSH_CLIENT: ((mustang_client))
-        BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_ENVIRONMENT: ((mustang_environment))
-        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
+        BOSH_CLIENT: ((gcp_wuts_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
+        BOSH_GW_USER: ((gcp_wuts_1_gw_user))
         NETWORK: default
-        SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
-        SSH_TUNNEL_USER: ((mustang_gw_user))
+        SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
         STEMCELL_OS: windows2016
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2016-go_agent.tgz
         VM_EXTENSIONS: "100GB_ephemeral_disk"
@@ -749,15 +749,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((mustang_ca_cert))
-        BOSH_CLIENT: ((mustang_client))
-        BOSH_CLIENT_SECRET: ((mustang_client_secret))
-        BOSH_ENVIRONMENT: ((mustang_environment))
-        BOSH_GW_USER: ((mustang_gw_user))
+        BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
+        BOSH_CLIENT: ((gcp_wuts_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
+        BOSH_GW_USER: ((gcp_wuts_1_gw_user))
         NETWORK: default
-        SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
-        SSH_TUNNEL_USER: ((mustang_gw_user))
+        SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
         STEMCELL_OS: windows1803
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows1803-go_agent.tgz
         VM_EXTENSIONS: "100GB_ephemeral_disk"
@@ -939,15 +939,15 @@ jobs:
           input_mapping: { stemcell: bosh-windows-stemcell }
           params:
             AZ: z1
-            BOSH_CA_CERT: ((mustang_ca_cert))
-            BOSH_CLIENT: ((mustang_client))
-            BOSH_CLIENT_SECRET: ((mustang_client_secret))
-            BOSH_ENVIRONMENT: ((mustang_environment))
-            BOSH_GW_USER: ((mustang_gw_user))
+            BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
+            BOSH_CLIENT: ((gcp_wuts_1_client))
+            BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
+            BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
+            BOSH_GW_USER: ((gcp_wuts_1_gw_user))
             NETWORK: default
-            SSH_TUNNEL_IP: ((mustang_jumpbox_ip))
-            SSH_TUNNEL_PRIVATE_KEY: ((mustang_gw_private_key))
-            SSH_TUNNEL_USER: ((mustang_gw_user))
+            SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
+            SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
+            SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
             STEMCELL_OS: windows2019
             STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-windows2019-go_agent.tgz
             VM_EXTENSIONS: "100GB_ephemeral_disk"
