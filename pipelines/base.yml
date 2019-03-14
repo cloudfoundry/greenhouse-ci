@@ -718,7 +718,7 @@ jobs:
       params:
         PACKER_CI: ((CHINA_PACKER_CI_PRIVATE_KEY))
   - task: create-stemcell
-    timeout: 1h30m
+    timeout: 3h
     file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
       AWS_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
