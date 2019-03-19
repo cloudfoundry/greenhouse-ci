@@ -811,16 +811,16 @@ jobs:
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-        BOSH_CA_CERT: ((goose_ca_cert))
-        BOSH_CLIENT: ((goose_client))
-        BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_ENVIRONMENT: ((goose_environment))
+        ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_BWATS_1))
+        BOSH_CA_CERT: ((gcp_bwats_1_ca_cert))
+        BOSH_CLIENT: ((gcp_bwats_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
         IAAS: gcp
         NETWORK: private
-        SSH_TUNNEL_IP: ((goose_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
-        SSH_TUNNEL_USER: ((goose_gw_user))
+        SSH_TUNNEL_IP: ((gcp_bwats_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_bwats_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_bwats_1_gw_user))
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "500GB_ephemeral_disk"
@@ -1235,17 +1235,17 @@ jobs:
       input_mapping: { stemcell: final-stemcell}
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       params:
-        ACCOUNT_JSON: ((CF-GREENHOUSE-GOOSE_ACCOUNT_JSON))
-        BOSH_CA_CERT: ((goose_ca_cert))
-        BOSH_CLIENT: ((goose_client))
-        BOSH_CLIENT_SECRET: ((goose_client_secret))
-        BOSH_ENVIRONMENT: ((goose_environment))
+        ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_PROMOTE_1))
+        BOSH_CA_CERT: ((gcp_bwats_1_ca_cert))
+        BOSH_CLIENT: ((gcp_bwats_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
         GINKGO_FOCUS: "is fully updated"
         IAAS: gcp
         NETWORK: private
-        SSH_TUNNEL_IP: ((goose_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((goose_gw_private_key))
-        SSH_TUNNEL_USER: ((goose_gw_user))
+        SSH_TUNNEL_IP: ((gcp_bwats_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_bwats_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_bwats_1_gw_user))
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "500GB_ephemeral_disk"
