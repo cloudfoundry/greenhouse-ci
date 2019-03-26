@@ -15,7 +15,9 @@ STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_INC_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
-STEMCELL_AUTOMATION_ZIP=${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP}
+mv ${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP} ${ROOT_DIR}/StemcellAutomation.zip
+
+STEMCELL_AUTOMATION_ZIP=${ROOT_DIR}/StemcellAutomation.zip
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Building Stembuild***

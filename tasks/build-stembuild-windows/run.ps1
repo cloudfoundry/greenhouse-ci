@@ -20,8 +20,14 @@ $env:PATH="${GO_DIR}/bin;$env:PATH"
 
 Write-Host ***Building Stembuild***
 Set-Location $STEMBUILD_DIR
+
 $STEMCELL_AUTOMATION_ZIP=Join-Path $ROOT_DIR $env:STEMCELL_AUTOMATION_ZIP
-Write-Host "Using stemcell automation script: $STEMCELL_AUTOMATION_ZIP"
+$NEW_STEMCELL_AUTOMATION_ZIP=Join-Path $ROOT_DIR "StemcellAutomation.zip"
+
+Move-Item -Path $STEMCELL_AUTOMATION_ZIP -Destination $NEW_STEMCELL_AUTOMATION_ZIP
+
+
+Write-Host "Using stemcell automation script: $NEW_STEMCELL_AUTOMATION_ZIP"
 make COMMAND=out/stembuild.exe AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
 
 Write-Host ***Copying stembuild to output directory***
