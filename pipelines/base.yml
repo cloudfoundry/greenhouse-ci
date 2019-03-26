@@ -27,6 +27,8 @@ groups:
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
+  - stembuild-windows
+  - stembuild-linux
 - name: aws
   jobs:
   - create-aws
@@ -57,6 +59,8 @@ groups:
   - create-vsphere-from-vmx
   - test-vsphere-from-vmx
   - wuts-vsphere
+  - stembuild-windows
+  - stembuild-linux
 - name: promote
   jobs:
   - promote
@@ -118,6 +122,23 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+- name: stemcell-automation
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-automation.git
+- name: pester
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pester/Pester.git
+    tag_filter: 4.4.0
+- name: stembuild-repo
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/stembuild.git
+    ignore_paths: [version/version]
 
 # releases
 - name: openssh-release
@@ -235,6 +256,13 @@ resources:
   source:
     branch: master
     pool: ((VSPHERE_POOL_NAME))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vcenter-ips
+  type: pool
+  source:
+    branch: master
+    pool: "vcenter-ips"
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
@@ -418,6 +446,34 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: lgpo
+  type: s3
+  source:
+    bucket: all-bosh-windows
+    regexp: external-dependencies/lgpo/LGPO-(.*).zip
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: ovftool
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-untested-linux
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-linux-x86_64-(.*)
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-untested-windows
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-windows-x86_64-(.*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 #pivnet
 - name: pivnet-public-stemcells
@@ -523,6 +579,200 @@ jobs:
     - put: base-gcp-image
       params:
         file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
+
+- name: stembuild-windows
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-automation
+      trigger: true
+    - get: pester
+    - get: open-ssh
+      resource: openssh-release
+      version: { tag: ((OPEN_SSH_VERSION)) }
+    - get: stemcell-builder
+      passed: [build]
+    - get: ci
+    - get: version
+      resource: main-version
+      passed: [build]
+      trigger: true
+    - get: lgpo
+  - task: test-stemcell-automation
+    config:
+      platform: windows
+      inputs:
+      - name: stemcell-automation
+      - name: pester
+      run:
+        path: powershell
+        args:
+        - "-Command"
+        - "& {
+              Import-Module ./Pester/pester.psm1;
+              pushd stemcell-automation;
+              $result=Invoke-Pester -PassThru;
+              popd;
+              Write-Host \"Failed Tests:\"$result.FailedCount;
+              exit $result.FailedCount
+            }"
+  - task: build-agent
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+  - task: build-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+  - task: generate-deps-file
+    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+  - task: zip-files
+    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - aggregate:
+    - get: stembuild
+      resource: stembuild-repo
+    - get: stembuild-version
+      resource: main-version
+    - get: ovftool
+  - task: unit-test
+    file: ci/tasks/stembuild/windows/unit/task.yml
+    tags: [vsphere-stembuild-worker]
+  - task: contract-test
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/stembuild/windows/contract/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+  - put: vcenter-ips
+    params: { acquire: true }
+  - task: integration
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/stembuild/windows/integration/task.yml
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      GOVC_USERNAME: ((GOVC_USERNAME))
+      GOVC_PASSWORD: ((GOVC_PASSWORD))
+      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      VM_NAME_PREFIX: "construct-windows-integration-ci-1803"
+      NETWORK_GATEWAY: "10.74.34.1"
+      SUBNET_MASK: "25"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+  - task: build
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stembuild-windows/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
+  - put: stembuild-untested-windows
+    params:
+      file: output/stembuild-windows-x86_64-*.exe
+  ensure:
+    put: vcenter-ips
+    params: { release: vcenter-ips }
+
+- name: stembuild-linux
+  serial: true
+  plan:
+  - aggregate:
+    - get: stemcell-automation
+      trigger: true
+    - get: pester
+    - get: open-ssh
+      resource: openssh-release
+      version: { tag: ((OPEN_SSH_VERSION)) }
+    - get: stemcell-builder
+      passed: [build]
+    - get: ci
+    - get: version
+      resource: main-version
+      passed: [build]
+      trigger: true
+    - get: lgpo
+  - task: test-stemcell-automation
+    config:
+      platform: windows
+      inputs:
+      - name: stemcell-automation
+      - name: pester
+      run:
+        path: powershell
+        args:
+        - "-Command"
+        - "& {
+              Import-Module ./Pester/pester.psm1;
+              pushd stemcell-automation;
+              $result=Invoke-Pester -PassThru;
+              popd;
+              Write-Host \"Failed Tests:\"$result.FailedCount;
+              exit $result.FailedCount
+            }"
+  - task: build-agent
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+  - task: build-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+  - task: generate-deps-file
+    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+  - task: zip-files
+    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - aggregate:
+    - get: stembuild
+      resource: stembuild-repo
+    - get: stembuild-version
+      resource: main-version
+    - get: ovftool
+  - task: unit-test
+    file: ci/tasks/stembuild/linux/unit/task.yml
+  - task: contract-test
+    file: ci/tasks/stembuild/linux/contract/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+  - put: vcenter-ips
+    params: { acquire: true }
+  - task: integration
+    file: ci/tasks/stembuild/linux/integration/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      GOVC_URL: ((VCENTER_URL))
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      GOVC_USERNAME: ((GOVC_USERNAME))
+      GOVC_PASSWORD: ((GOVC_PASSWORD))
+      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
+      NETWORK_GATEWAY: "10.74.34.1"
+      SUBNET_MASK: "25"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+  - task: build
+    file: ci/tasks/build-stembuild-linux/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
+  - put: stembuild-untested-linux
+    params:
+      file: output/stembuild-linux-x86_64-*
+  ensure:
+    put: vcenter-ips
+    params: { release: vcenter-ips }
 
 - name: create-aws
   serial: true
