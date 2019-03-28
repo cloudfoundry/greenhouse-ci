@@ -20,10 +20,8 @@ mv ${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP} ${ROOT_DIR}/StemcellAutomation.zip
 STEMCELL_AUTOMATION_ZIP=${ROOT_DIR}/StemcellAutomation.zip
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
-  echo ***Writing version to version file***
-  echo ${VERSION} > version/version
   echo ***Building Stembuild***
-  make AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
+  make STEMCELL_VERSION=${VERSION} AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
 popd
 
 echo ***Copying stembuild to output directory***
