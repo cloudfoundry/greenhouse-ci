@@ -305,7 +305,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       OVA_SOURCE_S3_REGION: "us-east-1"
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
       PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
       VM_NAME_PREFIX: "construct-windows-integration-ci-1803"
       NETWORK_GATEWAY: "10.74.34.1"
@@ -363,7 +363,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       OVA_SOURCE_S3_REGION: "us-east-1"
       OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v1.ova"
+      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
       PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
       VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
       NETWORK_GATEWAY: "10.74.34.1"
