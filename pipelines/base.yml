@@ -2128,7 +2128,6 @@ jobs:
       - get: stembuild-untested-windows
       - get: stembuild-version
         resource: main-version
-      - get: pivnet-stembuild-promote-test
     - task: trim-stembuild-version
       file: ci/tasks/set-stembuild-version/task.yml
     - task: pivnet-upload
