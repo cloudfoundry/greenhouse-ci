@@ -16,7 +16,7 @@ EOF
 cat > pivnet-metadata/metadata <<EOF
 ---
 release:
-  version: "$(cat stembuild/version)"
+  version: "stembuild-promote-test"
   release_type: Beta Release
   eula_slug: "pivotal_beta_eula"
   availability: Admins Only
