@@ -26,14 +26,6 @@ release:
 product_files:
 EOF
 
-release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
-echo "ls ***"
-ls pivnet-release
-
-if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
-    mv pivnet-release/*.tgz pivnet-metadata
-  fi
-
 mv stembuild/stembuild* pivnet-metadata
 
 cd pivnet-metadata

@@ -2133,10 +2133,13 @@ jobs:
       file: ci/tasks/set-stembuild-version/task.yml
     - task: pivnet-upload
       file: ci/tasks/pivnet-stembuild-upload/task.yml
-      input_mapping: { stembuild: stembuild-untested-linux, pivnet-release: pivnet-stembuild-promote-test }
+      input_mapping: { stembuild: stembuild-untested-linux }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - put: pivnet-stembuild-promote-test
+      params:
+        file_glob: 'pivnet-metadata/stembuild*'
+        metadata_file: pivnet-metadata/metadata
 
 - name: ship-bosh-stemcell-builder
   serial: true
