@@ -25,6 +25,7 @@ groups:
   - promote-aws
   - promote-vsphere
   - promote-azure
+  - promote-stembuild
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
   - stembuild-windows
@@ -68,6 +69,7 @@ groups:
   - promote-aws
   - promote-vsphere
   - promote-azure
+  - promote-stembuild
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
 
@@ -488,6 +490,18 @@ resources:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server-internal
     product_version: ((BOSHIO_OS_VERSION)).*
+#- name: pivnet-stembuild
+#  type: pivnet
+#  source:
+#    api_token: ((PIVNET_BOT_API_TOKEN))
+#    product_slug: stemcells-windows-server-internal
+#    product_version: ((BOSHIO_OS_VERSION)).*
+- name: pivnet-stembuild-promote-test
+  type: pivnet
+  source:
+    api_token: ((PIVNET_BOT_API_TOKEN))
+    product_slug: stemcells-windows-server-internal
+    product_version: stembuild-promote-test
 
 # time
 - name: midnight
@@ -2101,6 +2115,28 @@ jobs:
       params:
         repository: boshio-output
         rebase: true
+
+- name: promote-stembuild
+  # serial_groups:
+  # serial:
+  plan:
+    - aggregate:
+      - get: ci
+      - get: stembuild-untested-linux
+        trigger: false
+        passed: [stembuild-linux]
+      - get: stembuild-untested-windows
+      - get: stembuild-version
+        resource: main-version
+#      - get: pivnet-stembuild-promote-test
+    - task: trim-stembuild-version
+      file: ci/tasks/set-stembuild-version/task.yml
+    - task: pivnet-upload
+      file: ci/tasks/pivnet-stembuild-upload/task.yml
+      input_mapping: { stembuild: stembuild-untested-linux, pivnet-release: pivnet-stembuild-promote-test }
+      params:
+        OS_NAME: ((PIVNET_OS_NAME))
+    - put: pivnet-stembuild-promote-test
 
 - name: ship-bosh-stemcell-builder
   serial: true

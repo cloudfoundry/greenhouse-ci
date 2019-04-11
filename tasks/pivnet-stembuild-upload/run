@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e
+
+function add-pivnet-productfile () {
+  stembuild="$1"
+
+  echo "Adding $stembuild to Pivnet metadata"
+
+  cat >> metadata <<EOF
+  - file: pivnet-metadata/$stembuild
+    upload_as: "Stembuild for $OS_NAME"
+EOF
+}
+
+cat > pivnet-metadata/metadata <<EOF
+---
+release:
+  version: "$(cat stembuild/version)"
+  release_type: Beta Release
+  eula_slug: "pivotal_beta_eula"
+  availability: Admins Only
+  user_group_ids: []
+  eccn: ""
+  license_exception: ""
+product_files:
+EOF
+
+release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
+echo "ls ***"
+ls pivnet-release
+
+if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
+    mv pivnet-release/*.tgz pivnet-metadata
+  fi
+
+mv stembuild/stembuild* pivnet-metadata
+
+cd pivnet-metadata
+for s in $(ls stembuild*)
+  do
+    add-pivnet-productfile "$s"
+done
+cd ..
+
+echo 'Release details:'
+cat pivnet-metadata/metadata
+
+echo 'stembuilds:'
+ls pivnet-metadata/stembuild*
