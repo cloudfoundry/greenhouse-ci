@@ -9,7 +9,7 @@ function add-pivnet-productfile () {
 
   cat >> metadata <<EOF
   - file: pivnet-metadata/$stembuild
-    upload_as: "Stembuild test for $OS_NAME"
+    upload_as: "Stembuild test2 for $OS_NAME"
 EOF
 }
 
@@ -31,13 +31,13 @@ release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
-    mv pivnet-release/*.tgz pivnet-metadata
+if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
+    mv pivnet-release/stembuild* pivnet-metadata
 fi
 
-mv stembuild/stembuild* pivnet-metadata
+mv stembuild/stembuild* pivnet-metadata/stembuild-test2
 
-mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test
+#mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
 
 cd pivnet-metadata
 for s in $(ls stembuild*)
