@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: ci
   - name: stembuild
+  - name: pivnet-release
 outputs:
   - name: pivnet-metadata
 run:
