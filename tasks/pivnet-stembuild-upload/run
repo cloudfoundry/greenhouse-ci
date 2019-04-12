@@ -9,7 +9,7 @@ function add-pivnet-productfile () {
 
   cat >> metadata <<EOF
   - file: pivnet-metadata/$stembuild
-    upload_as: "Stembuild for $OS_NAME"
+    upload_as: "Stembuild test for $OS_NAME"
 EOF
 }
 
@@ -28,6 +28,8 @@ product_files:
 EOF
 
 mv stembuild/stembuild* pivnet-metadata
+
+mv pivnet-metadata/stembuild* stembuild-test
 
 cd pivnet-metadata
 for s in $(ls stembuild*)
