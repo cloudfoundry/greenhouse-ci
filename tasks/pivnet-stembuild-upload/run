@@ -29,7 +29,7 @@ EOF
 
 mv stembuild/stembuild* pivnet-metadata
 
-mv pivnet-metadata/stembuild* stembuild-test
+mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test
 
 cd pivnet-metadata
 for s in $(ls stembuild*)
