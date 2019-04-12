@@ -19,8 +19,9 @@ release:
   version: "stembuild-promote-test"
   release_type: Beta Release
   eula_slug: "pivotal_beta_eula"
-  availability: Admins Only
-  user_group_ids: []
+  availability: Selected User Groups Only
+  user_group_ids:
+    - 152
   eccn: ""
   license_exception: ""
 product_files:
