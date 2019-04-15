@@ -38,12 +38,13 @@ cat > pivnet-metadata/metadata <<EOF
 ---
 release:
   version: "$(cat stemcell/version)"
-  release_type: Beta Release
-  eula_slug: "pivotal_beta_eula"
-  availability: Admins Only
-  user_group_ids: []
-  eccn: ""
-  license_exception: ""
+  release_type: Security Release
+  eula_slug: "pivotal_software_eula"
+  availability: Selected User Groups Only
+  user_group_ids:
+    - 164
+  eccn: "5D002"
+  license_exception: "ECCN"
 product_files:
 EOF
 
