@@ -45,7 +45,7 @@ if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat
 fi
 
 mkdir pivnet-metadata/stembuild
-mv -t pivnet-metadata/stembuild stembuild/stembuild*
+mv stembuild/stembuild* pivnet-metadata/stembuild
 
 #mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
 
