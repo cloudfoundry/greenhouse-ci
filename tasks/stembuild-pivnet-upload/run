@@ -10,8 +10,8 @@ release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-echo "stembuild-promote-test" > stembuild/version
-
+VERSION='stembuild-promote-test'
+echo $VERSION > stembuild/version
 
 FILE_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
 echo "File Group ID is: $FILE_GROUP_ID"
@@ -46,6 +46,7 @@ FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File
 
 for i in $FILE_IDS; do
   ./pivnet add-product-file --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
+  ./pivnet remove-product-file --product-slug=$PRODUCT_SLUG --release-version=$VERSION --product-file-id=$i
 done
 
 
