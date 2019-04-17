@@ -13,7 +13,7 @@ inputs:
 outputs:
   - name: pivnet-metadata
 run:
-  path: ci/tasks/pivnet-stembuild-upload/run
+  path: ci/tasks/stembuild-prepare-pivnet-upload/run
 params:
   OS_NAME:
 

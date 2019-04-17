@@ -16,7 +16,7 @@ EOF
 stemcell=`ls stembuild/stembuild*`
 stemcellname=stembuild4
 
-cat > pivnet-metadata/metadata <<EOF
+cat > pivnet-metadata/folder-metadata <<EOF
 ---
 release:
   version: "stembuild-promote-test"
@@ -29,9 +29,6 @@ release:
   license_exception: ""
 file_groups:
   - name: "sample-group"
-    product_files:
-    - file: pivnet-metadata/stembuild/$stemcell
-      upload_as: "$stemcellname Stemcell for $OS_NAME"
 EOF
 
 release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
@@ -41,6 +38,7 @@ ls pivnet-release
 echo "stembuild-promote-test" > stembuild/version
 
 if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
+    # should be either stemcell* or stembuild*
     mv pivnet-release/stembuild* pivnet-metadata
 fi
 
@@ -57,7 +55,7 @@ mv stembuild/stembuild* pivnet-metadata/stembuild
 #cd ..
 
 echo 'Release details:'
-cat pivnet-metadata/metadata
+cat pivnet-metadata/folder-metadata
 
 echo 'stembuilds:'
 ls pivnet-metadata/stembuild*
