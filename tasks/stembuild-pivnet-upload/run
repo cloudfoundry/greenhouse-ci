@@ -63,9 +63,11 @@ for s in $(ls *stemcell*)
     add-pivnet-productfile "$s"
 done
 
+FOLDER_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
+
 cat >> metadata-with-folder <<EOF
 file_groups:
-  - name: stembuild-test-folder
+  - id: $FOLDER_GROUP_ID
     product_files:
 EOF
 popd

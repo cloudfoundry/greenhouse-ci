@@ -39,6 +39,10 @@ release:
     - 152
   eccn: ""
   license_exception: ""
+file_groups:
+  - name: stembuild-test-folder
+    product_files: []
+product_files:
 EOF
 
 
@@ -56,10 +60,6 @@ if [ "$(ls pivnet-release/*stemcell*)" != "" ] && [[ $release_version == *"$(cat
 fi
 
 pushd pivnet-metadata
-cat >> metadata <<EOF
-product_files:
-EOF
-
 for s in $(ls stembuild*)
   do
     add-stembuild-file "$s"
