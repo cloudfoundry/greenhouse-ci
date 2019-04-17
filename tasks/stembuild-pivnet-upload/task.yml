@@ -10,10 +10,11 @@ inputs:
   - name: ci
   - name: stembuild
   - name: pivnet-release
-outputs:
-  - name: pivnet-metadata
 run:
   path: ci/tasks/stembuild-pivnet-upload/run
 params:
   OS_NAME:
+  PIVNET_API_TOKEN:
+  PIVNET_ENDPOINT:
+  PRODUCT_SLUG:
 
