@@ -52,9 +52,10 @@ ls pivnet-release
 echo "stembuild-promote-test" > stembuild/version
 
 if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
-    # should be either stemcell* or stembuild*
-    mv pivnet-release/*stemcell* pivnet-metadata
     mv pivnet-release/stembuild* pivnet-metadata
+fi
+if [ "$(ls pivnet-release/*stemcell*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
+    mv pivnet-release/*stemcell* pivnet-metadata
 fi
 
 #mkdir pivnet-metadata/stembuild
