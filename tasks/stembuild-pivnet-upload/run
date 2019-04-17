@@ -34,16 +34,18 @@ echo "File Group ID is: $FILE_GROUP_ID"
 #  sha256sum --check
 #chmod 500 pivnet-linux-amd64-0.0.57
 alias pivnet="$(ls ./ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57)"
-pivnet login --api-token=$PIVNET_API_TOKEN --host=$PIVNET_ENDPOINT
+cp ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57 ./pivnet
+
+./pivnet login --api-token=$PIVNET_API_TOKEN --host=$PIVNET_ENDPOINT
 # info:
-pivnet file-group --product-slug=$PRODUCT_SLUG --file-group-id=$FILE_GROUP_ID
+./pivnet file-group --product-slug=$PRODUCT_SLUG --file-group-id=$FILE_GROUP_ID
 
 
 #mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
 FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
 
 for i in $FILE_IDS; do
-  pivnet add-file-group --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
+  ./pivnet add-file-group --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
 done
 
 
