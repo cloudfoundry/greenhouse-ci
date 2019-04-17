@@ -7,7 +7,7 @@ function add-pivnet-productfile () {
 
   echo "Adding $stemcell to Pivnet metadata"
 
-  cat >> metadata <<EOF
+  cat >> metadata-with-folder <<EOF
   - file: pivnet-metadata/$stemcell
     upload_as: "$stemcell Stemcell for $OS_NAME"
 EOF
@@ -18,7 +18,7 @@ function add-stembuild-id() {
 
   echo "Adding stembuild by id: $id to Pivnet metadata"
 
-  cat >> metadata <<EOF
+  cat >> metadata-with-folder <<EOF
     - id: $id
 EOF
 
@@ -27,7 +27,7 @@ EOF
 stemcell=`ls stembuild/stembuild*`
 stemcellname=stembuild4
 
-cat > pivnet-metadata/stembuild-metadata <<EOF
+cat > pivnet-metadata/metadata-with-folder <<EOF
 ---
 release:
   version: "stembuild-promote-test"
@@ -55,23 +55,20 @@ fi
 
 
 pushd pivnet-metadata
-cat >> stembuild-metadata <<EOF
+cat >> metadata-with-folder <<EOF
 product_files:
 EOF
 for s in $(ls *stemcell*)
   do
     add-pivnet-productfile "$s"
 done
-popd
 
-
-cp pivnet-metadata/stembuild-metadata pivnet-metadata/metadata-with-folder
-
-cat >> pivnet-metadata/metadata-with-folder <<EOF
+cat >> metadata-with-folder <<EOF
 file_groups:
   - name: stembuild-test-folder
     product_files:
 EOF
+popd
 
 #for f in $(ls stembuild*)
 #  do
