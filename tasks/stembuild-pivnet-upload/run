@@ -45,7 +45,7 @@ cp ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57 ./pivnet
 FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
 
 for i in $FILE_IDS; do
-  ./pivnet add-file-group --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
+  ./pivnet add-product-file --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
 done
 
 
