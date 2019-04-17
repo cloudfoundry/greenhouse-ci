@@ -93,7 +93,7 @@ done
 popd
 
 echo 'Release details:'
-cat pivnet-metadata/metadata
+cat pivnet-metadata/metadata-with-folder
 echo
 echo 'stembuilds:'
 ls pivnet-metadata/stembuild*
