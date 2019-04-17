@@ -38,6 +38,7 @@ release:
     - 152
   eccn: ""
   license_exception: ""
+  product_files:
 EOF
 
 
@@ -56,6 +57,12 @@ fi
 if [ "$(ls pivnet-release/*stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
     mv pivnet-release/*stembuild* pivnet-metadata
 fi
+
+STEMCELL_ID=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stemcell") ) | .ID')
+echo "Stemcell ID is: $STEMCELL_ID"
+cat >> pivnet-metadata/metadata-with-folder <<EOF
+  - id: $STEMCELL_ID
+EOF
 
 
 FOLDER_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
