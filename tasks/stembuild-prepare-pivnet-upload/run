@@ -39,7 +39,7 @@ release:
     - 152
   eccn: ""
   license_exception: ""
-file_groups:
+  file_groups:
   - name: "sample-group"
 EOF
 
@@ -72,7 +72,7 @@ for s in $(ls stembuild*)
     add-stembuild-file "$s"
 done
 cat >> metadata <<EOF
-product_files:
+  product_files:
 EOF
 for s in $(ls *stemcell*)
   do
@@ -81,7 +81,7 @@ done
 popd
 
 echo 'Release details:'
-cat pivnet-metadata/folder-metadata
+cat pivnet-metadata/metadata
 echo
 echo 'stembuilds:'
 ls pivnet-metadata/stembuild*
