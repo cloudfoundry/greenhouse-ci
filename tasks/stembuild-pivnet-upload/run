@@ -13,14 +13,13 @@ function add-pivnet-productfile () {
 EOF
 }
 
-function add-stembuild-file() {
-  stembuild="$1"
+function add-stembuild-id() {
+  id="$1"
 
-  echo "Adding $stembuild to Pivnet metadata"
+  echo "Adding stembuild by id: $id to Pivnet metadata"
 
   cat >> metadata <<EOF
-  - file: pivnet-metadata/$stembuild
-    upload_as: "Stembuild test for $OS_NAME"
+    - id: $id
 EOF
 
 }
@@ -47,24 +46,18 @@ echo "ls ***"
 ls pivnet-release
 
 echo "stembuild-promote-test" > stembuild/version
-
-if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
-    mv pivnet-release/stembuild* pivnet-metadata
-fi
+#if [ "$(ls pivnet-release/stembuild*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
+#    mv pivnet-release/stembuild* pivnet-metadata
+#fi
 if [ "$(ls pivnet-release/*stemcell*)" != "" ] && [[ $release_version == *"$(cat stembuild/version)"* ]]; then
     mv pivnet-release/*stemcell* pivnet-metadata
 fi
+
 
 pushd pivnet-metadata
 cat >> stembuild-metadata <<EOF
 product_files:
 EOF
-
-for s in $(ls stembuild*)
-  do
-    add-stembuild-file "$s"
-done
-
 for s in $(ls *stemcell*)
   do
     add-pivnet-productfile "$s"
@@ -72,12 +65,32 @@ done
 popd
 
 
+cp pivnet-metadata/stembuild-metadata pivnet-metadata/metadata-with-folder
+
+cat >> pivnet-metadata/metadata-with-folder <<EOF
+file_groups:
+  - name: stembuild-test-folder
+    product_files:
+EOF
+
+#for f in $(ls stembuild*)
+#  do
+#    FILE_ID=$(echo pivnet-release/metadata.json | jq .product_files\(?????\))
+#done
+
+
 #mkdir pivnet-metadata/stembuild
-mv stembuild/stembuild* pivnet-metadata
+#mv stembuild/stembuild* pivnet-metadata
 
 #mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
+FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
 
-
+pushd pivnet-metadata
+for i in $FILE_IDS
+  do
+    add-stembuild-id "$i"
+done
+popd
 
 echo 'Release details:'
 cat pivnet-metadata/metadata
@@ -87,5 +100,3 @@ ls pivnet-metadata/stembuild*
 
 cat pivnet-release/metadata.json
 echo
-echo $release_version
-cat stembuild/version
