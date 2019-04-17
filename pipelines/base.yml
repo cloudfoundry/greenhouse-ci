@@ -453,15 +453,15 @@ resources:
   source:
     bucket: all-bosh-windows
     regexp: external-dependencies/lgpo/LGPO-(.*).zip
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: AKIAJ7UKA3I5REQX55TA
+    secret_access_key: 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
 - name: ovftool
   type: s3
   source:
-    bucket: ((ROOT_BUCKET))
+    bucket: all-bosh-windows
     regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: AKIAJ7UKA3I5REQX55TA
+    secret_access_key: 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
 - name: stembuild-untested-linux
   type: s3
   source:
@@ -499,7 +499,8 @@ resources:
 - name: pivnet-stembuild-promote-test
   type: pivnet
   source:
-    api_token: ((PIVNET_BOT_API_TOKEN))
+    api_token: pSD_BiQFgoMuhkddXysb
+    endpoint: https://pivnet-integration.cfapps.io
     product_slug: stemcells-windows-server-internal
     product_version: stembuild-promote-test
 
@@ -744,39 +745,39 @@ jobs:
     - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild/linux/unit/task.yml
-  - task: contract-test
-    file: ci/tasks/stembuild/linux/contract/task.yml
-    tags: [vsphere-linux-worker]
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-  - put: vcenter-ips
-    params: { acquire: true }
-  - task: integration
-    file: ci/tasks/stembuild/linux/integration/task.yml
-    tags: [vsphere-linux-worker]
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((GOVC_DATASTORE))
-      GOVC_NETWORK: ((GOVC_NETWORK))
-      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      GOVC_USERNAME: ((GOVC_USERNAME))
-      GOVC_PASSWORD: ((GOVC_PASSWORD))
-      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_USERNAME: ((VM_USERNAME))
-      VM_PASSWORD: ((VM_PASSWORD))
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_SOURCE_S3_REGION: "us-east-1"
-      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-      VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
-      NETWORK_GATEWAY: "10.74.34.1"
-      SUBNET_MASK: "25"
-      ROOT_BUCKET: ((ROOT_BUCKET))
+#  - task: contract-test
+#    file: ci/tasks/stembuild/linux/contract/task.yml
+#    tags: [vsphere-linux-worker]
+#    params:
+#      GOVC_URL: ((VCENTER_URL))
+#      VM_FOLDER: ((VCENTER_VM_FOLDER))
+#      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+#  - put: vcenter-ips
+#    params: { acquire: true }
+#  - task: integration
+#    file: ci/tasks/stembuild/linux/integration/task.yml
+#    tags: [vsphere-linux-worker]
+#    params:
+#      GOVC_URL: ((VCENTER_URL))
+#      GOVC_DATASTORE: ((GOVC_DATASTORE))
+#      GOVC_NETWORK: ((GOVC_NETWORK))
+#      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+#      GOVC_USERNAME: ((GOVC_USERNAME))
+#      GOVC_PASSWORD: ((GOVC_PASSWORD))
+#      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
+#      VM_FOLDER: ((VCENTER_VM_FOLDER))
+#      VM_USERNAME: ((VM_USERNAME))
+#      VM_PASSWORD: ((VM_PASSWORD))
+#      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+#      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+#      OVA_SOURCE_S3_REGION: "us-east-1"
+#      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+#      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
+#      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+#      VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
+#      NETWORK_GATEWAY: "10.74.34.1"
+#      SUBNET_MASK: "25"
+#      ROOT_BUCKET: ((ROOT_BUCKET))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
     params:
@@ -784,9 +785,9 @@ jobs:
   - put: stembuild-untested-linux
     params:
       file: output/stembuild-linux-x86_64-*
-  ensure:
-    put: vcenter-ips
-    params: { release: vcenter-ips }
+#  ensure:
+#    put: vcenter-ips
+#    params: { release: vcenter-ips }
 
 - name: create-aws
   serial: true
@@ -2125,23 +2126,61 @@ jobs:
       - get: stembuild-untested-linux
         trigger: false
         passed: [stembuild-linux]
-      - get: stembuild-untested-windows
+#      - get: stembuild-untested-windows
       - get: stembuild-version
         resource: main-version
       - get: pivnet-stembuild-promote-test
-    - task: trim-stembuild-version
-      file: ci/tasks/set-stembuild-version/task.yml
-    - task: pivnet-upload
-      file: ci/tasks/pivnet-stembuild-upload/task.yml
+#    - task: trim-stembuild-version
+#      file: ci/tasks/set-stembuild-version/task.yml
+    - task: prepare-pivnet-upload
+      file: ci/tasks/stembuild-prepare-pivnet-upload/task.yml
       input_mapping: { stembuild: stembuild-untested-linux
       , pivnet-release: pivnet-stembuild-promote-test }
       params:
-        OS_NAME: ((PIVNET_OS_NAME))
+  #        OS_NAME: ((PIVNET_OS_NAME))
+          OS_NAME: 'PIVNET_OS_NAME'
     - put: pivnet-stembuild-promote-test
       params:
         override: true
-        file_glob: 'pivnet-metadata/stembuild*'
+        file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
+    - task: prepare-pivnet-folder-upload
+      file: ci/tasks/stembuild-pivnet-upload/task.yml
+      input_mapping: { stembuild: stembuild-untested-linux
+      ,              pivnet-release: pivnet-stembuild-promote-test }
+      output_mapping: { pivnet-metadata: pivnet-metadata-with-folder }
+      params:
+        #        OS_NAME: ((PIVNET_OS_NAME))
+        OS_NAME: 'PIVNET_OS_NAME'
+    - put: pivnet-stembuild-promote-test
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: pivnet-metadata-with-folder/metadata-with-folder
+
+#    #
+#    - task: create-filegroup-metadata
+#      put:L
+#
+#    # two-uses-of-resource variant
+#    - task: create-stembuild-metadata
+#    - put: upload-stembuild
+#
+#    - task: create-stembuild-folder-metadata
+#    - put: upload-stembuild-folder
+#
+#    # resource-followed-by-cli variant
+#    - put: create-stembuild-metadata
+#
+#    - task: patch-stembuild-metadata
+#    - put:
+#
+#    # resource-followed-by-cli variant
+#    - put: create-stembuild-metadata-and-folder
+#
+#    - task: patch-stembuild-metadata
+#    - put:
+
 
 - name: ship-bosh-stemcell-builder
   serial: true
