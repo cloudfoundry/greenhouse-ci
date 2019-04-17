@@ -54,6 +54,7 @@ if [ "$(ls pivnet-release/*stemcell*)" != "" ] && [[ $release_version == *"$(cat
 fi
 
 FOLDER_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
+STEMBUILD_ID=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
 echo "File Group ID is: $FOLDER_GROUP_ID"
 
 pushd pivnet-metadata
@@ -64,6 +65,11 @@ for s in $(ls *stemcell*)
   do
     add-pivnet-productfile "$s"
 done
+
+cat >> metadata-with-folder <<EOF
+  - id: $STEMBUILD_ID
+EOF
+
 
 cat >> metadata-with-folder <<EOF
 file_groups:
