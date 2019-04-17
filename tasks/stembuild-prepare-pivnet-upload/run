@@ -28,7 +28,7 @@ EOF
 stemcell=`ls stembuild/stembuild*`
 stemcellname=stembuild4
 
-cat > pivnet-metadata/stembuild-metadata <<EOF
+cat > pivnet-metadata/metadata <<EOF
 ---
 release:
   version: "stembuild-promote-test"
@@ -56,7 +56,7 @@ if [ "$(ls pivnet-release/*stemcell*)" != "" ] && [[ $release_version == *"$(cat
 fi
 
 pushd pivnet-metadata
-cat >> stembuild-metadata <<EOF
+cat >> metadata <<EOF
 product_files:
 EOF
 
