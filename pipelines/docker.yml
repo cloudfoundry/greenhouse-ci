@@ -2,7 +2,7 @@ resources:
 - name: ci
   type: git
   source:
-    branch: master
+    branch: docker-pipeline
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
     paths: [ docker/Dockerfile* ]
 
