@@ -20,6 +20,6 @@ jobs:
     trigger: true
   - put: pivnet-image
     params:
-      build: ci/docker
-      dockerfile: ci/docker/Dockerfile.pivnet
-      tag_as_latest: false
+      build: ci-pivnet-dockerfile/docker
+      dockerfile: ci-pivnet-dockerfile/docker/Dockerfile.pivnet
+      tag_as_latest: true
