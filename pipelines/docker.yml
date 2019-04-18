@@ -4,7 +4,7 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-    paths: [ docker/Dockerfile.ci ]
+    paths: [ docker/Dockerfile* ]
 
 - name: ci-image
   type: docker-image
@@ -13,14 +13,31 @@ resources:
     username: {{DOCKER_USERNAME}}
     password: {{DOCKER_PASSWORD}}
 
+- name: pivnet-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/pivnet
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
+
 jobs:
 - name: build-and-push
   serial: true
   plan:
   - get: ci
-    trigger: true
   - put: ci-image
     params:
       build: ci/docker
       dockerfile: ci/docker/Dockerfile.ci
       tag_as_latest: true
+
+- name: build-and-push-pivnet
+  serial: true
+  plan:
+  - get: ci
+    trigger: true
+  - put: pivnet-image
+    params:
+      build: ci/docker
+      dockerfile: ci/docker/Dockerfile.pivnet
+      tag_as_latest: false
