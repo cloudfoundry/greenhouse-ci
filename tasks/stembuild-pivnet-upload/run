@@ -43,7 +43,7 @@ cp ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57 ./pivnet
 
 #mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
 FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
-
+#RELEASE_ID=$(cat pivnet-release/metadata.json |jq '.Release.ID')
 for i in $FILE_IDS; do
   ./pivnet add-product-file --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
   ./pivnet remove-product-file --product-slug=$PRODUCT_SLUG --release-version=$VERSION --product-file-id=$i

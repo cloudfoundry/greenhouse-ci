@@ -2139,11 +2139,13 @@ jobs:
       params:
   #        OS_NAME: ((PIVNET_OS_NAME))
           OS_NAME: 'PIVNET_OS_NAME'
+
     - put: pivnet-stembuild-promote-test
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
+
     - task: update-pivnet-folder
       file: ci/tasks/stembuild-pivnet-upload/task.yml
       input_mapping: { stembuild: stembuild-untested-linux
@@ -2151,7 +2153,7 @@ jobs:
       params:
         #        OS_NAME: ((PIVNET_OS_NAME))
         OS_NAME: 'PIVNET_OS_NAME'
-        PIVNET_API_TOKEN: ((PIVNET_API_TOKEN))
+        PIVNET_API_TOKEN: 'pSD_BiQFgoMuhkddXysb'
         PIVNET_ENDPOINT: 'https://pivnet-integration.cfapps.io'
         PRODUCT_SLUG: 'stemcells-windows-server-internal'
 
