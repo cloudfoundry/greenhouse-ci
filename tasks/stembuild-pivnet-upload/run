@@ -10,9 +10,8 @@ release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-#this will only appear if you download stembuild and run --version
-#VERSION='stembuild-promote-test'
-#echo $VERSION > stembuild/version
+VERSION='stembuild-promote-test'
+echo $VERSION > stembuild/version
 
 FILE_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
 echo "File Group ID is: $FILE_GROUP_ID"
