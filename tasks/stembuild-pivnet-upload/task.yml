@@ -4,11 +4,10 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: concourse/git-resource
+    repository: pivotalgreenhouse/pivnet
 
 inputs:
   - name: ci
-  - name: stembuild
   - name: pivnet-release
 run:
   path: ci/tasks/stembuild-pivnet-upload/run

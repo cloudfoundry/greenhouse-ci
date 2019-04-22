@@ -1,44 +1,28 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-stemcell=`ls stembuild/stembuild*`
-stemcellname=stembuild4
+#stemcell=`ls stembuild/stembuild*`
+#stemcellname=stembuild4
 
 
 release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-VERSION='stembuild-promote-test'
-echo $VERSION > stembuild/version
+#this will only appear if you download stembuild and run --version
+#VERSION='stembuild-promote-test'
+#echo $VERSION > stembuild/version
 
 FILE_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
 echo "File Group ID is: $FILE_GROUP_ID"
-#STEMBUILD_ID=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
-
-
-#for f in $(ls stembuild*)
-#  do
-#    FILE_ID=$(echo pivnet-release/metadata.json | jq .product_files\(?????\))
-#done
-
 
 #mkdir pivnet-metadata/stembuild
 #mv stembuild/stembuild* pivnet-metadata
 
-# PivNet CLI
-
-#curl https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.57/pivnet-linux-amd64-0.0.57
-#echo "4f7ba30c2e9125439b40b5623226878e9530c81987224817acd36ea227fdabe2  ./pivnet-linux-amd64-0.0.57" |
-#  sha256sum --check
-#chmod 500 pivnet-linux-amd64-0.0.57
-alias pivnet="$(ls ./ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57)"
-cp ci/tasks/stembuild-pivnet-upload/pivnet-linux-amd64-0.0.57 ./pivnet
-
-./pivnet login --api-token=$PIVNET_API_TOKEN --host=$PIVNET_ENDPOINT
+pivnet login --api-token=$PIVNET_API_TOKEN --host=$PIVNET_ENDPOINT
 # info:
-./pivnet file-group --product-slug=$PRODUCT_SLUG --file-group-id=$FILE_GROUP_ID
+pivnet file-group --product-slug=$PRODUCT_SLUG --file-group-id=$FILE_GROUP_ID
 
 
 #mv pivnet-metadata/stembuild* pivnet-metadata/stembuild-test2
