@@ -29,8 +29,8 @@ pivnet file-group --product-slug=$PRODUCT_SLUG --file-group-id=$FILE_GROUP_ID
 FILE_IDS=$(cat pivnet-release/metadata.json |jq '.ProductFiles[] | select( .File | contains("stembuild") ) | .ID')
 #RELEASE_ID=$(cat pivnet-release/metadata.json |jq '.Release.ID')
 for i in $FILE_IDS; do
-  ./pivnet add-product-file --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
-  ./pivnet remove-product-file --product-slug=$PRODUCT_SLUG --release-version=$VERSION --product-file-id=$i
+  pivnet add-product-file --product-slug=$PRODUCT_SLUG --product-file-id=$i --file-group-id=$FILE_GROUP_ID
+  pivnet remove-product-file --product-slug=$PRODUCT_SLUG --release-version=$VERSION --product-file-id=$i
 done
 
 
