@@ -13,4 +13,4 @@ outputs:
 - name: output
 
 run:
-  path: ci/tasks/set-stembuild-version/run.sh
+  path: ci/tasks/set-stembuild-version/run
