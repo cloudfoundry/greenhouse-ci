@@ -2140,12 +2140,11 @@ jobs:
       file: ci/tasks/stembuild-prepare-pivnet-upload/task.yml
       params:
         OS_NAME: ((PIVNET_OS_NAME))
-    - put: pivnet-release
+    - put: pivnet-stembuild-promote-test
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata.json
-
     - task: update-pivnet-folder
       file: ci/tasks/stembuild-pivnet-upload/task.yml
       params:

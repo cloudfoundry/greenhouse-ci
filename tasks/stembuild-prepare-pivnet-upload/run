@@ -78,7 +78,7 @@ else
     > pivnet-metadata/metadata.json
 fi
 
-add-stembuild-folder ${PIVNET_OS_NAME}
+add-stembuild-folder ${OS_NAME}
 
 bin_dirs=( stembuild-untested-windows stembuild-untested-linux )
 for DIR in "${bin_dirs[@]}"
