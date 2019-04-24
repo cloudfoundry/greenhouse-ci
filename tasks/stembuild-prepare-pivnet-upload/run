@@ -58,7 +58,7 @@ function copy-stemcells() {
   copy-pattern "${source_dir}" ${target_dir} "*stemcell*"
 }
 
-existing_release_version=$(cat pivnet-release/metadata | jq -r .Release.Version)
+existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 release_version=$( cat version/version | cut -d '.' -f1-2 )
 
 echo "Releasing draft stembuild ${release_version}"
@@ -66,11 +66,11 @@ echo "Releasing draft stembuild ${release_version}"
 if [[ $existing_release_version == *"${release_version}"* ]]; then
   echo "Pivnet Release ${release_version} exists, will retain existing release files"
 
-  jq -r '.ProductFiles[].AWSObjectKey' pivnet-release/metadata | \
+  jq -r '.ProductFiles[].AWSObjectKey' pivnet-release/metadata.json | \
     xargs -I% basename % | \
     xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
 
-  cp pivnet-release/metadata pivnet-metadata/metadata
+  cp pivnet-release/metadata.json pivnet-metadata/metadata
 else
   echo "Creating Pivnet Release ${release_version} for first time"
 
@@ -111,7 +111,7 @@ echo
 echo 'stembuilds:'
 ls pivnet-metadata/stembuild*
 
-#cat pivnet-release/metadata
+#cat pivnet-release/metadata.json
 #echo
 echo $release_version
 cat version/version
