@@ -2123,6 +2123,7 @@ jobs:
   plan:
     - aggregate:
       - get: ci
+        trigger: true
       - get: stembuild-untested-linux
         trigger: false
         passed: [ stembuild-linux ]
@@ -2144,7 +2145,7 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
-        metadata_file: pivnet-metadata/metadata.json
+        metadata_file: pivnet-metadata/metadata
     - task: update-pivnet-folder
       file: ci/tasks/stembuild-pivnet-upload/task.yml
       params:
