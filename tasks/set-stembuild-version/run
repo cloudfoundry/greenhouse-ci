@@ -13,7 +13,7 @@ do
     echo "*** Setting release version of ${PLATFORM} Stembuild ***"
     SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f -printf "%f\n" )
     DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${RELEASE_VERSION}'/g' )
-    cp ${DIR}/${SOURCE_BINARY} output/${DEST_BINARY}
+    cp ${DIR}/${SOURCE_BINARY} trimmed-stembuild-artifacts/${DEST_BINARY}
 done
 
-echo ${RELEASE_VERSION} > output/tag
+echo ${RELEASE_VERSION} > trimmed-stembuild-artifacts/tag
