@@ -114,4 +114,4 @@ ls pivnet-metadata/stembuild*
 #cat pivnet-release/metadata.json
 #echo
 echo $release_version
-cat stembuild/version
+cat version/version
