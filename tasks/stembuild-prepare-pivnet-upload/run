@@ -85,8 +85,8 @@ for DIR in "${bin_dirs[@]}"
 do
     PLATFORM=$( echo ${DIR} | cut -d '-' -f3 )
     echo "*** Setting release version of ${PLATFORM} Stembuild to ${release_version} ***"
-    SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f)
-    basename SOURCE_BINARY
+    SOURCE_BINARY =$( find ${DIR} -name stembuild-\* -type f)
+    SOURCE_BINARY = basename $SOURCE_BINARY
     DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${release_version}'/g' )
     cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
     add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
