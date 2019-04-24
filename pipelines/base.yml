@@ -502,7 +502,7 @@ resources:
     api_token: pSD_BiQFgoMuhkddXysb
     endpoint: https://pivnet-integration.cfapps.io
     product_slug: stemcells-windows-server-internal
-    product_version: stembuild-promote-test
+    product_version: ((BOSHIO_OS_VERSION)).*
 
 # time
 - name: midnight
@@ -2125,31 +2125,29 @@ jobs:
       - get: ci
       - get: stembuild-untested-linux
         trigger: false
-        passed: [stembuild-linux]
-#      - get: stembuild-untested-windows
-      - get: stembuild-version
+        passed: [ stembuild-linux ]
+      - get: stembuild-untested-windows
+        trigger: false
+#        passed: [ stembuild-windows ]
+      - get: version
         resource: main-version
-      - get: pivnet-stembuild-promote-test
-#    - task: trim-stembuild-version
-#      file: ci/tasks/set-stembuild-version/task.yml
+        passed:
+        - stembuild-linux
+#        - stembuild-windows
+      - get: pivnet-release
+        resource: pivnet-stembuild-promote-test
     - task: prepare-pivnet-upload
       file: ci/tasks/stembuild-prepare-pivnet-upload/task.yml
-      input_mapping: { stembuild: stembuild-untested-linux
-      , pivnet-release: pivnet-stembuild-promote-test }
       params:
-  #        OS_NAME: ((PIVNET_OS_NAME))
-          OS_NAME: 'PIVNET_OS_NAME'
-
-    - put: pivnet-stembuild-promote-test
+        OS_NAME: ((PIVNET_OS_NAME))
+    - put: pivnet-release
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
-        metadata_file: pivnet-metadata/metadata
+        metadata_file: pivnet-metadata/metadata.json
 
     - task: update-pivnet-folder
       file: ci/tasks/stembuild-pivnet-upload/task.yml
-      input_mapping: { stembuild: stembuild-untested-linux
-      ,              pivnet-release: pivnet-stembuild-promote-test }
       params:
         #        OS_NAME: ((PIVNET_OS_NAME))
         OS_NAME: 'PIVNET_OS_NAME'

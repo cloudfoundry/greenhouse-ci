@@ -8,8 +8,10 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: stembuild
+  - name: stembuild-untested-linux
+  - name: stembuild-untested-windows
   - name: pivnet-release
+  - name: version
 outputs:
   - name: pivnet-metadata
 run:
