@@ -11,14 +11,14 @@ function add-product-file() {
   local fileName="$2"
 
   #jq does not support editing contents of a .json file in one line, a temp file is needed. Add -c for compact JSON
-  jq -c ".ProductFiles |= . + [{\"file\":\"${filePath}\", \"uploadAs\":\"${fileName}\"}]" pivnet-metadata/metadata.json > tmp.json
+  jq -c ".product_files |= . + [{\"file\":\"${filePath}\", \"upload_as\":\"${fileName}\"}]" pivnet-metadata/metadata.json > tmp.json
   mv tmp.json pivnet-metadata/metadata.json
 }
 
 function add-stembuild-folder() {
   local stembuildOs="$1"
 
-  jq -c ". + {\"FileGroups\":[{\"Name:\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"ProductFiles\": []}]}" pivnet-metadata/metadata.json > tmp.json
+  jq -c ". + {\"file_groups\":[{\"name\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"product_files\": []}]}" pivnet-metadata/metadata.json > tmp.json
   mv tmp.json pivnet-metadata/metadata.json
 }
 
@@ -58,32 +58,10 @@ function copy-stemcells() {
   copy-pattern "${source_dir}" ${target_dir} "*stemcell*"
 }
 
-cat > pivnet-metadata/metadata.yaml <<EOF
----
-Release:
- ReleaseType: "Security Release"
- EULASlug: pivotal_beta_eula
- Availability: "Selected User Groups Only"
- ECCN: 5D002
- LicenseException: ECCN
- UserGroupIDs:
-  -
-   164
- Version: "1709.4273"
-ProductFiles:
- -
-   file: "pivnet-metadata/stembuild-windows-x86_64-1709.4273.exe"
-  uploadAs: "Stembuild for windows"
- -
-   file: "pivnet-metadata/stembuild-linux-x86_64-1709.4273"
-  uploadAs: "Stembuild for linux"
-FileGroups:
- -
-   Name: "vSphere Stembuild CLI for Windows"
-  ProductFiles:
-EOF
+#Convert the JSON file to YAML. This is a confusing/annoying issue, refer to story notes for a detailed explanation
+yq r -j pivnet-release/metadata.yaml > pivnet-release/metadata.json
 
-existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
+existing_release_version=$(cat pivnet-release/metadata.json | jq -r .release.version)
 release_version=$( cat version/version | cut -d '.' -f1-2 )
 
 echo "Releasing draft stembuild ${release_version}"
@@ -91,7 +69,7 @@ echo "Releasing draft stembuild ${release_version}"
 if [[ $existing_release_version == *"${release_version}"* ]]; then
   echo "Pivnet Release ${release_version} exists, will retain existing release files"
 
-  jq -r '.ProductFiles[].AWSObjectKey' pivnet-release/metadata.json | \
+  jq -r '.product_files[].aws_object_key' pivnet-release/metadata.json | \
     xargs -I% basename % | \
     xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
 
@@ -99,7 +77,7 @@ if [[ $existing_release_version == *"${release_version}"* ]]; then
 else
   echo "Creating Pivnet Release ${release_version} for first time"
 
-  base_metadata | jq -c --arg version "${release_version}" '(.Release.Version=$version)' \
+  base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)' \
     > pivnet-metadata/metadata.json
 fi
 
@@ -120,7 +98,6 @@ done
 echo "ls ***"
 ls pivnet-release
 
-
 #pushd pivnet-metadata
 #for s in $(ls stembuild*)
 #  do
@@ -131,7 +108,11 @@ ls pivnet-release
 #popd
 
 echo 'Release details:'
-cat pivnet-metadata/metadata.json | jq
+
+#Convert the JSON file we've been building back into YAML because I hate myself
+yq r pivnet-metadata/metadata.json > pivnet-metadata/metadata.yaml
+
+cat pivnet-metadata/metadata.yaml | yq
 echo
 #echo 'stembuilds:'
 #ls pivnet-metadata/stembuild*

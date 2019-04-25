@@ -56,6 +56,7 @@ RUN AZ_REPO=$(lsb_release -cs) && \
     apt-get update && apt-get install azure-cli
 
 RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
+RUN wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 RUN pip install wheel --upgrade --user
 RUN pip install awscli
