@@ -58,62 +58,85 @@ function copy-stemcells() {
   copy-pattern "${source_dir}" ${target_dir} "*stemcell*"
 }
 
-cp pivnet-release/metadata.yaml pivnet-metadata/metadata.yaml
+cat > pivnet-metadata/metadata.yaml <<EOF
+---
+Release:
+ ReleaseType: "Security Release"
+ EULASlug: pivotal_beta_eula
+ Availability: "Selected User Groups Only"
+ ECCN: 5D002
+ LicenseException: ECCN
+ UserGroupIDs:
+  -
+   164
+ Version: "1709.4273"
+ProductFiles:
+ -
+   file: "pivnet-metadata/stembuild-windows-x86_64-1709.4273.exe"
+  uploadAs: "Stembuild for windows"
+ -
+   file: "pivnet-metadata/stembuild-linux-x86_64-1709.4273"
+  uploadAs: "Stembuild for linux"
+FileGroups:
+ -
+   Name: "vSphere Stembuild CLI for Windows"
+  ProductFiles:
+EOF
 
-#existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
-#release_version=$( cat version/version | cut -d '.' -f1-2 )
-#
-#echo "Releasing draft stembuild ${release_version}"
-#
-#if [[ $existing_release_version == *"${release_version}"* ]]; then
-#  echo "Pivnet Release ${release_version} exists, will retain existing release files"
-#
-#  jq -r '.ProductFiles[].AWSObjectKey' pivnet-release/metadata.json | \
-#    xargs -I% basename % | \
-#    xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
-#
-#  cp pivnet-release/metadata.json pivnet-metadata/metadata.json
-#else
-#  echo "Creating Pivnet Release ${release_version} for first time"
-#
-#  base_metadata | jq -c --arg version "${release_version}" '(.Release.Version=$version)' \
-#    > pivnet-metadata/metadata.json
-#fi
-#
-#add-stembuild-folder ${OS_NAME}
-#
-#bin_dirs=( stembuild-untested-windows stembuild-untested-linux )
-#for DIR in "${bin_dirs[@]}"
-#do
-#    PLATFORM=$( echo ${DIR} | cut -d '-' -f3 )
-#    echo "*** Setting release version of ${PLATFORM} Stembuild to ${release_version} ***"
-#    SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f)
-#    SOURCE_BINARY=$(basename ${SOURCE_BINARY})
-#    DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${release_version}'/g' )
-#    cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
-#    add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
+existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
+release_version=$( cat version/version | cut -d '.' -f1-2 )
+
+echo "Releasing draft stembuild ${release_version}"
+
+if [[ $existing_release_version == *"${release_version}"* ]]; then
+  echo "Pivnet Release ${release_version} exists, will retain existing release files"
+
+  jq -r '.ProductFiles[].AWSObjectKey' pivnet-release/metadata.json | \
+    xargs -I% basename % | \
+    xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
+
+  cp pivnet-release/metadata.json pivnet-metadata/metadata.json
+else
+  echo "Creating Pivnet Release ${release_version} for first time"
+
+  base_metadata | jq -c --arg version "${release_version}" '(.Release.Version=$version)' \
+    > pivnet-metadata/metadata.json
+fi
+
+add-stembuild-folder ${OS_NAME}
+
+bin_dirs=( stembuild-untested-windows stembuild-untested-linux )
+for DIR in "${bin_dirs[@]}"
+do
+    PLATFORM=$( echo ${DIR} | cut -d '-' -f3 )
+    echo "*** Setting release version of ${PLATFORM} Stembuild to ${release_version} ***"
+    SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f)
+    SOURCE_BINARY=$(basename ${SOURCE_BINARY})
+    DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${release_version}'/g' )
+    cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
+    add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
+done
+
+echo "ls ***"
+ls pivnet-release
+
+
+#pushd pivnet-metadata
+#for s in $(ls stembuild*)
+#  do
+#    #if $s contains "linux"
+#    add-product-file "/pivnet-metadata/$s" ""
+#    #if $s contains "windows"
 #done
-#
-#echo "ls ***"
-#ls pivnet-release
-#
-#
-##pushd pivnet-metadata
-##for s in $(ls stembuild*)
-##  do
-##    #if $s contains "linux"
-##    add-product-file "/pivnet-metadata/$s" ""
-##    #if $s contains "windows"
-##done
-##popd
-#
-#echo 'Release details:'
-#cat pivnet-metadata/metadata.json | jq
+#popd
+
+echo 'Release details:'
+cat pivnet-metadata/metadata.json | jq
+echo
+#echo 'stembuilds:'
+#ls pivnet-metadata/stembuild*
+
+#cat pivnet-release/metadata.json
 #echo
-##echo 'stembuilds:'
-##ls pivnet-metadata/stembuild*
-#
-##cat pivnet-release/metadata.json
-##echo
-##echo $release_version
-##cat version/version
+#echo $release_version
+#cat version/version
