@@ -59,7 +59,7 @@ function copy-stemcells() {
 }
 
 #Convert the JSON file to YAML. This is a confusing/annoying issue, refer to story notes for a detailed explanation
-yq r -j pivnet-release/metadata.yaml > pivnet-release/metadata.json
+yq r -j pivnet-release/metadata.yaml > pivnet-metadata/metadata.json
 
 existing_release_version=$(cat pivnet-release/metadata.json | jq -r .release.version)
 release_version=$( cat version/version | cut -d '.' -f1-2 )
@@ -112,7 +112,6 @@ echo 'Release details:'
 #Convert the JSON file we've been building back into YAML because I hate myself
 yq r pivnet-metadata/metadata.json > pivnet-metadata/metadata.yaml
 
-cat pivnet-metadata/metadata.yaml | yq
 echo
 #echo 'stembuilds:'
 #ls pivnet-metadata/stembuild*
