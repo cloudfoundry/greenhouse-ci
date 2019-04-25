@@ -18,4 +18,3 @@ run:
   path: ci/tasks/stembuild-prepare-pivnet-upload/run
 params:
   OS_NAME:
-

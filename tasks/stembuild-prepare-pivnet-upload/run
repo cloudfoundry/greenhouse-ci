@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function base_metadata() {
-  echo '{"Release":{"ReleaseType":"Security Release","EULASlug":"pivotal_beta_eula","Availability":"Selected User Groups Only","ECCN":"5D002","LicenseException":"ECCN","UserGroupIDs":["164"]},"ProductFiles":[],"FileGroups":[]}'
+  echo '{"release":{"release_type":"Security Release","eula_slug":"pivotal_beta_eula","availability":"Selected User Groups Only","eccn":"5D002","license_exception":"ECCN","user_group_ids":["164"]},"product_files":[],"file_groups":[]}'
 }
 
 function add-product-file() {
@@ -61,7 +61,7 @@ function copy-stemcells() {
 #Convert the JSON file to YAML. This is a confusing/annoying issue, refer to story notes for a detailed explanation
 yq r -j pivnet-release/metadata.yaml > pivnet-metadata/metadata.json
 
-existing_release_version=$(cat pivnet-release/metadata.json | jq -r .release.version)
+existing_release_version=$(cat pivnet-metadata/metadata.json | jq -r .release.version)
 release_version=$( cat version/version | cut -d '.' -f1-2 )
 
 echo "Releasing draft stembuild ${release_version}"
@@ -69,11 +69,10 @@ echo "Releasing draft stembuild ${release_version}"
 if [[ $existing_release_version == *"${release_version}"* ]]; then
   echo "Pivnet Release ${release_version} exists, will retain existing release files"
 
-  jq -r '.product_files[].aws_object_key' pivnet-release/metadata.json | \
+  jq -r '.product_files[].aws_object_key' pivnet-metadata/metadata.json | \
     xargs -I% basename % | \
     xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
 
-  cp pivnet-release/metadata.json pivnet-metadata/metadata.json
 else
   echo "Creating Pivnet Release ${release_version} for first time"
 
@@ -94,9 +93,6 @@ do
     cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
     add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
 done
-
-echo "ls ***"
-ls pivnet-release
 
 #pushd pivnet-metadata
 #for s in $(ls stembuild*)
