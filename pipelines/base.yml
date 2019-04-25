@@ -499,7 +499,7 @@ resources:
 - name: pivnet-stembuild-promote-test
   type: pivnet
   source:
-    api_token: pSD_BiQFgoMuhkddXysb
+    api_token: ((PIVNET_INTEGRATION_TOKEN))
     endpoint: https://pivnet-integration.cfapps.io
     product_slug: stemcells-windows-server-internal
     product_version: ((BOSHIO_OS_VERSION)).*
