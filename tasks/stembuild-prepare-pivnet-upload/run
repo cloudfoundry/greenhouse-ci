@@ -110,8 +110,8 @@ mv pivnet-release/metadata.json pivnet-metadata/metadata
 echo 'Release details:'
 cat pivnet-metadata/metadata | jq
 echo
-echo 'stembuilds:'
-ls pivnet-metadata/stembuild*
+#echo 'stembuilds:'
+#ls pivnet-metadata/stembuild*
 
 #cat pivnet-release/metadata.json
 #echo
