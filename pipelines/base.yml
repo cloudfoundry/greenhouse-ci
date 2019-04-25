@@ -2145,7 +2145,7 @@ jobs:
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
-        metadata_file: 'pivnet-metadata/metadata.json'
+        metadata_file: 'pivnet-metadata/metadata.yaml'
     - task: update-pivnet-folder
       file: ci/tasks/stembuild-pivnet-upload/task.yml
       params:
