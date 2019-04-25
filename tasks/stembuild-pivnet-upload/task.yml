@@ -9,7 +9,7 @@ image_resource:
 inputs:
   - name: ci
   - name: pivnet-release
-  - name: stembuild-version
+  - name: version
 run:
   path: ci/tasks/stembuild-pivnet-upload/run
 params:

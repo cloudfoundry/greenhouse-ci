@@ -10,7 +10,7 @@ release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-VERSION="$(cat stembuild-version/version)"
+VERSION="$(cat version/version)"
 
 FILE_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
 echo "File Group ID is: $FILE_GROUP_ID"
