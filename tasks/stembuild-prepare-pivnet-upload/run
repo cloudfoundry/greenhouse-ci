@@ -10,15 +10,15 @@ function add-product-file() {
   local filePath="$1"
   local fileName="$2"
 
-  #jq does not support editing contents of a .json file in one line, a temp file is needed.
-  jq ".ProductFiles |= . + [{\"file\":\"${filePath}\", \"uploadAs\":\"${fileName}\"}]" pivnet-metadata/metadata > tmp.json
+  #jq does not support editing contents of a .json file in one line, a temp file is needed. Add -c for compact JSON
+  jq -c ".ProductFiles |= . + [{\"file\":\"${filePath}\", \"uploadAs\":\"${fileName}\"}]" pivnet-metadata/metadata > tmp.json
   mv tmp.json pivnet-metadata/metadata
 }
 
 function add-stembuild-folder() {
   local stembuildOs="$1"
 
-  jq ". + {\"FileGroups\":[{\"Name:\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"ProductFiles\": []}]}" pivnet-metadata/metadata > tmp.json
+  jq -c ". + {\"FileGroups\":[{\"Name:\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"ProductFiles\": []}]}" pivnet-metadata/metadata > tmp.json
   mv tmp.json pivnet-metadata/metadata
 }
 
@@ -74,7 +74,7 @@ if [[ $existing_release_version == *"${release_version}"* ]]; then
 else
   echo "Creating Pivnet Release ${release_version} for first time"
 
-  base_metadata | jq --arg version "${release_version}" '(.Release.Version=$version)' \
+  base_metadata | jq -c --arg version "${release_version}" '(.Release.Version=$version)' \
     > pivnet-metadata/metadata
 fi
 
@@ -106,7 +106,7 @@ ls pivnet-release
 #popd
 
 echo 'Release details:'
-cat pivnet-metadata/metadata
+cat pivnet-metadata/metadata | jq
 echo
 echo 'stembuilds:'
 ls pivnet-metadata/stembuild*
