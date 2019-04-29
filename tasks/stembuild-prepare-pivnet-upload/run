@@ -59,9 +59,9 @@ function copy-stemcells() {
 }
 
 #Convert the JSON file to YAML. This is a confusing/annoying issue, refer to story notes for a detailed explanation
-yq r -j pivnet-release/metadata.yaml > pivnet-metadata/metadata.json
+json_metadata=$(yq read -j pivnet-release/metadata.yaml)
 
-existing_release_version=$(cat pivnet-metadata/metadata.json | jq -r .release.version)
+existing_release_version=$(echo "${json_metadata}" | jq -r .release.version)
 release_version=$( cat version/version | cut -d '.' -f1-2 )
 
 echo "Releasing draft stembuild ${release_version}"
@@ -69,15 +69,14 @@ echo "Releasing draft stembuild ${release_version}"
 if [[ $existing_release_version == *"${release_version}"* ]]; then
   echo "Pivnet Release ${release_version} exists, will retain existing release files"
 
-  jq -r '.product_files[].aws_object_key' pivnet-metadata/metadata.json | \
+  echo "${json_metadata}" | jq -r '.product_files[].aws_object_key' | \
     xargs -I% basename % | \
     xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
 
 else
   echo "Creating Pivnet Release ${release_version} for first time"
 
-  base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)' \
-    > pivnet-metadata/metadata.json
+  json_metadata=$(base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)')
 fi
 
 add-stembuild-folder ${OS_NAME}
@@ -87,8 +86,7 @@ for DIR in "${bin_dirs[@]}"
 do
     PLATFORM=$( echo ${DIR} | cut -d '-' -f3 )
     echo "*** Setting release version of ${PLATFORM} Stembuild to ${release_version} ***"
-    SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f)
-    SOURCE_BINARY=$(basename ${SOURCE_BINARY})
+    SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f -exec basename {} \;)
     DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${release_version}'/g' )
     cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
     add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
@@ -105,10 +103,9 @@ done
 
 
 #Convert the JSON file we've been building back into YAML because I hate myself
-yq r pivnet-metadata/metadata.json > pivnet-metadata/metadata.yaml
+echo "${json_metadata}" | yq read - > pivnet-metadata/metadata.yaml
 
 echo 'Release details:'
-cat pivnet-metadata/metadata.json
 cat pivnet-metadata/metadata.yaml
 
 #echo
