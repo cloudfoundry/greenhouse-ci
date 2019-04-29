@@ -9,17 +9,16 @@ function base_metadata() {
 function add-product-file() {
   local filePath="$1"
   local fileName="$2"
+  local jsonMetadata="$3"
 
-  #jq does not support editing contents of a .json file in one line, a temp file is needed. Add -c for compact JSON
-  jq -c ".product_files |= . + [{\"file\":\"${filePath}\", \"upload_as\":\"${fileName}\"}]" pivnet-metadata/metadata.json > tmp.json
-  mv tmp.json pivnet-metadata/metadata.json
+  echo "${jsonMetadata}" | jq -c ".product_files |= . + [{\"file\":\"${filePath}\", \"upload_as\":\"${fileName}\"}]"
 }
 
 function add-stembuild-folder() {
   local stembuildOs="$1"
+  local json_metadata="$2"
 
-  jq -c ". + {\"file_groups\":[{\"name\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"product_files\": []}]}" pivnet-metadata/metadata.json > tmp.json
-  mv tmp.json pivnet-metadata/metadata.json
+  echo "${json_metadata}" | jq -c ". + {\"file_groups\":[{\"name\":\"vSphere Stembuild CLI for ${stembuildOs}\", \"product_files\": []}]}"
 }
 
 function copy-pattern() {
@@ -79,7 +78,7 @@ else
   json_metadata=$(base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)')
 fi
 
-add-stembuild-folder ${OS_NAME}
+json_metadata=$(add-stembuild-folder ${OS_NAME} "${json_metadata}")
 
 bin_dirs=( stembuild-untested-windows stembuild-untested-linux )
 for DIR in "${bin_dirs[@]}"
@@ -89,7 +88,7 @@ do
     SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f -exec basename {} \;)
     DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${release_version}'/g' )
     cp ${DIR}/${SOURCE_BINARY} pivnet-metadata/${DEST_BINARY}
-    add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}"
+    json_metadata=$(add-product-file "pivnet-metadata/${DEST_BINARY}" "Stembuild for ${PLATFORM}" "${json_metadata}")
 done
 
 #pushd pivnet-metadata
