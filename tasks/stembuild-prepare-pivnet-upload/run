@@ -108,8 +108,8 @@ done
 yq r pivnet-metadata/metadata.json > pivnet-metadata/metadata.yaml
 
 echo 'Release details:'
-cat pivnet-release/metadata.json
-cat pivnet-release/metadata.yaml
+cat pivnet-metadata/metadata.json
+cat pivnet-metadata/metadata.yaml
 
 #echo
 #echo 'stembuilds:'
