@@ -2151,7 +2151,7 @@ jobs:
       params:
         #        OS_NAME: ((PIVNET_OS_NAME))
         OS_NAME: 'PIVNET_OS_NAME'
-        PIVNET_API_TOKEN: 'pSD_BiQFgoMuhkddXysb'
+        PIVNET_API_TOKEN: ((PIVNET_INTEGRATION_TOKEN))
         PIVNET_ENDPOINT: 'https://pivnet-integration.cfapps.io'
         PRODUCT_SLUG: 'stemcells-windows-server-internal'
 
