@@ -103,12 +103,15 @@ done
 #done
 #popd
 
-echo 'Release details:'
 
 #Convert the JSON file we've been building back into YAML because I hate myself
 yq r pivnet-metadata/metadata.json > pivnet-metadata/metadata.yaml
 
-echo
+echo 'Release details:'
+cat pivnet-release/metadata.json
+cat pivnet-release/metadata.yaml
+
+#echo
 #echo 'stembuilds:'
 #ls pivnet-metadata/stembuild*
 
