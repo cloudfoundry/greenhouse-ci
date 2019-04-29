@@ -78,7 +78,7 @@ else
   json_metadata=$(base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)')
 fi
 
-json_metadata=$(add-stembuild-folder ${OS_NAME} "${json_metadata}")
+json_metadata=$(add-stembuild-folder "${OS_NAME}" "${json_metadata}")
 
 bin_dirs=( stembuild-untested-windows stembuild-untested-linux )
 for DIR in "${bin_dirs[@]}"
