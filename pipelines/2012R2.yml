@@ -677,14 +677,14 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
-      BOSH_CA_CERT: ((BOSH_CONCOURSE_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((BOSH_CONCOURSE_BOSH_USER))
-      BOSH_CLIENT_SECRET: ((BOSH_CONCOURSE_BOSH_PASSWORD))
-      BOSH_ENVIRONMENT: ((BOSH_CONCOURSE_DIRECTOR_IP))
+      BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
+      BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
+      BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
       GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server"
-      SSH_TUNNEL_IP: ((BOSH_CONCOURSE_JUMPBOX_IP))
-      SSH_TUNNEL_PRIVATE_KEY: ((BOSH_CONCOURSE_GW_PRIVATE_KEY))
-      SSH_TUNNEL_USER: ((BOSH_CONCOURSE_GW_USER))
+      SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
       VM_TYPE: large
