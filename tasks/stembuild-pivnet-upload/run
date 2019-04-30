@@ -5,12 +5,16 @@ set -euo pipefail
 #stemcell=`ls stembuild/stembuild*`
 #stemcellname=stembuild4
 
-
+#release_version=$(yq r pivnet.release/metadata.yaml release.version)
+#VERSION="$(cat version/version)"
+#
+#
+##----
 release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 echo "ls ***"
 ls pivnet-release
 
-VERSION="$(cat version/version)"
+VERSION="$(cat version/version | cut -d '.' -f 1,2)" 
 
 FILE_GROUP_ID=$(cat pivnet-release/metadata.json |jq '.FileGroups[0].ID')
 echo "File Group ID is: $FILE_GROUP_ID"
@@ -34,3 +38,7 @@ done
 
 cat pivnet-release/metadata.json
 echo
+
+
+#TODO: Doesn't seem like the latest task actually has an updated release JSON/metadata. Will echo both out in previous task to see if the PUT was correct
+#TODO: Difference between version/version and release version? Important distinction in this case?
