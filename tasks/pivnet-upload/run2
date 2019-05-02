@@ -17,7 +17,7 @@ function add-product-file() {
 json_metadata=$(yq read -j pivnet-release/metadata.yaml)
 
 existing_release_version=$(echo "${json_metadata}" | jq -r .release.version)
-release_version=$( cat stemcell/version | cut -d '.' -f1-2 )
+release_version=$( cat version/version | cut -d '.' -f1-2 )
 #echo "Releasing stembuild ${release_version}"
 
 if [[ $existing_release_version == *"${release_version}"* ]]; then
