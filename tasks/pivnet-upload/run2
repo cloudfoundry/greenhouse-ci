@@ -64,7 +64,7 @@ echo "Adding $stemcell to Pivnet metadata"
 mv stemcell/*.tgz pivnet-metadata
 
 #add stemcell to metadata file
-add-product-file "pivnet-metadata/${stemcell}" "$stemcellname Stemcell for $OS_NAME"
+json_metadata=$(add-product-file "pivnet-metadata/${stemcell}" "$stemcellname Stemcell for $OS_NAME" "${json_metadata}")
 
 echo "${json_metadata}" | yq read - > pivnet-metadata/metadata.yaml
 
