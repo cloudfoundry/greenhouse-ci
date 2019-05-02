@@ -34,7 +34,7 @@ else
 fi
 
 
-stemcell=$(ls stemcell/*.tgz)
+stemcell=$(ls stemcell/*.tgz | xargs -I% basename %)
 
 case "$stemcell" in
     *"aws"*)
