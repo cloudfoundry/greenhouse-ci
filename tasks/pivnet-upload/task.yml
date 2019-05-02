@@ -10,6 +10,7 @@ inputs:
   - name: ci
   - name: stemcell
   - name: pivnet-release
+  - name: version
 outputs:
   - name: pivnet-metadata
 run:
