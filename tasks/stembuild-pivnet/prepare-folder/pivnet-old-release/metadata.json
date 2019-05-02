@@ -1,0 +1,72 @@
+{
+  "Release": {
+    "ID": 357962,
+    "Version": "1709.4278",
+    "ReleaseType": "Security Release",
+    "EULASlug": "pivotal_beta_eula",
+    "ReleaseDate": "2019-04-29",
+    "Description": "",
+    "ReleaseNotesURL": "",
+    "Availability": "Selected User Groups Only",
+    "UserGroupIDs": null,
+    "Controlled": false,
+    "ECCN": "5D002",
+    "LicenseException": "ECCN",
+    "EndOfSupportDate": "",
+    "EndOfGuidanceDate": "",
+    "EndOfAvailabilityDate": "",
+    "ProductFiles": [
+      {
+        "ID": 369381
+      },
+      {
+        "ID": 369380
+      }
+    ]
+  },
+  "ProductFiles": [
+    {
+      "File": "Stembuild for windows",
+      "Description": "",
+      "UploadAs": "",
+      "AWSObjectKey": "product-files/stemcells-windows-server-internal/stembuild-windows-x86_64-1709.4278.exe",
+      "FileType": "Software",
+      "FileVersion": "1709.4278",
+      "SHA256": "f51679b48a7dbb724537735483de048a608f32958cd57f70bac235a9372496f5",
+      "MD5": "",
+      "ID": 369381,
+      "Version": "",
+      "DocsURL": "",
+      "SystemRequirements": null,
+      "Platforms": null,
+      "IncludedFiles": null
+    },
+    {
+      "File": "Stembuild for linux",
+      "Description": "",
+      "UploadAs": "",
+      "AWSObjectKey": "product-files/stemcells-windows-server-internal/stembuild-linux-x86_64-1709.4278",
+      "FileType": "Software",
+      "FileVersion": "1709.4278",
+      "SHA256": "4597543559b3294c8dd802495600958fbc77b1c6e4788d225429c2d63e94b60c",
+      "MD5": "",
+      "ID": 369380,
+      "Version": "",
+      "DocsURL": "",
+      "SystemRequirements": null,
+      "Platforms": null,
+      "IncludedFiles": null
+    }
+  ],
+  "DependencySpecifiers": null,
+  "UpgradePathSpecifiers": null,
+  "FileGroups": [
+    {
+      "ID": 1770,
+      "Name": "vSphere Stembuild CLI for Windows Server Version 1709",
+      "ProductFiles": null
+    }
+  ],
+  "Dependencies": null,
+  "UpgradePaths": null
+}

@@ -1,0 +1,34 @@
+release:
+  id: 357962
+  version: "1709.4278"
+  release_type: Security Release
+  eula_slug: pivotal_beta_eula
+  release_date: "2019-04-29"
+  description: ""
+  release_notes_url: ""
+  availability: Selected User Groups Only
+  controlled: false
+  eccn: 5D002
+  license_exception: ECCN
+  end_of_support_date: ""
+  end_of_guidance_date: ""
+  end_of_availability_date: ""
+  product_files:
+  - id: 369381
+  - id: 369380
+product_files:
+- file: Stembuild for windows
+  aws_object_key: product-files/stemcells-windows-server-internal/stembuild-windows-x86_64-1709.4278.exe
+  file_type: Software
+  file_version: "1709.4278"
+  sha256: f51679b48a7dbb724537735483de048a608f32958cd57f70bac235a9372496f5
+  id: 369381
+- file: Stembuild for linux
+  aws_object_key: product-files/stemcells-windows-server-internal/stembuild-linux-x86_64-1709.4278
+  file_type: Software
+  file_version: "1709.4278"
+  sha256: 4597543559b3294c8dd802495600958fbc77b1c6e4788d225429c2d63e94b60c
+  id: 369380
+file_groups:
+- id: 1770
+  name: vSphere Stembuild CLI for Windows Server Version 1709
