@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+set -e
+
+function base_metadata() {
+  echo '{"release":{"release_type":"Security Release","eula_slug":"pivotal_beta_eula","availability":"Selected User Groups Only","eccn":"5D002","license_exception":"ECCN","user_group_ids":["164"]},"product_files":[],"file_groups":[]}'
+}
+
+function add-product-file() {
+  local filePath="$1"
+  local fileName="$2"
+  local jsonMetadata="$3"
+
+  echo "${jsonMetadata}" | jq -c ".product_files |= . + [{\"file\":\"${filePath}\", \"upload_as\":\"${fileName}\"}]"
+}
+
+json_metadata=$(yq read -j pivnet-release/metadata.yaml)
+
+existing_release_version=$(echo "${json_metadata}" | jq -r .release.version)
+release_version=$( cat stemcell/version | cut -d '.' -f1-2 )
+#echo "Releasing stembuild ${release_version}"
+
+if [[ $existing_release_version == *"${release_version}"* ]]; then
+  echo "Pivnet Release ${release_version} exists, will retain existing release files"
+
+  echo "${json_metadata}" | jq -r '.product_files[].aws_object_key' | \
+    xargs -I% basename % | \
+    xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
+
+else
+  echo "Creating Pivnet Release ${release_version} for first time"
+
+  json_metadata=$(base_metadata | jq -c --arg version "${release_version}" '(.release.version=$version)')
+fi
+
+
+stemcell=$(ls stemcell/*.tgz)
+
+case "$stemcell" in
+    *"aws"*)
+      stemcellname='AWS light'
+      ;;
+
+    *"google"*)
+      stemcellname='GCP light'
+      ;;
+
+    *"azure"*)
+      stemcellname='Azure light'
+      ;;
+
+    *"vsphere"*)
+      stemcellname='vSphere'
+      ;;
+
+    *)
+     echo "Invalid stemcell: $stemcell, supported IAASes are: aws, azure, google, vsphere"
+     exit 1
+esac
+
+echo "Adding $stemcell to Pivnet metadata"
+
+#move stemcell to metadata folder
+mv stemcell/*.tgz pivnet-metadata
+
+#add stemcell to metadata file
+add-product-file "pivnet-metadata/${stemcell}" "$stemcellname Stemcell for $OS_NAME"
+
+echo "${json_metadata}" | yq read - > pivnet-metadata/metadata.yaml
+
+echo 'Release details:'
+cat pivnet-metadata/metadata.yaml
+

@@ -13,7 +13,7 @@ inputs:
 outputs:
   - name: pivnet-metadata
 run:
-  path: ci/tasks/pivnet-upload/run
+  path: ci/tasks/pivnet-upload/run2
 params:
   OS_NAME:
 
