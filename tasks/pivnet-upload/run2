@@ -20,7 +20,7 @@ function correct_existing_file_names(){
   metadata_folder="pivnet-metadata"
   IFS=$'\n'
   i=0
-  for row in $(echo ${jsonMetadata} | jq  -c '.ProductFiles[]'); do
+  for row in $(echo ${jsonMetadata} | jq  -c '.product_files[]'); do
     filename=$(echo ${row} | jq -r ".aws_object_key" | xargs -I% basename %)
     newrow=$(echo ${row} | jq ".file |= \"${metadata_folder}/${filename}\"")
 
