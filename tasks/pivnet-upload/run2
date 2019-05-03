@@ -27,7 +27,7 @@ function correct_existing_file_names(){
     jsonMetadata=$(echo ${jsonMetadata} | jq ".product_files[${i}] |= ${newrow}")
     i=$i+1
   done
-  echo "${jsonMetadata}" | jq
+  echo "${jsonMetadata}"
 }
 
 echo "Existing metadata: $(cat pivnet-release/metadata.yaml)"
