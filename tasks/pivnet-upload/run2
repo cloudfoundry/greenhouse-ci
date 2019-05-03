@@ -14,6 +14,24 @@ function add-product-file() {
   echo "${jsonMetadata}" | jq -c ".product_files |= . + [{\"file\":\"${filePath}\", \"upload_as\":\"${fileName}\"}]"
 }
 
+function correct_existing_file_names(){
+  local jsonMetadata="$1"
+
+  metadata_folder="pivnet-metadata"
+  IFS=$'\n'
+  i=0
+  for row in $(echo ${jsonMetadata} | jq  -c '.ProductFiles[]'); do
+    filename=$(echo ${row} | jq -r ".aws_object_key" | xargs -I% basename %)
+    newrow=$(echo ${row} | jq ".file |= \"${metadata_folder}/${filename}\"")
+
+    jsonMetadata=$(echo ${jsonMetadata} | jq ".product_files[${i}] |= ${newrow}")
+    i=$i+1
+  done
+  echo "${jsonMetadata}" | jq
+}
+
+echo "Existing metadata: $(cat pivnet-release/metadata.yaml)"
+
 json_metadata=$(yq read -j pivnet-release/metadata.yaml)
 
 existing_release_version=$(echo "${json_metadata}" | jq -r .release.version)
@@ -26,6 +44,8 @@ if [[ $existing_release_version == *"${release_version}"* ]]; then
   echo "${json_metadata}" | jq -r '.product_files[].aws_object_key' | \
     xargs -I% basename % | \
     xargs -I% mv "pivnet-release/%" "pivnet-metadata/"
+
+  json_metadata=$(correct_existing_file_names "${json_metadata}")
 
 else
   echo "Creating Pivnet Release ${release_version} for first time"
