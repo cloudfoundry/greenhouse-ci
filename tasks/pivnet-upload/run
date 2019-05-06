@@ -3,39 +3,39 @@
 set -e
 
 function add-pivnet-productfile () {
-  stemcell="$1"
+  filename="$1"
 
-  echo "Adding $stemcell to Pivnet metadata"
-  case "$stemcell" in
+  echo "Adding $filename to Pivnet metadata"
+  case "$filename" in
       *"aws"*)
-        stemcellname='AWS light'
+        upload_as_name='AWS light Stemcell for $OS_NAME'
         ;;
 
       *"google"*)
-        stemcellname='GCP light'
+        upload_as_name='GCP light Stemcell for $OS_NAME'
         ;;
 
       *"azure"*)
-        stemcellname='Azure light'
+        upload_as_name='Azure light Stemcell for $OS_NAME'
         ;;
 
       *"vsphere"*)
-        stemcellname='vSphere'
+        upload_as_name='vSphere Stemcell for $OS_NAME'
         ;;
       "stembuild-linux-x86_64"*)
-        stemcellname='Stembuild for Linux'
+        upload_as_name='Stembuild for Linux'
         ;;
       "stembuild-windows-x86_64"*)
-        stemcellname='Stembuild for Windows'
+        upload_as_name='Stembuild for Windows'
         ;;
       *)
-       echo "Invalid stemcell: $stemcell, supported IAASes are: aws, azure, google, vsphere"
+       echo "Invalid filename: $filename, does not match: aws, azure, google, vsphere, stembuild-linux-x86_64 or stembuild-windows-x86_64"
        exit 1
   esac
 
   cat >> metadata <<EOF
-  - file: pivnet-metadata/$stemcell
-    upload_as: "$stemcellname Stemcell for $OS_NAME"
+  - file: pivnet-metadata/$filename
+    upload_as: "$upload_as_name"
 EOF
 }
 
@@ -68,15 +68,9 @@ for s in $(ls *.tgz)
     add-pivnet-productfile "$s"
 done
 
-for s in $(ls stembuild-linux-x86_64*)
-  do
-    add-pivnet-productfile "$s"
-done
+add-pivnet-productfile "$(ls stembuild-linux-x86_64*)"
+add-pivnet-productfile "$(ls stembuild-windows-x86_64*)"
 
-for s in $(ls stembuild-windows-x86_64*)
-  do
-    add-pivnet-productfile "$s"
-done
 cd ..
 
 echo 'Release details:'
