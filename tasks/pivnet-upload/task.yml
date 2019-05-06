@@ -8,13 +8,13 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: stemcell
+  - name: file-to-upload
   - name: pivnet-release
   - name: version
 outputs:
   - name: pivnet-metadata
 run:
-  path: ci/tasks/pivnet-upload/run2
+  path: ci/tasks/pivnet-upload/run
 params:
   OS_NAME:
 

@@ -22,7 +22,12 @@ function add-pivnet-productfile () {
       *"vsphere"*)
         stemcellname='vSphere'
         ;;
-
+      "stembuild-linux-x86_64"*)
+        stemcellname='Stembuild for Linux'
+        ;;
+      "stembuild-windows-x86_64"*)
+        stemcellname='Stembuild for Windows'
+        ;;
       *)
        echo "Invalid stemcell: $stemcell, supported IAASes are: aws, azure, google, vsphere"
        exit 1
@@ -53,10 +58,20 @@ if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $release_version == *"$(cat stem
   mv pivnet-release/*.tgz pivnet-metadata
 fi
 
-mv stemcell/*.tgz pivnet-metadata
+mv file-to-upload/* pivnet-metadata
 
 cd pivnet-metadata
 for s in $(ls *.tgz)
+  do
+    add-pivnet-productfile "$s"
+done
+
+for s in $(ls stembuild-linux-x86_64*)
+  do
+    add-pivnet-productfile "$s"
+done
+
+for s in $(ls stembuild-windows-x86_64*)
   do
     add-pivnet-productfile "$s"
 done
