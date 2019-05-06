@@ -22,9 +22,11 @@ function add-pivnet-productfile () {
       *"vsphere"*)
         upload_as_name='vSphere Stemcell for $OS_NAME'
         ;;
+
       "stembuild-linux-x86_64"*)
         upload_as_name='Stembuild for Linux'
         ;;
+
       "stembuild-windows-x86_64"*)
         upload_as_name='Stembuild for Windows'
         ;;
@@ -56,9 +58,14 @@ product_files:
 EOF
 
 existing_release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
-if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $existing_release_version == *"{$release_version}"* ]]; then
-  mv pivnet-release/*.tgz pivnet-metadata
-  mv pivnet-release/stembuild* pivnet-metadata
+
+if [ $existing_release_version == *"{$release_version}"* ]; then
+  if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
+    mv pivnet-release/*.tgz pivnet-metadata
+  fi
+  if [ "$(ls pivnet-release/stembuild*)" != "" ]; then
+    mv pivnet-release/stembuild* pivnet-metadata
+  fi
 fi
 
 mv file-to-upload/* pivnet-metadata
@@ -79,5 +86,5 @@ cd ..
 echo 'Release details:'
 cat pivnet-metadata/metadata
 
-echo 'Stemcells:'
-ls pivnet-metadata/*.tgz
+echo 'Current files in release:'
+ls pivnet-metadata/*stem*
