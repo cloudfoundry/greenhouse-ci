@@ -39,10 +39,12 @@ function add-pivnet-productfile () {
 EOF
 }
 
+release_version=$( cat version/version | cut -d '.' -f1-2 )
+
 cat > pivnet-metadata/metadata <<EOF
 ---
 release:
-  version: "$(cat stemcell/version)"
+  version: "${release_version}"
   release_type: Security Release
   eula_slug: "pivotal_software_eula"
   availability: Selected User Groups Only
