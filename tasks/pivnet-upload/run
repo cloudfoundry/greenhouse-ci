@@ -59,7 +59,7 @@ EOF
 
 existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
 
-if [ $existing_release_version == *"${release_version}"* ]; then
+if [ $existing_release_version == $release_version ]; then
   echo "Pivnet Release ${release_version} exists, will retain existing release files"
   if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
     mv pivnet-release/*.tgz pivnet-metadata/
