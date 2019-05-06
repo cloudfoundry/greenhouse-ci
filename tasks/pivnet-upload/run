@@ -55,9 +55,10 @@ release:
 product_files:
 EOF
 
-release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
-if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $release_version == *"$(cat stemcell/version)"* ]]; then
+existing_release_version=$(cat pivnet-release/metadata.json | jq .Release.Version)
+if [ "$(ls pivnet-release/*.tgz)" != "" ] && [[ $existing_release_version == *"{$release_version}"* ]]; then
   mv pivnet-release/*.tgz pivnet-metadata
+  mv pivnet-release/stembuild* pivnet-metadata
 fi
 
 mv file-to-upload/* pivnet-metadata
@@ -68,8 +69,10 @@ for s in $(ls *.tgz)
     add-pivnet-productfile "$s"
 done
 
-add-pivnet-productfile "$(ls stembuild-linux-x86_64*)"
-add-pivnet-productfile "$(ls stembuild-windows-x86_64*)"
+for s in $(ls stembuild*)
+  do
+    add-pivnet-productfile "$s"
+done
 
 cd ..
 
