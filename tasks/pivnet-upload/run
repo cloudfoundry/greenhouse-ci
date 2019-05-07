@@ -8,27 +8,27 @@ function add-pivnet-productfile () {
   echo "Adding $filename to Pivnet metadata"
   case "$filename" in
       *"aws"*)
-        upload_as_name="AWS light Stemcell for ${OS_NAME}"
+        upload_as_name="AWS light Stemcell"
         ;;
 
       *"google"*)
-        upload_as_name="GCP light Stemcell for ${OS_NAME}"
+        upload_as_name="GCP light Stemcell"
         ;;
 
       *"azure"*)
-        upload_as_name="Azure light Stemcell for {$OS_NAME}"
+        upload_as_name="Azure light Stemcell"
         ;;
 
       *"vsphere"*)
-        upload_as_name="vSphere Stemcell for {$OS_NAME}"
+        upload_as_name="vSphere Stemcell"
         ;;
 
       "stembuild-linux-x86_64"*)
-        upload_as_name="Stembuild CLI for vSphere ${OS_NAME} (Linux)"
+        upload_as_name="vSphere Stembuild CLI for Linux"
         ;;
 
       "stembuild-windows-x86_64"*)
-        upload_as_name="Stembuild CLI for vSphere ${OS_NAME} (Windows)"
+        upload_as_name="vSphere Stembuild CLI for Windows"
         ;;
       *)
        echo "Invalid filename: $filename, does not match: aws, azure, google, vsphere, stembuild-linux-x86_64 or stembuild-windows-x86_64"
