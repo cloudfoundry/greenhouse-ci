@@ -120,6 +120,7 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: "0.*"
 
 # versions
 - name: aws-build-number
