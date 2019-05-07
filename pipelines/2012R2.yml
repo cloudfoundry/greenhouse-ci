@@ -684,7 +684,10 @@ jobs:
       BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
       BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
       GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|allows SSH connection"
+<<<<<<< HEAD
       SSH_DISABLED_BY_DEFAULT: true
+=======
+>>>>>>> GINGKO_SKIP changes from previous story that had not been pushed [#165471168]
       SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
       SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
