@@ -120,6 +120,7 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: 0\.\d+
 
 # versions
 - name: aws-build-number
@@ -388,6 +389,7 @@ jobs:
         resource: openssh-release
         version: { tag: ((OPEN_SSH_VERSION)) }
       - get: stembuild
+        version: { tag: "0.31" }
     - put: version
       resource: vsphere-from-vmx-build-number
       params:
