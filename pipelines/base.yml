@@ -458,7 +458,7 @@ resources:
 - name: ovftool
   type: s3
   source:
-    bucket: ((ROOT_BUCKET))
+    bucket: all-bosh-windows
     regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
@@ -490,18 +490,6 @@ resources:
     api_token: ((PIVNET_BOT_API_TOKEN))
     product_slug: stemcells-windows-server-internal
     product_version: ((BOSHIO_OS_VERSION)).*
-#- name: pivnet-stembuild
-#  type: pivnet
-#  source:
-#    api_token: ((PIVNET_BOT_API_TOKEN))
-#    product_slug: stemcells-windows-server-internal
-#    product_version: ((BOSHIO_OS_VERSION)).*
-- name: pivnet-stembuild-promote-test
-  type: pivnet
-  source:
-    api_token: ((PIVNET_BOT_API_TOKEN))
-    product_slug: stemcells-windows-server-internal
-    product_version: stembuild-promote-test
 
 # time
 - name: midnight
@@ -1739,6 +1727,10 @@ jobs:
       - wuts-aws
       - wuts-vsphere
       - wuts-azure
+    - get: stembuild-untested-linux
+      passed: [ stembuild-linux ]
+    - get: stembuild-untested-windows
+      passed: [ stembuild-windows ]
     - get: main-version
       passed:
       - wuts-gcp
@@ -1859,7 +1851,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
+      input_mapping: { file-to-upload: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-dev-meta4-file
@@ -1877,7 +1869,7 @@ jobs:
     - put: pivnet-public-stemcells
       params:
         override: true
-        file_glob: 'pivnet-metadata/*.tgz'
+        file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
@@ -1933,7 +1925,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
+      input_mapping: { file-to-upload: final-stemcell, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-dev-file
@@ -1951,7 +1943,7 @@ jobs:
     - put: pivnet-public-stemcells
       params:
         override: true
-        file_glob: 'pivnet-metadata/*.tgz'
+        file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
@@ -2007,14 +1999,14 @@ jobs:
     file: ci/tasks/set-stemcell-version/task.yml
   - task: pivnet-upload
     file: ci/tasks/pivnet-upload/task.yml
-    input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells }
+    input_mapping: { file-to-upload: final-stemcell, pivnet-release: pivnet-internal-stemcells }
     params:
       OS_NAME: ((PIVNET_OS_NAME))
   - aggregate:
     - put: pivnet-internal-stemcells
       params:
         override: true
-        file_glob: 'pivnet-metadata/*.tgz'
+        file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
     - put: vsphere-stemcell-final-s3
       resource: vsphere-stemcell-final
@@ -2091,7 +2083,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
+      input_mapping: { file-to-upload: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
       params:
         OS_NAME: ((PIVNET_OS_NAME))
     - task: commit-meta4-file
@@ -2109,7 +2101,7 @@ jobs:
     - put: pivnet-public-stemcells
       params:
         override: true
-        file_glob: 'pivnet-metadata/*.tgz'
+        file_glob: 'pivnet-metadata/*stem*'
         metadata_file: pivnet-metadata/metadata
     - put: boshio
       params:
@@ -2117,28 +2109,45 @@ jobs:
         rebase: true
 
 - name: promote-stembuild
-  # serial_groups:
-  # serial:
+  serial_groups: ["pivnet"]
+  serial: true
   plan:
     - aggregate:
       - get: ci
+        trigger: false
       - get: stembuild-untested-linux
         trigger: false
-        passed: [stembuild-linux]
+        passed: [ promote ]
       - get: stembuild-untested-windows
-      - get: stembuild-version
+        trigger: false
+        passed: [ promote ]
+      - get: version
         resource: main-version
-    - task: trim-stembuild-version
-      file: ci/tasks/set-stembuild-version/task.yml
-    - task: pivnet-upload
-      file: ci/tasks/pivnet-stembuild-upload/task.yml
-      input_mapping: { stembuild: stembuild-untested-linux }
+        passed: [ promote ]
+      - get: pivnet-release
+        resource: pivnet-public-stemcells
+    - task: upload-stembuild-linux
+      file: ci/tasks/pivnet-upload/task.yml
+      input_mapping: {file-to-upload: stembuild-untested-linux}
       params:
         OS_NAME: ((PIVNET_OS_NAME))
-    - put: pivnet-stembuild-promote-test
+    - put: pivnet-release
+      resource: pivnet-public-stemcells
       params:
-        file_glob: 'pivnet-metadata/stembuild*'
-        metadata_file: pivnet-metadata/metadata
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: 'pivnet-metadata/metadata'
+    - task: upload-stembuild-windows
+      file: ci/tasks/pivnet-upload/task.yml
+      input_mapping: {file-to-upload: stembuild-untested-windows}
+      params:
+        OS_NAME: ((PIVNET_OS_NAME))
+    - put: pivnet-release
+      resource: pivnet-public-stemcells
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: 'pivnet-metadata/metadata'
 
 - name: ship-bosh-stemcell-builder
   serial: true
