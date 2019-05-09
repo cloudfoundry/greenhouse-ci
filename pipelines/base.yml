@@ -451,14 +451,14 @@ resources:
 - name: lgpo
   type: s3
   source:
-    bucket: all-bosh-windows
+    bucket: ((ROOT_BUCKET))
     regexp: external-dependencies/lgpo/LGPO-(.*).zip
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: ovftool
   type: s3
   source:
-    bucket: all-bosh-windows
+    bucket: ((ROOT_BUCKET))
     regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
