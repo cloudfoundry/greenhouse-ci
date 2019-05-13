@@ -158,7 +158,6 @@ resources:
     release: false
     drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    tag_filter: "0.*"
 
 - name: stemcell-builder-release
   type: github-release
