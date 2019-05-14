@@ -70,4 +70,3 @@ AZURE_HEAVY_WORKING_DIR: '/'
 
 # Promote Variables
 BOSHIO_OS_VERSION: '1709'
-PIVNET_OS_NAME: 'Windows Server Version 1709'

@@ -1192,9 +1192,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
-      params:
-        OS_NAME: ((PIVNET_OS_NAME))
+      input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-dev-meta4-file
       file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
@@ -1268,9 +1266,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
-      params:
-        OS_NAME: ((PIVNET_OS_NAME))
+      input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-dev-file
       file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
@@ -1339,9 +1335,7 @@ jobs:
         release: vsphere-director-lock
   - task: pivnet-upload
     file: ci/tasks/pivnet-upload/task.yml
-    input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-internal-stemcells }
-    params:
-      OS_NAME: ((PIVNET_OS_NAME))
+    input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
   - aggregate:
     - put: pivnet-internal-stemcells
       params:
@@ -1424,9 +1418,7 @@ jobs:
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
-      input_mapping: { stemcell: final-stemcell, pivnet-release: pivnet-public-stemcells }
-      params:
-        OS_NAME: ((PIVNET_OS_NAME))
+      input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-file
       input_mapping: { stemcell: final-stemcell }
       file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml

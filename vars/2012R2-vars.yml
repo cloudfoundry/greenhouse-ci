@@ -57,5 +57,5 @@ AZURE_HEAVY_VM_TYPE: default
 AZURE_HEAVY_WORKING_DIR: '/'
 
 # Promote Variables
-PIVNET_OS_NAME: 'Windows 2012R2 Server'
 BOSHIO_OS_VERSION: '2012R2'
+

@@ -72,7 +72,7 @@ else
   echo "Creating Pivnet Release ${release_version} for first time"
 fi
 
-mv file-to-upload/* pivnet-metadata
+mv source-folder/* pivnet-metadata
 
 cd pivnet-metadata
 for s in $(ls *.tgz)

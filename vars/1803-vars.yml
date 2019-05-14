@@ -71,4 +71,4 @@ AZURE_HEAVY_VM_TYPE: default
 
 # Promote Variables
 BOSHIO_OS_VERSION: '1803'
-PIVNET_OS_NAME: 'Windows Server Version 1803'
+

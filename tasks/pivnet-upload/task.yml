@@ -8,13 +8,11 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: file-to-upload
+  - name: source-folder
   - name: pivnet-release
   - name: version
 outputs:
   - name: pivnet-metadata
 run:
   path: ci/tasks/pivnet-upload/run
-params:
-  OS_NAME:
 
