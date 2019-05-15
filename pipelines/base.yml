@@ -156,6 +156,14 @@ resources:
     repository: stembuild
     pre_release: true
     release: false
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: 0\.\d+
+
+- name: post-stembuild-release
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: stembuild
     drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
@@ -2136,7 +2144,7 @@ jobs:
         metadata_file: 'pivnet-metadata/metadata'
     - task: get-stembuild-commit
       file: ci/tasks/stembuild/promote/get-stembuild-sha.yml
-    - put: stembuild-release
+    - put: post-stembuild-release
       params:
         name: final-stembuilds/tag
         tag: final-stembuilds/tag
