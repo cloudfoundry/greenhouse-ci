@@ -1,23 +1,14 @@
 groups:
 - name: all
   jobs:
-  - build-stembuild
   - build-stempatch
-  - build-stembuild-windows
-  - build-stembuild-linux
   - build-stempatch-windows
   - build-stempatch-linux
   - bump-stemcell-builder-submodules
   - create-vsphere-add-updates
-  - post-stembuild-draft-release
   - post-stempatch-draft-release
   - test-stemcell-builder
   - build-event-log-release
-- name: stembuild
-  jobs:
-  - build-stembuild-windows
-  - build-stembuild-linux
-  - post-stembuild-draft-release
 - name: stempatch
   jobs:
   - build-stempatch-windows
@@ -66,13 +57,6 @@ resources:
     private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
     ignore_paths: [version/version]
 
-- name: stembuild
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/stembuild.git
-    ignore_paths: [version/version]
-
 - name: stemcell-builder-develop
   type: git
   source:
@@ -102,15 +86,6 @@ resources:
     private_key: ((EVENT_LOG_RELEASE_DEPLOY_KEY))
 
 #releases
-- name: stembuild-release
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: stembuild
-    pre_release: true
-    release: false
-    drafts: true
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: stempatch-release
   type: github-release
@@ -120,16 +95,6 @@ resources:
     pre_release: true
     release: false
     drafts: true
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-
-- name: stemcell-automation-release
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: bosh-windows-stemcell-automation
-    pre_release: true
-    release: false
-    drafts: false
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: event-log-release-github
@@ -147,27 +112,12 @@ resources:
     interval: 720h
 
 #files
-- name: stembuild-untested-windows
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild-windows-x86_64-(.*).exe
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
 - name: stempatch-untested-windows
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: stempatch/untested/stempatch-windows-x86_64-(.*).exe
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
-- name: stembuild-untested-linux
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild-linux-x86_64-(.*)
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
@@ -196,25 +146,7 @@ resources:
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
-- name: vcenter-ips
-  type: pool
-  source:
-    branch: master
-    pool: "vcenter-ips"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
 # versions
-- name: stembuild-version
-  type: semver
-  source:
-    driver: git
-    uri: git@github.com:cloudfoundry-incubator/stembuild.git
-    private_key: ((CLOUDFOUNDRY_STEMBUILD_DEPLOY_KEY))
-    branch: master
-    file: version/version
-    initial_version: "0.14.0"
-
 - name: stempatch-version
   type: semver
   source:
@@ -244,15 +176,6 @@ resources:
     initial_version: "0.2.0"
 
 jobs:
-- name: build-stembuild
-  serial: true
-  plan:
-  - aggregate:
-    - get: stembuild
-      trigger: true
-    - get: stembuild-version
-  - put: stembuild-version
-    params: {bump: patch}
 
 - name: build-stempatch
   serial: true
@@ -263,122 +186,6 @@ jobs:
     - get: stempatch-version
   - put: stempatch-version
     params: {bump: patch}
-
-- name: build-stembuild-windows
-  serial: true
-  plan:
-  - aggregate:
-    - get: stembuild
-      passed: [ build-stembuild ]
-    - get: ci
-    - get: stembuild-version
-      passed: [ build-stembuild ]
-      trigger: true
-    - get: stemcell-automation-release
-  - task: unit-test
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild/windows/unit/task.yml
-  - task: contract-test
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild/windows/contract/task.yml
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-  - put: vcenter-ips
-    params: { acquire: true }
-  - task: integration
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild/windows/integration/task.yml
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((GOVC_DATASTORE))
-      GOVC_NETWORK: ((GOVC_NETWORK))
-      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      GOVC_USERNAME: ((GOVC_USERNAME))
-      GOVC_PASSWORD: ((GOVC_PASSWORD))
-      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_USERNAME: ((VM_USERNAME))
-      VM_PASSWORD: ((VM_PASSWORD))
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_SOURCE_S3_REGION: "us-east-1"
-      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-      VM_NAME_PREFIX: "construct-windows-integration-ci-1803"
-      NETWORK_GATEWAY: "10.74.34.1"
-      SUBNET_MASK: "25"
-      ROOT_BUCKET: ((ROOT_BUCKET))
-  - put: vcenter-ips
-    params: { release: vcenter-ips }
-  - task: build
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/build-stembuild-windows/task.yml
-    params:
-      STEMCELL_AUTOMATION_ZIP: stemcell-automation-release/StemcellAutomation.zip
-  - put: stembuild-untested-windows
-    params:
-      file: output/stembuild-windows-x86_64-*.exe
-
-- name: build-stembuild-linux
-  serial: true
-  plan:
-  - aggregate:
-    - get: stembuild
-      passed: [ build-stembuild ]
-    - get: ci
-    - get: stembuild-version
-      passed: [ build-stembuild ]
-      trigger: true
-    - get: ovftool
-    - get: stemcell-automation-release
-  - task: unit-test
-    file: ci/tasks/stembuild/linux/unit/task.yml
-  - task: contract-test
-    file: ci/tasks/stembuild/linux/contract/task.yml
-    tags: [vsphere-linux-worker]
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-  - put: vcenter-ips
-    params: { acquire: true }
-  - task: integration
-    file: ci/tasks/stembuild/linux/integration/task.yml
-    tags: [vsphere-linux-worker]
-    params:
-      GOVC_URL: ((VCENTER_URL))
-      GOVC_DATASTORE: ((GOVC_DATASTORE))
-      GOVC_NETWORK: ((GOVC_NETWORK))
-      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      GOVC_USERNAME: ((GOVC_USERNAME))
-      GOVC_PASSWORD: ((GOVC_PASSWORD))
-      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_USERNAME: ((VM_USERNAME))
-      VM_PASSWORD: ((VM_PASSWORD))
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      OVA_SOURCE_S3_REGION: "us-east-1"
-      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
-      OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/1803_iso_v2.ova"
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-      VM_NAME_PREFIX: "construct-linux-integration-ci-1803"
-      NETWORK_GATEWAY: "10.74.34.1"
-      SUBNET_MASK: "25"
-      ROOT_BUCKET: ((ROOT_BUCKET))
-  - task: build
-    file: ci/tasks/build-stembuild-linux/task.yml
-    params:
-      STEMCELL_AUTOMATION_ZIP: stemcell-automation-release/StemcellAutomation.zip
-  - put: stembuild-untested-linux
-    params:
-      file: output/stembuild-linux-x86_64-*
-  ensure:
-    put: vcenter-ips
-    params: { release: vcenter-ips }
 
 - name: build-stempatch-windows
   serial: true
@@ -471,28 +278,6 @@ jobs:
       put: vsphere-worker-lock
       params:
         release: vsphere-worker-lock
-
-- name: post-stembuild-draft-release
-  serial: true
-  plan:
-  - aggregate:
-    - get: ci
-    - get: stembuild-untested-windows
-      passed: [ build-stembuild-windows ]
-    - get: stembuild-untested-linux
-      passed: [ build-stembuild-linux ]
-    - get: stembuild-version
-      passed: [ build-stembuild-linux, build-stembuild-windows ]
-  - task: trim-version-from-binaries
-    file: ci/tasks/set-stembuild-version/task.yml
-  - put: stembuild-release
-    params:
-      name: output/tag
-      tag: output/tag
-      globs:
-      - output/stembuild-*-x86_64-*
-  - put: stembuild-version
-    params: {bump: minor}
 
 - name: post-stempatch-draft-release
   serial: true
