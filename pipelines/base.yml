@@ -2121,7 +2121,7 @@ jobs:
       - get: stembuild
         passed: [ promote ]
     - task: set-stembuild-version
-      file: ci/tasks/set-stembuild-version
+      file: ci/tasks/set-stembuild-version/task.yml
       input_mapping: {stembuild-version: version}
     - task: prepare-stembuild-for-upload
       file: ci/tasks/pivnet-upload/task.yml
