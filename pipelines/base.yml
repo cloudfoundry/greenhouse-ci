@@ -1759,18 +1759,7 @@ jobs:
     - get: packer-output-china-ami
       passed: [wuts-aws-china]
   - task: ensure-versions-match
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: ci
-        - name: vsphere-stemcell-release-candidate
-        - name: aws-tested
-        - name: aws-govcloud-tested
-        - name: gcp-tested
-        - name: azure-tested
-      run:
-        path: ci/tasks/match-stemcell-versions/run
+    file: ci/tasks/match-stemcell-versions/task.yml
 
 - name: promote-aws
   serial_groups: ["pivnet"]

@@ -6,9 +6,13 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
   - name: ci
   - name: vsphere-stemcell-release-candidate
-  - name: aws-stemcell-release-candidate
-  - name: gcp-stemcell-release-candidate
-  - name: azure-stemcell-release-candidate
+  - name: aws-tested
+  - name: aws-govcloud-tested
+  - name: gcp-tested
+  - name: azure-tested
+  - name: aws-china-tested
+  - name: stembuild-untested-linux
+  - name: stembuild-untested-windows
 
 run:
   path: ci/tasks/match-stemcell-versions/run
