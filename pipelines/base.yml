@@ -474,14 +474,14 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild-linux-x86_64-(.*)
+    regexp: stembuild/untested/stembuild-linux-x86_64-(((BOSHIO_OS_VERSION)).*)
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: stembuild-untested-windows
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: stembuild/untested/stembuild-windows-x86_64-(.*).exe
+    regexp: stembuild/untested/stembuild-windows-x86_64-(((BOSHIO_OS_VERSION)).*).exe
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
