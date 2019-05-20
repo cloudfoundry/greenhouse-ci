@@ -2108,10 +2108,10 @@ jobs:
       - get: ci
         trigger: false
       - get: stembuild-untested-linux
-        trigger: false
+        trigger: true
         passed: [ promote ]
       - get: stembuild-untested-windows
-        trigger: false
+        trigger: true
         passed: [ promote ]
       - get: version
         resource: main-version
