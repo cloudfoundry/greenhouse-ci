@@ -49,7 +49,7 @@ release:
   version: "${release_version}"
   release_type: Security Release
   eula_slug: "pivotal_software_eula"
-  availability: Selected User Groups Only
+  availability: Admins Only
   user_group_ids:
     - 164
   eccn: "5D002"
