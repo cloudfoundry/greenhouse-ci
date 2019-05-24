@@ -646,7 +646,7 @@ jobs:
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild/windows/contract/task.yml
     params:
-      GOVC_URL: ((VCENTER_URL))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       VM_FOLDER: ((VCENTER_VM_FOLDER))
       PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
   - put: vcenter-ips
@@ -655,12 +655,11 @@ jobs:
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/stembuild/windows/integration/task.yml
     params:
-      GOVC_URL: ((VCENTER_URL))
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
       GOVC_DATASTORE: ((GOVC_DATASTORE))
       GOVC_NETWORK: ((GOVC_NETWORK))
       GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      VCENTER_ADMIN_USERNAME: ((VCENTER_ADMIN_USERNAME))
-      VCENTER_ADMIN_PASSWORD: ((VCENTER_ADMIN_PASSWORD))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       VCENTER_STEMBUILD_USER: ((VCENTER_STEMBUILD_USER))
       VCENTER_STEMBUILD_PASSWORD: ((VCENTER_STEMBUILD_PASSWORD))
       GOVC_FOLDER: ((VCENTER_VM_FOLDER))
@@ -744,7 +743,7 @@ jobs:
     file: ci/tasks/stembuild/linux/contract/task.yml
     tags: [vsphere-linux-worker]
     params:
-      GOVC_URL: ((VCENTER_URL))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       VM_FOLDER: ((VCENTER_VM_FOLDER))
       PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
   - put: vcenter-ips
@@ -753,12 +752,11 @@ jobs:
     file: ci/tasks/stembuild/linux/integration/task.yml
     tags: [vsphere-linux-worker]
     params:
-      GOVC_URL: ((VCENTER_URL))
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
       GOVC_DATASTORE: ((GOVC_DATASTORE))
       GOVC_NETWORK: ((GOVC_NETWORK))
       GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      VCENTER_ADMIN_USERNAME: ((VCENTER_ADMIN_USERNAME))
-      VCENTER_ADMIN_PASSWORD: ((VCENTER_ADMIN_PASSWORD))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       VCENTER_STEMBUILD_USER: ((VCENTER_STEMBUILD_USER))
       VCENTER_STEMBUILD_PASSWORD: ((VCENTER_STEMBUILD_PASSWORD))
       GOVC_FOLDER: ((VCENTER_VM_FOLDER))
