@@ -1,6 +1,9 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
+Import-Module ./ci/tasks/common/setup-windows-container.psm1
+Set-TmpDir
+
 $ROOT_DIR= (Get-Item "$PSScriptRoot/../../../../..").FullName
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
