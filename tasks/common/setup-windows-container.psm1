@@ -1,4 +1,4 @@
-function Set-Tmp-Dir
+function Set-TmpDir
 {
     $working_directory = Get-Location
     $guid = $( New-Guid ).Guid
