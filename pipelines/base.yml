@@ -1283,6 +1283,11 @@ jobs:
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
         VM_PREFIX: ((VM_PREFIX))
+  - &print-updates task: print-updates
+    run:
+      inputs: [{name: hotfix-log}]
+      path: cat
+      args: ["hotfix-log/hotfixes.log"]
   - put: azure-untested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -1463,6 +1468,7 @@ jobs:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
         IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
+  - *print-updates
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     params:

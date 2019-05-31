@@ -12,6 +12,7 @@ inputs:
 
 outputs:
   - name: bosh-windows-stemcell
+  - output: hotfix-log
 
 run:
   path: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/run
