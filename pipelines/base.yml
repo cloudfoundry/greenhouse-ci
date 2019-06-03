@@ -1283,7 +1283,7 @@ jobs:
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
         VM_PREFIX: ((VM_PREFIX))
-  - task: print-updates
+  - task: &print-updates print-updates
     config:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
@@ -1472,15 +1472,7 @@ jobs:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
         IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
-  - task: print-updates
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: hotfix-log
-      run:
-        path: cat
-        args: ["hotfix-log/hotfixes.log"]
+  - task: *print-updates
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     params:
