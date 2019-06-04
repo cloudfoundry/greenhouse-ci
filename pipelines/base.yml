@@ -848,7 +848,8 @@ jobs:
         IAAS: aws
         REGIONS: "us-east-1,us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
         VM_PREFIX: ((VM_PREFIX))
-  - task: &print-updates print-updatesz
+  - &print-updates
+    task: print-updates
     config:
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
@@ -1011,7 +1012,7 @@ jobs:
         IAAS: aws
         REGIONS: "cn-north-1"
         VM_PREFIX: ((VM_PREFIX))
-  - task: *print-updates
+  - *print-updates
   - aggregate:
     - put: aws-china-untested
       params:
@@ -1155,7 +1156,7 @@ jobs:
         IAAS: aws
         REGIONS: "us-gov-west-1"
         VM_PREFIX: ((VM_PREFIX))
-  - task: *print-updates
+  - *print-updates
   - aggregate:
     - put: aws-govcloud-untested
       params:
@@ -1294,7 +1295,7 @@ jobs:
         SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
         TENANT_ID: ((AZURE_TENANT_ID))
         VM_PREFIX: ((VM_PREFIX))
-  - task: *print-updates
+  - *print-updates
   - put: azure-untested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -1475,7 +1476,7 @@ jobs:
         ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
         IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
-  - task: *print-updates
+  - *print-updates
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     params:
@@ -1620,7 +1621,7 @@ jobs:
       OWNER: Pivotal
       SKIP_WINDOWS_UPDATE: false
       VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data-((BASE_IMAGE_OS))"
-  - task: *print-updates
+  - *print-updates
 
 - name: test-vsphere-from-vmx
   serial: true
