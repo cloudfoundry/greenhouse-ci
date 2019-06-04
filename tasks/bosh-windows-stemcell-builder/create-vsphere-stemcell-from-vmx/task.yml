@@ -10,6 +10,9 @@ inputs:
   - name: sshd
   - name: stembuild
 
+outputs:
+  - name: hotfix-log
+
 run:
   path: powershell
   args:

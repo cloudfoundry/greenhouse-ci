@@ -9,7 +9,7 @@ mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
 
 $env:PATH="${PWD}\bin;$env:PATH"
 
-cd "stemcell-builder"
+pushd "stemcell-builder"
 bundle install --without test
 if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not bundle install"
@@ -30,3 +30,6 @@ if ($LASTEXITCODE -ne 0) {
   Write-Error "Could not build vsphere"
   Exit 1
 }
+
+popd
+mv stemcell-builder/hotfixes.log hotfix-log/

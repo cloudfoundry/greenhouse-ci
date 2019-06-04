@@ -16,6 +16,7 @@ outputs:
   - name: bosh-windows-stemcell
   - name: amis
   - name: sha
+  - name: hotfix-log
 
 run:
   path: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/run
