@@ -409,6 +409,16 @@ jobs:
         AWS_REGION: us-east-1
         INPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs"
         OUTPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal"
+  - &print-updates
+    task: print-updates
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: hotfix-log
+      run:
+        path: cat
+        args: ["hotfix-log/hotfixes.log"]
     ensure:
       put: vsphere-worker-lock
       params:
@@ -643,6 +653,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         VM_PREFIX: ((VM_PREFIX))
+  - *print-updates
   - task: wait-for-ami-availability
     file: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/task.yml
     params:
@@ -784,6 +795,7 @@ jobs:
         ACCOUNT_JSON: ((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))
         VM_PREFIX: ((VM_PREFIX))
         IAAS: gcp
+  - *print-updates
   - task: publish-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
     params:
@@ -938,6 +950,7 @@ jobs:
         TENANT_ID: ((AZURE_TENANT_ID))
         IAAS: azure
         VM_PREFIX: ((VM_PREFIX))
+  - *print-updates
   - put: azure-untested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
