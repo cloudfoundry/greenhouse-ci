@@ -409,16 +409,16 @@ jobs:
         AWS_REGION: us-east-1
         INPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs"
         OUTPUT_BUCKET: "((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal"
-  - &print-updates
-    task: print-updates
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: hotfix-log
-      run:
-        path: cat
-        args: ["hotfix-log/hotfixes.log"]
+    - &print-updates
+      task: print-updates
+      config:
+        platform: linux
+        image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+        inputs:
+          - name: hotfix-log
+        run:
+          path: cat
+          args: ["hotfix-log/hotfixes.log"]
     ensure:
       put: vsphere-worker-lock
       params:
