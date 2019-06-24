@@ -1,0 +1,32 @@
+- name: bbl-release
+  type: github-release
+  source:
+    owner: cloudfoundry
+    repository: bosh-bootloader
+
+#IaaS specific locks
+- name: aws-bbl-lock
+  type: pool
+  source:
+    branch: master
+    pool:
+    private-key:
+    uri:
+
+jobs:
+- name: update-aws
+  serial: true
+  plan:
+  - put: aws-bbl-lock
+    params:
+      acquire: true
+  - do:
+    - get: bbl-release
+      trigger: true
+    - task: bbl-up
+      file:
+      params:
+
+
+
+
