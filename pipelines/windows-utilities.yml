@@ -279,13 +279,22 @@ resources:
 
 jobs:
 - name: test-wuts-release
-  serial: false
+  serial: true
   plan:
   - get: ci
   - get: windows-utilities-tests
     trigger: true
   - task: test-wuts
     file: ci/tasks/test-wuts/task.yml
+
+- name: test-windows-utilities-release
+  serial: true
+  plan:
+  - get: ci
+  - get: windows-utilities-release
+    trigger: true
+  - task: test-utilities-release
+    file: ci/tasks/test-utilities-release/task.yml
 
 - name: run-wuts-gcp-2012R2
   serial: true
@@ -298,6 +307,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -338,6 +348,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -380,6 +391,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -420,6 +432,7 @@ jobs:
       - get: azure-2012R2-base-vhd-uri
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -487,6 +500,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -527,6 +541,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -569,6 +584,7 @@ jobs:
       - get: ci
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]
@@ -609,6 +625,7 @@ jobs:
       - get: azure-1803-vhd-uri
       - get: windows-utilities-release
         trigger: true
+        passed: [test-utilities-release]
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
         resource: windows-utilities-tests
         passed: [test-wuts-release]

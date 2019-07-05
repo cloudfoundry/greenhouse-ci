@@ -1,0 +1,14 @@
+---
+platform: windows
+
+inputs:
+- name: ci
+- name: windows-utilities-release
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-Command"
+  - ci/tasks/test-utilities-release/run.ps1
