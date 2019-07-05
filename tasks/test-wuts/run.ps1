@@ -5,7 +5,7 @@ $startupType = Get-Service "wuauserv" | Select-Object -ExpandProperty StartType 
 "wuauserv status = * $status *"
 "wuauserv startuptype = * $startupType *"
 
-cd .\windows-utilities-tests\assets\wuts-release\jobs\check_windowsdefender\templates\m
+cd .\windows-utilities-tests\assets\wuts-release\jobs\check_windowsdefender\templates\modules
 
 $pesterResults = Invoke-Pester -PassThru
 if ($pesterResults.FailedCount -gt 0) {
