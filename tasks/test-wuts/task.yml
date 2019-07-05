@@ -1,0 +1,14 @@
+---
+platform: windows
+
+inputs:
+- name: ci
+- name: windows-utilities-tests
+
+run:
+  path: powershell
+  args:
+  - "-ExecutionPolicy"
+  - "Bypass"
+  - "-Command"
+  - ci/tasks/test-wuts/run.ps1
