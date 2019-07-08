@@ -119,10 +119,10 @@ resources:
   source:
     tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
-- name: windows-utilities-tests
+- name: windows-utilities-tests-released
   type: git
   source:
-    branch: master
+    tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
 - name: stemcell-automation
   type: git
@@ -916,7 +916,7 @@ jobs:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: aws-tested
       passed: [test-aws]
@@ -1067,7 +1067,7 @@ jobs:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: aws-china-tested
       passed: [test-aws-china]
@@ -1210,7 +1210,7 @@ jobs:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: aws-govcloud-tested
       passed: [test-aws-govcloud]
@@ -1383,7 +1383,7 @@ jobs:
     - get: azstemcell
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: azure-tested
       passed: [test-azure]
@@ -1540,7 +1540,7 @@ jobs:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: gcp-tested
       passed: [test-gcp]
@@ -1693,7 +1693,7 @@ jobs:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: vsphere-stemcell-release-candidate
       passed: [test-vsphere-from-vmx]
