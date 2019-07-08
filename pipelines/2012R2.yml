@@ -93,10 +93,10 @@ resources:
   source:
     tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
-- name: windows-utilities-tests
+- name: windows-utilities-tests-released
   type: git
   source:
-    branch: master
+    tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
 
 # github releases
@@ -497,7 +497,7 @@ jobs:
       - get: ci
       - get: windows-utilities
       - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests
+        resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: vsphere-stemcell-tested
         passed: [test-vsphere-from-vmx]
@@ -715,7 +715,7 @@ jobs:
     - get: ci
     - get: windows-utilities
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: stemcell
       resource: aws-tested
       trigger: true
@@ -860,7 +860,7 @@ jobs:
     - get: ci
     - get: windows-utilities
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: gcp-tested
       trigger: true
@@ -1039,7 +1039,7 @@ jobs:
       passed: [test-azure]
     - get: windows-utilities
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-      resource: windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-windows-stemcell
       resource: azure-tested
       passed: [test-azure]
