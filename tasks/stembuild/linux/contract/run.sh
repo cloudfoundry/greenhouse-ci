@@ -15,6 +15,7 @@ cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
 # install ginkgo
 go get github.com/onsi/ginkgo/ginkgo
+go get -u github.com/vmware/govmomi/vcsim
 
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
