@@ -1,3 +1,19 @@
+variables:
+- &passed_all_wuts_jobs
+  passed:
+  - run-wuts-aws-2012R2
+  - run-wuts-azure-2012R2
+  - run-wuts-gcp-2012R2
+  - run-wuts-vsphere-2012R2
+  - run-wuts-aws-1803
+  - run-wuts-azure-1803
+  - run-wuts-gcp-1803
+  - run-wuts-vsphere-1803
+  - run-wuts-aws-2019
+  - run-wuts-azure-2019
+  - run-wuts-gcp-2019
+  - run-wuts-vsphere-2019
+
 resources:
 # repos
 - name: windows-utilities-tests
@@ -878,15 +894,9 @@ jobs:
   - aggregate:
     - get: ci
     - get: windows-utilities-release
-      passed:
-      - run-wuts-aws-2012R2
-      - run-wuts-azure-2012R2
-      - run-wuts-gcp-2012R2
-      - run-wuts-vsphere-2012R2
-      - run-wuts-aws-1803
-      - run-wuts-azure-1803
-      - run-wuts-gcp-1803
-      - run-wuts-vsphere-1803
+      <<: *passed_all_wuts_jobs
+    - get: windows-utilities-tests
+      <<: *passed_all_wuts_jobs
     - get: windows-utilities-release-semver
       params:
         bump: minor
@@ -903,6 +913,11 @@ jobs:
     params:
       repository: finalized-release/release
       tag: windows-utilities-release-semver/number
+  - put: windows-utilities-tests
+    params:
+      repository: windows-utilities-tests
+      tag: windows-utilities-release-semver/number
+      only_tag: true
   - put: windows-utilities-release-semver
     params:
       file: windows-utilities-release-semver/number
