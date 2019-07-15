@@ -554,19 +554,18 @@ jobs:
   - put: main-version
     params:
       file: version/number
-  - aggregate:
-    - put: vsphere-from-vmx-build-number
-      params:
-        file: version/number
-    - put: aws-build-number
-      params:
-        file: version/number
-    - put: gcp-build-number
-      params:
-        file: version/number
-    - put: azure-build-number
-      params:
-        file: version/number
+  - put: vsphere-from-vmx-build-number
+    params:
+      file: version/number
+  - put: aws-build-number
+    params:
+      file: version/number
+  - put: gcp-build-number
+    params:
+      file: version/number
+  - put: azure-build-number
+    params:
+      file: version/number
   - aggregate:
     - task: collect-amis
       file: ci/tasks/collect-base-amis/task.yml
@@ -1098,40 +1097,39 @@ jobs:
 - name: promote
   serial: true
   plan:
-  - aggregate:
-    - get: ci
-    - get: vsphere-stemcell-tested
-      passed: [wuts-vsphere]
-    - get: vsphere-from-vmx-build-number
-      passed: [wuts-vsphere]
-    - get: aws-tested
-      passed: [wuts-aws]
-    - get: gcp-stemcell-tested
-      passed: [wuts-gcp]
-      resource: gcp-tested
-    - get: azure-tested
-      passed: [wuts-azure]
-    - get: azure-base-vhd-uri
-      passed: [wuts-azure]
-    - get: azure-build-number
-      passed: [wuts-azure]
-    - get: stemcell-builder
-      passed:
-        - wuts-gcp
-        - wuts-aws
-        - wuts-vsphere
-        - wuts-azure
-    - get: version
-      resource: main-version
-      passed:
-        - wuts-gcp
-        - wuts-aws
-        - wuts-vsphere
-        - wuts-azure
-    - get: aws-build-number
-      passed: [wuts-aws]
-    - get: packer-output-ami
-      passed: [wuts-aws]
+  - get: ci
+  - get: vsphere-stemcell-tested
+    passed: [wuts-vsphere]
+  - get: vsphere-from-vmx-build-number
+    passed: [wuts-vsphere]
+  - get: aws-tested
+    passed: [wuts-aws]
+  - get: gcp-stemcell-tested
+    passed: [wuts-gcp]
+    resource: gcp-tested
+  - get: azure-tested
+    passed: [wuts-azure]
+  - get: azure-base-vhd-uri
+    passed: [wuts-azure]
+  - get: azure-build-number
+    passed: [wuts-azure]
+  - get: stemcell-builder
+    passed:
+      - wuts-gcp
+      - wuts-aws
+      - wuts-vsphere
+      - wuts-azure
+  - get: version
+    resource: main-version
+    passed:
+      - wuts-gcp
+      - wuts-aws
+      - wuts-vsphere
+      - wuts-azure
+  - get: aws-build-number
+    passed: [wuts-aws]
+  - get: packer-output-ami
+    passed: [wuts-aws]
   - task: ensure-versions-match
     config:
       platform: linux
