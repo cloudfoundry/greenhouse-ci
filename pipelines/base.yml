@@ -146,7 +146,7 @@ resources:
 - name: openssh-release
   type: github-release
   source:
-    user: PowerShell
+    owner: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     tag_filter: ((OPEN_SSH_VERSION))
@@ -600,7 +600,6 @@ jobs:
     - get: pester
     - get: open-ssh
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stemcell-builder
       passed: [build]
     - get: ci
@@ -708,7 +707,6 @@ jobs:
     - get: pester
     - get: open-ssh
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stemcell-builder
       passed: [build]
     - get: ci
@@ -822,7 +820,6 @@ jobs:
       passed: [build]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: aws-build-number
     params:
@@ -990,7 +987,6 @@ jobs:
       passed: [wuts-aws]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1134,7 +1130,6 @@ jobs:
       passed: [wuts-aws]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1274,7 +1269,6 @@ jobs:
       passed: [build]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: azure-build-number
     params:
@@ -1471,7 +1465,6 @@ jobs:
       passed: [build]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: gcp-build-number
     params:
@@ -1610,7 +1603,6 @@ jobs:
       passed: [build]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stembuild-release
   - put: version
     resource: vsphere-from-vmx-build-number
