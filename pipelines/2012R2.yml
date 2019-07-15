@@ -110,7 +110,7 @@ resources:
 - name: openssh-release
   type: github-release
   source:
-    user: PowerShell
+    owner: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     tag_filter: ((OPEN_SSH_VERSION))
@@ -388,7 +388,6 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
-        version: { tag: ((OPEN_SSH_VERSION)) }
       - get: stembuild
         version: { tag: "0.31" }
     - put: version
@@ -613,7 +612,6 @@ jobs:
       passed: [build]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
   - put: version
     resource: aws-build-number
     params:
@@ -767,7 +765,6 @@ jobs:
     - get: ci
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stemcell-builder
       passed: [build]
     - get: main-version
@@ -906,7 +903,6 @@ jobs:
     - get: ci
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stemcell-builder
       passed: [build]
     - get: main-version
