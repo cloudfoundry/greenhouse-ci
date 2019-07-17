@@ -20,7 +20,8 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+    uri: git@github.com:cloudfoundry-incubator/windows-utilities-tests.git
+    private_key: ((WINDOWS_UTILITIES_TESTS_DEPLOY_KEY))
 - name: windows-utilities-release
   type: git
   source:
