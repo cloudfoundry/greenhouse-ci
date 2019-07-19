@@ -66,7 +66,7 @@ resources:
 - name: openssh-release
   type: github-release
   source:
-    user: PowerShell
+    owner: PowerShell
     repository: Win32-OpenSSH
     access_token: {{GREENHOUSE_CI_ACCESS_TOKEN}}
     tag_filter: ((OPEN_SSH_VERSION))
@@ -77,6 +77,7 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: "0.31"
 - name: vsphere-director-lock
   type: pool
   source:
@@ -135,9 +136,7 @@ jobs:
       passed: [create-vsphere-add-updates]
     - get: sshd
       resource: openssh-release
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stembuild
-      version: { tag: "0.31" }
   - task: checkout-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell

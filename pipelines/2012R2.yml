@@ -121,9 +121,10 @@ resources:
     repository: stembuild
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    tag_filter: 0\.\d+
+    tag_filter: "0.31" #last version of stembuild supporting the version flag
 
-# versions
+
+  # versions
 - name: aws-build-number
   type: semver
   source:
@@ -389,7 +390,6 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: stembuild
-        version: { tag: "0.31" }
     - put: version
       resource: vsphere-from-vmx-build-number
       params:
