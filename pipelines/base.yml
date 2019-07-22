@@ -916,6 +916,7 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - put: aws-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
@@ -1066,6 +1067,7 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - put: aws-china-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
@@ -1208,6 +1210,7 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - put: aws-govcloud-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
@@ -1368,6 +1371,7 @@ jobs:
       ROOT_EPHEMERAL_VM_TYPE: ((ROOT_EPHEMERAL_VM_TYPE))
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: "10GB_ephemeral_disk"
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - task: upload-stemcell-to-acceptance
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -1532,6 +1536,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
         MOUNT_EPHEMERAL_DISK: true
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
     ensure:
       put: goose-lock
       params:
@@ -1683,6 +1688,7 @@ jobs:
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
         VM_EXTENSIONS: 10GB_ephemeral_disk
         MOUNT_EPHEMERAL_DISK: true
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
     ensure:
       put: vsphere-director-lock
       params:
@@ -1875,6 +1881,7 @@ jobs:
       SSH_TUNNEL_USER: ((AWS_PROMOTE_SSH_TUNNEL_USER))
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
@@ -1943,6 +1950,7 @@ jobs:
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk"
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
     ensure:
       put: goose-lock
       params:
@@ -2012,6 +2020,7 @@ jobs:
         STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
     ensure:
       put: vsphere-director-lock
       params:
@@ -2101,6 +2110,7 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
   - aggregate:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml

@@ -14,6 +14,8 @@ PATCHFILE_OS_VERSION: 2019
 MAJOR_STEMCELL_FILE: '2019-stemcell-(.*).json'
 JSON_REGEX: '2019-stemcell-*.json'
 
+SECURITY_COMPLIANCE_APPLIED: true
+
 VHD_VMDK_BUCKET: "all-bosh-windows/2019/untested/vsphere/diffcell/inputs"
 PATCH_OUTPUT_BUCKET: "all-bosh-windows/2019/untested/vsphere/diffcell/patchfiles"
 DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2019-go_agent.tgz"
