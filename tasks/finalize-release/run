@@ -15,7 +15,7 @@ pushd release
   RELEASE_YML=$PWD/releases/${RELEASE_NAME}/${RELEASE_NAME}-${FINAL_RELEASE_VERSION}.yml
   RELEASE_TGZ=$PWD/releases/${RELEASE_NAME}/${RELEASE_NAME}-${FINAL_RELEASE_VERSION}.tgz
 
-  # idempotently create tarball in case later parts of shipit fail
+  #idempotently create tarball in case later parts of shipit fail
   if [ -e "${RELEASE_YML}" ]; then
     echo "----- Release already created; making tarball..."
     bosh --sha2 -n create-release --tarball=${RELEASE_TGZ} ${RELEASE_YML}

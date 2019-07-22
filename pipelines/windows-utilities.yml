@@ -39,6 +39,14 @@ resources:
     branch: master
     uri: https://github.com/pivotal-cf-experimental/azstemcell.git
 
+# release
+- name: windows-utilities-release-github
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: windows-utilities-release
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
 # s3
 - name: gcp-2012R2-stemcell-rc
   type: s3
@@ -277,13 +285,6 @@ resources:
     pool: stemcells-azure
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
-- name: windows-utilities-release-github
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: windows-utilities-release
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # time
 - name: sunday
@@ -914,6 +915,12 @@ jobs:
     params:
       repository: finalized-release/release
       tag: windows-utilities-release-semver/number
+  - put: windows-utilities-release-github
+    params:
+      name: windows-utilities-release-semver/number
+      tag: windows-utilities-release-semver/number
+      globs:
+        - finalized-release/windows-utilities-*.tgz
   - put: windows-utilities-tests
     params:
       repository: windows-utilities-tests
@@ -922,9 +929,3 @@ jobs:
   - put: windows-utilities-release-semver
     params:
       file: windows-utilities-release-semver/number
-  - put: windows-utilities-release-github
-    params:
-      name: windows-utilities-release-semver/number
-      tag: windows-utilities-release-semver/number
-      globs:
-      - finalized-release/windows-utilities-*.tgz
