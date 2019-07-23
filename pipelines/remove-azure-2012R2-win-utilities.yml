@@ -1,0 +1,29 @@
+# Due to a failure in apply the July 2019 monthly patch rollup (Patch Tuesday) in Azure for 2012R2 we are temporarily
+# removing Azure related jobs from the 2012R2 pipeline. We hope, and expect, that this issue will be resolved in
+# future monthly patch releases, at which point we will stop applying this ops file, in order to return the Azure
+# jobs to the pipeline
+
+---
+
+# Remove passing requirement from release-final for two resources, this has been deduplicated in to a variable,
+# however the way bosh interpolate works requires us to remove it from each of the resource usage definitions
+- type: remove
+  path: /variables/0/passed/1
+- type: remove
+  path: /jobs/name=release-final/plan/0/aggregate/get=windows-utilities-release/passed/1
+- type: remove
+  path: /jobs/name=release-final/plan/0/aggregate/get=windows-utilities-tests/passed/1
+
+# Remove resources
+- type: remove
+  path: /resources/name=azure-2012R2-stemcell-rc
+- type: remove
+  path: /resources/name=azure-2012R2-stemcell-version
+- type: remove
+  path: /resources/name=azure-2012R2-base-vhd-uri
+- type: remove
+  path: /resources/name=azure-2012R2-lock
+
+# Remove 2012R2 job
+- type: remove
+  path: /jobs/name=run-wuts-azure-2012R2
