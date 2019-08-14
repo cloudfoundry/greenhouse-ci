@@ -40,6 +40,7 @@ resources:
   source:
     owner: PowerShell
     repository: Win32-OpenSSH
+    tag_filter: ((OPEN_SSH_VERSION))
 
 - name: bosh-windows-stemcell-builder
   type: git
@@ -98,7 +99,6 @@ jobs:
     - get: stemcell-automation
       passed: [ unit-test ]
     - get: open-ssh
-      version: { tag: ((OPEN_SSH_VERSION)) }
     - get: stemcell-builder
       resource: bosh-windows-stemcell-builder
     - get: lgpo
