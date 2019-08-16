@@ -3,6 +3,9 @@
 set -ex
 
 export STEMBUILD_VERSION=`cat stembuild-version/version`
+export OVA_SOURCE_S3_FILENAME="ova-for-stembuild-test/${OS_LINE}_iso_v2.ova"
+export VM_NAME_PREFIX="construct-windows-integration-ci-${OS_LINE}"
+
 ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../../../.. && pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
