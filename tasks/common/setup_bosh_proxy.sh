@@ -1,4 +1,10 @@
 function setup_bosh_proxy {
+  if [[ -z $* ]]; then
+    echo "No ssh tunnel arguments passed to setup_bosh_proxy function, setting BOSH_ALL_PROXY as empty string\n"
+    export BOSH_ALL_PROXY=""
+    return 0
+  fi
+
   SSH_TUNNEL_USER=${1}; shift
   SSH_TUNNEL_IP=${1}; shift
   SSH_TUNNEL_PRIVATE_KEY=${1}; shift
