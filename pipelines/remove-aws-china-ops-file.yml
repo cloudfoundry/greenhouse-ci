@@ -1,6 +1,6 @@
 #groups
 - type: remove
-  path: /groups/name=all/jobs/
+  path: /groups/name=all/jobs/4
 - type: remove
   path: /groups/name=all/jobs/4
 - type: remove
