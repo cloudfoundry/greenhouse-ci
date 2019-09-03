@@ -69,7 +69,7 @@ jobs:
 - name: unit-test
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stemcell-automation
       trigger: true
     - get: pester
@@ -95,7 +95,7 @@ jobs:
 - name: package
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stemcell-automation
       passed: [ unit-test ]
     - get: open-ssh
@@ -119,7 +119,7 @@ jobs:
 - name: post-draft-release
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stemcell-automation
       passed: [ package ]
     - get: stemcell-automation-zip-file
