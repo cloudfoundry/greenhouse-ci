@@ -180,7 +180,7 @@ jobs:
 - name: build-stempatch
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stempatch
       trigger: true
     - get: stempatch-version
@@ -190,7 +190,7 @@ jobs:
 - name: build-stempatch-windows
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: librsync
     - get: stempatch
       passed: [ build-stempatch ]
@@ -208,7 +208,7 @@ jobs:
 - name: build-stempatch-linux
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: librsync
     - get: stempatch
       passed: [ build-stempatch ]
@@ -226,7 +226,7 @@ jobs:
 - name: bump-stemcell-builder-submodules
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder-develop
     - get: bosh-agent
@@ -251,7 +251,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: monthly-updates-trigger
         trigger: true
       - get: ci
@@ -282,7 +282,7 @@ jobs:
 - name: post-stempatch-draft-release
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stempatch-untested-windows
       passed: [ build-stempatch-windows ]
@@ -304,13 +304,13 @@ jobs:
 - name: test-stemcell-builder
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder-develop
       trigger: true
     - get: stemcell-builder-master
       resource: stemcell-builder
-  - aggregate:
+  - in_parallel:
     - task: test-stemcell-builder
       file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
       input_mapping: {stemcell-builder: stemcell-builder-develop}
@@ -330,7 +330,7 @@ jobs:
 - name: build-event-log-release
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
       - get: ci
       - get: event-log-release-version
         params:
