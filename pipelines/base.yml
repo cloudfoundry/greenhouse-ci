@@ -513,7 +513,7 @@ jobs:
   serial: true
   serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version, vsphere-patchfile-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       trigger: true
@@ -528,7 +528,7 @@ jobs:
   - put: main-version
     params:
       file: version/number
-  - aggregate:
+  - in_parallel:
     - put: vsphere-from-vmx-build-number
       params:
         file: version/number
@@ -541,7 +541,7 @@ jobs:
     - put: azure-build-number
       params:
         file: version/number
-  - aggregate:
+  - in_parallel:
     - task: collect-amis
       file: ci/tasks/collect-base-amis/task.yml
       output_mapping: { base-amis: windows-amis }
@@ -577,7 +577,7 @@ jobs:
         BASE_OS: ((BASE_IMAGE_OS))
         BASE_IMAGE_REGEX: ((BASE_IMAGE_REGEX))
         IMAGE_FAMILY: ((IMAGE_FAMILY))
-  - aggregate:
+  - in_parallel:
     - put: windows-base-amis
       params:
         file: windows-amis/base-amis-((BASE_IMAGE_OS))-*.json
@@ -594,7 +594,7 @@ jobs:
 - name: stembuild-windows
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stemcell-automation
       trigger: true
     - get: pester
@@ -637,7 +637,7 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
     file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
-  - aggregate:
+  - in_parallel:
     - get: stembuild
     - get: stembuild-version
       resource: main-version
@@ -700,7 +700,7 @@ jobs:
 - name: stembuild-linux
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: stemcell-automation
       trigger: true
     - get: pester
@@ -740,7 +740,7 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
     file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
-  - aggregate:
+  - in_parallel:
     - get: stembuild
     - get: stembuild-version
       resource: main-version
@@ -802,7 +802,7 @@ jobs:
   serial: true
   serial_groups: [aws-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [build]
@@ -873,7 +873,7 @@ jobs:
       AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-  - aggregate:
+  - in_parallel:
     - put: aws-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
@@ -884,7 +884,7 @@ jobs:
 - name: test-aws
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: bosh-windows-stemcell
       resource: aws-untested
       passed: [create-aws]
@@ -922,7 +922,7 @@ jobs:
 - name: wuts-aws
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
@@ -970,7 +970,7 @@ jobs:
   serial: true
   serial_groups: [aws-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [wuts-aws]
@@ -1022,7 +1022,7 @@ jobs:
         REGIONS: "cn-north-1"
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
-  - aggregate:
+  - in_parallel:
     - put: aws-china-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
@@ -1034,7 +1034,7 @@ jobs:
 - name: test-aws-china
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: bosh-windows-stemcell
       resource: aws-china-untested
       passed: [create-aws-china]
@@ -1073,7 +1073,7 @@ jobs:
 - name: wuts-aws-china
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
@@ -1114,7 +1114,7 @@ jobs:
   serial: true
   serial_groups: [aws-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [wuts-aws]
@@ -1166,7 +1166,7 @@ jobs:
         REGIONS: "us-gov-west-1"
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
-  - aggregate:
+  - in_parallel:
     - put: aws-govcloud-untested
       params:
         file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
@@ -1178,7 +1178,7 @@ jobs:
 - name: test-aws-govcloud
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: bosh-windows-stemcell
       resource: aws-govcloud-untested
       passed: [create-aws-govcloud]
@@ -1216,7 +1216,7 @@ jobs:
 - name: wuts-aws-govcloud
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
@@ -1257,7 +1257,7 @@ jobs:
   serial: true
   serial_groups: [azure-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [build]
@@ -1315,7 +1315,7 @@ jobs:
 - name: test-azure
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: azstemcell
     - get: stemcell-builder
@@ -1388,7 +1388,7 @@ jobs:
 - name: wuts-azure
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: azstemcell
     - get: windows-utilities-release
@@ -1451,7 +1451,7 @@ jobs:
   serial: true
   serial_groups: [gcp-version]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [build]
@@ -1498,7 +1498,7 @@ jobs:
 - name: test-gcp
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: bosh-windows-stemcell
       resource: gcp-untested
       passed: [create-gcp]
@@ -1546,7 +1546,7 @@ jobs:
 - name: wuts-gcp
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
@@ -1590,7 +1590,7 @@ jobs:
   serial: true
   serial_groups: [vsphere-vmx-version, vsphere]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [build]
@@ -1636,7 +1636,7 @@ jobs:
   serial: true
   serial_groups: [vsphere]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [create-vsphere-from-vmx]
@@ -1699,7 +1699,7 @@ jobs:
   serial: true
   serial_groups: [vsphere]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
     - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
@@ -1743,7 +1743,7 @@ jobs:
 - name: promote
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: vsphere-stemcell-release-candidate
       passed: [wuts-vsphere]
@@ -1796,7 +1796,7 @@ jobs:
   serial_groups: ["pivnet"]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: aws-tested
       passed: [promote]
@@ -1880,7 +1880,7 @@ jobs:
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-  - aggregate:
+  - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
@@ -1891,7 +1891,7 @@ jobs:
         IAAS: aws
         OS_NAME: windows
         OS_VERSION: ((BOSHIO_OS_VERSION))
-  - aggregate:
+  - in_parallel:
     - put: aws-stemcell-final-s3
       resource: aws-stemcell-final
       params:
@@ -1910,7 +1910,7 @@ jobs:
   serial_groups: ["pivnet"]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: gcp-tested
       passed: [promote]
@@ -1953,7 +1953,7 @@ jobs:
       put: goose-lock
       params:
         release: goose-lock
-  - aggregate:
+  - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
@@ -1964,7 +1964,7 @@ jobs:
         IAAS: gcp
         OS_NAME: windows
         OS_VERSION: ((BOSHIO_OS_VERSION))
-  - aggregate:
+  - in_parallel:
     - put: gcp-stemcell-final-s3
       resource: gcp-stemcell-final
       params:
@@ -1983,7 +1983,7 @@ jobs:
   serial_groups: ["vsphere"]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: vsphere-stemcell-release-candidate
       passed: [promote]
@@ -2030,7 +2030,7 @@ jobs:
   - task: pivnet-upload
     file: ci/tasks/pivnet-upload/task.yml
     input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
-  - aggregate:
+  - in_parallel:
     - put: pivnet-internal-stemcells
       params:
         override: true
@@ -2044,7 +2044,7 @@ jobs:
 - name: print-azure-publishing-instructions
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [promote]
@@ -2074,7 +2074,7 @@ jobs:
   serial_groups: ["pivnet"]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: azure-tested
       passed: [print-azure-publishing-instructions]
@@ -2109,7 +2109,7 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-  - aggregate:
+  - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
       input_mapping: { source-folder: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
@@ -2120,7 +2120,7 @@ jobs:
         IAAS: azure
         OS_NAME: windows
         OS_VERSION: ((BOSHIO_OS_VERSION))
-  - aggregate:
+  - in_parallel:
     - put: azure-stemcell-final-s3
       resource: azure-stemcell-final
       params:
@@ -2139,7 +2139,7 @@ jobs:
   serial_groups: ["pivnet"]
   serial: true
   plan:
-    - aggregate:
+    - in_parallel:
       - get: ci
         trigger: false
       - get: stembuild-untested-linux
@@ -2180,7 +2180,7 @@ jobs:
 - name: ship-bosh-stemcell-builder
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: stemcell-builder
       passed: [promote]
@@ -2190,7 +2190,7 @@ jobs:
   - task: shorten-stemcell-version
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     input_mapping: { stemcells-main-version: main-version }
-  - aggregate:
+  - in_parallel:
     - task: build-psmodules-zip
       file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
     - task: build-agent-zip
