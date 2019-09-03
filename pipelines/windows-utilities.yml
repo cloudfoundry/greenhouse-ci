@@ -321,7 +321,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -362,7 +362,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -405,7 +405,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -444,7 +444,7 @@ jobs:
   serial: true
   plan:
   - do:
-    - aggregate:
+    - in_parallel:
       - get: azstemcell
       - get: ci
       - get: azure-2012R2-base-vhd-uri
@@ -514,7 +514,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -555,7 +555,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -598,7 +598,7 @@ jobs:
     params:
       acquire: true
   - do:
-    - aggregate:
+    - in_parallel:
       - get: ci
       - get: windows-utilities-release
         trigger: true
@@ -637,7 +637,7 @@ jobs:
   serial: true
   plan:
   - do:
-    - aggregate:
+    - in_parallel:
       - get: azstemcell
       - get: ci
       - get: azure-1803-vhd-uri
@@ -708,7 +708,7 @@ jobs:
       params:
         acquire: true
     - do:
-        - aggregate:
+        - in_parallel:
             - get: ci
             - get: windows-utilities-release
               trigger: true
@@ -748,7 +748,7 @@ jobs:
       params:
         acquire: true
     - do:
-        - aggregate:
+        - in_parallel:
             - get: ci
             - get: windows-utilities-release
               trigger: true
@@ -790,7 +790,7 @@ jobs:
       params:
         acquire: true
     - do:
-        - aggregate:
+        - in_parallel:
             - get: ci
             - get: windows-utilities-release
               trigger: true
@@ -828,7 +828,7 @@ jobs:
   serial: true
   plan:
     - do:
-        - aggregate:
+        - in_parallel:
             - get: azstemcell
             - get: ci
             - get: azure-2019-vhd-uri
@@ -893,7 +893,7 @@ jobs:
 - name: release-final
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ci
     - get: windows-utilities-release
       <<: *passed_all_wuts_jobs
