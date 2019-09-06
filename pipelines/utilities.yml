@@ -181,9 +181,11 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: stempatch
-      trigger: true
-    - get: stempatch-version
+      fail_fast: true
+      steps:
+      - get: stempatch
+        trigger: true
+      - get: stempatch-version
   - put: stempatch-version
     params: {bump: patch}
 
@@ -191,13 +193,15 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: librsync
-    - get: stempatch
-      passed: [ build-stempatch ]
-    - get: ci
-    - get: stempatch-version
-      passed: [ build-stempatch ]
-      trigger: true
+      fail_fast: true
+      steps:
+      - get: librsync
+      - get: stempatch
+        passed: [ build-stempatch ]
+      - get: ci
+      - get: stempatch-version
+        passed: [ build-stempatch ]
+        trigger: true
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stempatch-windows/task.yml
@@ -209,14 +213,16 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: librsync
-    - get: stempatch
-      passed: [ build-stempatch ]
-    - get: ci
-    - get: stempatch-version
-      passed: [ build-stempatch ]
-      trigger: true
-    - get: ovftool
+      fail_fast: true
+      steps:
+      - get: librsync
+      - get: stempatch
+        passed: [ build-stempatch ]
+      - get: ci
+      - get: stempatch-version
+        passed: [ build-stempatch ]
+        trigger: true
+      - get: ovftool
   - task: build
     file: ci/tasks/build-stempatch-linux/task.yml
   - put: stempatch-untested-linux
@@ -227,12 +233,14 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: ci
-    - get: stemcell-builder-develop
-    - get: bosh-agent
-      trigger: true
-    - get: bwats
-      trigger: true
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder-develop
+      - get: bosh-agent
+        trigger: true
+      - get: bwats
+        trigger: true
   - task: bump-submodules
     input_mapping:
       source-repo: stemcell-builder-develop
@@ -252,13 +260,15 @@ jobs:
       acquire: true
   - do:
     - in_parallel:
-      - get: monthly-updates-trigger
-        trigger: true
-      - get: ci
-      - get: stemcell-builder
-      - get: windows-stemcell-dependencies
-      - get: vmx-version
-        resource: updated-vmx-version
+        fail_fast: true
+        steps:
+        - get: monthly-updates-trigger
+          trigger: true
+        - get: ci
+        - get: stemcell-builder
+        - get: windows-stemcell-dependencies
+        - get: vmx-version
+          resource: updated-vmx-version
     - task: add-updates
       privileged: true
       input_mapping: { version: vmx-version }
@@ -283,13 +293,15 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: ci
-    - get: stempatch-untested-windows
-      passed: [ build-stempatch-windows ]
-    - get: stempatch-untested-linux
-      passed: [ build-stempatch-linux ]
-    - get: stempatch-version
-      passed: [ build-stempatch-linux, build-stempatch-windows ]
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stempatch-untested-windows
+        passed: [ build-stempatch-windows ]
+      - get: stempatch-untested-linux
+        passed: [ build-stempatch-linux ]
+      - get: stempatch-version
+        passed: [ build-stempatch-linux, build-stempatch-windows ]
   - task: trim-version-from-binaries
     file: ci/tasks/set-stempatch-version/task.yml
   - put: stempatch-release
@@ -305,11 +317,13 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: ci
-    - get: stemcell-builder-develop
-      trigger: true
-    - get: stemcell-builder-master
-      resource: stemcell-builder
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder-develop
+        trigger: true
+      - get: stemcell-builder-master
+        resource: stemcell-builder
   - in_parallel:
     - task: test-stemcell-builder
       file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
@@ -331,6 +345,8 @@ jobs:
   serial: true
   plan:
   - in_parallel:
+      fail_fast: true
+      steps:
       - get: ci
       - get: event-log-release-version
         params:
