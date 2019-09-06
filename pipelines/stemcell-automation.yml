@@ -70,9 +70,11 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: stemcell-automation
-      trigger: true
-    - get: pester
+      fail_fast: true
+      steps:
+      - get: stemcell-automation
+        trigger: true
+      - get: pester
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -96,14 +98,16 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: stemcell-automation
-      passed: [ unit-test ]
-    - get: open-ssh
-    - get: stemcell-builder
-      resource: bosh-windows-stemcell-builder
-    - get: lgpo
-    - get: ci
-    - get: version
+      fail_fast: true
+      steps:
+      - get: stemcell-automation
+        passed: [ unit-test ]
+      - get: open-ssh
+      - get: stemcell-builder
+        resource: bosh-windows-stemcell-builder
+      - get: lgpo
+      - get: ci
+      - get: version
   - task: build-agent
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
   - task: build-psmodules
@@ -120,12 +124,14 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: stemcell-automation
-      passed: [ package ]
-    - get: stemcell-automation-zip-file
-      passed: [ package ]
-    - get: ci
-    - get: version
+      fail_fast: true
+      steps:
+      - get: stemcell-automation
+        passed: [ package ]
+      - get: stemcell-automation-zip-file
+        passed: [ package ]
+      - get: ci
+      - get: version
   - task: rename_zip_file
     config:
       platform: linux
