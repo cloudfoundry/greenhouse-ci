@@ -92,12 +92,14 @@ jobs:
   serial_groups: [vsphere]
   plan:
   - in_parallel:
-    - get: ci
-    - get: stemcell-builder-released-sha
-      trigger: true
-    - get: windows-stemcell-dependencies
-    - get: vmx-version
-      resource: updated-vmx-version
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder-released-sha
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: vmx-version
+        resource: updated-vmx-version
   - task: checkout-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: add-updates
@@ -123,20 +125,22 @@ jobs:
   serial_groups: [vsphere]
   plan:
   - in_parallel:
-    - get: ci
-    - get: stemcell-builder-released-sha
-      passed: [create-vsphere-add-updates]
-      trigger: true
-    - get: windows-stemcell-dependencies
-      passed: [create-vsphere-add-updates]
-    - get: version
-      resource: stemcell-version
-    - get: vmx-version
-      resource: updated-vmx-version
-      passed: [create-vsphere-add-updates]
-    - get: sshd
-      resource: openssh-release
-    - get: stembuild
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder-released-sha
+        passed: [create-vsphere-add-updates]
+        trigger: true
+      - get: windows-stemcell-dependencies
+        passed: [create-vsphere-add-updates]
+      - get: version
+        resource: stemcell-version
+      - get: vmx-version
+        resource: updated-vmx-version
+        passed: [create-vsphere-add-updates]
+      - get: sshd
+        resource: openssh-release
+      - get: stembuild
   - task: checkout-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
@@ -168,16 +172,18 @@ jobs:
       acquire: true
   - do:
     - in_parallel:
-      - get: ci
-      - get: bosh-windows-stemcell
-        tags: [vsphere-linux-worker]
-        resource: private-stemcell-pre-release-candidate
-        trigger: true
-      - get: stemcell-builder-released-sha
-        passed: [create-vsphere-stemcell]
-      - get: version
-        resource: stemcell-version
-        passed: [create-vsphere-stemcell]
+        fail_fast: true
+        steps:
+        - get: ci
+        - get: bosh-windows-stemcell
+          tags: [vsphere-linux-worker]
+          resource: private-stemcell-pre-release-candidate
+          trigger: true
+        - get: stemcell-builder-released-sha
+          passed: [create-vsphere-stemcell]
+        - get: version
+          resource: stemcell-version
+          passed: [create-vsphere-stemcell]
     - task: checkout-stemcell-builder
       tags: [vsphere-linux-worker]
       file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
@@ -213,11 +219,13 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: private-stemcell-release-candidate
-      passed: [test-vsphere-stemcell]
-      trigger: true
-    - get: stemcell-version
-      passed: [test-vsphere-stemcell]
+      fail_fast: true
+      steps:
+      - get: private-stemcell-release-candidate
+        passed: [test-vsphere-stemcell]
+        trigger: true
+      - get: stemcell-version
+        passed: [test-vsphere-stemcell]
   - task: pivnet-metadata
     config:
       inputs: [{name: private-stemcell-release-candidate}]
