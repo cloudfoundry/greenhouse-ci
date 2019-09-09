@@ -1,7 +1,7 @@
 #docker pull pivotalgreenhouse/ci
 FROM ruby:2.5.1
 
-ENV PACKER_URL "https://releases.hashicorp.com/packer/1.4.1/packer_1.4.1_linux_amd64.zip"
+ENV PACKER_URL "https://windows-bosh-private.s3.amazonaws.com/packer.zip"
 
 RUN apt-get update -qq && \
   apt-get install -qqy --no-install-recommends apt-transport-https && rm -rf /var/lib/apt/lists/*
