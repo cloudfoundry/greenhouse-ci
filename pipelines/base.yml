@@ -1197,7 +1197,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
         IAAS: aws
-        REGIONS: "us-gov-west-1"
+        REGIONS: "us-gov-east-1"
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
   - in_parallel:
@@ -1907,7 +1907,7 @@ jobs:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-      REGIONS: "us-gov-east-1"
+      REGIONS: "us-gov-west-1"
   - task: copy-china-stemcells
     timeout: 1h30m
     attempts: 3
