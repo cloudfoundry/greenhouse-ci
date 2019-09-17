@@ -473,7 +473,7 @@ jobs:
         BOSH_CLIENT: ((regina_client))
         BOSH_CLIENT_SECRET: ((regina_client_secret))
         BOSH_ENVIRONMENT: ((regina_environment))
-        GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|allows SSH connection"
+        GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|ssh enabled"
         SSH_DISABLED_BY_DEFAULT: true
         SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
@@ -707,7 +707,7 @@ jobs:
       BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
       BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
       BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
-      GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|allows SSH connection"
+      GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|ssh enabled"
       SSH_DISABLED_BY_DEFAULT: true
       SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
       SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
@@ -851,7 +851,7 @@ jobs:
         BOSH_CLIENT: ((gcp_bwats_1_client))
         BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
         BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
-        GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|allows SSH connection"
+        GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|ssh enabled"
         IAAS: gcp
         NETWORK: private
         SSH_DISABLED_BY_DEFAULT: true
@@ -1025,7 +1025,7 @@ jobs:
       BOSH_ENVIRONMENT: ((AZURE_BWATS_BOSH_DIRECTOR_IP))
       BOSH_GW_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
       BWATS_BOSH_TIMEOUT: 3h
-      GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|allows SSH connection"
+      GINKGO_SKIP: "has all certificate authority certs that are present on the Windows Update Server|ssh enabled"
       NETWORK: ((AZURE_HEAVY_NETWORK))
       SSH_DISABLED_BY_DEFAULT: true
       SSH_TUNNEL_IP: ((AZURE_BWATS_SSH_TUNNEL_IP))
