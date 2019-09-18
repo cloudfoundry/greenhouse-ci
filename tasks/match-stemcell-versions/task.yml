@@ -10,7 +10,6 @@ inputs:
   - name: aws-govcloud-tested
   - name: gcp-tested
   - name: azure-tested
-  - name: aws-china-tested
   - name: stembuild-untested-linux
   - name: stembuild-untested-windows
 
