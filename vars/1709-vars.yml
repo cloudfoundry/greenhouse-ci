@@ -2,59 +2,57 @@
 #Common Variables
 AWS_LOCK: 'stemcells-aws'
 AZURE_LOCK: 'stemcells-azure'
-BASE_FOLDER_NAME: '1803'
-BASE_IMAGE_OS: 'windows1803'
-STEMCELL_OS_NAME: 'windows1803'
+BASE_FOLDER_NAME: '1709'
+AWS_POOL_NAME: 'aws-wuts-1709'
+AZURE_POOL_NAME: 'azure-wuts-1709'
+GOOSE_POOL_NAME: 'goose-1709'
+GCP_POOL_NAME: 'gcp-wuts-1709'
+VSPHERE_POOL_NAME: 'vsphere-1709'
+PATCHFILE_OS_VERSION: 1709
+MAJOR_STEMCELL_FILE: '2016-stemcell-(.*).json'
+JSON_REGEX: '2016-stemcell-*.json'
+
+VHD_VMDK_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/inputs"
+PATCH_OUTPUT_BUCKET: "all-bosh-windows/1709/untested/vsphere/diffcell/patchfiles"
+BASE_IMAGE_OS: 'windows1709'
+STEMCELL_OS_NAME: 'windows2016'
 GCP_LOCK: 'stemcells-gcp'
 ROOT_BUCKET: 'all-bosh-windows'
-STEMCELL_INITIAL_VERSION: '1803.2.0'
-VM_PREFIX: 'packer-1803-prod'
+DEV_BUCKET: 'all-bosh-windows-dev'
+STEMCELL_INITIAL_VERSION: '1709.0.0'
+VM_PREFIX: 'packer-1709-prod'
 VSPHERE_LOCK: 'vsphere-worker-lock'
-PATCHFILE_OS_VERSION: 1803
-MAJOR_STEMCELL_FILE: '1803-stemcell-(.*).json'
-JSON_REGEX: '1803-stemcell-*.json'
 
-SECURITY_COMPLIANCE_APPLIED: false
-
-VHD_VMDK_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/inputs"
-PATCH_OUTPUT_BUCKET: "all-bosh-windows/1803/untested/vsphere/diffcell/patchfiles"
-DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows1803-go_agent.tgz"
-
-# concourse pool resources
-AWS_POOL_NAME: 'aws-wuts-1803'
-AZURE_POOL_NAME: 'azure-wuts-1803'
-GOOSE_POOL_NAME: 'goose-1803'
-GCP_POOL_NAME: 'gcp-wuts-1803'
-VSPHERE_POOL_NAME: 'vsphere-1803'
+DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2016-go_agent.tgz"
 
 #AWS Base Image Info
-BASE_AMI_NAME: 'Windows_Server-1803-English-Core-Base-*'
+BASE_AMI_NAME: 'Windows_Server-1709-English-Core-Base*'
 #AWS Output Info
-AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1803'
+AWS_REGIONAL_BUCKET: 'aws-regional-stemcells-1709'
 #AWS Packer Info
 AWS_PACKER_REGION: 'us-east-1'
 AWS_CHINA_PACKER_REGION: 'cn-north-1'
 AWS_GOVCLOUD_PACKER_REGION: 'us-gov-west-1'
 
 #GCP Base Image Info
-BASE_IMAGE_REGEX: 'windows-server-1803-dc-core-v.*'
-IMAGE_FAMILY: 'windows-1803-core'
+BASE_IMAGE_REGEX: 'windows-server-1709-dc-core-v.*'
+IMAGE_FAMILY: 'windows-1709-core'
 #GCP Packer Info
 WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
 
 #Azure Create & Publish Variables
-AZURE_BASE_IMAGE: 'Datacenter-Core-1803-with-Containers-smalldisk'
+AZURE_BASE_IMAGE: 'Datacenter-Core-1709-smalldisk'
 AZURE_BASE_IMAGE_OFFER: 'WindowsServerSemiAnnual'
 AZURE_CLIENT_ID: ((KOALA_CLIENT_ID))
 AZURE_CLIENT_SECRET: ((KOALA_CLIENT_SECRET))
 AZURE_CONTAINER_NAME: 'system'
 AZURE_LOCATION: 'East US'
 AZURE_OBJECT_ID: ((KOALA_OBJECT_ID))
-AZURE_OFFER: 'bosh-windows-server-1803'
-AZURE_OS_VERSION: windows1803
+AZURE_OFFER: 'bosh-windows-server-1709'
+AZURE_OS_VERSION: windows2016
 AZURE_PUBLISHER: 'pivotal'
 AZURE_RESOURCE_GROUP_NAME: ((KOALA_RESOURCE_GROUP_NAME))
-AZURE_SKU: '1803-8plus'
+AZURE_SKU: '1709-17onwards'
 AZURE_STORAGE_ACCESS_KEY: ((KOALA_STORAGE_ACCESS_KEY))
 AZURE_STORAGE_ACCOUNT: ((KOALA_STORAGE_ACCOUNT))
 AZURE_PATCHFILE_CONTAINER_NAME: ((KOALA_PATCHFILE_CONTAINER_NAME))
@@ -72,5 +70,5 @@ AZURE_HEAVY_NETWORK: default
 AZURE_HEAVY_VM_TYPE: default
 
 # Promote Variables
-BOSHIO_OS_VERSION: '1803'
+BOSHIO_OS_VERSION: '1709'
 
