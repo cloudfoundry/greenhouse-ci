@@ -1,0 +1,14 @@
+FROM ubuntu
+RUN apt-get update -qq && \
+  apt-get install -qqy --no-install-recommends \
+  ca-certificates \
+  wget
+
+RUN wget "https://github.com/vmware/govmomi/releases/download/v0.21.0/govc_linux_amd64.gz"
+RUN echo "8ac96aeeef4f43f38baed6089f5f2159b0e7802e  govc_linux_amd64.gz" > sums
+RUN sha1sum --check sums
+RUN cat govc_linux_amd64.gz | gunzip > /usr/local/bin/govc
+RUN chmod 555 /usr/local/bin/govc
+
+# cleanup
+RUN rm -rf /var/lib/apt/lists/*

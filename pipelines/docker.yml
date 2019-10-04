@@ -1,17 +1,12 @@
 resources:
+# dockerfiles
+
 - name: ci-pivnet-dockerfile
   type: git
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
     paths: [ docker/Dockerfile.pivnet ]
-
-- name: pivnet-image
-  type: docker-image
-  source:
-    repository: pivotalgreenhouse/pivnet
-    username: {{DOCKER_USERNAME}}
-    password: {{DOCKER_PASSWORD}}
 
 - name: ci-dockerfile
   type: git
@@ -20,7 +15,30 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
     paths: [ docker/Dockerfile.ci ]
 
+- name: govc-dockerfile
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    paths: [ docker/Dockerfile.govc ]
+
+# docker build resources
+
+- name: pivnet-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/pivnet
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
+
 - name: ci-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
+
+- name: govc-image
   type: docker-image
   source:
     repository: pivotalgreenhouse/ci
@@ -47,3 +65,13 @@ jobs:
       build: ci-dockerfile/docker
       dockerfile: ci-dockerfile/docker/Dockerfile.ci
       tag_as_latest: true
+
+- name: build-and-push-govc
+  plan:
+    - get: govc-dockerfile
+      trigger: true
+    - put: govc-image
+      params:
+        build: govc-dockerfile/docker
+        dockerfile: govc-dockerfile/docker/Dockerfile.govc
+        tag_as_latest: true
