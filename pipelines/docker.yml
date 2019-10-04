@@ -41,7 +41,7 @@ resources:
 - name: govc-image
   type: docker-image
   source:
-    repository: pivotalgreenhouse/ci
+    repository: pivotalgreenhouse/govc
     username: {{DOCKER_USERNAME}}
     password: {{DOCKER_PASSWORD}}
 
