@@ -30,6 +30,7 @@ groups:
   - ship-bosh-stemcell-builder
   - stembuild-windows
   - stembuild-linux
+  - test-stembuild-linux-stemcell
 - name: aws
   jobs:
   - create-aws
@@ -62,6 +63,7 @@ groups:
   - wuts-vsphere
   - stembuild-windows
   - stembuild-linux
+  - test-stembuild-linux-stemcell
 - name: promote
   jobs:
   - promote
@@ -813,6 +815,51 @@ jobs:
   ensure:
     put: vcenter-ips
     params: { release: vcenter-ips }
+
+- name: test-stembuild-linux-stemcell
+  serial: true
+  plan:
+  - get: stembuild-untested-linux
+    passed: [stembuild-linux]
+    trigger: false
+#  - get: BWATS-RESOURCE
+  - task: revert-snapshot
+    tags: [vsphere-linux-worker]
+    config:
+      platform: linux
+      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/govc } }
+      run:
+        path: bash
+        args:
+          - '-c'
+          - 'govc snapshot.revert -u=$CREDENTIAL_URL -s=true -dc=$DATACENTER -vm=$VM_TO_REVERT "$SNAPSHOT_NAME"'
+          - 'govc vm.power -u=$CREDENTIAL_URL -dc=$DATACENTER -on=true $VM_TO_REVERT'
+    params:
+      CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      DATACENTER: canada-dc
+      VM_TO_REVERT: "calgary/stembuild_target_2"
+      SNAPSHOT_NAME: "ready to stembuild"
+  - task: run-stembuild-construct
+    tags: [vsphere-linux-worker]
+    config:
+      platform: linux
+      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+      inputs:
+      - name: stembuild-untested-linux
+      run:
+        path: bash
+        args:
+          - '-c'
+          - 'cd stembuild-untested-linux'
+          - 'mv stembuild* stembuild'
+          - 'chmod 500 stembuild'
+          - '/.stembuild construct'
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+# run bwats
 
 - name: create-aws
   serial: true
