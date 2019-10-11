@@ -17,4 +17,4 @@ outputs:
 run:
   path: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.bash
 
-params: []
+params:

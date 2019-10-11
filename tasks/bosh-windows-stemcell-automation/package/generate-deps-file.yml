@@ -18,4 +18,4 @@ outputs:
 run:
   path: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.bash
 
-params: []
+params:
