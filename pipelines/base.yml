@@ -653,6 +653,7 @@ jobs:
       fail_fast: true
       steps:
       - get: stembuild
+        trigger: true
       - get: stembuild-version
         resource: main-version
       - get: ovftool
@@ -760,6 +761,7 @@ jobs:
       fail_fast: true
       steps:
       - get: stembuild
+        trigger: true
       - get: stembuild-version
         resource: main-version
       - get: ovftool
