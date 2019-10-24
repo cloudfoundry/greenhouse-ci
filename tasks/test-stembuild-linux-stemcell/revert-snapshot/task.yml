@@ -1,0 +1,16 @@
+---
+platform: linux
+image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/govc } }
+
+inputs:
+  - name: ci
+
+run:
+  path: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/run.sh
+
+params:
+  CREDENTIAL_URL:
+  DATACENTER:
+  VM_TO_REVERT:
+  SNAPSHOT_NAME:
+
