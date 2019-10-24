@@ -700,6 +700,7 @@ jobs:
       NETWORK_GATEWAY: "10.74.34.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
+      SKIP_CLEANUP: true #dont commit this, related to debugging by GG/FGJ
   - task: build
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/build-stembuild-windows/task.yml
@@ -807,6 +808,7 @@ jobs:
       NETWORK_GATEWAY: "10.74.34.1"
       SUBNET_MASK: "25"
       ROOT_BUCKET: ((ROOT_BUCKET))
+      SKIP_CLEANUP: true #dont commit this, related to debugging by GG/FGJ
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
     params:
@@ -821,47 +823,69 @@ jobs:
 - name: test-stembuild-linux-stemcell
   serial: true
   plan:
-  - get: stembuild-untested-linux
-    passed: [stembuild-linux]
-    trigger: false
-#  - get: BWATS-RESOURCE
+  - in_parallel:
+    - get: ci
+    - get: lgpo
+    - get: stembuild-untested-linux
+    - get: stemcell-builder
+      passed: [stembuild-linux]
+      trigger: false
+  #revert target vm to pre-stembuild-construct state
   - task: revert-snapshot
+    file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
     tags: [vsphere-linux-worker]
-    config:
-      platform: linux
-      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/govc } }
-      run:
-        path: bash
-        args:
-          - '-c'
-          - 'govc snapshot.revert -u=$CREDENTIAL_URL -s=true -dc=$DATACENTER -vm=$VM_TO_REVERT "$SNAPSHOT_NAME"'
-          - 'govc vm.power -u=$CREDENTIAL_URL -dc=$DATACENTER -on=true $VM_TO_REVERT'
     params:
       CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-      DATACENTER: canada-dc
-      VM_TO_REVERT: "calgary/stembuild_target_2"
+      DATACENTER: ((VCENTER_STEMBUILD_DC))
+      VM_TO_REVERT: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
       SNAPSHOT_NAME: "ready to stembuild"
+  #run stembuild construct on the target vm
   - task: run-stembuild-construct
+    file: ci/tasks/test-stembuild-linux-stemcell/stembuild-construct/task.yml
     tags: [vsphere-linux-worker]
-    config:
-      platform: linux
-      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-      inputs:
-      - name: stembuild-untested-linux
-      run:
-        path: bash
-        args:
-          - '-c'
-          - 'cd stembuild-untested-linux'
-          - 'mv stembuild* stembuild'
-          - 'chmod 500 stembuild'
-          - '/.stembuild construct'
     params:
       VCENTER_BASE_URL: ((VCENTER_BASE_URL))
       VCENTER_USERNAME: ((VCENTER_USERNAME))
       VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
+      STEMBUILD_BASE_VM_IP: ((STEMBUILD_VM_IP))
+      STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
+      STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+  #run package on the target vm
+  - task: run-stembuild-package
+    file: ci/tasks/test-stembuild-linux-stemcell/stembuild-package/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
       VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
-# run bwats
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+  - task: bwats-stembuild
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      BOSH_CA_CERT: ((regina_ca_cert))
+      BOSH_CLIENT: ((regina_client))
+      BOSH_CLIENT_SECRET: ((regina_client_secret))
+      BOSH_ENVIRONMENT: ((regina_environment))
+      SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+      SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+      SSH_TUNNEL_USER: ((regina_gw_user))
+      STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
+      STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+      VM_TYPE: large # WARN: This is Cloud Config specific!!!
+      VM_EXTENSIONS: 10GB_ephemeral_disk
+      MOUNT_EPHEMERAL_DISK: true
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+    input_mapping: { stemcell: stembuild-built-stemcell }
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+
 
 - name: create-aws
   serial: true
