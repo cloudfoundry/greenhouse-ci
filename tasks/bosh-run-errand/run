@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -eux
-
-bosh -n -d "$BOSH_DEPLOYMENT" run-errand "$ERRAND_NAME"

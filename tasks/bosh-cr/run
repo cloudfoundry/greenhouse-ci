@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -eux
-
-version=$(cat version/number)
-bosh -n create-release --dir=release --tarball=release-tarball/release.tgz --version=$version

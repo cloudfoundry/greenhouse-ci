@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-
-( cd release && git rev-parse HEAD ) > generated-release/commitish
-
-version=$(cat version/number)
-echo "v$version" > generated-release/name
-echo "v$version" > generated-release/version

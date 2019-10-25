@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -eux
-
-version=$(bosh int --path '/stemcells/os=ubuntu-trusty/version' $bosh_manifest_path)
-cd stemcell
-curl -LO "https://s3.amazonaws.com/bosh-core-stemcells/vsphere/bosh-stemcell-${version}-vsphere-esxi-ubuntu-trusty-go_agent.tgz"

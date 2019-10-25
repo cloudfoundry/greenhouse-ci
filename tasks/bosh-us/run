@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -eux
-
-bosh -n upload-stemcell stemcell/*.tgz
