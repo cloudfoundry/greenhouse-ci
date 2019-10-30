@@ -26,12 +26,14 @@ if [ "$SECURITY_COMPLIANCE_APPLIED" != "true" ] ; then
   SECURITY_COMPLIANCE_APPLIED="false"
 fi
 
-cd bosh-windows-acceptance-tests
+export GOPATH=$(pwd)
 
-cat > config.json <<EOF
+cd src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+
+cat > config.json <<END_OF_CONFIG
 {
   "bosh": {
-    "ca_cert": "$BOSH_CA_CERT",
+    "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
     "client": "$BOSH_CLIENT",
     "client_secret": "$BOSH_CLIENT_SECRET",
     "target": "$BOSH_TARGET"
@@ -48,11 +50,9 @@ cat > config.json <<EOF
   "skip_ms_update_test": $SKIP_MS_UPDATE_TEST,
   "security_compliance_applied": $SECURITY_COMPLIANCE_APPLIED
 }
-EOF
+END_OF_CONFIG
 
-mkdir -p $GOPATH/src/github.com/cloudfoundry-incubator
-ln -s ln -s . $GOPATH/src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
-
-go build -o ginkgo github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests/vendor/github.com/onsi/ginkgo/ginkgo
+go build -o ginkgo ./vendor/github.com/onsi/ginkgo/ginkgo
 
 CONFIG_JSON=config.json ./ginkgo --focus="$GINKGO_FOCUS" --skip="$GINKGO_SKIP" -r -v .
+
