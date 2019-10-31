@@ -2,7 +2,9 @@
 
 set -ex
 
-pushd "stemcell-builder/${BOSH_AGENT_DIR}"
+export BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
+
+pushd "${BOSH_AGENT_DIR}"
   mv bosh-agent*.exe bosh-agent.exe
 popd
 

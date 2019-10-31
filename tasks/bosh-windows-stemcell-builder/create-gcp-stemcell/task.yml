@@ -10,6 +10,7 @@ inputs:
   - name: version
   - name: windows-stemcell-dependencies
   - name: sshd
+  - name: bosh-agent
 
 outputs:
   - name: bosh-windows-stemcell
@@ -25,3 +26,4 @@ params:
   VERSION_DIR: ../version
   STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   VM_PREFIX:
+  BOSH_AGENT_DIR: bosh-agent
