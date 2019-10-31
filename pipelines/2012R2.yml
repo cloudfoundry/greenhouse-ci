@@ -1227,6 +1227,7 @@ jobs:
       SSH_TUNNEL_USER: ((AWS_PROMOTE_SSH_TUNNEL_USER))
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
+      SKIP_MS_UPDATE_TEST: true
   - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
@@ -1299,6 +1300,7 @@ jobs:
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "500GB_ephemeral_disk"
+        SKIP_MS_UPDATE_TEST: true
     ensure:
       put: goose-lock
       params:
@@ -1371,6 +1373,7 @@ jobs:
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_TYPE: large
+        SKIP_MS_UPDATE_TEST: true
     ensure:
       put: vsphere-director-lock
       params:
@@ -1461,6 +1464,7 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
       VM_TYPE: default
+      SKIP_MS_UPDATE_TEST: true
   - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml

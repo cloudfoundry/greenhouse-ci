@@ -2033,6 +2033,7 @@ jobs:
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      SKIP_MS_UPDATE_TEST: true
   - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
@@ -2106,6 +2107,7 @@ jobs:
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk"
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        SKIP_MS_UPDATE_TEST: true
     ensure:
       put: goose-lock
       params:
@@ -2180,6 +2182,7 @@ jobs:
         STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        SKIP_MS_UPDATE_TEST: true
     ensure:
       put: vsphere-director-lock
       params:
@@ -2276,6 +2279,7 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      SKIP_MS_UPDATE_TEST: true
   - in_parallel:
     - task: pivnet-upload
       file: ci/tasks/pivnet-upload/task.yml
