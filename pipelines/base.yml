@@ -85,6 +85,10 @@ resource_types:
   type: docker-image
   source:
     repository: pcfabr/azure-blobstore-resource
+- name: metalink-repository
+  type: registry-image
+  source:
+    repository: dpb587/metalink-repository-resource
 
 resources:
 # repos
@@ -182,6 +186,11 @@ resources:
     repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
+
+- name: bosh-agent
+  type: metalink-repository
+  source:
+    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
 
 # versions
 - name: aws-build-number
@@ -913,6 +922,7 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
+      - get: bosh-agent
   - put: version
     resource: aws-build-number
     params:

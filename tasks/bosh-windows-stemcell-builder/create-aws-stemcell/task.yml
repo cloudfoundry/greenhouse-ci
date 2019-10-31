@@ -11,6 +11,7 @@ inputs:
   - name: windows-stemcell-dependencies
   - name: sshd
   - name: packer-ci-private-key
+  - name: bosh-agent
 
 outputs:
   - name: bosh-windows-stemcell
@@ -36,3 +37,4 @@ params:
 
   OUTPUT_BUCKET_NAME: aws-regional-stemcells
   OUTPUT_BUCKET_REGION: us-east-1
+  BOSH_AGENT_DIR: bosh-agent

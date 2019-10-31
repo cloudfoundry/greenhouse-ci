@@ -2,13 +2,17 @@
 
 set -ex
 
-pushd stemcell-builder
-bundle install --without test
-rake package:agent
-rake package:psmodules
-rake build:aws
-
+pushd "stemcell-builder/${BOSH_AGENT_DIR}"
+  mv bosh-agent*.exe bosh-agent.exe
 popd
+
+pushd stemcell-builder
+  bundle install --without test
+  rake package:agent
+  rake package:psmodules
+  rake build:aws
+popd
+
 mv stemcell-builder/bosh-windows-stemcell/*.tgz bosh-windows-stemcell
 mv stemcell-builder/bosh-windows-stemcell/*.sha sha
 
