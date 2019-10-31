@@ -98,6 +98,11 @@ resources:
   source:
     tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+- name: bosh-windows-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
 # github releases
 - name: stemcell-builder-release
@@ -445,6 +450,8 @@ jobs:
           trigger: true
         - get: main-version
           passed: [create-vsphere-from-vmx]
+        - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+          resource: bosh-windows-acceptance-tests
     - task: bosh-windows-stemcell
       tags: [vsphere-linux-worker]
       params:
@@ -699,6 +706,8 @@ jobs:
         passed: [create-aws]
       - get: packer-output-ami
         passed: [create-aws]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
@@ -838,6 +847,8 @@ jobs:
       - get: windows-stemcell-dependencies
       - get: main-version
         passed: [create-gcp]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - put: goose-lock
     params:
       acquire: true
@@ -1000,6 +1011,8 @@ jobs:
       - get: version
         resource: azure-build-number
         passed: [create-azure]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - put: azure-download-lock
     params:
       acquire: true
@@ -1192,6 +1205,8 @@ jobs:
       - get: default-ami
         resource: packer-output-ami
         passed: [promote]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - get: pivnet-public-stemcells
   - task: copy-stemcells
     timeout: 1h30m
@@ -1273,6 +1288,8 @@ jobs:
         passed: [promote]
       - get: boshio-input
         resource: boshio
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - get: pivnet-public-stemcells
   - put: goose-lock
     params:
@@ -1348,6 +1365,8 @@ jobs:
         resource: main-version
         passed: [promote]
       - get: pivnet-internal-stemcells
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - put: vsphere-director-lock
     params:
       acquire: true
@@ -1440,6 +1459,8 @@ jobs:
         passed: [print-azure-publishing-instructions]
       - get: boshio-input
         resource: boshio
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
   - get: pivnet-public-stemcells
   - task: azure-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: azure-tested }
