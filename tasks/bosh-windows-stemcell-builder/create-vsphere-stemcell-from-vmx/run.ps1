@@ -9,7 +9,7 @@ mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
 
 $env:PATH="${PWD}\bin;$env:PATH"
 
-$BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
+$BOSH_AGENT_DIR="$(pwd)/$env:BOSH_AGENT_DIR"
 pushd "${BOSH_AGENT_DIR}"
   mv bosh-agent*.exe bosh-agent.exe
 popd
