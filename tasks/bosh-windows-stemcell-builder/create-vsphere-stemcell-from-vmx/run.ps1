@@ -3,14 +3,13 @@ trap { $host.SetShouldExit(1) }
 
 New-Item -ItemType Directory -Force -Path $env:VMX_CACHE_DIR
 
-Write-Host "Copying stembuild (${PWD}\stembuild-release\stembuild-windows-x86_64-*.exe) to: ${PWD}\bin\stembuild.exe"
+Write-Host "Copying stembuild (${PWD}\stembuild\stembuild-windows-x86_64-*.exe) to: ${PWD}\bin\stembuild.exe"
 mkdir "${PWD}\bin"
-mv "${PWD}\stembuild-release\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
+mv "${PWD}\stembuild\stembuild-windows-x86_64-*.exe" "${PWD}\bin\stembuild.exe"
 
 $env:PATH="${PWD}\bin;$env:PATH"
 
-BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
-echo "bosh agent dir: ${BOSH_AGENT_DIR}`n"
+$env:BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
 pushd "${BOSH_AGENT_DIR}"
   mv bosh-agent*.exe bosh-agent.exe
 popd
