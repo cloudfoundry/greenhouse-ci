@@ -9,7 +9,7 @@ inputs:
   - name: windows-stemcell-dependencies
   - name: sshd
   - name: stembuild
-  - name: bosh-agent
+  - name: bosh-agent-release
 
 outputs:
   - name: hotfix-log
@@ -42,4 +42,4 @@ params:
   VERSION_DIR: ../version
   VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data"
   VMX_VERSION_DIR: ../vmx-version
-  BOSH_AGENT_DIR: bosh-agent
+  BOSH_AGENT_DIR: bosh-agent-release

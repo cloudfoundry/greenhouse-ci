@@ -9,7 +9,7 @@ inputs:
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
   - name: sshd
-  - name: bosh-agent
+  - name: bosh-agent-release
 
 outputs:
   - name: bosh-windows-stemcell
@@ -38,4 +38,4 @@ params:
   BASE_IMAGE:
   BASE_IMAGE_OFFER:
   VM_PREFIX:
-  BOSH_AGENT_DIR: bosh-agent
+  BOSH_AGENT_DIR: bosh-agent-release
