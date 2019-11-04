@@ -426,15 +426,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
-        BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
-        BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+        BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
+        BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
+        BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
+        BOSH_GW_USER: ((AWS_BWATS_GW_USER))
         NETWORK: default
-        SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+        SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
         STEMCELL_OS: windows2012R2
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2012R2-go_agent-us-east-1.tgz
         VM_EXTENSIONS: ""
@@ -627,15 +627,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
-        BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
-        BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+        BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
+        BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
+        BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
+        BOSH_GW_USER: ((AWS_BWATS_GW_USER))
         NETWORK: default
-        SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+        SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
         STEMCELL_OS: windows1803
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows1803-go_agent-us-east-1.tgz
         VM_EXTENSIONS: ""
@@ -826,15 +826,15 @@ jobs:
         input_mapping: { stemcell: bosh-windows-stemcell }
         params:
           AZ: z1
-          BOSH_CA_CERT: ((AWS_WUTS_BOSH_TARGET_CERT))
-          BOSH_CLIENT: ((AWS_WUTS_BOSH_USER))
-          BOSH_CLIENT_SECRET: ((AWS_WUTS_BOSH_PASSWORD))
-          BOSH_ENVIRONMENT: ((AWS_WUTS_DIRECTOR_IP))
-          BOSH_GW_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+          BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
+          BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
+          BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
+          BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
+          BOSH_GW_USER: ((AWS_BWATS_GW_USER))
           NETWORK: default
-          SSH_TUNNEL_IP: ((AWS_WUTS_SSH_TUNNEL_IP))
-          SSH_TUNNEL_PRIVATE_KEY: ((AWS_WUTS_SSH_TUNNEL_PRIVATE_KEY))
-          SSH_TUNNEL_USER: ((AWS_WUTS_SSH_TUNNEL_USER))
+          SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
+          SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
+          SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
           STEMCELL_OS: windows2019
           STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-windows2019-go_agent-us-east-1.tgz
           VM_EXTENSIONS: ""
