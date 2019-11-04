@@ -4,10 +4,11 @@ image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci 
 inputs:
 - name: stemcell-builder
 - name: bosh-agent-release
+- name: ci
 outputs:
 - name: bosh-agent
 run:
-  path: bash
-  args:
-  - "-c"
-  - "cd stemcell-builder && bundle && rake package:agent && mv build/*.zip ../bosh-agent"
+  path: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/run.sh
+
+params:
+  BOSH_AGENT_DIR: bosh-agent-release
