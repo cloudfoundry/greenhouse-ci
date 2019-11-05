@@ -57,6 +57,10 @@ resource_types:
   source:
     repository: pivotalcf/pivnet-resource
     tag: latest-final
+- name: metalink-repository
+  type: registry-image
+  source:
+    repository: dpb587/metalink-repository-resource
 
 resources:
 # repos
@@ -127,6 +131,10 @@ resources:
     pre_release: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     tag_filter: "0.31" #last version of stembuild supporting the version flag
+- name: bosh-agent-release
+  type: metalink-repository
+  source:
+    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
 
 
   # versions
@@ -397,6 +405,7 @@ jobs:
         - get: sshd
           resource: openssh-release
         - get: stembuild
+        - get: bosh-agent-release
     - put: version
       resource: vsphere-from-vmx-build-number
       params:
@@ -631,6 +640,7 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
+      - get: bosh-agent-release
   - put: version
     resource: aws-build-number
     params:
@@ -801,6 +811,7 @@ jobs:
         passed: [build]
         trigger: true
       - get: windows-stemcell-dependencies
+      - get: bosh-agent-release
   - put: version
     resource: gcp-build-number
     params:
@@ -947,6 +958,7 @@ jobs:
         passed: [build]
         trigger: true
       - get: windows-stemcell-dependencies
+      - get: bosh-agent-release
   - put: version
     resource: azure-build-number
     params:

@@ -187,7 +187,7 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
-- name: bosh-agent
+- name: bosh-agent-release
   type: metalink-repository
   source:
     uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
@@ -634,6 +634,7 @@ jobs:
         passed: [build]
         trigger: true
       - get: lgpo
+      - get: bosh-agent-release
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -656,7 +657,7 @@ jobs:
               exit $result.FailedCount
             }"
   - task: build-agent
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
   - task: build-psmodules
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
   - task: generate-deps-file
@@ -745,6 +746,7 @@ jobs:
         passed: [build]
         trigger: true
       - get: lgpo
+      - get: bosh-agent-release
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -764,7 +766,7 @@ jobs:
               exit $result.FailedCount
             }"
   - task: build-agent
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
   - task: build-psmodules
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
   - task: generate-deps-file
@@ -922,7 +924,7 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
-      - get: bosh-agent
+      - get: bosh-agent-release
   - put: version
     resource: aws-build-number
     params:
@@ -1101,7 +1103,7 @@ jobs:
         passed: [wuts-aws]
       - get: sshd
         resource: openssh-release
-      - get: bosh-agent
+      - get: bosh-agent-release
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1256,7 +1258,7 @@ jobs:
         passed: [wuts-aws]
       - get: sshd
         resource: openssh-release
-      - get: bosh-agent
+      - get: bosh-agent-release
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1407,7 +1409,7 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
-      - get: bosh-agent
+      - get: bosh-agent-release
   - put: version
     resource: azure-build-number
     params:
@@ -1613,7 +1615,7 @@ jobs:
         passed: [build]
       - get: sshd
         resource: openssh-release
-      - get: bosh-agent
+      - get: bosh-agent-release
   - put: version
     resource: gcp-build-number
     params:
@@ -1762,6 +1764,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: stembuild-release
+      - get: bosh-agent-release
   - put: version
     resource: vsphere-from-vmx-build-number
     params:
@@ -2385,7 +2388,7 @@ jobs:
       - task: build-psmodules-zip
         file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
       - task: build-agent-zip
-        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
       - task: get-stemcell-builder-sha
         file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
       - task: create-major-stemcell
