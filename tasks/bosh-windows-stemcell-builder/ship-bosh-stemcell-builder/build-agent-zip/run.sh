@@ -11,6 +11,7 @@ popd
 
 pushd stemcell-builder
   pushd src/github.com/cloudfoundry/bosh-agent
+    git fetch
     git checkout "v$CURRENT_VERSION"
   popd
   bundle

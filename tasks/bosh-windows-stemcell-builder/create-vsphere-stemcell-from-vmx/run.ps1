@@ -22,6 +22,7 @@ bundle install --without test
     Exit 1
   }
   pushd src/github.com/cloudfoundry/bosh-agent
+    git fetch
     git checkout "v$CURRENT_VERSION"
   popd
 
