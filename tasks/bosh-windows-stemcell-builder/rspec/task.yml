@@ -6,6 +6,10 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
   - name: ci
   - name: stemcell-builder
+  - name: bosh-agent-release
 
 run:
   path: ci/tasks/bosh-windows-stemcell-builder/rspec/run
+
+params:
+  BOSH_AGENT_DIR: bosh-agent-release

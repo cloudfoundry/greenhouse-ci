@@ -22,6 +22,12 @@ groups:
   jobs:
   - build-event-log-release
 
+resource_types:
+- name: metalink-repository
+  type: registry-image
+  source:
+    repository: dpb587/metalink-repository-resource
+
 resources:
 # repos
 - name: bosh-agent
@@ -86,6 +92,11 @@ resources:
     private_key: ((EVENT_LOG_RELEASE_DEPLOY_KEY))
 
 #releases
+
+- name: bosh-agent-release
+  type: metalink-repository
+  source:
+    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
 
 - name: stempatch-release
   type: github-release
@@ -324,6 +335,7 @@ jobs:
         trigger: true
       - get: stemcell-builder-master
         resource: stemcell-builder
+      - get: bosh-agent-release
   - in_parallel:
     - task: test-stemcell-builder
       file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
