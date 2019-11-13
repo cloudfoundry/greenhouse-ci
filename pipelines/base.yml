@@ -878,6 +878,7 @@ jobs:
 
 - name: test-stembuild-linux-stemcell
   serial: true
+  serial_groups: [vsphere]
   plan:
   - in_parallel:
     - get: ci
@@ -887,6 +888,9 @@ jobs:
       trigger: true
     - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
       resource: bosh-windows-acceptance-tests
+    - get: windows-utilities-release
+    - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      resource: windows-utilities-tests-released
     - get: bosh-agent-release
       passed: [stembuild-linux]
   - task: revert-snapshot
@@ -931,6 +935,25 @@ jobs:
     params:
       acquire: true
   - do:
+    - task: run-wuts
+      file: ci/tasks/run-wuts/task.yml
+      tags: [vsphere-linux-worker]
+      input_mapping: { stemcell: stembuild-built-stemcell }
+      params:
+        AZ: z1
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        BOSH_GW_USER: ((regina_gw_user))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_EXTENSIONS: ""
+        VM_TYPE: default
     - task: bwats-stembuild
       file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
       tags: [vsphere-linux-worker]
