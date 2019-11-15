@@ -1033,6 +1033,7 @@ jobs:
     - task: download-heavy
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
+      timeout: 60m
       params:
         STEMCELL_OS: ((AZURE_OS_VERSION))
         DESTINATION_DIR: heavy-stemcell
@@ -1107,6 +1108,7 @@ jobs:
     - task: download-heavy
       file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
       tags: [azure-linux-worker]
+      timeout: 60m
       params:
         STEMCELL_OS: ((BASE_IMAGE_OS))
         DESTINATION_DIR: heavy-stemcell
