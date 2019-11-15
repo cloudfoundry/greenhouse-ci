@@ -544,6 +544,7 @@ jobs:
           bump: patch
       - get: midnight
         trigger: true
+      - get: bosh-agent-release
   - put: main-version
     params:
       file: version/number
@@ -637,6 +638,7 @@ jobs:
         trigger: true
       - get: lgpo
       - get: bosh-agent-release
+        passed: [build]
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -749,6 +751,7 @@ jobs:
         trigger: true
       - get: lgpo
       - get: bosh-agent-release
+        passed: [build]
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -847,6 +850,8 @@ jobs:
       trigger: false
     - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
       resource: bosh-windows-acceptance-tests
+    - get: bosh-agent-release
+      passed: [stembuild-linux]
   - task: revert-snapshot
     file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
     tags: [vsphere-linux-worker]
@@ -927,6 +932,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+        passed: [build]
   - put: version
     resource: aws-build-number
     params:
@@ -1014,6 +1020,8 @@ jobs:
         passed: [create-aws]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-aws]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
@@ -1055,6 +1063,8 @@ jobs:
       - get: packer-output-ami
         passed: [test-aws]
       - get: aws-build-number
+        passed: [test-aws]
+      - get: bosh-agent-release
         passed: [test-aws]
   - put: aws-lock
     params:
@@ -1106,6 +1116,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+        passed: [wuts-aws]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1175,6 +1186,8 @@ jobs:
         passed: [create-aws-china]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-aws-china]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
@@ -1217,6 +1230,8 @@ jobs:
       - get: packer-output-china-ami
         passed: [test-aws-china]
       - get: aws-build-number
+        passed: [test-aws-china]
+      - get: bosh-agent-release
         passed: [test-aws-china]
   - do:
     - task: run-wuts
@@ -1261,6 +1276,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+        passed: [wuts-aws]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1330,6 +1346,8 @@ jobs:
         passed: [create-aws-govcloud]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-aws-govcloud]
   - task: test-stemcell
     file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
@@ -1372,6 +1390,8 @@ jobs:
         passed: [test-aws-govcloud]
       - get: aws-build-number
         passed: [test-aws-govcloud]
+      - get: bosh-agent-release
+        passed: [test-aws-govcloud]
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -1412,6 +1432,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+        passed: [build]
   - put: version
     resource: azure-build-number
     params:
@@ -1479,6 +1500,8 @@ jobs:
         trigger: true
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-azure]
   - put: azure-download-lock
     params:
       acquire: true
@@ -1554,6 +1577,8 @@ jobs:
         passed: [test-azure]
       - get: main-version
         passed: [test-azure]
+      - get: bosh-agent-release
+        passed: [test-azure]
   - put: azure-download-lock
     params:
       acquire: true
@@ -1618,6 +1643,7 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+        passed: [build]
   - put: version
     resource: gcp-build-number
     params:
@@ -1667,6 +1693,8 @@ jobs:
         passed: [create-gcp]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-gcp]
   - put: goose-lock
     params:
       acquire: true
@@ -1715,6 +1743,8 @@ jobs:
       - get: stemcell-builder
         passed: [test-gcp]
       - get: main-version
+        passed: [test-gcp]
+      - get: bosh-agent-release
         passed: [test-gcp]
   - put: gcp-lock
     params:
@@ -1767,6 +1797,7 @@ jobs:
         resource: openssh-release
       - get: stembuild-release
       - get: bosh-agent-release
+        passed: [build]
   - put: version
     resource: vsphere-from-vmx-build-number
     params:
@@ -1810,6 +1841,8 @@ jobs:
         passed: [create-vsphere-from-vmx]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-vsphere-from-vmx]
   - task: bosh-windows-stemcell
     tags: [vsphere-linux-worker]
     params:
@@ -1877,6 +1910,8 @@ jobs:
       - get: stemcell-builder
         passed: [test-vsphere-from-vmx]
       - get: main-version
+        passed: [test-vsphere-from-vmx]
+      - get: bosh-agent-release
         passed: [test-vsphere-from-vmx]
   - put: vsphere-director-lock
     params:
@@ -1957,6 +1992,14 @@ jobs:
         passed: [wuts-aws-china]
       - get: packer-output-china-ami
         passed: [wuts-aws-china]
+      - get: bosh-agent-release
+        passed:
+          - wuts-gcp
+          - wuts-aws
+          - wuts-vsphere
+          - wuts-azure
+          - wuts-aws-govcloud
+          #- wuts-aws-china
   - task: ensure-versions-match
     file: ci/tasks/match-stemcell-versions/task.yml
 
@@ -2377,6 +2420,8 @@ jobs:
       steps:
       - get: ci
       - get: stemcell-builder
+        passed: [promote]
+      - get: bosh-agent-release
         passed: [promote]
       - get: main-version
         passed: [promote]
