@@ -10,5 +10,7 @@ RUN sha1sum --check sums
 RUN cat govc_linux_amd64.gz | gunzip > /usr/local/bin/govc
 RUN chmod 555 /usr/local/bin/govc
 
+RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
+
 # cleanup
 RUN rm -rf /var/lib/apt/lists/*
