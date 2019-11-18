@@ -2040,6 +2040,8 @@ jobs:
         resource: packer-output-china-ami
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [promote]
   - get: pivnet-public-stemcells
   - task: copy-public-stemcells
     timeout: 1h30m
