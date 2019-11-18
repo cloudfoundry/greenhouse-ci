@@ -3,7 +3,7 @@
 # Remove test-stembuild-linux-stemcell job from groups
 
 - type: remove
-  path: /groups/name=all/jobs/29
+  path: /groups/name=all/jobs/19
 - type: remove
   path: /groups/name=vsphere/jobs/5
 

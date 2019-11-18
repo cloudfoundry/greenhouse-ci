@@ -1,0 +1,1653 @@
+groups:
+- name: all
+  jobs:
+  - build
+  - create-azure
+  - test-azure
+  - wuts-azure
+  - create-gcp
+  - test-gcp
+  - wuts-gcp
+  - create-vsphere-from-vmx
+  - test-vsphere-from-vmx
+  - wuts-vsphere
+  - promote
+  - promote-gcp
+  - promote-vsphere
+  - promote-azure
+  - promote-stembuild
+  - print-azure-publishing-instructions
+  - ship-bosh-stemcell-builder
+  - stembuild-windows
+  - stembuild-linux
+  - test-stembuild-linux-stemcell
+- name: azure
+  jobs:
+  - create-azure
+  - test-azure
+  - wuts-azure
+- name: gcp
+  jobs:
+  - create-gcp
+  - test-gcp
+  - wuts-gcp
+- name: vsphere
+  jobs:
+  - create-vsphere-from-vmx
+  - test-vsphere-from-vmx
+  - wuts-vsphere
+  - stembuild-windows
+  - stembuild-linux
+  - test-stembuild-linux-stemcell
+- name: promote
+  jobs:
+  - promote
+  - promote-gcp
+  - promote-vsphere
+  - promote-azure
+  - promote-stembuild
+  - print-azure-publishing-instructions
+  - ship-bosh-stemcell-builder
+
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+- name: azure-blobstore
+  type: docker-image
+  source:
+    repository: pcfabr/azure-blobstore-resource
+- name: metalink-repository
+  type: registry-image
+  source:
+    repository: dpb587/metalink-repository-resource
+
+resources:
+# repos
+- name: azstemcell
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
+- name: ci
+  type: git
+  source:
+    branch: ((CI_BRANCH))
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: stemcell-builder
+  type: git
+  source:
+    branch: ((STEMCELL_BUILDER_BRANCH))
+    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+- name: windows-stemcell-dependencies
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
+    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
+- name: boshio
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:bosh-io/stemcells-windows-index.git
+    private_key: ((BOSH_WINDOWS_BOSHIO_DEPLOY_KEY))
+- name: windows-utilities-release
+  type: git
+  source:
+    tag_filter: "*"
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
+- name: windows-utilities-tests-released
+  type: git
+  source:
+    tag_filter: "*"
+    uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+- name: stemcell-automation
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-automation.git
+- name: pester
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/pester/Pester.git
+    tag_filter: 4.4.0
+- name: stembuild
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/stembuild.git
+    ignore_paths: [version/version]
+- name: bosh-windows-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
+
+# releases
+- name: openssh-release
+  type: github-release
+  source:
+    owner: PowerShell
+    repository: Win32-OpenSSH
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: ((OPEN_SSH_VERSION))
+- name: stembuild-release
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: stembuild
+    pre_release: true
+    release: false
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: 0\.\d+
+
+- name: post-stembuild-release
+  type: github-release
+  source:
+    owner: cloudfoundry-incubator
+    repository: stembuild
+    drafts: true
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+
+- name: stemcell-builder-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: bosh-windows-stemcell-builder
+    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    drafts: true
+
+- name: bosh-agent-release
+  type: metalink-repository
+  source:
+    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
+    version: '~2.268.0'
+
+# versions
+- name: azure-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/azure-((PIPELINE_NAME))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: gcp-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/gcp-((PIPELINE_NAME))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: main-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/main
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: updated-vmx-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/vsphere-updated-vmx
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: 1.0.0
+- name: vsphere-from-vmx-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/vsphere-((PIPELINE_NAME))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+
+# locks
+- name: azure-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((AZURE_POOL_NAME))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: azure-download-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((AZURE_LOCK))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: goose-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((GOOSE_POOL_NAME))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: gcp-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((GCP_POOL_NAME))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-director-lock
+  type: pool
+  source:
+    branch: master
+    pool: ((VSPHERE_POOL_NAME))
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vcenter-ips
+  type: pool
+  source:
+    branch: master
+    pool: "vcenter-ips"
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+
+# s3 buckets
+- name: major-stemcell
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/metadata/((MAJOR_STEMCELL_FILE))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-release-candidate
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: vsphere-stemcell-final
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-private
+    regexp: ((BASE_FOLDER_NAME))/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-stemcell-final
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-production
+    region_name: us-east-2
+    regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: base-gcp-image
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/inputs/base-gcp-image-((BASE_IMAGE_OS))-(.*).json
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-untested
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-tested
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: gcp-stemcell-final
+  type: s3
+  source:
+    bucket: bosh-windows-stemcells-production
+    region_name: us-east-2
+    regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-untested
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-base-vhd-uri
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: azure-tested
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: lgpo
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: external-dependencies/lgpo/LGPO-(.*).zip
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: ovftool
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-untested-linux
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-linux-x86_64-(((BOSHIO_OS_VERSION)).*)
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-untested-windows
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-windows-x86_64-(((BOSHIO_OS_VERSION)).*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+#pivnet
+- name: pivnet-public-stemcells
+  type: pivnet
+  source:
+    api_token: ((PIVNET_BOT_API_TOKEN))
+    product_slug: stemcells-windows-server
+    product_version: ((BOSHIO_OS_VERSION)).*
+- name: pivnet-internal-stemcells
+  type: pivnet
+  source:
+    api_token: ((PIVNET_BOT_API_TOKEN))
+    product_slug: stemcells-windows-server-internal
+    product_version: ((BOSHIO_OS_VERSION)).*
+
+# time
+- name: midnight
+  type: time
+  source:
+    start: 12:00 AM
+    stop: 1:00 AM
+    location: America/New_York
+
+jobs:
+- name: build
+  serial: true
+  serial_groups: [azure-version, gcp-version, vsphere-vmx-version, vsphere-patchfile-version]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: updated-vmx-version
+      - get: version
+        resource: main-version
+        params:
+          bump: patch
+      - get: midnight
+        trigger: true
+      - get: bosh-agent-release
+  - put: main-version
+    params:
+      file: version/number
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - put: vsphere-from-vmx-build-number
+        params:
+          file: version/number
+      - put: gcp-build-number
+        params:
+          file: version/number
+      - put: azure-build-number
+        params:
+          file: version/number
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - task: collect-gcp-image
+        file: ci/tasks/collect-gcp-image/task.yml
+        output_mapping: { base-gcp-image: windows-gcp-image }
+        params:
+          ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+          BASE_OS: ((BASE_IMAGE_OS))
+          BASE_IMAGE_REGEX: ((BASE_IMAGE_REGEX))
+          IMAGE_FAMILY: ((IMAGE_FAMILY))
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - put: base-gcp-image
+        params:
+          file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
+
+- name: stembuild-windows
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stemcell-automation
+        trigger: true
+      - get: pester
+      - get: open-ssh
+        resource: openssh-release
+      - get: stemcell-builder
+        passed: [build]
+      - get: ci
+      - get: version
+        resource: main-version
+        passed: [build]
+        trigger: true
+      - get: lgpo
+      - get: bosh-agent-release
+        passed: [build]
+  - task: test-stemcell-automation
+    config:
+      platform: windows
+      inputs:
+      - name: stemcell-automation
+      - name: pester
+      - name: ci
+      run:
+        path: powershell
+        args:
+        - "-Command"
+        - "& {
+              Import-Module ./ci/tasks/common/setup-windows-container.psm1;
+              Set-TmpDir;
+              Import-Module ./Pester/pester.psm1;
+              pushd stemcell-automation;
+              $result=Invoke-Pester -PassThru;
+              popd;
+              Write-Host \"Failed Tests:\"$result.FailedCount;
+              exit $result.FailedCount
+            }"
+  - task: build-agent
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+  - task: build-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+  - task: generate-deps-file
+    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+  - task: zip-files
+    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stembuild
+        trigger: true
+      - get: stembuild-version
+        resource: main-version
+      - get: ovftool
+  - task: unit-test
+    file: ci/tasks/stembuild/windows/unit/task.yml
+    tags: [vsphere-stembuild-worker]
+  - task: contract-test
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/stembuild/windows/contract/task.yml
+    params:
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      CONTRACT_TEST_VM_PATH: ((CONTRACT_BASE_VM_PATH))
+      CONTRACT_TEST_VM_PASSWORD: ((CONTRACT_VM_PASSWORD))
+      CONTRACT_TEST_VM_USERNAME: ((CONTRACT_VM_USERNAME))
+  - put: vcenter-ips
+    params: { acquire: true }
+  - task: integration
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/stembuild/windows/integration/task.yml
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      VCENTER_STEMBUILD_USER: ((VCENTER_STEMBUILD_USER))
+      VCENTER_STEMBUILD_PASSWORD: ((VCENTER_STEMBUILD_PASSWORD))
+      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      OS_LINE: ((PIPELINE_NAME))
+      NETWORK_GATEWAY: "10.74.34.1"
+      SUBNET_MASK: "25"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+  - task: build
+    tags: [vsphere-stembuild-worker]
+    file: ci/tasks/build-stembuild-windows/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
+  - put: stembuild-untested-windows
+    params:
+      file: output/stembuild-windows-x86_64-*.exe
+  ensure:
+    put: vcenter-ips
+    params: { release: vcenter-ips }
+
+- name: stembuild-linux
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stemcell-automation
+        trigger: true
+      - get: pester
+      - get: open-ssh
+        resource: openssh-release
+      - get: stemcell-builder
+        passed: [build]
+      - get: ci
+      - get: version
+        resource: main-version
+        passed: [build]
+        trigger: true
+      - get: lgpo
+      - get: bosh-agent-release
+        passed: [build]
+  - task: test-stemcell-automation
+    config:
+      platform: windows
+      inputs:
+      - name: stemcell-automation
+      - name: pester
+      run:
+        path: powershell
+        args:
+        - "-Command"
+        - "& {
+              Import-Module ./Pester/pester.psm1;
+              pushd stemcell-automation;
+              $result=Invoke-Pester -PassThru;
+              popd;
+              Write-Host \"Failed Tests:\"$result.FailedCount;
+              exit $result.FailedCount
+            }"
+  - task: build-agent
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+  - task: build-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+  - task: generate-deps-file
+    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+  - task: zip-files
+    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stembuild
+        trigger: true
+      - get: stembuild-version
+        resource: main-version
+      - get: ovftool
+  - task: unit-test
+    file: ci/tasks/stembuild/linux/unit/task.yml
+  - task: contract-test
+    file: ci/tasks/stembuild/linux/contract/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      CONTRACT_TEST_VM_PATH: ((CONTRACT_BASE_VM_PATH))
+      CONTRACT_TEST_VM_PASSWORD: ((CONTRACT_VM_PASSWORD))
+      CONTRACT_TEST_VM_USERNAME: ((CONTRACT_VM_USERNAME))
+  - put: vcenter-ips
+    params: { acquire: true }
+  - task: integration
+    file: ci/tasks/stembuild/linux/integration/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      GOVC_DATASTORE: ((GOVC_DATASTORE))
+      GOVC_NETWORK: ((GOVC_NETWORK))
+      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      VCENTER_STEMBUILD_USER: ((VCENTER_STEMBUILD_USER))
+      VCENTER_STEMBUILD_PASSWORD: ((VCENTER_STEMBUILD_PASSWORD))
+      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VM_USERNAME: ((VM_USERNAME))
+      VM_PASSWORD: ((VM_PASSWORD))
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      OVA_SOURCE_S3_REGION: "us-east-1"
+      OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+      OS_LINE: ((PIPELINE_NAME))
+      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+      NETWORK_GATEWAY: "10.74.34.1"
+      SUBNET_MASK: "25"
+      ROOT_BUCKET: ((ROOT_BUCKET))
+  - task: build
+    file: ci/tasks/build-stembuild-linux/task.yml
+    params:
+      STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
+  - put: stembuild-untested-linux
+    params:
+      file: output/stembuild-linux-x86_64-*
+  ensure:
+    put: vcenter-ips
+    params: { release: vcenter-ips }
+
+- name: test-stembuild-linux-stemcell
+  serial: true
+  plan:
+  - in_parallel:
+    - get: ci
+    - get: lgpo
+    - get: stembuild-untested-linux
+      passed: [stembuild-linux]
+      trigger: false
+    - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      resource: bosh-windows-acceptance-tests
+    - get: bosh-agent-release
+      passed: [stembuild-linux]
+  - task: revert-snapshot
+    file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      DATACENTER: ((VCENTER_STEMBUILD_DC))
+      VM_TO_REVERT: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
+      SNAPSHOT_NAME: "ready_to_stembuild"
+  - task: run-stembuild-construct
+    file: ci/tasks/test-stembuild-linux-stemcell/stembuild-construct/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
+      STEMBUILD_BASE_VM_IP: ((STEMBUILD_VM_IP))
+      STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
+      STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+  - task: run-stembuild-package
+    file: ci/tasks/test-stembuild-linux-stemcell/stembuild-package/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      VCENTER_USERNAME: ((VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
+      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - task: bwats-stembuild
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      tags: [vsphere-linux-worker]
+      input_mapping: { stemcell: stembuild-built-stemcell }
+      params:
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        VM_EXTENSIONS: 10GB_ephemeral_disk
+        MOUNT_EPHEMERAL_DISK: true
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+
+
+# Run BWATS against China stemcell
+
+- name: create-azure
+  serial: true
+  serial_groups: [azure-version]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build]
+      - get: version
+        resource: azure-build-number
+        passed: [build]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [build]
+      - get: sshd
+        resource: openssh-release
+      - get: bosh-agent-release
+        passed: [build]
+  - put: version
+    resource: azure-build-number
+    params:
+      pre: build
+  - task: create-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+    params:
+      BASE_IMAGE: ((AZURE_BASE_IMAGE))
+      BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
+      CLIENT_ID: ((AZURE_CLIENT_ID))
+      CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+      LOCATION: ((AZURE_LOCATION))
+      OBJECT_ID: ((AZURE_OBJECT_ID))
+      OFFER: ((AZURE_OFFER))
+      OS_VERSION: ((AZURE_OS_VERSION))
+      PUBLISHER: ((AZURE_PUBLISHER))
+      RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+      SKU: ((AZURE_SKU))
+      STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+      TENANT_ID: ((AZURE_TENANT_ID))
+      VM_SIZE: ((AZURE_VM_SIZE))
+      VM_PREFIX: ((VM_PREFIX))
+      MOUNT_EPHEMERAL_DISK: true
+    ensure:
+      task: delete-orphan-vms
+      file: ci/tasks/delete-vms/task.yml
+      params:
+        CLIENT_ID: ((AZURE_CLIENT_ID))
+        CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+        IAAS: azure
+        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        TENANT_ID: ((AZURE_TENANT_ID))
+        VM_PREFIX: ((VM_PREFIX))
+  - &print-updates
+    task: print-updates
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: hotfix-log
+      run:
+        path: cat
+        args: ["hotfix-log/hotfixes.log"]
+  - put: azure-untested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+  - put: azure-base-vhd-uri
+    params:
+      file: bosh-windows-stemcell/bosh-stemcell-*-azure-vhd-uri.txt
+
+- name: test-azure
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: azstemcell
+      - get: stemcell-builder
+        passed: [create-azure]
+      - get: azure-build-number
+        passed: [create-azure]
+      - get: main-version
+        passed: [create-azure]
+      - get: bosh-windows-stemcell
+        resource: azure-untested
+        passed: [create-azure]
+      - get: azure-base-vhd-uri
+        passed: [create-azure]
+      - get: version
+        resource: azure-build-number
+        passed: [create-azure]
+        trigger: true
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-azure]
+  - put: azure-download-lock
+    params:
+      acquire: true
+  - do:
+    - task: download-heavy
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      tags: [azure-linux-worker]
+      timeout: 20m
+      params:
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        DESTINATION_DIR: heavy-stemcell
+        WORKING_DIR: '.'
+    ensure:
+      put: azure-download-lock
+      params:
+        release: azure-download-lock
+  - task: test-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    input_mapping: {stemcell: heavy-stemcell}
+    params:
+      AZ: ((AZURE_HEAVY_AZ))
+      BOSH_CA_CERT: ((AZURE_BWATS_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AZURE_BWATS_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((AZURE_BWATS_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((AZURE_BWATS_BOSH_DIRECTOR_IP))
+      BOSH_GW_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
+      BWATS_BOSH_TIMEOUT: 3h
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      SSH_TUNNEL_IP: ((AZURE_BWATS_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_BWATS_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_BWATS_SSH_TUNNEL_USER))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/*.tgz
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      ROOT_EPHEMERAL_VM_TYPE: ((ROOT_EPHEMERAL_VM_TYPE))
+      MOUNT_EPHEMERAL_DISK: true
+      VM_EXTENSIONS: "10GB_ephemeral_disk"
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+  - task: upload-stemcell-to-acceptance
+    file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
+    tags: [azure-linux-worker]
+    input_mapping: {heavy_stemcell_dir: heavy-stemcell}
+    params:
+      BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((PM_ACCEPTANCE_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((PM_ACCEPTANCE_BOSH_DIRECTOR))
+      SSH_TUNNEL_IP: ((PM_ACCEPTANCE_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((PM_ACCEPTANCE_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((PM_ACCEPTANCE_SSH_TUNNEL_USER))
+  - put: azure-tested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+- name: wuts-azure
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: azstemcell
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests-released
+      - get: bosh-windows-stemcell
+        resource: azure-tested
+        passed: [test-azure]
+        trigger: true
+      - get: azure-base-vhd-uri
+        passed: [test-azure]
+      - get: azure-build-number
+        passed: [test-azure]
+      - get: stemcell-builder
+        passed: [test-azure]
+      - get: main-version
+        passed: [test-azure]
+      - get: bosh-agent-release
+        passed: [test-azure]
+  - put: azure-download-lock
+    params:
+      acquire: true
+  - do:
+    - task: download-heavy
+      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      tags: [azure-linux-worker]
+      timeout: 20m
+      params:
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        DESTINATION_DIR: heavy-stemcell
+    ensure:
+      put: azure-download-lock
+      params:
+        release: azure-download-lock
+  - put: azure-lock
+    params:
+      acquire: true
+  - do:
+    - task: run-wuts
+      file: ci/tasks/run-wuts/task.yml
+      input_mapping: { stemcell: heavy-stemcell }
+      params:
+        AZ: ((AZURE_HEAVY_AZ))
+        BOSH_CA_CERT: ((AZURE_WUTS_BOSH_TARGET_CERT))
+        BOSH_CLIENT: ((AZURE_WUTS_BOSH_CLIENT_ID))
+        BOSH_CLIENT_SECRET: ((AZURE_WUTS_BOSH_CLIENT_SECRET))
+        BOSH_ENVIRONMENT: ((AZURE_WUTS_BOSH_DIRECTOR_IP))
+        BOSH_GW_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+        NETWORK: ((AZURE_HEAVY_NETWORK))
+        SSH_TUNNEL_IP: ((AZURE_WUTS_SSH_TUNNEL_IP))
+        SSH_TUNNEL_PRIVATE_KEY: ((AZURE_WUTS_SSH_TUNNEL_PRIVATE_KEY))
+        SSH_TUNNEL_USER: ((AZURE_WUTS_SSH_TUNNEL_USER))
+        STEMCELL_OS: ((AZURE_OS_VERSION))
+        STEMCELL_PATH: stemcell/*.tgz
+        VM_EXTENSIONS: ""
+        VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+        WUTS_BOSH_TIMEOUT: 3h
+    ensure:
+      put: azure-lock
+      params:
+        release: azure-lock
+- name: create-gcp
+  serial: true
+  serial_groups: [gcp-version]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build]
+      - get: base-gcp-image
+        resource: base-gcp-image
+        passed: [build]
+      - get: version
+        resource: gcp-build-number
+        passed: [build]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [build]
+      - get: sshd
+        resource: openssh-release
+      - get: bosh-agent-release
+        passed: [build]
+  - put: version
+    resource: gcp-build-number
+    params:
+      pre: build
+  - task: create-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+    params:
+      OS_VERSION: ((STEMCELL_OS_NAME))
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      VM_PREFIX: ((VM_PREFIX))
+      MOUNT_EPHEMERAL_DISK: true
+    ensure:
+      task: delete-orphan-vms
+      file: ci/tasks/delete-vms/task.yml
+      params:
+        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+        IAAS: gcp
+        VM_PREFIX: ((VM_PREFIX))
+  - *print-updates
+  - task: publish-stemcell
+    file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
+    params:
+      OS_VERSION: ((STEMCELL_OS_NAME))
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+  - put: gcp-untested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+
+- name: test-gcp
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: bosh-windows-stemcell
+        resource: gcp-untested
+        passed: [create-gcp]
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-gcp]
+      - get: version
+        resource: gcp-build-number
+        passed: [create-gcp]
+        trigger: true
+      - get: windows-stemcell-dependencies
+      - get: main-version
+        passed: [create-gcp]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-gcp]
+  - put: goose-lock
+    params:
+      acquire: true
+  - do:
+    - task: test-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_BWATS_1))
+        BOSH_CA_CERT: ((gcp_bwats_1_ca_cert))
+        BOSH_CLIENT: ((gcp_bwats_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
+        IAAS: gcp
+        NETWORK: private
+        SSH_TUNNEL_IP: ((gcp_bwats_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_bwats_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_bwats_1_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
+        MOUNT_EPHEMERAL_DISK: true
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+    ensure:
+      put: goose-lock
+      params:
+        release: goose-lock
+  - put: gcp-tested
+    params:
+      file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+
+- name: wuts-gcp
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests-released
+      - get: bosh-windows-stemcell
+        resource: gcp-tested
+        passed: [test-gcp]
+        trigger: true
+      - get: stemcell-builder
+        passed: [test-gcp]
+      - get: main-version
+        passed: [test-gcp]
+      - get: bosh-agent-release
+        passed: [test-gcp]
+  - put: gcp-lock
+    params:
+      acquire: true
+  - do:
+    - task: run-wuts
+      file: ci/tasks/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        AZ: z1
+        BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
+        BOSH_CLIENT: ((gcp_wuts_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
+        BOSH_GW_USER: ((gcp_wuts_1_gw_user))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_EXTENSIONS: "100GB_ephemeral_disk"
+        VM_TYPE: default
+    ensure:
+      put: gcp-lock
+      params:
+        release: gcp-lock
+
+- name: create-vsphere-from-vmx
+  serial: true
+  serial_groups: [vsphere-vmx-version, vsphere]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [build]
+      - get: windows-stemcell-dependencies
+      - get: version
+        resource: vsphere-from-vmx-build-number
+        passed: [build]
+        trigger: true
+      - get: vmx-version
+        resource: updated-vmx-version
+        passed: [build]
+      - get: main-version
+        passed: [build]
+      - get: sshd
+        resource: openssh-release
+      - get: stembuild-release
+      - get: bosh-agent-release
+        passed: [build]
+  - put: version
+    resource: vsphere-from-vmx-build-number
+    params:
+      pre: build
+  - task: create-stemcell
+    privileged: true
+    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
+    input_mapping: { stembuild: stembuild-release }
+    tags: [vsphere-windows-worker]
+    params:
+      ADMINISTRATOR_PASSWORD: "Password123!"
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+      INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
+      MOUNT_EPHEMERAL_DISK: true
+      NEW_PASSWORD: "Password123!"
+      ORGANIZATION: Pivotal
+      OS_VERSION: ((STEMCELL_OS_NAME))
+      OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
+      OWNER: Pivotal
+      SKIP_WINDOWS_UPDATE: false
+      VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data-((BASE_IMAGE_OS))"
+  - *print-updates
+
+- name: test-vsphere-from-vmx
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [create-vsphere-from-vmx]
+      - get: version
+        resource: vsphere-from-vmx-build-number
+        passed: [create-vsphere-from-vmx]
+        trigger: true
+      - get: main-version
+        passed: [create-vsphere-from-vmx]
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+      - get: bosh-agent-release
+        passed: [create-vsphere-from-vmx]
+  - task: bosh-windows-stemcell
+    tags: [vsphere-linux-worker]
+    params:
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: version
+      outputs:
+        - name: stemcell
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            VERSION=$(cat version/number)
+            echo "((DOWNLOAD_TEXT))"
+            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz stemcell
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - task: test-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      tags: [vsphere-linux-worker]
+      params:
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        VM_EXTENSIONS: 10GB_ephemeral_disk
+        MOUNT_EPHEMERAL_DISK: true
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+  - put: vsphere-stemcell-release-candidate
+    params:
+      file: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+
+- name: wuts-vsphere
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: windows-utilities-release
+      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        resource: windows-utilities-tests-released
+      - get: bosh-windows-stemcell
+        resource: vsphere-stemcell-release-candidate
+        passed: [test-vsphere-from-vmx]
+        trigger: true
+      - get: stemcell-builder
+        passed: [test-vsphere-from-vmx]
+      - get: main-version
+        passed: [test-vsphere-from-vmx]
+      - get: bosh-agent-release
+        passed: [test-vsphere-from-vmx]
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - do:
+    - task: run-wuts
+      tags: [vsphere-linux-worker]
+      file: ci/tasks/run-wuts/task.yml
+      input_mapping: { stemcell: bosh-windows-stemcell }
+      params:
+        AZ: z1
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        BOSH_GW_USER: ((regina_gw_user))
+        NETWORK: default
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_EXTENSIONS: ""
+        VM_TYPE: default
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+
+- name: promote
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: vsphere-stemcell-release-candidate
+        passed: [wuts-vsphere]
+      - get: gcp-tested
+        passed: [wuts-gcp]
+      - get: azure-tested
+        passed: [wuts-azure]
+      - get: azure-base-vhd-uri
+        passed: [wuts-azure]
+      - get: azure-build-number
+        passed: [wuts-azure]
+      - get: stemcell-builder
+        passed:
+        - wuts-gcp
+        - wuts-vsphere
+        - wuts-azure
+      - get: stembuild-untested-linux
+        passed: [ stembuild-linux ]
+      - get: stembuild-untested-windows
+        passed: [ stembuild-windows ]
+      - get: stembuild
+        passed:
+        - stembuild-linux
+        - stembuild-windows
+      - get: main-version
+        passed:
+        - wuts-gcp
+        - wuts-vsphere
+        - wuts-azure
+      - get: bosh-agent-release
+        passed:
+          - wuts-gcp
+          - wuts-vsphere
+          - wuts-azure
+  - task: ensure-versions-match
+    file: ci/tasks/match-stemcell-versions/task1803.yml
+
+- name: promote-gcp
+  serial_groups: ["pivnet"]
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: gcp-tested
+        passed: [promote]
+        trigger: true
+      - get: stemcell-builder
+        passed: [promote]
+      - get: version
+        resource: main-version
+        passed: [promote]
+      - get: boshio-input
+        resource: boshio
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+  - get: pivnet-public-stemcells
+  - put: goose-lock
+    params:
+      acquire: true
+  - task: gcp-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: gcp-tested }
+    file: ci/tasks/set-stemcell-version/task.yml
+  - do:
+    - task: test-gcp-stemcell
+      input_mapping: { stemcell: final-stemcell }
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      params:
+        ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_PROMOTE_1))
+        BOSH_CA_CERT: ((gcp_bwats_1_ca_cert))
+        BOSH_CLIENT: ((gcp_bwats_1_client))
+        BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
+        BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
+        GINKGO_FOCUS: "is fully updated"
+        IAAS: gcp
+        NETWORK: private
+        SSH_TUNNEL_IP: ((gcp_bwats_1_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((gcp_bwats_1_gw_private_key))
+        SSH_TUNNEL_USER: ((gcp_bwats_1_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME))
+        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        SKIP_MS_UPDATE_TEST: true
+    ensure:
+      put: goose-lock
+      params:
+        release: goose-lock
+  - in_parallel:
+    - task: pivnet-upload
+      file: ci/tasks/pivnet-upload/task.yml
+      input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
+    - task: commit-meta4-dev-file
+      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      input_mapping: { stemcell: final-stemcell }
+      params:
+        IAAS: gcp
+        OS_NAME: windows
+        OS_VERSION: ((BOSHIO_OS_VERSION))
+  - in_parallel:
+    - put: gcp-stemcell-final-s3
+      resource: gcp-stemcell-final
+      params:
+        file: final-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
+    - put: pivnet-public-stemcells
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
+
+- name: promote-vsphere
+  serial_groups: ["vsphere"]
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: vsphere-stemcell-release-candidate
+        passed: [promote]
+        trigger: true
+      - get: stemcell-builder
+        passed: [promote]
+      - get: version
+        resource: main-version
+        passed: [promote]
+      - get: pivnet-internal-stemcells
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+  - put: vsphere-director-lock
+    params:
+      acquire: true
+  - task: vsphere-set-stemcell-filename-version
+    tags: [vsphere-linux-worker]
+    input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+    file: ci/tasks/set-stemcell-version/task.yml
+  - do:
+    - task: test-vsphere-stemcell
+      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+      input_mapping: { stemcell: final-stemcell }
+      tags: [vsphere-linux-worker]
+      params:
+        BOSH_CA_CERT: ((regina_ca_cert))
+        BOSH_CLIENT: ((regina_client))
+        BOSH_CLIENT_SECRET: ((regina_client_secret))
+        BOSH_ENVIRONMENT: ((regina_environment))
+        GINKGO_FOCUS: "is fully updated"
+        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+        SSH_TUNNEL_USER: ((regina_gw_user))
+        STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
+        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+        VM_TYPE: large # WARN: This is Cloud Config specific!!!
+        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        SKIP_MS_UPDATE_TEST: true
+    ensure:
+      put: vsphere-director-lock
+      params:
+        release: vsphere-director-lock
+  - task: vsphere-set-stemcell-filename-version
+    tags: [vsphere-linux-worker]
+    input_mapping: { bosh-windows-stemcell: vsphere-stemcell-release-candidate }
+    file: ci/tasks/set-stemcell-version/task.yml
+  - task: pivnet-upload
+    file: ci/tasks/pivnet-upload/task.yml
+    input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
+  - in_parallel:
+    - put: pivnet-internal-stemcells
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: pivnet-metadata/metadata
+    - put: vsphere-stemcell-final-s3
+      resource: vsphere-stemcell-final
+      params:
+        file: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+
+- name: print-azure-publishing-instructions
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [promote]
+      - get: version
+        resource: azure-build-number
+        passed: [promote]
+      - get: main-version
+        passed: [promote]
+      - get: azure-tested
+        passed: [promote]
+      - get: azure-base-vhd-uri
+        passed: [promote]
+  - task: print-azure-publishing-instructions
+    file: ci/tasks/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
+    params:
+      AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
+      AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((AZURE_PUBLISHED_STORAGE_ACCESS_KEY))
+      AZURE_PUBLISHED_STORAGE_ACCOUNT: ((AZURE_PUBLISHED_STORAGE_ACCOUNT))
+      AZURE_TENANT_ID: ((AZURE_TENANT_ID))
+      CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+      SKU: ((AZURE_SKU))
+
+- name: promote-azure
+  serial_groups: ["pivnet"]
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: azure-tested
+        passed: [print-azure-publishing-instructions]
+      - get: version
+        resource: main-version
+        passed: [print-azure-publishing-instructions]
+      - get: stemcell-builder
+        passed: [print-azure-publishing-instructions]
+      - get: boshio-input
+        resource: boshio
+      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+        resource: bosh-windows-acceptance-tests
+  - get: pivnet-public-stemcells
+  - task: azure-set-stemcell-filename-version
+    input_mapping: { bosh-windows-stemcell: azure-tested }
+    output_mapping: { final-stemcell: azure-stemcell-final }
+    file: ci/tasks/set-stemcell-version/task.yml
+  - task: test-azure-stemcell
+    input_mapping: { stemcell: azure-stemcell-final }
+    file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+    params:
+      AZ: ((AZURE_HEAVY_AZ))
+      BOSH_CA_CERT: ((AZURE_PROMOTE_BOSH_TARGET_CERT))
+      BOSH_CLIENT: ((AZURE_PROMOTE_BOSH_CLIENT_ID))
+      BOSH_CLIENT_SECRET: ((AZURE_PROMOTE_BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((AZURE_PROMOTE_BOSH_DIRECTOR_IP))
+      BOSH_GW_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
+      GINKGO_FOCUS: "is fully updated"
+      NETWORK: ((AZURE_HEAVY_NETWORK))
+      SSH_TUNNEL_IP: ((AZURE_PROMOTE_SSH_TUNNEL_IP))
+      SSH_TUNNEL_PRIVATE_KEY: ((AZURE_PROMOTE_SSH_TUNNEL_PRIVATE_KEY))
+      SSH_TUNNEL_USER: ((AZURE_PROMOTE_SSH_TUNNEL_USER))
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      STEMCELL_PATH: stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+      VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
+      SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      SKIP_MS_UPDATE_TEST: true
+  - in_parallel:
+    - task: pivnet-upload
+      file: ci/tasks/pivnet-upload/task.yml
+      input_mapping: { source-folder: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
+    - task: commit-meta4-file
+      input_mapping: { stemcell: azure-stemcell-final }
+      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      params:
+        IAAS: azure
+        OS_NAME: windows
+        OS_VERSION: ((BOSHIO_OS_VERSION))
+  - in_parallel:
+    - put: azure-stemcell-final-s3
+      resource: azure-stemcell-final
+      params:
+        file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
+    - put: pivnet-public-stemcells
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: pivnet-metadata/metadata
+    - put: boshio
+      params:
+        repository: boshio-output
+        rebase: true
+
+- name: promote-stembuild
+  serial_groups: ["pivnet"]
+  serial: true
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+        - get: ci
+          trigger: false
+        - get: stembuild-untested-linux
+          trigger: true
+          passed: [ promote ]
+        - get: stembuild-untested-windows
+          trigger: true
+          passed: [ promote ]
+        - get: version
+          resource: main-version
+          passed: [ promote ]
+        - get: pivnet-release
+          resource: pivnet-public-stemcells
+        - get: stembuild
+          passed: [ promote ]
+    - task: set-stembuild-version
+      file: ci/tasks/set-stembuild-version/task.yml
+      input_mapping: {stembuild-version: version}
+    - task: prepare-stembuild-for-upload
+      file: ci/tasks/pivnet-upload/task.yml
+      input_mapping: {source-folder: final-stembuilds}
+    - put: pivnet-release
+      resource: pivnet-public-stemcells
+      params:
+        override: true
+        file_glob: 'pivnet-metadata/*stem*'
+        metadata_file: 'pivnet-metadata/metadata'
+    - task: get-stembuild-commit
+      file: ci/tasks/stembuild/promote/get-stembuild-sha.yml
+    - put: post-stembuild-release
+      params:
+        name: final-stembuilds/tag
+        tag: final-stembuilds/tag
+        commitish: stembuild-commit/sha
+        globs:
+        - final-stembuilds/stembuild*
+
+- name: ship-bosh-stemcell-builder
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        passed: [promote]
+      - get: bosh-agent-release
+        passed: [promote]
+      - get: main-version
+        passed: [promote]
+        trigger: true
+  - task: shorten-stemcell-version
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
+    input_mapping: { stemcells-main-version: main-version }
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - task: build-psmodules-zip
+        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+      - task: build-agent-zip
+        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+      - task: get-stemcell-builder-sha
+        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
+      - task: create-major-stemcell
+        file: ci/tasks/create-major-stemcell/task.yml
+        input_mapping: { version: stemcell-builder-release-version }
+  - put: stemcell-builder-release
+    params:
+      name: stemcell-builder-release-version/version
+      tag: stemcell-builder-release-version/version
+      commitish: stemcell-builder-commit/sha
+      globs:
+      - bosh-psmodules/bosh-psmodules.zip
+      - bosh-agent/agent.zip
+  - put: main-version
+    params:
+      bump: minor
+  - put: major-stemcell-s3
+    resource: major-stemcell
+    params:
+      file: stemcell-info/((JSON_REGEX))
+
+
+
