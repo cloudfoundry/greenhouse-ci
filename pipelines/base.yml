@@ -190,7 +190,7 @@ resources:
   type: metalink-repository
   source:
     uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
-    version: '~2.268.0'
+    version: ((BOSH_AGENT_RELEASE_VERSION))
 
 # versions
 - name: aws-build-number

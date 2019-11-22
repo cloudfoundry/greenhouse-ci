@@ -97,6 +97,7 @@ resources:
   type: metalink-repository
   source:
     uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
+    version: ((BOSH_AGENT_RELEASE_VERSION))
 
 - name: stempatch-release
   type: github-release
