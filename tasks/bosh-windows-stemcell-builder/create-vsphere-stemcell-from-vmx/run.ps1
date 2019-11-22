@@ -12,6 +12,7 @@ $env:PATH="${PWD}\bin;$env:PATH"
 $env:BOSH_AGENT_DIR="$(pwd)/$env:BOSH_AGENT_DIR"
 pushd "${env:BOSH_AGENT_DIR}"
   $CURRENT_VERSION=$(Get-Content .resource/version)
+  mv bosh-agent-pipe*.exe pipe.exe
   mv bosh-agent*.exe bosh-agent.exe
 popd
 
