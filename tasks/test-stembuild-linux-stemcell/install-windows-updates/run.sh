@@ -1,97 +1,46 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -exu
+set -e
 
-#govc snapshot.revert -u=${CREDENTIAL_URL} -s=true -dc=${DATACENTER} -vm=${VM_TO_REVERT} "${SNAPSHOT_NAME}"
+export GOVC_URL="${CREDENTIAL_URL}"
 
+vm_ipath=${STEMBUILD_CONSTRUCT_TARGET_VM}
+vm_username=${VM_USERNAME}
+vm_password=${VM_PASSWORD}
 
-function powershellCmd() {
-	local vm_ipath="${1}"
-	local vm_username="${2}"
-	local vm_password="${3}"
-	local script="${4}"
+powershell_exe="\\Windows\\System32\\WindowsPowerShell\\V1.0\\powershell.exe"
 
-	if ! pid=$(govc guest.start -ipath=${vm_ipath} -l=${vm_username}:${vm_password} \
-		'C:\\Windows\\System32\\WindowsPowerShell\\V1.0\\powershell.exe -NoProfile -Command "'+${script}+'"'); then
-		writeErr "could not run powershell command on VM at ${vm_ipath}"
-		return 1
-	fi
+# get wu-install /wu-update set up to work on the vm...
 
-	if ! processInfo=$(govc guest.ps -ipath=${vm_ipath} -l=${vm_username}:${vm_password} -p=${pid} -X=true -x -json); then
-		writeErr "could not get powershell process info on VM at ${vm_ipath}"
-		return 1
-	fi
-
-	if ! exitCode=$(echo "${processInfo}" | jq '.info.ProcessInfo[0].ExitCode'); then
-		writeErr "process info not be parsed for powershell command on VM at ${vm_ipath}"
-		return 1
-	fi
-
-	echo "${exitCode}"
-	return 0
+function wait_for_vm_to_come_up() {
+  result=-1
+  set +e
+  while [[ result -ne 0 ]]; do
+    # try to connect
+    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Get-ChildItem \\ > /dev/null
+  done
+  set -e
 }
 
-function restartVM() {
-	local vm_ipath="${1}"
+updates_remaining=-1
+while [[ updates_remaining -ne 0 ]]; do
+  install_update_pid=$(
+    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Install-WindowsUpdate -AcceptAll -AutoReboot
+  )
+  echo "install-WU pid is $install_update_pid"
 
-	if ! govc vm.power -vm.ipath=${vm_ipath} -r=true -wait=true; then
-		writeErr "Could not restart VM at ${vm_ipath}"
-		return 1
-	fi
 
-	return 0
-}
-function writeErr() {
-	local msg="${1}"
-	echo "[ERROR]: ${msg}"
-}
+  # ignore unreachable agent if the vm just went down for reboot
+  set +e
+  govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${install_update_pid} -X
+  set -e
 
-echo "--------------------------------------------------------"
-echo "Running windows update"
-echo "--------------------------------------------------------"
-echo -ne "|"
+  # poll and wait for connectivity
+  sleep 60
+  wait_for_vm_to_come_up
 
-# TODO: Change to 'while' not fully updated
-
-updates_needed=true
-
-while (${updates_needed}); do
-	if ! exitCode=$(powershellCmd "${VM_TO_REVERT}" "${VCENTER_USERNAME}" "${VCENTER_PASSWORD}" "Get-WUInstall -AcceptAll -IgnoreReboot"); then
-		writeErr "could not run windows update"
-		exit 1
-	fi
-
-	if [[ ${exitCode} == "1" ]]; then
-		writeErr "windows update process exited with error"
-		exit 1
-	fi
-
-	if ! restartVM "${VM_TO_REVERT}"; then
-		writeErr "could not restart VM"
-		exit 1
-	fi
-
-	if ! updateExitCode=$(powershellCmd "${VM_TO_REVERT}" "${VCENTER_USERNAME}" "${VCENTER_PASSWORD}" "If ((Get-WindowsUpdate).Count -eq 0) {exit 0} Else {exit 1}"); then
-	  writeErr "could not get windows update"
-	  exit 1
-	fi
-
-	if [[ ${updateExitCode} == "0" ]] ; then
-	  echo "installed all necessary windows updates"
-	  updates_needed=false
-	fi
-
-	echo -ne "."
+  returnWindowsUpdateCount="exit ((Get-WindowsUpdate).Count)"
+  get_update_count_pid=$(govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe ${returnWindowsUpdateCount})
+	updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+	echo "Updates remaining: $updates_remaining"
 done
-
-
-
-# TODO: Add create snapshot of updated VM
-
-# while not up to date
-### install windows updates
-### restart (block on coming back up)
-
-# print a list of updates that are installed (Get-Hotfix type deal)
-
-# create new snapshot with update VM
