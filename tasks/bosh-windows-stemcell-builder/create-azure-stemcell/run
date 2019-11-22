@@ -6,6 +6,7 @@ export BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
 
 pushd "${BOSH_AGENT_DIR}"
   CURRENT_VERSION=$(cat .resource/version)
+  mv bosh-agent-pipe*.exe pipe.exe
   mv bosh-agent*.exe bosh-agent.exe
 popd
 
