@@ -160,7 +160,6 @@ resources:
     owner: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    tag_filter: ((OPEN_SSH_VERSION))
 - name: stembuild-release
   type: github-release
   source:
