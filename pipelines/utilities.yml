@@ -91,6 +91,13 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/event-log-release.git
     private_key: ((EVENT_LOG_RELEASE_DEPLOY_KEY))
 
+- name: bosh-psmodules
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry-incubator/bosh-psmodules.git
+    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_BOSH_PSMODULES_DEPLOY_KEY))
+
 #releases
 
 - name: bosh-agent-release
@@ -336,6 +343,7 @@ jobs:
       - get: stemcell-builder-master
         resource: stemcell-builder
       - get: bosh-agent-release
+      - get: bosh-psmodules
   - in_parallel:
     - task: test-stemcell-builder
       file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
