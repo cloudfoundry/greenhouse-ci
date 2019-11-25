@@ -17,7 +17,9 @@ function wait_for_vm_to_come_up() {
   set +e
   while [[ result -ne 0 ]]; do
     # try to connect
-    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Get-ChildItem \\ > /dev/null
+    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Get-ChildItem \\ 2> /dev/null
+    result=$?
+    sleep 1
   done
   set -e
 }
@@ -31,13 +33,18 @@ while [[ updates_remaining -ne 0 ]]; do
 
 
   # ignore unreachable agent if the vm just went down for reboot
+  # -X blocks until the guest process exits
   set +e
   govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${install_update_pid} -X
   set -e
+  echo "Install-WU done"
 
-  # poll and wait for connectivity
+  # wait for VM to go down and poll for connectivity
+  echo "Waiting for VM to come back after reboot, if necessary..."
   sleep 60
   wait_for_vm_to_come_up
+
+  echo "VM reachable"
 
   returnWindowsUpdateCount="exit ((Get-WindowsUpdate).Count)"
   get_update_count_pid=$(govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe ${returnWindowsUpdateCount})
