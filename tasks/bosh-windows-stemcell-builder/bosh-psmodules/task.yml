@@ -3,7 +3,6 @@ platform: windows
 
 inputs:
   - name: ci
-  - name: stemcell-builder
   - name: bosh-psmodules
 
 run:

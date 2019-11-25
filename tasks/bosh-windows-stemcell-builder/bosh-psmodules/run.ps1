@@ -7,9 +7,9 @@ $startupType = Get-Service "wuauserv" | Select-Object -ExpandProperty StartType 
 "wuauserv status = * $status *"
 "wuauserv startuptype = * $startupType *"
 
-Import-Module ./stemcell-builder/src/github.com/pester/Pester/pester.psm1
-foreach ($module in (Get-ChildItem "./stemcell-builder/bosh-psmodules/modules").Name) {
-  Push-Location "./stemcell-builder/bosh-psmodules/modules/$module"
+Import-Module ./bosh-psmodules/src/github.com/pester/Pester/pester.psm1
+foreach ($module in (Get-ChildItem "./bosh-psmodules/modules").Name) {
+  Push-Location "./bosh-psmodules/modules/$module"
     $results=Invoke-Pester -PassThru
     if ($results.FailedCount -gt 0) {
       $result += $results.FailedCount
