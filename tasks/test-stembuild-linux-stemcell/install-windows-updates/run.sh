@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -e
+set -eu
+
+WINDOWS_UPDATE_POWERSHELL_MODULE_URL='http://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/file/41459/25/PSWindowsUpdate.zip'
+wget $WINDOWS_UPDATE_POWERSHELL_MODULE_URL -O PSWindowsUpdate.zip
 
 export GOVC_URL="${CREDENTIAL_URL}"
 
@@ -23,6 +26,17 @@ function wait_for_vm_to_come_up() {
   done
   set -e
 }
+
+govc guest.upload -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} PSWindowsUpdate.zip 'C:\PSWindowsUpdate.zip'
+
+
+command='Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'
+echo "Running $command"
+pid=$(
+  govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe ${command}
+)
+return=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+echo "$command returned $return"
 
 updates_remaining=-1
 while [[ updates_remaining -ne 0 ]]; do

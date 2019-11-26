@@ -858,15 +858,15 @@ jobs:
       CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       DATACENTER: ((VCENTER_STEMBUILD_DC))
       VM_TO_REVERT: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
-      SNAPSHOT_NAME: "ready_to_stembuild"
+      SNAPSHOT_NAME: "stembuild_ready_power_on"
   - task: install-windows-updates
-    file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
-      tags: [vsphere-linux-worker]
-      params:
-        CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-        STEMBUILD_CONSTRUCT_TARGET_VM: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
-        VM_USERNAME: ((STEMBUILD_VM_USERNAME))
-        VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+    file: ci/tasks/test-stembuild-linux-stemcell/install-windows-updates/task.yml
+    tags: [vsphere-linux-worker]
+    params:
+      CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+      STEMBUILD_CONSTRUCT_TARGET_VM: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
+      VM_USERNAME: ((STEMBUILD_VM_USERNAME))
+      VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - task: run-stembuild-construct
     file: ci/tasks/test-stembuild-linux-stemcell/stembuild-construct/task.yml
     tags: [vsphere-linux-worker]
