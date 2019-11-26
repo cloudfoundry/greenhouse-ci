@@ -8,6 +8,7 @@ groups:
   - create-vsphere-add-updates
   - post-stempatch-draft-release
   - test-stemcell-builder
+  - test-bosh-psmodules
   - build-event-log-release
 - name: stempatch
   jobs:
@@ -18,6 +19,9 @@ groups:
   jobs:
   - bump-stemcell-builder-submodules
   - test-stemcell-builder
+- name: bosh-psmodules
+  jobs:
+  - test-bosh-psmodules
 - name: event-log-release
   jobs:
   - build-event-log-release
@@ -344,16 +348,9 @@ jobs:
       - get: stemcell-builder-master
         resource: stemcell-builder
       - get: bosh-agent-release
-      - get: bosh-psmodules
-  - in_parallel:
-    - task: test-stemcell-builder
-      file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
-      input_mapping: {stemcell-builder: stemcell-builder-develop}
-    - task: test-bosh-psmodules
-      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
-      input_mapping: {stemcell-builder: stemcell-builder-develop}
-      tags:
-      - vsphere-stembuild-worker
+  - task: test-stemcell-builder
+    file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
+    input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
     file: ci/tasks/merge-repo/task.yml
@@ -361,6 +358,19 @@ jobs:
       FROM_BRANCH: develop
   - put: stemcell-builder
     params: { repository: merged-repo/to-repo }
+
+- name: test-bosh-psmodules
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: bosh-psmodules
+  - task: test-bosh-psmodules
+    file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+    tags:
+      - vsphere-stembuild-worker
 
 - name: build-event-log-release
   serial: true
