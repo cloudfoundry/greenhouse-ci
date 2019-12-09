@@ -7,7 +7,6 @@ $startupType = Get-Service "wuauserv" | Select-Object -ExpandProperty StartType 
 "wuauserv status = * $status *"
 "wuauserv startuptype = * $startupType *"
 
-Import-Module ./bosh-psmodules/src/github.com/pester/Pester/pester.psm1
 foreach ($module in (Get-ChildItem "./bosh-psmodules/modules").Name) {
   Push-Location "./bosh-psmodules/modules/$module"
     $results=Invoke-Pester -PassThru
