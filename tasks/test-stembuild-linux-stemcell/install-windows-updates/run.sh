@@ -13,6 +13,8 @@ vm_password=${VM_PASSWORD}
 
 powershell_exe="\\Windows\\System32\\WindowsPowerShell\\V1.0\\powershell.exe"
 
+govc_pwsh_cmd="govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe"
+
 # get wu-install /wu-update set up to work on the vm...
 
 function wait_for_vm_to_come_up() {
@@ -20,7 +22,7 @@ function wait_for_vm_to_come_up() {
   set +e
   while [[ result -ne 0 ]]; do
     # try to connect
-    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Get-ChildItem \\ 2> /dev/null
+    $govc_pwsh_cmd Get-ChildItem \\ 2> /dev/null
     result=$?
     sleep 1
   done
@@ -33,7 +35,7 @@ govc guest.upload -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} PSWindo
 command='Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'
 echo "Running $command"
 pid=$(
-  govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe ${command}
+  $govc_pwsh_cmd ${command}
 )
 return=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${pid} -X -json | jq '.ProcessInfo[0].ExitCode')
 echo "$command returned $return"
@@ -41,7 +43,7 @@ echo "$command returned $return"
 updates_remaining=-1
 while [[ updates_remaining -ne 0 ]]; do
   install_update_pid=$(
-    govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe Install-WindowsUpdate -AcceptAll -AutoReboot
+    $govc_pwsh_cmd Install-WindowsUpdate -AcceptAll -AutoReboot
   )
   echo "install-WU pid is $install_update_pid"
 
@@ -61,7 +63,7 @@ while [[ updates_remaining -ne 0 ]]; do
   echo "VM reachable"
 
   returnWindowsUpdateCount="exit ((Get-WindowsUpdate).Count)"
-  get_update_count_pid=$(govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} $powershell_exe ${returnWindowsUpdateCount})
+  get_update_count_pid=$($govc_pwsh_cmd ${returnWindowsUpdateCount})
 	updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
 	echo "Updates remaining: $updates_remaining"
 done
