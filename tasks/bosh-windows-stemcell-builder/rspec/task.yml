@@ -10,3 +10,6 @@ inputs:
 
 run:
   path: ci/tasks/bosh-windows-stemcell-builder/rspec/run
+
+params:
+  BOSH_AGENT_DIR: bosh-agent-release

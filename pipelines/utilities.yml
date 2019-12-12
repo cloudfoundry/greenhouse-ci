@@ -95,12 +95,11 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/event-log-release.git
     private_key: ((EVENT_LOG_RELEASE_DEPLOY_KEY))
 
-- name: bosh-psmodules
+- name: bosh-psmodules-repo
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry-incubator/bosh-psmodules.git
-    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_BOSH_PSMODULES_DEPLOY_KEY))
+    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 
 #releases
 
@@ -366,9 +365,10 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
-      - get: bosh-psmodules
+      - get: bosh-psmodules-repo
   - task: test-bosh-psmodules
     file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+    input_mapping: {bosh-psmodules: bosh-psmodules-repo}
     tags:
       - vsphere-stembuild-worker
 
