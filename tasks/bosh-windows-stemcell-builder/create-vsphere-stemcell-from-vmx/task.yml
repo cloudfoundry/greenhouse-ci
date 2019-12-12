@@ -10,6 +10,7 @@ inputs:
   - name: sshd
   - name: stembuild
   - name: bosh-agent-release
+  - name: bosh-psmodules-repo
 
 outputs:
   - name: hotfix-log
@@ -43,3 +44,4 @@ params:
   VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data"
   VMX_VERSION_DIR: ../vmx-version
   BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"

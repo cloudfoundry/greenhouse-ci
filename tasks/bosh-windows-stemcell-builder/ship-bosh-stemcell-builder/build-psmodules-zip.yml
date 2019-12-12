@@ -3,8 +3,11 @@ platform: linux
 image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
 inputs:
 - name: stemcell-builder
+- name: bosh-psmodules-repo
 outputs:
 - name: bosh-psmodules
+params:
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
 run:
   path: bash
   args:

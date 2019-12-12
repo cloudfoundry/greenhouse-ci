@@ -31,6 +31,7 @@ groups:
   - stembuild-windows
   - stembuild-linux
   - test-stembuild-linux-stemcell
+  - test-bosh-psmodules
 - name: aws
   jobs:
   - create-aws
@@ -108,6 +109,11 @@ resources:
     branch: ((STEMCELL_BUILDER_BRANCH))
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+- name: bosh-psmodules-repo
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 - name: windows-stemcell-dependencies
   type: git
   source:
@@ -600,7 +606,6 @@ jobs:
           BASE_OS: ((BASE_IMAGE_OS))
           BASE_IMAGE_REGEX: ((BASE_IMAGE_REGEX))
           IMAGE_FAMILY: ((IMAGE_FAMILY))
-          IMAGE_FAMILY: ((IMAGE_FAMILY))
   - in_parallel:
       fail_fast: true
       steps:
@@ -616,6 +621,20 @@ jobs:
       - put: base-gcp-image
         params:
           file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
+
+- name: test-bosh-psmodules
+  serial: true
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: bosh-psmodules
+            trigger: true
+    - task: test-bosh-psmodules
+      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      tags:
+        - vsphere-stembuild-worker
 
 - name: stembuild-windows
   serial: true
@@ -638,6 +657,8 @@ jobs:
       - get: lgpo
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -751,6 +772,8 @@ jobs:
       - get: lgpo
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: test-stemcell-automation
     config:
       platform: windows
@@ -940,6 +963,8 @@ jobs:
         resource: openssh-release
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: aws-build-number
     params:
@@ -1124,6 +1149,8 @@ jobs:
         resource: openssh-release
       - get: bosh-agent-release
         passed: [wuts-aws]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1284,6 +1311,8 @@ jobs:
         resource: openssh-release
       - get: bosh-agent-release
         passed: [wuts-aws]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1440,6 +1469,8 @@ jobs:
         resource: openssh-release
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: azure-build-number
     params:
@@ -1653,6 +1684,8 @@ jobs:
         resource: openssh-release
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: gcp-build-number
     params:
@@ -1807,6 +1840,8 @@ jobs:
       - get: stembuild-release
       - get: bosh-agent-release
         passed: [build]
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: vsphere-from-vmx-build-number
     params:
@@ -2009,6 +2044,8 @@ jobs:
           - wuts-azure
           - wuts-aws-govcloud
           #- wuts-aws-china
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: ensure-versions-match
     file: ci/tasks/match-stemcell-versions/task.yml
 
@@ -2048,6 +2085,8 @@ jobs:
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
+        passed: [promote]
+      - get: bosh-psmodules-repo
         passed: [promote]
   - get: pivnet-public-stemcells
   - task: copy-public-stemcells
@@ -2437,6 +2476,8 @@ jobs:
       - get: main-version
         passed: [promote]
         trigger: true
+      - get: bosh-psmodules-repo
+        passed: [promote]
   - task: shorten-stemcell-version
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
     input_mapping: { stemcells-main-version: main-version }

@@ -6,6 +6,7 @@ inputs:
   - name: version
   - name: stemcell-builder
   - name: windows-stemcell-dependencies
+  - name: bosh-psmodules-repo
 
 run:
   path: powershell
@@ -28,3 +29,4 @@ params:
   UPDATES_PROXY_BYPASS_LIST:
   VERSION_DIR: ../version
   VMX_CACHE_DIR: "C:\\vmx-data"
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"

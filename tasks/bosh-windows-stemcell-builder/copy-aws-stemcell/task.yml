@@ -10,6 +10,7 @@ inputs:
   - name: amis
   - name: default-stemcell
   - name: bosh-agent-release
+  - name: bosh-psmodules-repo
 
 outputs:
   - name: copied-regional-stemcells
@@ -26,3 +27,4 @@ params:
   AMIS_DIR: ../amis
   DEFAULT_STEMCELL_DIR: ../default-stemcell
   BOSH_AGENT_DIR: ../bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"

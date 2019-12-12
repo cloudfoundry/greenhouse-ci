@@ -11,6 +11,7 @@ inputs:
   - name: windows-stemcell-dependencies
   - name: sshd
   - name: bosh-agent-release
+  - name: bosh-psmodules-repo
 
 outputs:
   - name: bosh-windows-stemcell
@@ -27,3 +28,4 @@ params:
   STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   VM_PREFIX:
   BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
