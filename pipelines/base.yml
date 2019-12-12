@@ -629,7 +629,7 @@ jobs:
         fail_fast: true
         steps:
           - get: ci
-          - get: bosh-psmodules
+          - get: bosh-psmodules-repo
             trigger: true
     - task: test-bosh-psmodules
       file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
