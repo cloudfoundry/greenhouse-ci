@@ -1,0 +1,21 @@
+---
+platform: windows
+image
+inputs:
+  - name: stemcell-automation
+  - name: pester
+  - name: ci
+run:
+  path: powershell
+  args:
+    - "-Command"
+    - "& {
+            Import-Module ./ci/tasks/common/setup-windows-container.psm1;
+            Set-TmpDir;
+            Import-Module ./Pester/pester.psm1;
+            pushd stemcell-automation;
+            $result=Invoke-Pester -PassThru;
+            popd;
+            Write-Host \"Failed Tests:\"$result.FailedCount;
+            exit $result.FailedCount
+          }"

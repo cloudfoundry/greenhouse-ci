@@ -775,23 +775,7 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
   - task: test-stemcell-automation
-    config:
-      platform: windows
-      inputs:
-      - name: stemcell-automation
-      - name: pester
-      run:
-        path: powershell
-        args:
-        - "-Command"
-        - "& {
-              Import-Module ./Pester/pester.psm1;
-              pushd stemcell-automation;
-              $result=Invoke-Pester -PassThru;
-              popd;
-              Write-Host \"Failed Tests:\"$result.FailedCount;
-              exit $result.FailedCount
-            }"
+    file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
   - task: build-agent
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
   - task: build-psmodules
