@@ -1,19 +1,10 @@
 groups:
 - name: all
   jobs:
-  - build-stempatch
-  - build-stempatch-windows
-  - build-stempatch-linux
   - create-vsphere-add-updates
-  - post-stempatch-draft-release
   - test-stemcell-builder
   - test-bosh-psmodules
   - build-event-log-release
-- name: stempatch
-  jobs:
-  - build-stempatch-windows
-  - build-stempatch-linux
-  - post-stempatch-draft-release
 - name: stemcell-builder
   jobs:
   - test-stemcell-builder
@@ -37,21 +28,6 @@ resources:
   source:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
-
-- name: librsync
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/librsync/librsync.git
-    tag_filter: v*
-
-- name: stempatch
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:pivotal-cf/stempatch.git
-    private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
-    ignore_paths: [version/version]
 
 - name: stemcell-builder-develop
   type: git
@@ -95,16 +71,6 @@ resources:
     uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
     version: ((BOSH_AGENT_RELEASE_VERSION))
 
-- name: stempatch-release
-  type: github-release
-  source:
-    owner: pivotal-cf
-    repository: stempatch
-    pre_release: true
-    release: false
-    drafts: true
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-
 - name: event-log-release-github
   type: github-release
   source:
@@ -119,32 +85,6 @@ resources:
   source:
     interval: 720h
 
-#files
-
-- name: stempatch-untested-windows
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: stempatch/untested/stempatch-windows-x86_64-(.*).exe
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
-- name: stempatch-untested-linux
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: stempatch/untested/stempatch-linux-x86_64-(.*)
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
-- name: ovftool
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
 # locks
 - name: vsphere-worker-lock
   type: pool
@@ -153,17 +93,6 @@ resources:
     pool: 'vsphere-worker-lock'
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
-# versions
-- name: stempatch-version
-  type: semver
-  source:
-    driver: git
-    uri: git@github.com:pivotal-cf/stempatch.git
-    private_key: ((CLOUDFOUNDRY_STEMPATCH_DEPLOY_KEY))
-    branch: master
-    file: version/version
-    initial_version: "0.3.6"
 
 - name: updated-vmx-version
   type: semver
@@ -184,59 +113,6 @@ resources:
     initial_version: "0.2.0"
 
 jobs:
-
-- name: build-stempatch
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: stempatch
-        trigger: true
-      - get: stempatch-version
-  - put: stempatch-version
-    params: {bump: patch}
-
-- name: build-stempatch-windows
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: librsync
-      - get: stempatch
-        passed: [ build-stempatch ]
-      - get: ci
-      - get: stempatch-version
-        passed: [ build-stempatch ]
-        trigger: true
-  - task: build
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/build-stempatch-windows/task.yml
-  - put: stempatch-untested-windows
-    params:
-      file: output/stempatch-windows-x86_64-*.exe
-
-- name: build-stempatch-linux
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: librsync
-      - get: stempatch
-        passed: [ build-stempatch ]
-      - get: ci
-      - get: stempatch-version
-        passed: [ build-stempatch ]
-        trigger: true
-      - get: ovftool
-  - task: build
-    file: ci/tasks/build-stempatch-linux/task.yml
-  - put: stempatch-untested-linux
-    params:
-      file: output/stempatch-linux-x86_64-*
-
 - name: create-vsphere-add-updates
   serial: true
   plan:
@@ -274,30 +150,6 @@ jobs:
       put: vsphere-worker-lock
       params:
         release: vsphere-worker-lock
-
-- name: post-stempatch-draft-release
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: stempatch-untested-windows
-        passed: [ build-stempatch-windows ]
-      - get: stempatch-untested-linux
-        passed: [ build-stempatch-linux ]
-      - get: stempatch-version
-        passed: [ build-stempatch-linux, build-stempatch-windows ]
-  - task: trim-version-from-binaries
-    file: ci/tasks/set-stempatch-version/task.yml
-  - put: stempatch-release
-    params:
-      name: output/tag
-      tag: output/tag
-      globs:
-      - output/stempatch-*-x86_64-*
-  - put: stempatch-version
-    params: {bump: minor}
 
 - name: test-stemcell-builder
   serial: true
