@@ -299,7 +299,6 @@ jobs:
       file: ci/tasks/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
       tags: [vsphere-windows-worker]
       params:
-        OS_VERSION: windows2012R2
         ADMINISTRATOR_PASSWORD: "Password123!"
         AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
         AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
