@@ -32,18 +32,6 @@ resource_types:
 
 resources:
 # repos
-- name: bosh-agent
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-agent.git
-
-- name: bwats
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
-
 - name: ci
   type: git
   source:
