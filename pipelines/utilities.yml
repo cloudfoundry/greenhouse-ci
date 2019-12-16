@@ -4,7 +4,6 @@ groups:
   - build-stempatch
   - build-stempatch-windows
   - build-stempatch-linux
-  - bump-stemcell-builder-submodules
   - create-vsphere-add-updates
   - post-stempatch-draft-release
   - test-stemcell-builder
@@ -17,7 +16,6 @@ groups:
   - post-stempatch-draft-release
 - name: stemcell-builder
   jobs:
-  - bump-stemcell-builder-submodules
   - test-stemcell-builder
 - name: bosh-psmodules
   jobs:
@@ -250,29 +248,6 @@ jobs:
   - put: stempatch-untested-linux
     params:
       file: output/stempatch-linux-x86_64-*
-
-- name: bump-stemcell-builder-submodules
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: stemcell-builder-develop
-      - get: bosh-agent
-        trigger: true
-      - get: bwats
-        trigger: true
-  - task: bump-submodules
-    input_mapping:
-      source-repo: stemcell-builder-develop
-    output_mapping:
-      bumped-repo: stemcell-builder-bumped
-    file: ci/tasks/bump-submodules/task.yml
-  - put: stemcell-builder-develop
-    params:
-      repository: stemcell-builder-bumped
-      rebase: true
 
 - name: create-vsphere-add-updates
   serial: true
