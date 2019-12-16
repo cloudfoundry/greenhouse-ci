@@ -13,3 +13,4 @@ run:
 
 params:
   BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
