@@ -163,6 +163,8 @@ jobs:
       - get: stemcell-builder-master
         resource: stemcell-builder
       - get: bosh-agent-release
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: test-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
     input_mapping: {stemcell-builder: stemcell-builder-develop}
