@@ -21,6 +21,7 @@ groups:
   - promote-azure
   - print-azure-publishing-instructions
   - ship-bosh-stemcell-builder
+  - test-bosh-psmodules
 - name: vsphere
   jobs:
   - create-vsphere-from-vmx
@@ -75,6 +76,11 @@ resources:
     branch: ((STEMCELL_BUILDER_BRANCH))
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+- name: bosh-psmodules-repo
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 - name: windows-stemcell-dependencies
   type: git
   source:
@@ -407,6 +413,8 @@ jobs:
           resource: openssh-release
         - get: stembuild
         - get: bosh-agent-release
+        - get: bosh-psmodules-repo
+          passed: [test-bosh-psmodules]
     - put: version
       resource: vsphere-from-vmx-build-number
       params:
@@ -618,6 +626,20 @@ jobs:
       params:
         file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
 
+- name: test-bosh-psmodules
+  serial: true
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: bosh-psmodules-repo
+            trigger: true
+    - task: test-bosh-psmodules
+      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      tags:
+        - vsphere-stembuild-worker
+
 - name: create-aws
   serial: true
   serial_groups: [aws-version]
@@ -642,6 +664,8 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: bosh-agent-release
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: aws-build-number
     params:
@@ -813,6 +837,8 @@ jobs:
         trigger: true
       - get: windows-stemcell-dependencies
       - get: bosh-agent-release
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: gcp-build-number
     params:
@@ -960,6 +986,8 @@ jobs:
         trigger: true
       - get: windows-stemcell-dependencies
       - get: bosh-agent-release
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - put: version
     resource: azure-build-number
     params:
@@ -1182,6 +1210,8 @@ jobs:
     passed: [wuts-aws]
   - get: packer-output-ami
     passed: [wuts-aws]
+  - get: bosh-psmodules-repo
+    passed: [test-bosh-psmodules]
   - task: ensure-versions-match
     config:
       platform: linux
@@ -1222,6 +1252,8 @@ jobs:
         passed: [promote]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: bosh-psmodules-repo
+        passed: [promote]
   - get: pivnet-public-stemcells
   - task: copy-stemcells
     timeout: 1h30m
@@ -1535,6 +1567,8 @@ jobs:
       steps:
       - get: ci
       - get: stemcell-builder
+        passed: [promote]
+      - get: bosh-psmodules-repo
         passed: [promote]
       - get: main-version
         passed: [promote]

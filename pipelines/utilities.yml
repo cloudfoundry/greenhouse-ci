@@ -291,6 +291,8 @@ jobs:
         - get: windows-stemcell-dependencies
         - get: vmx-version
           resource: updated-vmx-version
+        - get: bosh-psmodules-repo
+          passed: [test-bosh-psmodules]
     - task: add-updates
       privileged: true
       input_mapping: { version: vmx-version }

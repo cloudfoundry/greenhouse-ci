@@ -85,6 +85,11 @@ resources:
     pool: vsphere-bwats-regina
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: bosh-psmodules-repo
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 
 jobs:
 - name: create-vsphere-add-updates
@@ -100,6 +105,8 @@ jobs:
       - get: windows-stemcell-dependencies
       - get: vmx-version
         resource: updated-vmx-version
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: checkout-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: add-updates
@@ -119,6 +126,20 @@ jobs:
       VMX_CACHE_DIR: C:\vmx-data-private
   - put: updated-vmx-version
     params: {bump: major}
+
+- name: test-bosh-psmodules
+  serial: true
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: bosh-psmodules-repo
+            trigger: true
+    - task: test-bosh-psmodules
+      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      tags:
+        - vsphere-stembuild-worker
 
 - name: create-vsphere-stemcell
   serial: true
@@ -141,6 +162,8 @@ jobs:
       - get: sshd
         resource: openssh-release
       - get: stembuild
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
   - task: checkout-stemcell-builder
     file: ci/tasks/bosh-windows-stemcell-builder/checkout-stemcell-builder/task.yml
   - task: create-stemcell
