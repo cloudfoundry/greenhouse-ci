@@ -1,6 +1,5 @@
 ---
 platform: windows
-image
 inputs:
   - name: stemcell-automation
   - name: pester
