@@ -72,6 +72,7 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: ci
       - get: stemcell-automation
         trigger: true
       - get: pester
