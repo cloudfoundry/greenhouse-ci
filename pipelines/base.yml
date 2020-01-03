@@ -538,6 +538,27 @@ resources:
     location: America/New_York
 
 jobs:
+- name: test-bosh-psmodules
+  serial: true
+  plan:
+    - put: test-psmodules-lock
+      params:
+        acquire: true
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: bosh-psmodules-repo
+            trigger: true
+    - task: test-bosh-psmodules
+      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+      tags:
+        - vsphere-stembuild-worker
+  ensure:
+    put: test-psmodules-lock
+    params:
+      release: test-psmodules-lock
+
 - name: build
   serial: true
   serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version, vsphere-patchfile-version]
@@ -548,6 +569,8 @@ jobs:
       - get: ci
       - get: stemcell-builder
         trigger: true
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
       - get: windows-stemcell-dependencies
       - get: updated-vmx-version
       - get: version
@@ -629,27 +652,6 @@ jobs:
         params:
           file: windows-gcp-image/base-gcp-image-((BASE_IMAGE_OS))-*.json
 
-- name: test-bosh-psmodules
-  serial: true
-  plan:
-    - put: test-psmodules-lock
-      params:
-        acquire: true
-    - in_parallel:
-        fail_fast: true
-        steps:
-          - get: ci
-          - get: bosh-psmodules-repo
-            trigger: true
-    - task: test-bosh-psmodules
-      file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
-      tags:
-        - vsphere-stembuild-worker
-  ensure:
-    put: test-psmodules-lock
-    params:
-      release: test-psmodules-lock
-
 - name: stembuild-windows
   serial: true
   plan:
@@ -672,7 +674,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
   - task: build-agent
@@ -768,7 +770,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
   - task: build-agent
@@ -943,7 +945,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - put: version
     resource: aws-build-number
     params:
@@ -1129,7 +1131,7 @@ jobs:
       - get: bosh-agent-release
         passed: [wuts-aws]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1291,7 +1293,7 @@ jobs:
       - get: bosh-agent-release
         passed: [wuts-aws]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1449,7 +1451,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - put: version
     resource: azure-build-number
     params:
@@ -1664,7 +1666,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - put: version
     resource: gcp-build-number
     params:
@@ -1820,7 +1822,7 @@ jobs:
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - put: version
     resource: vsphere-from-vmx-build-number
     params:
@@ -2024,7 +2026,7 @@ jobs:
           - wuts-aws-govcloud
           #- wuts-aws-china
       - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
+        passed: [build]
   - task: ensure-versions-match
     file: ci/tasks/match-stemcell-versions/task.yml
 
