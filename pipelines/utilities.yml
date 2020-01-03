@@ -111,6 +111,13 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "0.2.0"
+- name: test-psmodules-lock
+  type: pool
+  source:
+    branch: master
+    pool: "test-psmodules"
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 jobs:
 - name: create-vsphere-add-updates
@@ -179,6 +186,9 @@ jobs:
 - name: test-bosh-psmodules
   serial: true
   plan:
+  - put: test-psmodules-lock
+    params:
+      acquire: true
   - in_parallel:
       fail_fast: true
       steps:
@@ -189,6 +199,10 @@ jobs:
     input_mapping: {bosh-psmodules: bosh-psmodules-repo}
     tags:
       - vsphere-stembuild-worker
+  ensure:
+    put: test-psmodules-lock
+    params:
+      release: test-psmodules-lock
 
 - name: build-event-log-release
   serial: true
