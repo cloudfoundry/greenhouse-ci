@@ -45,6 +45,13 @@ resources:
     username: {{DOCKER_USERNAME}}
     password: {{DOCKER_PASSWORD}}
 
+# dependency resources
+
+- name: go-dep
+  type: github-release
+  source:
+    owner: golang
+    repository: dep
 jobs:
 - name: build-and-push-pivnet
   plan:
@@ -60,6 +67,7 @@ jobs:
   plan:
   - get: ci-dockerfile
     trigger: true
+  - get: go-dep
   - put: ci-image
     params:
       build: ci-dockerfile/docker
