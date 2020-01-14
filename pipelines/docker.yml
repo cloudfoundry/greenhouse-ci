@@ -68,6 +68,13 @@ jobs:
   - get: ci-dockerfile
     trigger: true
   - get: go-dep
+  - task: copy-dep
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      run:
+        path: cp
+        args: ["go-dep", "ci-dockerfile/docker/go-dep"]
   - put: ci-image
     params:
       build: ci-dockerfile/docker

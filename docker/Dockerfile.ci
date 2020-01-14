@@ -76,10 +76,7 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 755 "$GOPATH/bin"
-RUN pwd
-RUN ls -la
-RUN ls -la go-dep
-RUN ls -la /
+
 COPY go-dep /go-dep/
 RUN cd /go-dep/ && sha256sum dep-linux-arm64.sha256 && chmod +x dep-linux-arm64 && mv dep-linux-arm64 "$GOPATH/bin/dep" && cd -
 
