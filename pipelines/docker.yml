@@ -70,15 +70,20 @@ jobs:
   - get: go-dep
   - task: copy-dep
     config:
+      inputs:
+        - name: go-dep
+        - name: ci-dockerfile
+      outputs:
+        - name: docker-build-dir
       platform: linux
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       run:
         path: cp
-        args: ["go-dep", "ci-dockerfile/docker/go-dep"]
+        args: ["-R", "go-dep", "ci-dockerfile/docker", "docker-build-dir"]
   - put: ci-image
     params:
-      build: ci-dockerfile/docker
-      dockerfile: ci-dockerfile/docker/Dockerfile.ci
+      build: docker-build-dir
+      dockerfile: docker-build-dir/docker/Dockerfile.ci
       tag_as_latest: true
 
 - name: build-and-push-govc
