@@ -3,7 +3,7 @@
 set -ex
 
 RELEASE_VERSION=$( cat stembuild-version/version | cut -d '.' -f1-2 )
-BIN_DIRS=( stembuild-untested-windows stembuild-untested-linux )
+BIN_DIRS=( stembuild-promote-windows stembuild-promote-linux )
 
 for DIR in "${BIN_DIRS[@]}"
 do
