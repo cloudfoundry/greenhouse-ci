@@ -151,6 +151,7 @@ resources:
   type: git
   source:
     branch: master
+    tag_filter: promote
     uri: https://github.com/cloudfoundry-incubator/stembuild.git
     ignore_paths: [version/version]
 - name: bosh-windows-acceptance-tests
@@ -514,6 +515,30 @@ resources:
     regexp: stembuild/untested/stembuild-windows-x86_64-(((BOSHIO_OS_VERSION)).*).exe
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+# temporarily lock version
+- name: stembuild-promote-linux
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-linux-x86_(.*)-2019.15.45
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-promote-windows
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: stembuild/untested/stembuild-windows-x86_(.*)-2019.15.45.exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: aws-govcloud-promote
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-2019.15.45-(.*)-aws-xen-hvm-windows2019-go_agent-us-gov-west-1.tgz
+    region_name: ((AWS_GOVCLOUD_PACKER_REGION))
+    access_key_id: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+    secret_access_key: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 
 #pivnet
 - name: pivnet-public-stemcells
@@ -1977,8 +2002,7 @@ jobs:
         passed: [wuts-vsphere]
       - get: aws-tested
         passed: [wuts-aws]
-      - get: aws-govcloud-tested
-        passed: [wuts-aws-govcloud]
+      - get: aws-govcloud-promote
       - get: gcp-tested
         passed: [wuts-gcp]
       - get: azure-tested
@@ -1993,10 +2017,8 @@ jobs:
         - wuts-aws
         - wuts-vsphere
         - wuts-azure
-      - get: stembuild-untested-linux
-        passed: [ stembuild-linux ]
-      - get: stembuild-untested-windows
-        passed: [ stembuild-windows ]
+      - get: stembuild-promote-linux
+      - get: stembuild-promote-windows
       - get: stembuild
         passed:
         - stembuild-linux
@@ -2040,7 +2062,7 @@ jobs:
       - get: ci
       - get: aws-tested
         passed: [promote]
-      - get: aws-govcloud-tested
+      - get: aws-govcloud-promote
         passed: [promote]
       - get: aws-china-tested
         passed: [promote]
@@ -2408,10 +2430,10 @@ jobs:
         steps:
         - get: ci
           trigger: false
-        - get: stembuild-untested-linux
+        - get: stembuild-promote-linux
           trigger: true
           passed: [ promote ]
-        - get: stembuild-untested-windows
+        - get: stembuild-promote-windows
           trigger: true
           passed: [ promote ]
         - get: version
