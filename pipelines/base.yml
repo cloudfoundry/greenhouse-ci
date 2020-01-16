@@ -2106,7 +2106,7 @@ jobs:
   - task: copy-govcloud-stemcells
     timeout: 1h30m
     attempts: 3
-    input_mapping: { version: aws-build-number, default-stemcell: aws-govcloud-tested, amis: govcloud-ami}
+    input_mapping: { version: aws-build-number, default-stemcell: aws-govcloud-promote, amis: govcloud-ami}
     output_mapping: {copied-regional-stemcells: aws-govcloud-stemcells}
     file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
     params:
