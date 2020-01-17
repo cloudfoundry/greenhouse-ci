@@ -5,8 +5,8 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 
 inputs:
 - name: ci
-- name: stembuild-promote-windows
-- name: stembuild-promote-linux
+- name: stembuild-untested-windows
+- name: stembuild-untested-linux
 - name: stembuild-version
 
 outputs:

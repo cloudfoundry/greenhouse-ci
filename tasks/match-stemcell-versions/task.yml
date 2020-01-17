@@ -7,11 +7,11 @@ inputs:
   - name: ci
   - name: vsphere-stemcell-release-candidate
   - name: aws-tested
-  - name: aws-govcloud-promote
+  - name: aws-govcloud-tested
   - name: gcp-tested
   - name: azure-tested
-  - name: stembuild-promote-linux
-  - name: stembuild-promote-windows
+  - name: stembuild-untested-linux
+  - name: stembuild-untested-windows
 
 run:
   path: ci/tasks/match-stemcell-versions/run
