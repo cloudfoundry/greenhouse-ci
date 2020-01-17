@@ -539,6 +539,15 @@ resources:
     region_name: ((AWS_GOVCLOUD_PACKER_REGION))
     access_key_id: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
     secret_access_key: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+- name: packer-output-govcloud-ami-promote
+  type: s3
+  source:
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/packer-output-ami-2019.15.45-(.*).txt
+    access_key_id: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+    secret_access_key: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    region_name: ((AWS_GOVCLOUD_PACKER_REGION))
+
 
 #pivnet
 - name: pivnet-public-stemcells
@@ -2080,8 +2089,7 @@ jobs:
         resource: packer-output-ami
         passed: [promote]
       - get: govcloud-ami
-        passed: [promote]
-        resource: packer-output-govcloud-ami
+        resource: packer-output-govcloud-ami-promote
       - get: china-ami
         passed: [promote]
         resource: packer-output-china-ami
