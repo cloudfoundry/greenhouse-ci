@@ -19,7 +19,7 @@ run:
   path: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/run
 
 params:
-  OS_VERSION: windows2012R2
+  OS_VERSION:
   ACCOUNT_JSON:
 
   VERSION_DIR: ../version
