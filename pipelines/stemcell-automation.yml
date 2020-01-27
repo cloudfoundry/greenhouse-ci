@@ -94,7 +94,7 @@ jobs:
       - get: ci
       - get: version
   - task: build-agent
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip.yml
+    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
   - task: build-psmodules
     file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
   - task: generate-deps-file
