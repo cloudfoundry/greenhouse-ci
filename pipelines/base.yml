@@ -850,7 +850,7 @@ jobs:
     - get: lgpo
     - get: stembuild-untested-linux
       passed: [stembuild-linux]
-      trigger: false
+      trigger: true
     - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
       resource: bosh-windows-acceptance-tests
     - get: bosh-agent-release
