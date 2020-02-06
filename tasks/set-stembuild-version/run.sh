@@ -10,7 +10,7 @@ do
     PLATFORM=$( echo ${DIR} | cut -d '-' -f3 )
     echo "*** Setting release version of ${PLATFORM} Stembuild ***"
     SOURCE_BINARY=$( find ${DIR} -name stembuild-\* -type f -printf "%f\n" )
-    DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+/'${RELEASE_VERSION}'/g' )
+    DEST_BINARY=$( echo ${SOURCE_BINARY} | sed -r 's/[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-build\.[[:digit:]]+)?/'${RELEASE_VERSION}'/g' )
     cp ${DIR}/${SOURCE_BINARY} final-stembuilds/${DEST_BINARY}
 done
 

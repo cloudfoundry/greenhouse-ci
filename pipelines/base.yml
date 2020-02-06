@@ -223,6 +223,22 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: stembuild-linux-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-((PIPELINE_NAME))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: stembuild-windows-build-number
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-((PIPELINE_NAME))
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: main-version
   type: semver
   source:
@@ -598,6 +614,12 @@ jobs:
       - put: azure-build-number
         params:
           file: version/number
+      - put: stembuild-windows-build-number
+        params:
+          file: version/number
+      - put: stembuild-linux-build-number
+        params:
+          file: version/number
   - in_parallel:
       fail_fast: true
       steps:
@@ -667,14 +689,20 @@ jobs:
         passed: [build]
       - get: ci
       - get: version
-        resource: main-version
+        resource: stembuild-windows-build-number
         passed: [build]
         trigger: true
+      - get: main-version
+        passed: [build]
       - get: lgpo
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
+  - put: version
+    resource: stembuild-windows-build-number
+    params:
+      pre: build
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
   - task: build-agent
@@ -691,7 +719,7 @@ jobs:
       - get: stembuild
         trigger: true
       - get: stembuild-version
-        resource: main-version
+        resource: stembuild-windows-build-number
       - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild/windows/unit/task.yml
@@ -763,14 +791,20 @@ jobs:
         passed: [build]
       - get: ci
       - get: version
-        resource: main-version
+        resource: stembuild-linux-build-number
         passed: [build]
         trigger: true
+      - get: main-version
+        passed: [build]
       - get: lgpo
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
+  - put: version
+    resource: stembuild-linux-build-number
+    params:
+      pre: build
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
   - task: build-agent
@@ -787,7 +821,7 @@ jobs:
       - get: stembuild
         trigger: true
       - get: stembuild-version
-        resource: main-version
+        resource: stembuild-linux-build-number
       - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild/linux/unit/task.yml
