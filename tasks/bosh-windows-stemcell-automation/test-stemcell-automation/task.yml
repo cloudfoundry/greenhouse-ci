@@ -1,7 +1,7 @@
 ---
 platform: windows
 inputs:
-  - name: stemcell-automation
+  - name: stembuild
   - name: pester
   - name: ci
 run:
@@ -12,7 +12,7 @@ run:
             Import-Module ./ci/tasks/common/setup-windows-container.psm1;
             Set-TmpDir;
             Import-Module ./Pester/pester.psm1;
-            pushd stemcell-automation;
+            pushd stembuild/stemcell-automation;
             $result=Invoke-Pester -PassThru;
             popd;
             Write-Host \"Failed Tests:\"$result.FailedCount;
