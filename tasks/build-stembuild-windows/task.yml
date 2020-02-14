@@ -4,7 +4,7 @@ platform: windows
 inputs:
 - name: stembuild
 - name: ci
-- name: version
+- name: stembuild-version
 - name: stemcell-automation-release
   optional: true
 - name: zip-file

@@ -694,6 +694,8 @@ jobs:
         passed: [build]
       - get: stembuild
         trigger: true
+      - get: stembuild-version
+        resource: stembuild-windows-build-number
       - get: ovftool
   - put: version
     resource: stembuild-windows-build-number
@@ -789,6 +791,8 @@ jobs:
         passed: [build]
       - get: stembuild
         trigger: true
+      - get: stembuild-version  ### can we reduce the double-getting & aliasing of main-version to stembuild-version? what actually relies on it?
+        resource: stembuild-linux-build-number
       - get: ovftool
   - put: version
     resource: stembuild-linux-build-number
@@ -2438,6 +2442,7 @@ jobs:
           passed: [ promote ]
     - task: set-stembuild-version
       file: ci/tasks/set-stembuild-version/task.yml
+      input_mapping: {stembuild-version: version}
     - task: prepare-stembuild-for-upload
       file: ci/tasks/pivnet-upload/task.yml
       input_mapping: {source-folder: final-stembuilds}

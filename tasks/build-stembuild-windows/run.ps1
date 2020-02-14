@@ -3,7 +3,7 @@ trap { Exit 1 }
 
 $ROOT_DIR= (Get-Item "$PSScriptRoot/../../..").FullName
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
-$VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
+$VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR stembuild-version) version)
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
