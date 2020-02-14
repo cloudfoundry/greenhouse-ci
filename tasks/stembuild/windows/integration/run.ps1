@@ -32,7 +32,7 @@ Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 
 $env:USER_PROVIDED_IP = cat $ROOT_DIR/vcenter-ips/name
-$env:STEMBUILD_VERSION = cat $ROOT_DIR/stembuild-version/version
+$env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
 
 $env:PATH="$env:GOPATH\bin;$env:PATH"
 Set-Location $STEMBUILD_DIR

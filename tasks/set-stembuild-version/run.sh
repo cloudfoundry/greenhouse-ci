@@ -2,7 +2,7 @@
 
 set -ex
 
-RELEASE_VERSION=$( cat stembuild-version/version | cut -d '.' -f1-2 )
+RELEASE_VERSION=$( cat version/version | cut -d '.' -f1-2 )
 BIN_DIRS=( stembuild-untested-windows stembuild-untested-linux )
 
 for DIR in "${BIN_DIRS[@]}"
