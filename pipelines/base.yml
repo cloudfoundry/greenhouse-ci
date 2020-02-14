@@ -670,8 +670,6 @@ jobs:
         passed: [build]
       - get: stembuild
         trigger: true
-      - get: stembuild-version
-        resource: main-version
       - get: ovftool
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
@@ -761,8 +759,6 @@ jobs:
         passed: [build]
       - get: stembuild
         trigger: true
-      - get: stembuild-version
-        resource: main-version
       - get: ovftool
   - task: test-stemcell-automation
     file: ci/tasks/bosh-windows-stemcell-automation/test-stemcell-automation/task.yml
@@ -2408,7 +2404,6 @@ jobs:
           passed: [ promote ]
     - task: set-stembuild-version
       file: ci/tasks/set-stembuild-version/task.yml
-      input_mapping: {stembuild-version: version}
     - task: prepare-stembuild-for-upload
       file: ci/tasks/pivnet-upload/task.yml
       input_mapping: {source-folder: final-stembuilds}

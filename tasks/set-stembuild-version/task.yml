@@ -7,7 +7,7 @@ inputs:
 - name: ci
 - name: stembuild-untested-windows
 - name: stembuild-untested-linux
-- name: stembuild-version
+- name: version
 
 outputs:
 - name: final-stembuilds
