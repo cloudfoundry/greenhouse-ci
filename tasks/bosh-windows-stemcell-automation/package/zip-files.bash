@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-cp open-ssh/OpenSSH-Win64.zip bosh-psmodules/bosh-psmodules.zip bosh-agent/agent.zip deps-file/deps.json stembuild/stemcell-automation
-zip -rj StemcellAutomation.zip stembuild/stemcell-automation -x \*.Tests.\* *NOTICE
-cp StemcellAutomation.zip "zip-file/StemcellAutomation-"`date +"%s"`.zip
+pushd stemcell-automation
+file_sources=`jq -r '.[] | select(.exclude_from_zip != true) | .file_source' $DIR/dependency_sources.json`
+cp $file_sources ../deps-file/deps.json .
+zip StemcellAutomation.zip * -x mk-deps.rb \*.Tests.\* NOTICE
+cp StemcellAutomation.zip ../zip-file/StemcellAutomation-`date +"%s"`.zip

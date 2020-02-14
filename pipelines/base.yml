@@ -136,6 +136,11 @@ resources:
   source:
     tag_filter: "*"
     uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+- name: stemcell-automation
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/bosh-windows-stemcell-automation.git
 - name: pester
   type: git
   source:
@@ -675,6 +680,8 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: stemcell-automation
+        trigger: true
       - get: pester
       - get: open-ssh
         resource: openssh-release
@@ -692,11 +699,6 @@ jobs:
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
-      - get: stembuild
-        trigger: true
-      - get: stembuild-version
-        resource: stembuild-windows-build-number
-      - get: ovftool
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -711,6 +713,14 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
     file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stembuild
+        trigger: true
+      - get: stembuild-version
+        resource: stembuild-windows-build-number
+      - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild/windows/unit/task.yml
     tags: [vsphere-stembuild-worker]
@@ -772,6 +782,8 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: stemcell-automation
+        trigger: true
       - get: pester
       - get: open-ssh
         resource: openssh-release
@@ -789,11 +801,6 @@ jobs:
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
-      - get: stembuild
-        trigger: true
-      - get: stembuild-version  ### can we reduce the double-getting & aliasing of main-version to stembuild-version? what actually relies on it?
-        resource: stembuild-linux-build-number
-      - get: ovftool
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -808,6 +815,14 @@ jobs:
     file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
   - task: zip-files
     file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: stembuild
+        trigger: true
+      - get: stembuild-version
+        resource: stembuild-linux-build-number
+      - get: ovftool
   - task: unit-test
     file: ci/tasks/stembuild/linux/unit/task.yml
   - task: contract-test

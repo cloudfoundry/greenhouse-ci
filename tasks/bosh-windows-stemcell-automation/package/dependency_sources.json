@@ -1,0 +1,19 @@
+[
+  {
+    "file_source": "../open-ssh/OpenSSH-Win64.zip",
+    "version_source": "../open-ssh/version"
+  },
+  {
+    "file_source": "../bosh-psmodules/bosh-psmodules.zip",
+    "version_source": "../version/version"
+  },
+  {
+    "file_source": "../bosh-agent/agent.zip",
+    "version_source": "../version/version"
+  },
+  {
+    "file_source": "../lgpo/LGPO.zip",
+    "version_source": "../lgpo/version",
+    "exclude_from_zip": true
+  }
+]
