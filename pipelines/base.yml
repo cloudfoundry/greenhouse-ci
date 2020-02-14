@@ -930,6 +930,8 @@ jobs:
       - get: ci
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
+      - get: stembuild-untested-linux
+        passed: [create-stembuild-linux-stemcell]
       - get: stembuild-linux-stemcell
         passed: [create-stembuild-linux-stemcell]
         trigger: true
@@ -971,6 +973,8 @@ jobs:
         - get: windows-utilities-release
         - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
           resource: windows-utilities-tests-released
+        - get: stembuild-untested-linux
+          passed: [test-stembuild-linux-stemcell]
         - get: stembuild-linux-stemcell
           trigger: true
           passed: [test-stembuild-linux-stemcell]
@@ -2076,7 +2080,7 @@ jobs:
         - wuts-vsphere
         - wuts-azure
       - get: stembuild-untested-linux
-        passed: [ stembuild-linux ]
+        passed: [ wuts-stembuild-linux-stemcell ]
       - get: stembuild-untested-windows
         passed: [ stembuild-windows ]
       - get: stembuild
