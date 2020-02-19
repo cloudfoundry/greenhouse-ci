@@ -33,6 +33,9 @@ groups:
   - create-stembuild-linux-stemcell
   - test-stembuild-linux-stemcell
   - wuts-stembuild-linux-stemcell
+  - create-stembuild-windows-stemcell
+  - test-stembuild-windows-stemcell
+  - wuts-stembuild-windows-stemcell
   - test-bosh-psmodules
 - name: aws
   jobs:
@@ -329,6 +332,7 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/metadata/((MAJOR_STEMCELL_FILE))
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
 - name: stembuild-linux-stemcell
   type: s3
   source:
@@ -336,6 +340,14 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/stembuild-linux-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+- name: stembuild-windows-stemcell
+  type: s3
+  bucket: ((ROOT_BUCKET))
+  regexp: ((BASE_FOLDER_NAME))/stembuild-windows-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+  access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+  secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
 - name: vsphere-stemcell-release-candidate
   type: s3
   source:
@@ -1010,6 +1022,144 @@ jobs:
       put: vsphere-director-lock
       params:
         release: vsphere-director-lock
+
+- name: create-stembuild-windows-stemcell
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+    - in_parallel:
+        - get: ci
+        - get: lgpo
+        - get: stembuild-untested-windows
+          passed: [stembuild-windows]
+          trigger: true
+    - task: revert-snapshot
+      file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
+      tags: [vsphere-linux-worker]
+      params:
+        CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+        DATACENTER: ((VCENTER_STEMBUILD_DC))
+        VM_TO_REVERT: ((VCENTER_VM_FOLDER))/((STEMBUILD_WINDOWS_VM_NAME))
+        SNAPSHOT_NAME: "stembuild_ready_power_on"
+    - task: install-windows-updates
+      file: ci/tasks/test-stembuild-linux-stemcell/install-windows-updates/task.yml
+      tags: [vsphere-linux-worker]
+      params:
+        CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+        STEMBUILD_CONSTRUCT_TARGET_VM: ((VCENTER_VM_FOLDER))/((STEMBUILD_WINDOWS_VM_NAME))
+        VM_USERNAME: ((STEMBUILD_VM_USERNAME))
+        VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+    - task: run-stembuild-construct
+      file: ci/tasks/test-stembuild-windows-stemcell/stembuild-construct/task.yml #TODO: Rewrite this task for windows
+      tags: [vsphere-windows-worker]
+      params:
+        VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+        VCENTER_USERNAME: ((VCENTER_USERNAME))
+        VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+        VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+        STEMBUILD_BASE_VM_NAME: ((STEMBUILD_WINDOWS_VM_NAME))
+        STEMBUILD_BASE_VM_IP: ((STEMBUILD_WINDOWS_VM_IP))
+        STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
+        STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+    - task: run-stembuild-package
+      file: ci/tasks/test-stembuild-windows-stemcell/stembuild-package/task.yml # TODO: Change for windows binary
+      tags: [vsphere-windows-worker]
+      params:
+        VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+        VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+        VCENTER_USERNAME: ((VCENTER_USERNAME))
+        VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+        STEMBUILD_BASE_VM_NAME: ((STEMBUILD_WINDOWS_VM_NAME))
+        VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+    - put: stembuild-windows-stemcell
+      params:
+        file: stembuild-built-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+
+- name: test-stembuild-windows-stemcell
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+            resource: bosh-windows-acceptance-tests
+          - get: stembuild-untested-windows
+            passed: [create-stembuild-windows-stemcell]
+          - get: stembuild-windows-stemcell
+            passed: [create-stembuild-windows-stemcell]
+            trigger: true
+    - put: vsphere-director-lock
+      params:
+        acquire: true
+    - do:
+        - task: bwats-stembuild
+          file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
+          tags: [vsphere-linux-worker]
+          input_mapping: { stemcell: stembuild-windows-stemcell }
+          params:
+            BOSH_CA_CERT: ((regina_ca_cert))
+            BOSH_CLIENT: ((regina_client))
+            BOSH_CLIENT_SECRET: ((regina_client_secret))
+            BOSH_ENVIRONMENT: ((regina_environment))
+            SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+            SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+            SSH_TUNNEL_USER: ((regina_gw_user))
+            STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
+            STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+            VM_TYPE: large # WARN: This is Cloud Config specific!!!
+            VM_EXTENSIONS: 10GB_ephemeral_disk
+            MOUNT_EPHEMERAL_DISK: true
+            SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      ensure:
+        put: vsphere-director-lock
+        params:
+          release: vsphere-director-lock
+
+- name: wuts-stembuild-windows-stemcell
+  serial: true
+  serial_groups: [vsphere]
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: ci
+          - get: windows-utilities-release
+          - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+            resource: windows-utilities-tests-released
+          - get: stembuild-untested-windows
+            passed: [test-stembuild-windows-stemcell]
+          - get: stembuild-windows-stemcell
+            trigger: true
+            passed: [test-stembuild-windows-stemcell]
+    - put: vsphere-director-lock
+      params:
+        acquire: true
+    - do:
+        - task: run-wuts
+          file: ci/tasks/run-wuts/task.yml
+          tags: [vsphere-linux-worker]
+          input_mapping: { stemcell: stembuild-windows-stemcell }
+          params:
+            AZ: z1
+            BOSH_CA_CERT: ((regina_ca_cert))
+            BOSH_CLIENT: ((regina_client))
+            BOSH_CLIENT_SECRET: ((regina_client_secret))
+            BOSH_ENVIRONMENT: ((regina_environment))
+            BOSH_GW_USER: ((regina_gw_user))
+            NETWORK: default
+            SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
+            SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
+            SSH_TUNNEL_USER: ((regina_gw_user))
+            STEMCELL_OS: ((STEMCELL_OS_NAME))
+            STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+            VM_EXTENSIONS: ""
+            VM_TYPE: default
+      ensure:
+        put: vsphere-director-lock
+        params:
+          release: vsphere-director-lock
 
 - name: create-aws
   serial: true
