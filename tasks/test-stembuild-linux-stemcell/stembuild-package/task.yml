@@ -5,7 +5,8 @@ image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci 
 inputs:
   - name: ci
   - name: stembuild-untested-linux
-
+  - name: build-number
+    
 outputs:
   - name: stembuild-built-stemcell
 

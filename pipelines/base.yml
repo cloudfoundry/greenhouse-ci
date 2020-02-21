@@ -880,6 +880,9 @@ jobs:
     - get: stembuild-untested-linux
       passed: [stembuild-linux]
       trigger: true
+    - get: build-number
+      resource: stembuild-linux-build-number
+      passed: [stembuild-linux]
   - task: revert-snapshot
     file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
     tags: [vsphere-linux-worker]
