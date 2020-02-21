@@ -4,6 +4,7 @@ platform: windows
 inputs:
   - name: ci
   - name: stembuild-untested-windows
+  - name: build-number
 
 outputs:
   - name: stembuild-built-stemcell

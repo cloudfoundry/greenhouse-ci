@@ -12,6 +12,10 @@ Move-Item stembuild-untested-windows/stembuild.exe .
 
 ICACLS stembuild.exe /grant:r "users:(RX)" /C
 
-.\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME
+$version="$(cat .\build-number\number)"
+$patch,$build=$version.split('.')[2,3]
+$patch_version="$patch.$build"
+
+.\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -patch-version $patch_version
 
 Move-Item *.tgz stembuild-built-stemcell

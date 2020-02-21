@@ -1040,6 +1040,9 @@ jobs:
         - get: stembuild-untested-windows
           passed: [stembuild-windows]
           trigger: true
+        - get: build-number
+          resource: stembuild-windows-build-number
+          passed: [stembuild-windows]
     - task: revert-snapshot
       file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
       tags: [vsphere-linux-worker]
