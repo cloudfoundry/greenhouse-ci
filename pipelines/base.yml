@@ -17,9 +17,6 @@ groups:
   - create-gcp
   - test-gcp
   - wuts-gcp
-  - create-vsphere-from-vmx
-  - test-vsphere-from-vmx
-  - wuts-vsphere
   - promote
   - promote-gcp
   - promote-aws
@@ -64,9 +61,6 @@ groups:
   - wuts-gcp
 - name: vsphere
   jobs:
-  - create-vsphere-from-vmx
-  - test-vsphere-from-vmx
-  - wuts-vsphere
   - stembuild-windows
   - stembuild-linux
   - create-stembuild-linux-stemcell
@@ -249,22 +243,6 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: ((STEMCELL_INITIAL_VERSION))
-- name: updated-vmx-version
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/vsphere-updated-vmx
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: 1.0.0
-- name: vsphere-from-vmx-build-number
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/vsphere-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # locks
 - name: aws-lock
@@ -348,13 +326,6 @@ resources:
   access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
   secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 
-- name: vsphere-stemcell-release-candidate
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: vsphere-stemcell-final
   type: s3
   source:
@@ -602,7 +573,7 @@ jobs:
 
 - name: build
   serial: true
-  serial_groups: [aws-version, azure-version, gcp-version, vsphere-vmx-version, vsphere-patchfile-version]
+  serial_groups: [aws-version, azure-version, gcp-version]
   plan:
   - in_parallel:
       fail_fast: true
@@ -615,7 +586,6 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
       - get: windows-stemcell-dependencies
-      - get: updated-vmx-version
       - get: version
         resource: main-version
         params:
@@ -629,9 +599,6 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
-      - put: vsphere-from-vmx-build-number
-        params:
-          file: version/number
       - put: aws-build-number
         params:
           file: version/number
@@ -2047,176 +2014,6 @@ jobs:
       params:
         release: gcp-lock
 
-- name: create-vsphere-from-vmx
-  serial: true
-  serial_groups: [vsphere-vmx-version, vsphere]
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: stemcell-builder
-        passed: [build]
-      - get: windows-stemcell-dependencies
-      - get: version
-        resource: vsphere-from-vmx-build-number
-        passed: [build]
-        trigger: true
-      - get: vmx-version
-        resource: updated-vmx-version
-        passed: [build]
-      - get: main-version
-        passed: [build]
-      - get: sshd
-        resource: openssh-release
-      - get: stembuild-release
-      - get: bosh-agent-release
-        passed: [build]
-      - get: bosh-psmodules-repo
-        passed: [build]
-  - put: version
-    resource: vsphere-from-vmx-build-number
-    params:
-      pre: build
-  - task: create-stemcell
-    privileged: true
-    file: ci/tasks/bosh-windows-stemcell-builder/create-vsphere-stemcell-from-vmx/task.yml
-    input_mapping: { stembuild: stembuild-release }
-    tags: [vsphere-windows-worker]
-    params:
-      ADMINISTRATOR_PASSWORD: "Password123!"
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_REGION: us-east-1
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-      INPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/inputs
-      MOUNT_EPHEMERAL_DISK: true
-      NEW_PASSWORD: "Password123!"
-      ORGANIZATION: Pivotal
-      OS_VERSION: ((STEMCELL_OS_NAME))
-      OUTPUT_BUCKET: ((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal
-      OWNER: Pivotal
-      SKIP_WINDOWS_UPDATE: false
-      VMX_CACHE_DIR: "C:\\var\\vcap\\data\\vmx-data-((BASE_IMAGE_OS))"
-  - *print-updates
-
-- name: test-vsphere-from-vmx
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: stemcell-builder
-        passed: [create-vsphere-from-vmx]
-      - get: version
-        resource: vsphere-from-vmx-build-number
-        passed: [create-vsphere-from-vmx]
-        trigger: true
-      - get: main-version
-        passed: [create-vsphere-from-vmx]
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
-        resource: bosh-windows-acceptance-tests
-      - get: bosh-agent-release
-        passed: [create-vsphere-from-vmx]
-  - task: bosh-windows-stemcell
-    tags: [vsphere-linux-worker]
-    params:
-      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: version
-      outputs:
-        - name: stemcell
-      run:
-        path: /bin/bash
-        args:
-          - -c
-          - |
-            VERSION=$(cat version/number)
-            echo "((DOWNLOAD_TEXT))"
-            aws s3 cp --quiet s3://((ROOT_BUCKET))/((BASE_FOLDER_NAME))/untested/vsphere/internal/bosh-stemcell-${VERSION}-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz stemcell
-  - put: vsphere-director-lock
-    params:
-      acquire: true
-  - do:
-    - task: test-stemcell
-      file: ci/tasks/bosh-windows-stemcell-builder/bwats/task.yml
-      tags: [vsphere-linux-worker]
-      params:
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: ((STEMCELL_OS_NAME)) # this should be whatever the os listed in stemcell.MF says
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-        VM_TYPE: large # WARN: This is Cloud Config specific!!!
-        VM_EXTENSIONS: 10GB_ephemeral_disk
-        MOUNT_EPHEMERAL_DISK: true
-        SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-    ensure:
-      put: vsphere-director-lock
-      params:
-        release: vsphere-director-lock
-  - put: vsphere-stemcell-release-candidate
-    params:
-      file: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-
-- name: wuts-vsphere
-  serial: true
-  serial_groups: [vsphere]
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-        resource: windows-utilities-tests-released
-      - get: bosh-windows-stemcell
-        resource: vsphere-stemcell-release-candidate
-        passed: [test-vsphere-from-vmx]
-        trigger: true
-      - get: stemcell-builder
-        passed: [test-vsphere-from-vmx]
-      - get: main-version
-        passed: [test-vsphere-from-vmx]
-      - get: bosh-agent-release
-        passed: [test-vsphere-from-vmx]
-  - put: vsphere-director-lock
-    params:
-      acquire: true
-  - do:
-    - task: run-wuts
-      tags: [vsphere-linux-worker]
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
-      params:
-        AZ: z1
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        BOSH_GW_USER: ((regina_gw_user))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: ((STEMCELL_OS_NAME))
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: default
-    ensure:
-      put: vsphere-director-lock
-      params:
-        release: vsphere-director-lock
-
 - name: promote
   serial: true
   plan:
@@ -2224,8 +2021,6 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
-      - get: vsphere-stemcell-release-candidate
-        passed: [wuts-vsphere]
       - get: aws-tested
         passed: [wuts-aws]
       - get: aws-govcloud-tested
@@ -2242,7 +2037,6 @@ jobs:
         passed:
         - wuts-gcp
         - wuts-aws
-        - wuts-vsphere
         - wuts-azure
       - get: stembuild-untested-linux
         passed: [ wuts-stembuild-linux-stemcell ]
@@ -2258,7 +2052,6 @@ jobs:
         passed:
         - wuts-gcp
         - wuts-aws
-        - wuts-vsphere
         - wuts-azure
       - get: packer-output-ami
         passed: [wuts-aws]
@@ -2274,7 +2067,6 @@ jobs:
         passed:
           - wuts-gcp
           - wuts-aws
-          - wuts-vsphere
           - wuts-azure
           - wuts-aws-govcloud
           #- wuts-aws-china
