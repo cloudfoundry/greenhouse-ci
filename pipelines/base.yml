@@ -162,15 +162,6 @@ resources:
     owner: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-- name: stembuild-release
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: stembuild
-    pre_release: true
-    release: false
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    tag_filter: 0\.\d+
 
 - name: post-stembuild-release
   type: github-release
@@ -321,18 +312,12 @@ resources:
 
 - name: stembuild-windows-stemcell
   type: s3
-  bucket: ((ROOT_BUCKET))
-  regexp: ((BASE_FOLDER_NAME))/stembuild-windows-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-  access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-  secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
-- name: vsphere-stemcell-final
-  type: s3
   source:
-    bucket: bosh-windows-stemcells-private
-    regexp: ((BASE_FOLDER_NAME))/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
+    bucket: ((ROOT_BUCKET))
+    regexp: ((BASE_FOLDER_NAME))/stembuild-windows-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
 - name: stembuild-linux-stemcell-final
   type: s3
   source:
@@ -2074,7 +2059,7 @@ jobs:
         passed: [build]
   - task: ensure-versions-match
     file: ci/tasks/match-stemcell-versions/task.yml
-    input-mapping: {stembuild-stemcell-tested: stembuild-linux-stemcell }
+    input_mapping: { stembuild-stemcell-tested: stembuild-linux-stemcell }
 
 - name: promote-aws
   serial_groups: ["pivnet"]
