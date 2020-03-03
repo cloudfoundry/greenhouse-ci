@@ -995,7 +995,7 @@ jobs:
 
 - name: create-stembuild-windows-stemcell
   serial: true
-  serial_groups: [vsphere]
+  serial_groups: [vsphere-windows]
   plan:
     - in_parallel:
         - get: ci
@@ -1057,7 +1057,7 @@ jobs:
 
 - name: test-stembuild-windows-stemcell
   serial: true
-  serial_groups: [vsphere]
+  serial_groups: [vsphere-windows]
   plan:
     - in_parallel:
         fail_fast: true
@@ -1099,7 +1099,7 @@ jobs:
 
 - name: wuts-stembuild-windows-stemcell
   serial: true
-  serial_groups: [vsphere]
+  serial_groups: [vsphere-windows]
   plan:
     - in_parallel:
         fail_fast: true
