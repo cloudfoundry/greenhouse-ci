@@ -51,14 +51,6 @@
   path: /resources/name=aws-govcloud-untested
 - type: remove
   path: /resources/name=aws-govcloud-tested
-- type: remove
-  path: /resources/name=base-china-ami
-- type: remove
-  path: /resources/name=packer-output-china-ami
-- type: remove
-  path: /resources/name=aws-china-untested
-- type: remove
-  path: /resources/name=aws-china-tested
 
 # JOBS
 # remove unnecessary jobs
@@ -85,12 +77,6 @@
   path: /jobs/name=test-aws-govcloud
 - type: remove
   path: /jobs/name=wuts-aws-govcloud
-- type: remove
-  path: /jobs/name=create-aws-china
-- type: remove
-  path: /jobs/name=test-aws-china
-- type: remove
-  path: /jobs/name=wuts-aws-china
 
 # configure gcp for dev
 - type: replace
@@ -138,5 +124,3 @@
   path: /jobs/name=build/plan/0/aggregate/get=midnight
 - type: remove
   path: /jobs/name=build/plan/4/aggregate/put=base-govcloud-ami
-- type: remove
-  path: /jobs/name=build/plan/4/aggregate/put=base-china-ami
