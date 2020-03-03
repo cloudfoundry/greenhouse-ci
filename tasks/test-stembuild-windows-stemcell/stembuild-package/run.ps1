@@ -15,7 +15,7 @@ ICACLS stembuild.exe /grant:r "users:(RX)" /C
 $version="$(cat .\build-number\number)"
 $stemcellBuildNumber="$(cat .\stemcell-build-number\count)"
 $patch,$build=$version.split('.')[2,3]
-$patch_version="$patch.$build.$stemcellBuildNumber"
+$patch_version="$patch.$build$stemcellBuildNumber"
 
 .\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -patch-version $patch_version
 
