@@ -6,7 +6,8 @@ inputs:
   - name: ci
   - name: stembuild-untested-linux
   - name: build-number
-    
+  - name: stemcell-build-number
+
 outputs:
   - name: stembuild-built-stemcell
 

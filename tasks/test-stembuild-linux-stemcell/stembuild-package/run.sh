@@ -10,8 +10,9 @@ mv stembuild-untested-linux/stembuild .
 chmod 500 stembuild
 
 version="$(cat build-number/number)"
+stemcellBuildNumber="$(cat stemcell-build-number/count)"
 IFS='.' read -r -a array <<< "$version"
-patch_version="${array[2]}.${array[3]}"
+patch_version="${array[2]}.${array[3]}${stemcellBuildNumber}"
 
 ./stembuild package \
   -vcenter-url ${VCENTER_BASE_URL} -vcenter-username ${VCENTER_USERNAME} -vcenter-password ${VCENTER_PASSWORD} -vm-inventory-path ${VCENTER_VM_FOLDER}/${STEMBUILD_BASE_VM_NAME} -patch-version ${patch_version}

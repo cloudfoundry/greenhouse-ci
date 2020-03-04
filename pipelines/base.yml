@@ -229,6 +229,13 @@ resources:
     key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-stemcell-((PIPELINE_NAME))
     aws_access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     aws_secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+- name: stembuild-linux-stemcell-build-number
+  type: counter-resource
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-stemcell-((PIPELINE_NAME))
+    aws_access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    aws_secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: main-version
   type: semver
   source:
@@ -813,6 +820,13 @@ jobs:
     - get: build-number
       resource: stembuild-linux-build-number
       passed: [stembuild-linux]
+    - get: stemcell-build-number
+      resource: stembuild-linux-stemcell-build-number
+      params:
+        inc: true
+  - put: stembuild-linux-stemcell-build-number
+    params:
+      file: stemcell-build-number/count
   - task: revert-snapshot
     file: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/task.yml
     tags: [vsphere-linux-worker]
