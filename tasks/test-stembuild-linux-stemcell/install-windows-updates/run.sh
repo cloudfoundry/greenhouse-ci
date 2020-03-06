@@ -40,8 +40,14 @@ pid=$(
 return=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${pid} -X -json | jq '.ProcessInfo[0].ExitCode')
 echo "$command returned $return"
 
-updates_remaining=-1
+returnWindowsUpdateCount="exit (([array](Get-WindowsUpdate)).Count)"
+echo "getting update count"
+get_update_count_pid=$($govc_pwsh_cmd ${returnWindowsUpdateCount})
+echo "getting update count exit code via guest.ps"
+updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+echo "Windows Updates to install: $updates_remaining"
 while [[ updates_remaining -ne 0 ]]; do
+
   install_update_pid=$(
     $govc_pwsh_cmd Install-WindowsUpdate -AcceptAll -AutoReboot
   )
@@ -61,9 +67,7 @@ while [[ updates_remaining -ne 0 ]]; do
   wait_for_vm_to_come_up
 
   echo "VM reachable"
-
-  returnWindowsUpdateCount="exit ((Get-WindowsUpdate).Count)"
   get_update_count_pid=$($govc_pwsh_cmd ${returnWindowsUpdateCount})
-	updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
-	echo "Updates remaining: $updates_remaining"
+  updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+  echo "Updates remaining: $updates_remaining"
 done
