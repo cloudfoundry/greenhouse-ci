@@ -12,7 +12,7 @@ outputs:
   - name: stembuild-built-stemcell
 
 run:
-  path: ci/tasks/test-stembuild-linux-stemcell/stembuild-package/run.sh
+  path: ci/tasks/stembuild-package/run.sh
 
 params:
   VCENTER_BASE_URL:

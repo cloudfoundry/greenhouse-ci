@@ -10,7 +10,7 @@ run:
   path: powershell
   args:
     - "-File"
-    - ci/tasks/test-stembuild-windows-stemcell/stembuild-construct/run.ps1
+    - ci/tasks/stembuild-construct/run.ps1
 
 params:
   VCENTER_BASE_URL:

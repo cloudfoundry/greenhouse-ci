@@ -6,7 +6,7 @@ inputs:
   - name: ci
 
 run:
-  path: ci/tasks/test-stembuild-linux-stemcell/revert-snapshot/run.sh
+  path: ci/tasks/revert-snapshot/run.sh
 
 params:
   CREDENTIAL_URL:

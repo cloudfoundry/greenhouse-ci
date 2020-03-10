@@ -6,7 +6,7 @@ inputs:
   - name: ci
 
 run:
-  path: ci/tasks/test-stembuild-linux-stemcell/install-windows-updates/run.sh
+  path: ci/tasks/install-windows-updates/run.sh
 
 params:
   CREDENTIAL_URL:

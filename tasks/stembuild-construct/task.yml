@@ -8,7 +8,7 @@ inputs:
   - name: lgpo
 
 run:
-  path: ci/tasks/test-stembuild-linux-stemcell/stembuild-construct/run.sh
+  path: ci/tasks/stembuild-construct/run.sh
 
 params:
   VCENTER_BASE_URL:
