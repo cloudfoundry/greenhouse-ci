@@ -73,3 +73,8 @@ AZURE_HEAVY_VM_TYPE: default
 # Promote Variables
 BOSHIO_OS_VERSION: '2019'
 
+# Stembuild Integration OVA Info
+OVA_SOURCE_S3_REGION: "us-east-1"
+OVA_SOURCE_S3_BUCKET: "all-bosh-windows"
+OVA_SOURCE_S3_FILENAME: "ova-for-stembuild-test/Windows2019_VMWTools10.3.10.ova"
+

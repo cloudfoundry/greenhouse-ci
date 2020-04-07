@@ -3,7 +3,6 @@
 set -ex
 
 export STEMBUILD_VERSION=`cat version/version`
- export OVA_SOURCE_S3_FILENAME="ova-for-stembuild-test/Windows2019_VMWTools10.3.10.ova"
 export VM_NAME_PREFIX="construct-windows-integration-ci-${OS_LINE}"
 
 ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../../../.. && pwd)

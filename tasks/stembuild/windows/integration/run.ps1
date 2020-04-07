@@ -10,7 +10,6 @@ $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
 
 
-$env:OVA_SOURCE_S3_FILENAME="ova-for-stembuild-test/${env:OS_LINE}_iso_v2.ova"
 $env:VM_NAME_PREFIX="construct-windows-integration-ci-${env:OS_LINE}"
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"
