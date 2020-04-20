@@ -1150,6 +1150,7 @@ jobs:
       params:
         PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
   - task: create-stemcell
+    attempts: 3
     timeout: 2h
     file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
@@ -1332,6 +1333,7 @@ jobs:
       params:
         PACKER_CI: ((GOVCLOUD_PACKER_CI_PRIVATE_KEY))
   - task: create-stemcell
+    attempts: 3
     timeout: 1h30m
     file: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/task.yml
     params:
@@ -1480,6 +1482,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
+    attempts: 3
     file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
@@ -1695,6 +1698,7 @@ jobs:
     params:
       pre: build
   - task: create-stemcell
+    attempts: 3
     file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
