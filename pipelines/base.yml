@@ -178,7 +178,7 @@ resources:
 - name: bosh-agent-release
   type: metalink-repository
   source:
-    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
+    uri: git+https://github.com/greenhouse-org/bosh-agent-index.git//
     version: ((BOSH_AGENT_RELEASE_VERSION))
 
 # versions
