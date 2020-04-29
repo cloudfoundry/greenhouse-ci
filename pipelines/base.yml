@@ -995,7 +995,7 @@ jobs:
         VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     - task: run-stembuild-construct
       file: ci/tasks/stembuild-construct/task-windows.yml
-      tags: [vsphere-windows-worker]
+      tags: [vsphere-stembuild-worker]
       params:
         VCENTER_BASE_URL: ((VCENTER_BASE_URL))
         VCENTER_USERNAME: ((VCENTER_USERNAME))
@@ -1007,7 +1007,7 @@ jobs:
         STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     - task: run-stembuild-package
       file: ci/tasks/stembuild-package/task-windows.yml
-      tags: [vsphere-windows-worker]
+      tags: [vsphere-stembuild-worker]
       params:
         VCENTER_BASE_URL: ((VCENTER_BASE_URL))
         VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
