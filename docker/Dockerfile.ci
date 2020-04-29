@@ -62,9 +62,9 @@ RUN pip install awscli
 RUN gem install aws-sdk
 RUN gem install azure_mgmt_resources
 
-ENV GOLANG_VERSION 1.12.7
+ENV GOLANG_VERSION 1.14.2
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 66d83bfb5a9ede000e33c6579a91a29e6b101829ad41fffb5c5bb6c900e109d9
+ENV GOLANG_DOWNLOAD_SHA256 6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
     && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
