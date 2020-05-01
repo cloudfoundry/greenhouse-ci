@@ -13,7 +13,7 @@ run:
   path: /bin/bash
   args:
   - -c
-  - ci/tasks/stembuild/linux/integration/run.sh
+  - ci/tasks/test-integration-stembuild-linux/run.sh
 
 params:
   GOVC_INSECURE: 1

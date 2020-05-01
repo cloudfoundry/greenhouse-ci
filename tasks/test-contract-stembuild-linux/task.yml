@@ -10,7 +10,7 @@ run:
   path: /bin/bash
   args:
   - -c
-  - ci/tasks/stembuild/linux/contract/run.sh
+  - ci/tasks/test-contract-stembuild-linux/run.sh
 
 params:
   GOVC_INSECURE: 1

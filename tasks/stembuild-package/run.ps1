@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
-Import-Module ./ci/tasks/common/setup-windows-container.psm1
+Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
 
 pushd stembuild-untested-windows

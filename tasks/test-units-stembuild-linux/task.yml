@@ -12,4 +12,4 @@ run:
   path: /bin/bash
   args:
     - -c
-    - ci/tasks/stembuild/linux/unit/run.sh
+    - ci/tasks/test-units-stembuild-linux/run.sh

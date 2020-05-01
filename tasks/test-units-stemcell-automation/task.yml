@@ -9,7 +9,7 @@ run:
   args:
     - "-Command"
     - "& {
-            Import-Module ./ci/tasks/common/setup-windows-container.psm1;
+            Import-Module ./ci/common-scripts/setup-windows-container.psm1;
             Set-TmpDir;
             Import-Module ./Pester/pester.psm1;
             pushd stembuild/stemcell-automation;

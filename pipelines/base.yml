@@ -755,9 +755,9 @@ jobs:
   - task: zip-files
     file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
   - task: unit-test
-    file: ci/tasks/stembuild/linux/unit/task.yml
+    file: ci/tasks/test-units-stembuild-linux/task.yml
   - task: contract-test
-    file: ci/tasks/stembuild/linux/contract/task.yml
+    file: ci/tasks/test-contract-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
     params:
       VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
@@ -773,7 +773,7 @@ jobs:
   - put: vcenter-ips
     params: { acquire: true }
   - task: integration
-    file: ci/tasks/stembuild/linux/integration/task.yml
+    file: ci/tasks/test-integration-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
     params:
       VCENTER_BASE_URL: ((VCENTER_BASE_URL))
@@ -1580,7 +1580,7 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: "10GB_ephemeral_disk"
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-  - task: upload-stemcell-to-acceptance
+  - task: upload-stemcell-to-acceptance # TODO: WE SHOULDN'T DO THIS ANYMORE
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
     input_mapping: {heavy_stemcell_dir: heavy-stemcell}
@@ -1956,8 +1956,8 @@ jobs:
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       SKIP_MS_UPDATE_TEST: true
   - in_parallel:
-    - task: pivnet-upload
-      file: ci/tasks/pivnet-upload/task.yml
+    - task: upload-to-pivnet
+      file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-dev-meta4-file
       file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
@@ -2034,8 +2034,8 @@ jobs:
       params:
         release: goose-lock
   - in_parallel:
-    - task: pivnet-upload
-      file: ci/tasks/pivnet-upload/task.yml
+    - task: upload-to-pivnet
+      file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-dev-file
       file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
@@ -2112,8 +2112,8 @@ jobs:
     tags: [vsphere-linux-worker]
     input_mapping: { bosh-windows-stemcell: stembuild-linux-stemcell }
     file: ci/tasks/set-stemcell-version/task.yml
-  - task: pivnet-upload
-    file: ci/tasks/pivnet-upload/task.yml
+  - task: upload-to-pivnet
+    file: ci/tasks/upload-to-pivnet/task.yml
     input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
   - in_parallel:
     - put: pivnet-internal-stemcells # This is what actually releases things to pivnet
@@ -2202,8 +2202,8 @@ jobs:
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       SKIP_MS_UPDATE_TEST: true
   - in_parallel:
-    - task: pivnet-upload
-      file: ci/tasks/pivnet-upload/task.yml
+    - task: upload-to-pivnet
+      file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: { source-folder: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-file
       input_mapping: { stemcell: azure-stemcell-final }
@@ -2252,7 +2252,7 @@ jobs:
     - task: set-stembuild-version
       file: ci/tasks/set-stembuild-version/task.yml
     - task: prepare-stembuild-for-upload
-      file: ci/tasks/pivnet-upload/task.yml
+      file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: {source-folder: final-stembuilds}
     - put: pivnet-release
       resource: pivnet-public-stemcells
@@ -2260,8 +2260,8 @@ jobs:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: 'pivnet-metadata/metadata'
-    - task: get-stembuild-commit
-      file: ci/tasks/stembuild/promote/get-stembuild-sha.yml
+    - task: get-stembuild-commit-sha
+      file: ci/tasks/get-stembuild-commit-sha.yml
     - put: post-stembuild-release
       params:
         name: final-stembuilds/tag
