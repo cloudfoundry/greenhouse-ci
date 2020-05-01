@@ -8,7 +8,7 @@ inputs:
   - name: stemcell
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/bwats/run
+  path: ci/tasks/run-bwats/run
 
 params:
   ACCOUNT_JSON:

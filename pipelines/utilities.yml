@@ -194,8 +194,8 @@ jobs:
       steps:
       - get: ci
       - get: bosh-psmodules-repo
-  - task: test-bosh-psmodules
-    file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+  - task: test-units-bosh-psmodules
+    file: ci/tasks/test-units-bosh-psmodules/task.yml
     input_mapping: {bosh-psmodules: bosh-psmodules-repo}
     tags:
       - vsphere-stembuild-worker

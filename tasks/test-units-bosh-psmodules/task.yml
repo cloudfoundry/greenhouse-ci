@@ -11,4 +11,4 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-Command"
-  - ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/run.ps1
+  - ci/tasks/test-units-bosh-psmodules/run.ps1

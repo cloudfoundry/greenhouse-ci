@@ -21,7 +21,7 @@ outputs:
   - name: hotfix-log
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/create-aws-stemcell/run
+  path: ci/tasks/create-aws-stemcell/run
 
 params:
   OS_VERSION:
