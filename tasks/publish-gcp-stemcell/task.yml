@@ -16,7 +16,7 @@ outputs:
   - name: untested-stemcell
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/run
+  path: ci/tasks/publish-gcp-stemcell/run
 
 params:
   OS_VERSION:

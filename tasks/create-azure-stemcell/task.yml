@@ -17,7 +17,7 @@ outputs:
   - name: hotfix-log
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/run
+  path: ci/tasks/create-azure-stemcell/run
 
 params:
   OS_VERSION:

@@ -1147,7 +1147,7 @@ jobs:
         - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
       params:
         PACKER_CI: ((PACKER_CI_PRIVATE_KEY))
-  - task: create-stemcell
+  - task: create-aws-stemcell
     timeout: 2h
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
@@ -1329,7 +1329,7 @@ jobs:
         - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
       params:
         PACKER_CI: ((GOVCLOUD_PACKER_CI_PRIVATE_KEY))
-  - task: create-stemcell
+  - task: create-aws-govcloud-stemcell
     timeout: 1h30m
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
@@ -1477,8 +1477,8 @@ jobs:
     resource: azure-build-number
     params:
       pre: build
-  - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-azure-stemcell/task.yml
+  - task: create-azure-stemcell
+    file: ci/tasks/create-azure-stemcell/task.yml
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
@@ -1692,8 +1692,8 @@ jobs:
     resource: gcp-build-number
     params:
       pre: build
-  - task: create-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/create-gcp-stemcell/task.yml
+  - task: create-gcp-stemcell
+    file: ci/tasks/create-gcp-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
@@ -1707,8 +1707,8 @@ jobs:
         IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
-  - task: publish-stemcell
-    file: ci/tasks/bosh-windows-stemcell-builder/publish-gcp-stemcell/task.yml
+  - task: publish-gcp-stemcell
+    file: ci/tasks/publish-gcp-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
@@ -2145,7 +2145,7 @@ jobs:
       - get: azure-base-vhd-uri
         passed: [promote]
   - task: print-azure-publishing-instructions
-    file: ci/tasks/bosh-windows-stemcell-builder/print-azure-publishing-instructions/task.yml
+    file: ci/tasks/print-azure-publishing-instructions/task.yml
     params:
       AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
       AZURE_CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
