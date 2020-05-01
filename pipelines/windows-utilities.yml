@@ -373,7 +373,7 @@ jobs:
           acquire: true
       - do:
         - task: download-heavy
-          file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+          file: ci/tasks/download-heavy-azure-stemcell/task.yml
           input_mapping:
             azure-build-number: azure-2019-stemcell-version
             azure-base-vhd-uri: azure-2019-vhd-uri

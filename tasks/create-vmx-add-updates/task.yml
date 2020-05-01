@@ -14,7 +14,7 @@ run:
   - "-ExecutionPolicy"
   - "Bypass"
   - "-File"
-  - ci/tasks/bosh-windows-stemcell-builder/create-vmx-add-updates/run.ps1
+  - ci/tasks/create-vmx-add-updates/run.ps1
 
 params:
   ADMINISTRATOR_PASSWORD: replace-me

@@ -652,15 +652,15 @@ jobs:
   - task: test-units-stemcell-automation
     file: ci/tasks/test-units-stemcell-automation/task.yml
   - task: build-agent
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+    file: ci/tasks/build-agent-zip/task.yml
   - task: build-psmodules
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+    file: ci/tasks/build-psmodules-zip/task.yml
   - task: generate-deps-file
-    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+    file: ci/tasks/generate-deps-file/task.yml
   - task: zip-files
-    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+    file: ci/tasks/zip-files/task.yml
   - task: unit-test
-    file: ci/tasks/stembuild/windows/unit/task.yml
+    file: ci/tasks/test-units-stembuild-windows/task.yml
     tags: [vsphere-stembuild-worker]
   - task: contract-test
     tags: [vsphere-stembuild-worker]
@@ -747,13 +747,13 @@ jobs:
   - task: test-units-stemcell-automation
     file: ci/tasks/test-units-stemcell-automation/task.yml
   - task: build-agent
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+    file: ci/tasks/build-agent-zip/task.yml
   - task: build-psmodules
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+    file: ci/tasks/build-psmodules-zip/task.yml
   - task: generate-deps-file
-    file: ci/tasks/bosh-windows-stemcell-automation/package/generate-deps-file.yml
+    file: ci/tasks/generate-deps-file/task.yml
   - task: zip-files
-    file: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.yml
+    file: ci/tasks/zip-files/task.yml
   - task: unit-test
     file: ci/tasks/test-units-stembuild-linux/task.yml
   - task: contract-test
@@ -1179,7 +1179,7 @@ jobs:
         path: cat
         args: ["hotfix-log/hotfixes.log"]
   - task: wait-for-ami-availability
-    file: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/task.yml
+    file: ci/tasks/wait-for-ami-availability/task.yml
     params:
       AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
@@ -1547,7 +1547,7 @@ jobs:
       acquire: true
   - do:
     - task: download-heavy
-      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      file: ci/tasks/download-heavy-azure-stemcell/task.yml
       tags: [azure-linux-worker]
       timeout: 20m
       params:
@@ -1625,7 +1625,7 @@ jobs:
       acquire: true
   - do:
     - task: download-heavy
-      file: ci/tasks/bosh-windows-stemcell-builder/azure-download-heavy/task.yml
+      file: ci/tasks/download-heavy-azure-stemcell/task.yml
       tags: [azure-linux-worker]
       timeout: 20m
       params:
@@ -1914,7 +1914,7 @@ jobs:
     attempts: 3
     input_mapping: { version: aws-build-number, default-stemcell: aws-tested, amis: default-ami}
     output_mapping: {copied-regional-stemcells: aws-public-stemcells}
-    file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    file: ci/tasks/copy-aws-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
@@ -1925,14 +1925,14 @@ jobs:
     attempts: 3
     input_mapping: { version: aws-build-number, default-stemcell: aws-govcloud-tested, amis: govcloud-ami}
     output_mapping: {copied-regional-stemcells: aws-govcloud-stemcells}
-    file: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/task.yml
+    file: ci/tasks/copy-aws-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       AWS_SECRET_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
       REGIONS: "us-gov-east-1"
   - task: aggregate-stemcells
-    file: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/task.yml
+    file: ci/tasks/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number, amis: default-ami }
     params:
       COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells'
@@ -1960,7 +1960,7 @@ jobs:
       file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-dev-meta4-file
-      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: aws
@@ -2038,7 +2038,7 @@ jobs:
       file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-dev-file
-      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/commit-meta4-file/task.yml
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: gcp
@@ -2207,7 +2207,7 @@ jobs:
       input_mapping: { source-folder: azure-stemcell-final, pivnet-release: pivnet-public-stemcells }
     - task: commit-meta4-file
       input_mapping: { stemcell: azure-stemcell-final }
-      file: ci/tasks/bosh-windows-stemcell-builder/commit-meta4-file/task.yml
+      file: ci/tasks/commit-meta4-file/task.yml
       params:
         IAAS: azure
         OS_NAME: windows
@@ -2287,17 +2287,17 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [promote]
   - task: shorten-stemcell-version
-    file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/shorten-stemcell-version.yml
+    file: ci/tasks/shorten-stemcell-version/task.yml
     input_mapping: { stemcells-main-version: main-version }
   - in_parallel:
       fail_fast: true
       steps:
       - task: build-psmodules-zip
-        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-psmodules-zip.yml
+        file: ci/tasks/build-psmodules-zip/task.yml
       - task: build-agent-zip
-        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/task.yml
+        file: ci/tasks/build-agent-zip/task.yml
       - task: get-stemcell-builder-sha
-        file: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/get-stemcell-builder-sha.yml
+        file: ci/tasks/get-stemcell-builder-sha/task.yml
       - task: create-major-stemcell
         file: ci/tasks/create-major-stemcell/task.yml
         input_mapping: { version: stemcell-builder-release-version }

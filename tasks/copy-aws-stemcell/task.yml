@@ -16,7 +16,7 @@ outputs:
   - name: copied-regional-stemcells
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/copy-aws-stemcell/run
+  path: ci/tasks/copy-aws-stemcell/run
 
 params:
   OS_VERSION:

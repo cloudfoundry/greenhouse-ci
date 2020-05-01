@@ -8,7 +8,7 @@ inputs:
 outputs:
 - name: bosh-agent
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/ship-bosh-stemcell-builder/build-agent-zip/run.sh
+  path: ci/tasks/build-agent-zip/run.sh
 
 params:
   BOSH_AGENT_DIR: bosh-agent-release

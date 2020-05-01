@@ -17,7 +17,7 @@ outputs:
   - name: sha
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/aggregate-stemcells/run
+  path: ci/tasks/aggregate-stemcells/run
 
 params:
   OS_VERSION:

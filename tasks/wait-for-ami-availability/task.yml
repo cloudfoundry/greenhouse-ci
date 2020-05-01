@@ -10,7 +10,7 @@ inputs:
   - name: amis
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/wait-for-ami-availability/run
+  path: ci/tasks/wait-for-ami-availability/run
 
 params:
   AWS_ACCESS_KEY:

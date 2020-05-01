@@ -10,7 +10,7 @@ inputs:
   - name: bosh-psmodules-repo
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-builder/rspec/run
+  path: ci/tasks/test-stemcell-builder/run
 
 params:
   BOSH_AGENT_DIR: bosh-agent-release

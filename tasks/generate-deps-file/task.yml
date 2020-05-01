@@ -7,14 +7,15 @@ inputs:
   - name: stembuild
   - name: open-ssh
   - name: stemcell-builder
-  - name: deps-file
+  - name: lgpo
+  - name: version
   - name: bosh-agent
   - name: bosh-psmodules
 
 outputs:
-  - name: zip-file
+  - name: deps-file
 
 run:
-  path: ci/tasks/bosh-windows-stemcell-automation/package/zip-files.bash
+  path: ci/tasks/generate-deps-file/run.bash
 
 params:
