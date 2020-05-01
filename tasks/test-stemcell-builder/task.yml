@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: stemcell-builder
+  - name: bosh-agent-release
+  - name: bosh-psmodules-repo
+
+run:
+  path: ci/tasks/test-stemcell-builder/run
+
+params:
+  BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"

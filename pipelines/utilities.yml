@@ -142,7 +142,7 @@ jobs:
     - task: add-updates
       privileged: true
       input_mapping: { version: vmx-version }
-      file: ci/tasks/bosh-windows-stemcell-builder/create-vmx-add-updates/task.yml
+      file: ci/tasks/create-vmx-add-updates/task.yml
       tags: [vsphere-windows-worker]
       params:
         ADMINISTRATOR_PASSWORD: "Password123!"
@@ -173,7 +173,7 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
   - task: test-stemcell-builder
-    file: ci/tasks/bosh-windows-stemcell-builder/rspec/task.yml
+    file: ci/tasks/test-stemcell-builder/task.yml
     input_mapping: {stemcell-builder: stemcell-builder-develop}
   - task: merge-to-master
     input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
@@ -194,8 +194,8 @@ jobs:
       steps:
       - get: ci
       - get: bosh-psmodules-repo
-  - task: test-bosh-psmodules
-    file: ci/tasks/bosh-windows-stemcell-builder/bosh-psmodules/task.yml
+  - task: test-units-bosh-psmodules
+    file: ci/tasks/test-units-bosh-psmodules/task.yml
     input_mapping: {bosh-psmodules: bosh-psmodules-repo}
     tags:
       - vsphere-stembuild-worker

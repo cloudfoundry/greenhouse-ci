@@ -1,0 +1,26 @@
+---
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci-azcopy}}
+
+inputs:
+- name: azstemcell
+- name: azure-base-vhd-uri
+- name: azure-build-number
+- name: bosh-windows-stemcell
+- name: ci
+
+outputs:
+  - name: heavy-stemcell
+
+run:
+  path: /bin/bash
+  args:
+  - -l
+  - -c
+  - |
+    pwsh -ExecutionPolicy Bypass -File ci/tasks/download-heavy-azure-stemcell/run.ps1
+
+params:
+  STEMCELL_OS:
+  WORKING_DIR: '/'
+  DESTINATION_DIR:

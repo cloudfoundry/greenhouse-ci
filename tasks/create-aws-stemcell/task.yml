@@ -1,0 +1,42 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: stemcell-builder
+  - name: base-amis
+  - name: version
+  - name: windows-stemcell-dependencies
+  - name: sshd
+  - name: packer-ci-private-key
+  - name: bosh-agent-release
+  - name: bosh-psmodules-repo
+
+outputs:
+  - name: bosh-windows-stemcell
+  - name: amis
+  - name: sha
+  - name: hotfix-log
+
+run:
+  path: ci/tasks/create-aws-stemcell/run
+
+params:
+  OS_VERSION:
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:
+  AWS_REGION:
+  PACKER_REGION:
+  VM_PREFIX:
+
+  VERSION_DIR: ../version
+  BASE_AMIS_DIR: ../base-amis
+  AMIS_DIR: ../amis
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+
+  OUTPUT_BUCKET_NAME: aws-regional-stemcells
+  OUTPUT_BUCKET_REGION: us-east-1
+  BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"

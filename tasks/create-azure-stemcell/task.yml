@@ -1,0 +1,43 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: version
+  - name: stemcell-builder
+  - name: windows-stemcell-dependencies
+  - name: sshd
+  - name: bosh-agent-release
+  - name: bosh-psmodules-repo
+
+outputs:
+  - name: bosh-windows-stemcell
+  - name: hotfix-log
+
+run:
+  path: ci/tasks/create-azure-stemcell/run
+
+params:
+  OS_VERSION:
+  CLIENT_ID:
+  CLIENT_SECRET:
+  TENANT_ID:
+  SUBSCRIPTION_ID:
+  OBJECT_ID:
+  RESOURCE_GROUP_NAME:
+  STORAGE_ACCOUNT:
+  LOCATION:
+  VM_SIZE:
+  PUBLISHER:
+  OFFER:
+  SKU:
+  ADMIN_PASSWORD:
+  VERSION_DIR: ../version
+  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
+  BASE_IMAGE:
+  BASE_IMAGE_OFFER:
+  VM_PREFIX:
+  BOSH_AGENT_DIR: bosh-agent-release
+  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
