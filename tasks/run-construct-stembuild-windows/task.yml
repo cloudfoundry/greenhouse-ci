@@ -1,14 +1,16 @@
 ---
-platform: linux
-image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci },  }
+platform: windows
 
 inputs:
   - name: ci
-  - name: stembuild-untested-linux
+  - name: stembuild-untested-windows
   - name: lgpo
 
 run:
-  path: ci/tasks/stembuild-construct/run.sh
+  path: powershell
+  args:
+    - "-File"
+    - ci/tasks/run-construct-stembuild-windows/run.ps1
 
 params:
   VCENTER_BASE_URL:

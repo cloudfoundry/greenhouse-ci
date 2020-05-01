@@ -664,7 +664,7 @@ jobs:
     tags: [vsphere-stembuild-worker]
   - task: contract-test
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild/windows/contract/task.yml
+    file: ci/tasks/test-contract-stembuild-windows/task.yml
     params:
       VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
       VM_FOLDER: ((VCENTER_VM_FOLDER))
@@ -680,7 +680,7 @@ jobs:
     params: { acquire: true }
   - task: integration
     tags: [vsphere-stembuild-worker]
-    file: ci/tasks/stembuild/windows/integration/task.yml
+    file: ci/tasks/test-integration-stembuild-windows/task.yml
     params:
       VCENTER_BASE_URL: ((VCENTER_BASE_URL))
       GOVC_DATASTORE: ((GOVC_DATASTORE))
@@ -844,7 +844,7 @@ jobs:
       VM_USERNAME: ((STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - task: run-stembuild-construct
-    file: ci/tasks/stembuild-construct/task.yml
+    file: ci/tasks/run-construct-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
     params:
       VCENTER_BASE_URL: ((VCENTER_BASE_URL))
@@ -856,7 +856,7 @@ jobs:
       STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
       STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - task: run-stembuild-package
-    file: ci/tasks/stembuild-package/task.yml
+    file: ci/tasks/run-package-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
     params:
       VCENTER_BASE_URL: ((VCENTER_BASE_URL))
@@ -992,7 +992,7 @@ jobs:
         VM_USERNAME: ((STEMBUILD_VM_USERNAME))
         VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     - task: run-stembuild-construct
-      file: ci/tasks/stembuild-construct/task-windows.yml
+      file: ci/tasks/run-construct-stembuild-windows/task.yml
       tags: [vsphere-windows-worker]
       params:
         VCENTER_BASE_URL: ((VCENTER_BASE_URL))
@@ -1004,7 +1004,7 @@ jobs:
         STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
         STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     - task: run-stembuild-package
-      file: ci/tasks/stembuild-package/task-windows.yml
+      file: ci/tasks/run-package-stembuild-windows/task.yml
       tags: [vsphere-windows-worker]
       params:
         VCENTER_BASE_URL: ((VCENTER_BASE_URL))

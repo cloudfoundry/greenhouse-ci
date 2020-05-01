@@ -1,10 +1,9 @@
 ---
-platform: linux
-image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci },  }
+platform: windows
 
 inputs:
   - name: ci
-  - name: stembuild-untested-linux
+  - name: stembuild-untested-windows
   - name: build-number
   - name: stemcell-build-number
 
@@ -12,7 +11,10 @@ outputs:
   - name: stembuild-built-stemcell
 
 run:
-  path: ci/tasks/stembuild-package/run.sh
+  path: powershell
+  args:
+    - "-File"
+    - ci/tasks/run-package-stembuild-windows/run.ps1
 
 params:
   VCENTER_BASE_URL:

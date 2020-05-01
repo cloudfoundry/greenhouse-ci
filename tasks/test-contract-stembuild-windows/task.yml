@@ -9,7 +9,7 @@ run:
   path: powershell
   args:
   - "-File"
-  - ci/tasks/stembuild/windows/contract/run.ps1
+  - ci/tasks/test-contract-stembuild-windows/run.ps1
 
 params:
   GOVC_INSECURE: 1

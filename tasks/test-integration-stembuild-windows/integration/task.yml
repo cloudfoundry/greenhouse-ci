@@ -14,7 +14,7 @@ run:
   path: powershell
   args:
   - "-File"
-  - ci/tasks/stembuild/windows/integration/run.ps1
+  - ci/tasks/test-integration-stembuild-windows/run.ps1
 
 params:
   GOVC_INSECURE: 1
