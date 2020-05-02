@@ -1,7 +1,6 @@
 groups:
 - name: all
   jobs:
-  - create-vsphere-add-updates
   - test-stemcell-builder
   - test-bosh-psmodules
   - build-event-log-release
@@ -43,13 +42,6 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
 
-- name: windows-stemcell-dependencies
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
-    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
-
 - name: event-log-release
   type: git
   source:
@@ -64,7 +56,6 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 
 #releases
-
 - name: bosh-agent-release
   type: metalink-repository
   source:
@@ -79,30 +70,6 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
     drafts: true
 
-# time
-- name: monthly-updates-trigger
-  type: time
-  source:
-    interval: 720h
-
-# locks
-- name: vsphere-worker-lock
-  type: pool
-  source:
-    branch: master
-    pool: 'vsphere-worker-lock'
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
-- name: updated-vmx-version
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: 2012R2/versions/vsphere-updated-vmx
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-    initial_version: "1.0.0"
-
 - name: event-log-release-version
   type: semver
   source:
@@ -111,6 +78,8 @@ resources:
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "0.2.0"
+
+# locks
 - name: test-psmodules-lock
   type: pool
   source:
@@ -120,44 +89,6 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 jobs:
-- name: create-vsphere-add-updates
-  serial: true
-  plan:
-  - put: vsphere-worker-lock
-    params:
-      acquire: true
-  - do:
-    - in_parallel:
-        fail_fast: true
-        steps:
-        - get: monthly-updates-trigger
-          trigger: true
-        - get: ci
-        - get: stemcell-builder
-        - get: windows-stemcell-dependencies
-        - get: vmx-version
-          resource: updated-vmx-version
-        - get: bosh-psmodules-repo
-          passed: [test-bosh-psmodules]
-    - task: add-updates
-      privileged: true
-      input_mapping: { version: vmx-version }
-      file: ci/tasks/create-vmx-add-updates/task.yml
-      tags: [vsphere-windows-worker]
-      params:
-        ADMINISTRATOR_PASSWORD: "Password123!"
-        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-        AWS_REGION: us-east-1
-        INPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
-        OUTPUT_BUCKET: "all-bosh-windows/2012R2/untested/vsphere/internal/inputs"
-    - put: updated-vmx-version
-      params: {bump: major}
-    ensure:
-      put: vsphere-worker-lock
-      params:
-        release: vsphere-worker-lock
-
 - name: test-stemcell-builder
   serial: true
   plan:
