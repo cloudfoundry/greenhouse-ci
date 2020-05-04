@@ -3,7 +3,7 @@
 set -ex
 
 VERSION=`cat version/version`
-ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../../../.. && pwd)
+ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
 echo ***Installing VMWare OVF Tools***
