@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
-$ROOT_DIR= (Get-Item "$PSScriptRoot/../../..").FullName
+$ROOT_DIR=Get-Location
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
 

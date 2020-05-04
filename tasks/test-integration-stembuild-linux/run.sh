@@ -5,7 +5,7 @@ set -ex
 export STEMBUILD_VERSION=`cat version/version`
 export VM_NAME_PREFIX="construct-windows-integration-ci-${OS_LINE}"
 
-ROOT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"`/../../../../.. && pwd)
+ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
 export USER_PROVIDED_IP=`cat vcenter-ips/name`

@@ -4,7 +4,7 @@ trap { Exit 1 }
 Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
 
-$ROOT_DIR= (Get-Item "$PSScriptRoot/../../../../..").FullName
+$ROOT_DIR=Get-Location
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
