@@ -35,7 +35,6 @@ params:
   SKU:
   ADMIN_PASSWORD:
   VERSION_DIR: ../version
-  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   BASE_IMAGE:
   BASE_IMAGE_OFFER:
   VM_PREFIX:

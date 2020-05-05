@@ -117,12 +117,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
-- name: windows-stemcell-dependencies
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:pivotal-cf/windows-stemcell-dependencies.git
-    private_key: ((PIVOTAL-CF_WINDOWS-STEMCELL-DEPENDENCIES_PRIVATE_KEY))
 - name: boshio
   type: git
   source:
@@ -1750,7 +1744,6 @@ jobs:
         resource: gcp-build-number
         passed: [create-gcp]
         trigger: true
-      - get: windows-stemcell-dependencies
       - get: main-version
         passed: [create-gcp]
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests

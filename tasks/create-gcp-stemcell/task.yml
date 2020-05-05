@@ -25,7 +25,6 @@ params:
   BASE_IMAGE_DIR: ../base-gcp-image
   OS_VERSION:
   VERSION_DIR: ../version
-  STEMCELL_DEPS_DIR: ../windows-stemcell-dependencies
   VM_PREFIX:
   BOSH_AGENT_DIR: bosh-agent-release
   BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
