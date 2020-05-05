@@ -8,7 +8,7 @@ inputs:
   - name: stemcell-builder
   - name: base-gcp-image
   - name: version
-  - name: windows-stemcell-dependencies
+  - name: lgpo-binary
   - name: sshd
   - name: bosh-agent-release
   - name: bosh-psmodules-repo

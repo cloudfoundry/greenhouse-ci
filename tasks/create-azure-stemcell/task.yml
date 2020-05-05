@@ -7,7 +7,7 @@ inputs:
   - name: ci
   - name: version
   - name: stemcell-builder
-  - name: windows-stemcell-dependencies
+  - name: lgpo-binary
   - name: sshd
   - name: bosh-agent-release
   - name: bosh-psmodules-repo
