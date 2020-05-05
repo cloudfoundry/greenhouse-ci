@@ -1321,7 +1321,7 @@ jobs:
         passed: [wuts-aws]
         resource: aws-build-number
         trigger: true
-      - get: windows-stemcell-dependencies
+      - get: lgpo-binary
       - get: main-version
         passed: [wuts-aws]
       - get: sshd
@@ -1480,7 +1480,7 @@ jobs:
         resource: azure-build-number
         passed: [build]
         trigger: true
-      - get: windows-stemcell-dependencies
+      - get: lgpo-binary
       - get: main-version
         passed: [build]
       - get: sshd
@@ -1696,7 +1696,7 @@ jobs:
         resource: gcp-build-number
         passed: [build]
         trigger: true
-      - get: windows-stemcell-dependencies
+      - get: lgpo-binary
       - get: main-version
         passed: [build]
       - get: sshd
