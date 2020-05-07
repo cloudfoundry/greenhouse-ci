@@ -2272,7 +2272,7 @@ jobs:
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: 'pivnet-metadata/metadata'
     - task: get-stembuild-commit-sha
-      file: ci/tasks/get-stembuild-commit-sha.yml
+      file: ci/tasks/get-stembuild-commit-sha/task.yml
     - put: post-stembuild-release
       params:
         name: final-stembuilds/tag
