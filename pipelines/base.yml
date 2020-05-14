@@ -1924,6 +1924,7 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [promote]
   - get: pivnet-public-stemcells
+    attempts: 5
   - task: copy-public-stemcells
     timeout: 1h30m
     attempts: 3
@@ -1987,6 +1988,7 @@ jobs:
       params:
         file: final-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
     - put: pivnet-public-stemcells
+      attempts: 5
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
@@ -2017,6 +2019,7 @@ jobs:
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
   - get: pivnet-public-stemcells
+    attempts: 5
   - put: goose-lock
     params:
       acquire: true
@@ -2065,6 +2068,7 @@ jobs:
       params:
         file: final-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
     - put: pivnet-public-stemcells
+      attempts: 5
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
@@ -2091,6 +2095,7 @@ jobs:
         resource: main-version
         passed: [promote]
       - get: pivnet-internal-stemcells
+        attempts: 5
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
   - put: vsphere-director-lock
@@ -2132,6 +2137,7 @@ jobs:
     input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
   - in_parallel:
     - put: pivnet-internal-stemcells # This is what actually releases things to pivnet
+      attempts: 5
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
@@ -2192,6 +2198,7 @@ jobs:
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
   - get: pivnet-public-stemcells
+    attempts: 5
   - task: azure-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: azure-tested }
     output_mapping: { final-stemcell: azure-stemcell-final }
@@ -2233,6 +2240,7 @@ jobs:
       params:
         file: azure-stemcell-final/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
     - put: pivnet-public-stemcells
+      attempts: 5
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
@@ -2262,6 +2270,7 @@ jobs:
           passed: [ promote ]
         - get: pivnet-release
           resource: pivnet-public-stemcells
+          attempts: 5
         - get: stembuild
           passed: [ promote ]
     - task: set-stembuild-version
@@ -2271,6 +2280,7 @@ jobs:
       input_mapping: {source-folder: final-stembuilds}
     - put: pivnet-release
       resource: pivnet-public-stemcells
+      attempts: 5
       params:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
