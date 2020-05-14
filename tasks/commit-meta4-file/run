@@ -41,7 +41,6 @@ function create-meta4-file {
 version=`cut -d'.' -f1-2 version/number`
 cp -r boshio-input/. boshio-output
 
-echo -e "Creating meta4 file for ${CYAN}${IAAS}${NC}"
 case "$IAAS" in
     "aws")
       filename='aws-xen-hvm-go_agent'
@@ -55,12 +54,19 @@ case "$IAAS" in
       filename='azure-hyperv-go_agent'
       ;;
 esac
+metalink=boshio-output/dev/$OS_NAME-$OS_VERSION/$version/$filename.meta4
 
-metalink=$(create-meta4-file $filename $version)
-meta4-the-stemcell $IAAS $version $metalink
+if test -f $metalink; then
+  echo -e "Meta4 file for ${CYAN}${IAAS}${NC} already exists"
+else
+  echo -e "Creating meta4 file for ${CYAN}${IAAS}${NC}"
+  metalink=$(create-meta4-file $filename $version)
+  meta4-the-stemcell $IAAS $version $metalink
 
-cd boshio-output
-git add .
-git config --global user.email "ci@localhost"
-git config --global user.name "CI Bot"
-git commit -m "publish: $OS_NAME-$OS_VERSION/$version"
+  cd boshio-output
+  git add .
+  git config --global user.email "ci@localhost"
+  git config --global user.name "CI Bot"
+  git commit -m "publish: $OS_NAME-$OS_VERSION/$version"
+fi
+
