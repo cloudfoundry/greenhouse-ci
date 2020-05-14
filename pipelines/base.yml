@@ -877,6 +877,16 @@ jobs:
       VCENTER_PASSWORD: ((VCENTER_PASSWORD))
       STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
       VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+  - &print-updates
+    task: print-updates
+    config:
+      platform: linux
+      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+      inputs:
+        - name: hotfix-log
+      run:
+        path: cat
+        args: ["hotfix-log/hotfixes.log"]
   - put: stembuild-linux-stemcell
     params:
       file: stembuild-built-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -1025,6 +1035,7 @@ jobs:
         VCENTER_PASSWORD: ((VCENTER_PASSWORD))
         STEMBUILD_BASE_VM_NAME: ((STEMBUILD_WINDOWS_VM_NAME))
         VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+    - *print-updates
     - put: stembuild-windows-stemcell
       params:
         file: stembuild-built-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -1181,16 +1192,7 @@ jobs:
         IAAS: aws
         REGIONS: "us-east-1,us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
         VM_PREFIX: ((VM_PREFIX))
-  - &print-updates
-    task: print-updates
-    config:
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      inputs:
-        - name: hotfix-log
-      run:
-        path: cat
-        args: ["hotfix-log/hotfixes.log"]
+  - *print-updates
   - task: wait-for-ami-availability
     file: ci/tasks/wait-for-ami-availability/task.yml
     params:

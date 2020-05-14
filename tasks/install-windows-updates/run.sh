@@ -29,16 +29,19 @@ function wait_for_vm_to_come_up() {
   set -e
 }
 
+function run_pwsh_command_with_govc() {
+  command=$1
+  echo "Running $command"
+  pid=$(
+    $govc_pwsh_cmd ${command}
+  )
+  return=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+  echo "${command} returned ${return}"
+}
+
 govc guest.upload -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} PSWindowsUpdate.zip 'C:\PSWindowsUpdate.zip'
 
-
-command='Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'
-echo "Running $command"
-pid=$(
-  $govc_pwsh_cmd ${command}
-)
-return=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${pid} -X -json | jq '.ProcessInfo[0].ExitCode')
-echo "$command returned $return"
+run_pwsh_command_with_govc 'Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'
 
 returnWindowsUpdateCount="exit (([array](Get-WindowsUpdate)).Count)"
 echo "getting update count"
@@ -71,3 +74,7 @@ while [[ updates_remaining -ne 0 ]]; do
   updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
   echo "Updates remaining: $updates_remaining"
 done
+
+run_pwsh_command_with_govc "Get-Hotfix > C:\\hotfix.log"
+mkdir hotfix-log
+govc guest.download -l ${vm_username}:${vm_password} -vm=${vm_ipath} "C:\\hotfix.log" hotfix-log/hotfixes.log
