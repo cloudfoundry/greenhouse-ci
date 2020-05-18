@@ -5,6 +5,9 @@ image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/gov
 inputs:
   - name: ci
 
+outputs:
+  - name: hotfix-log
+
 run:
   path: ci/tasks/install-windows-updates/run.sh
 

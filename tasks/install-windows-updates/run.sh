@@ -76,5 +76,5 @@ while [[ updates_remaining -ne 0 ]]; do
 done
 
 run_pwsh_command_with_govc "Get-Hotfix > C:\\hotfix.log"
-mkdir hotfix-log
+
 govc guest.download -l ${vm_username}:${vm_password} -vm=${vm_ipath} "C:\\hotfix.log" hotfix-log/hotfixes.log
