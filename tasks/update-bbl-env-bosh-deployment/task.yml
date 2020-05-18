@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: bbl-state
+  - name: bosh-deployment
+
+outputs:
+  - name: bbl-state-with-updated-bosh-deployment
+
+run:
+  path: ci/tasks/update-env-bosh-deployment/run.sh
+
+params:
+  BBL_ENV_NAME:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_EMAIL:
