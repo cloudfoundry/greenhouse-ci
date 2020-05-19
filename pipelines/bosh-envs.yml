@@ -38,7 +38,9 @@ jobs:
           GIT_COMMIT_USERNAME: "CI Bot"
       - task: bbl-up
         file: cf-deployment-concourse-tasks/bbl-up/task.yml
-        input_mapping: { bbl-config: bbl-state, bbl-state: bbl-state-with-updated-bosh-deployment }
+        input_mapping:
+          bbl-config: bbl-state
+          bbl-state: bbl-state-with-updated-bosh-deployment
         params:
           BBL_GCP_SERVICE_ACCOUNT_KEY: ((GCP_SERVICE_ACCOUNT_KEY))
           # - Key content or path to the file containing credentials downloaded from GCP
@@ -53,4 +55,5 @@ jobs:
           SKIP_LB_CREATION: true
 
       - put: greenhouse-private
-        params: {repository: updated-bbl-state }
+        params:
+          repository: updated-bbl-state
