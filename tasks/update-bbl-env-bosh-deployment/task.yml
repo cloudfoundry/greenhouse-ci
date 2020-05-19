@@ -11,7 +11,7 @@ outputs:
   - name: bbl-state-with-updated-bosh-deployment
 
 run:
-  path: ci/tasks/update-env-bosh-deployment/run.sh
+  path: ci/tasks/update-bbl-env-bosh-deployment/run.sh
 
 params:
   BBL_ENV_NAME:
