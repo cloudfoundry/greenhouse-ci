@@ -8,9 +8,9 @@ popd
 
 cp -R bbl-state/* bbl-state-with-updated-bosh-deployment/
 
-mkdir -p bbl-state-with-updated-bosh-deployment/dev-envs/((BBL_ENV_NAME))/bosh-deployment
+mkdir -p "bbl-state-with-updated-bosh-deployment/dev-envs/${BBL_ENV_NAME}/bosh-deployment"
 
-cp -R bosh-deployment/* bbl-state-with-updated-bosh-deployment/dev-envs/((BBL_ENV_NAME))/bosh-deployment/
+cp -R bosh-deployment/* "bbl-state-with-updated-bosh-deployment/dev-envs/${BBL_ENV_NAME}/bosh-deployment"
 
 git config user.name "${GIT_COMMIT_USERNAME}"
 git config user.email "${GIT_COMMIT_EMAIL}"
