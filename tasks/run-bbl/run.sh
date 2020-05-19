@@ -10,8 +10,8 @@ function commit(){
     rsync -a "${WORKSPACE_DIR}/greenhouse-private/" "${WORKSPACE_DIR}/updated-greenhouse-private" # / at the end of private is required
 }
 
-git config user.name "${GIT_COMMIT_USERNAME}"
-git config user.email "${GIT_COMMIT_EMAIL}"
+git config --global user.name "${GIT_COMMIT_USERNAME}"
+git config --global user.email "${GIT_COMMIT_EMAIL}"
 
 mkdir -p "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
 pushd "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
