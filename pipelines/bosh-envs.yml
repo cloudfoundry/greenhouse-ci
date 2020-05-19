@@ -2,7 +2,7 @@ resources:
   - name: ci
     type: git
     source:
-      branch: master
+      branch: 172681675-automate-bbl-up
       uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
   - name: cf-deployment-concourse-tasks
     type: git
@@ -15,7 +15,6 @@ resources:
     source:
       branch: master
       uri: https://github.com/cloudfoundry/bosh-deployment.git
-      tag_filter: v3.*
   - name: greenhouse-private
     type: git
     source:
@@ -53,5 +52,5 @@ jobs:
           GIT_COMMIT_MESSAGE: "Update bbl state dir"
           SKIP_LB_CREATION: true
 
-      - put: updated-bbl-state
-        params: {repository: greenhouse-private }
+      - put: greenhouse-private
+        params: {repository: updated-bbl-state }
