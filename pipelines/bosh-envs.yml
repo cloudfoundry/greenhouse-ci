@@ -40,6 +40,6 @@ jobs:
           BBL_GCP_REGION: us-east1
           BBL_IAAS: gcp
           BBL_ENV_NAME: gcp-test
-#      - put: greenhouse-private
-#        params:
-#          repository: updated-greenhouse-private
+      - put: greenhouse-private
+        params:
+          repository: updated-greenhouse-private

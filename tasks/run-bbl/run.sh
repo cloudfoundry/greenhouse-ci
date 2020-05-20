@@ -3,11 +3,12 @@
 set -eEux
 
 export WORKSPACE_DIR=$(pwd)
+apt install rsync -y
 
 function commit(){
     git add .
     git commit -m "${BBL_ENV_NAME}: ${GIT_COMMIT_MESSAGE}"
-    cp -a "${WORKSPACE_DIR}/greenhouse-private/" "${WORKSPACE_DIR}/updated-greenhouse-private" # / at the end of private is required
+    rsync -a "${WORKSPACE_DIR}/greenhouse-private/" "${WORKSPACE_DIR}/updated-greenhouse-private" # / at the end of private is required
 }
 
 git config --global user.name "${GIT_COMMIT_USERNAME}"
