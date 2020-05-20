@@ -43,3 +43,4 @@ jobs:
       - put: greenhouse-private
         params:
           repository: updated-greenhouse-private
+          rebase: true
