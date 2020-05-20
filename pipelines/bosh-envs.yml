@@ -1,0 +1,46 @@
+resources:
+  - name: ci
+    type: git
+    source:
+      branch: 172681675-automate-bbl-up #TODO: change when merging to master
+      uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+  - name: bosh-deployment
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry/bosh-deployment.git
+  - name: jumpbox-deployment
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/cloudfoundry/jumpbox-deployment.git
+  - name: greenhouse-private
+    type: git
+    source:
+      branch: master
+      uri: git@github.com:pivotal-cf/greenhouse-private.git
+      private_key: ((GREENHOUSE_PRIVATE_DEPLOY_KEY))
+
+jobs:
+  - name: create-gcp-test #interpolate ((BBL_ENV_NAME))
+    plan:
+      - in_parallel:
+          - get: ci
+          - get: bosh-deployment
+          - get: jumpbox-deployment
+          - get: greenhouse-private
+
+      - task: run-bbl
+        file: ci/tasks/run-bbl/task.yml
+        params:
+          GIT_COMMIT_EMAIL: "bosh-windows-eng@pivotal.io"
+          GIT_COMMIT_USERNAME: "CI Bot"
+          GIT_COMMIT_MESSAGE: "Update bbl state dir"
+          BBL_GCP_SERVICE_ACCOUNT_KEY: ((GCP_SERVICE_ACCOUNT_KEY))
+          BBL_GCP_REGION: us-east1
+          BBL_IAAS: gcp
+          BBL_ENV_NAME: gcp-test
+      - put: greenhouse-private
+        params:
+          repository: updated-greenhouse-private
+          rebase: true
