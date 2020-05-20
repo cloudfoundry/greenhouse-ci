@@ -7,7 +7,7 @@ export WORKSPACE_DIR=$(pwd)
 function commit(){
     git add .
     git commit -m "${BBL_ENV_NAME}: ${GIT_COMMIT_MESSAGE}"
-    rsync -a "${WORKSPACE_DIR}/greenhouse-private/" "${WORKSPACE_DIR}/updated-greenhouse-private" # / at the end of private is required
+    cp -a "${WORKSPACE_DIR}/greenhouse-private/" "${WORKSPACE_DIR}/updated-greenhouse-private" # / at the end of private is required
 }
 
 git config --global user.name "${GIT_COMMIT_USERNAME}"
