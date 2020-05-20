@@ -19,6 +19,9 @@ run:
   path: ci/tasks/run-bbl/run.sh
 
 params:
+  GIT_COMMIT_EMAIL: "bosh-windows-eng@pivotal.io"
+  GIT_COMMIT_USERNAME: "CI Bot"
+  GIT_COMMIT_MESSAGE: "Update bbl state dir"
   BBL_GCP_SERVICE_ACCOUNT_KEY:
   BBL_GCP_REGION:
   BBL_IAAS:

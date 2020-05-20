@@ -33,10 +33,7 @@ jobs:
       - task: run-bbl
         file: ci/tasks/run-bbl/task.yml
         params:
-          GIT_COMMIT_EMAIL: "bosh-windows-eng@pivotal.io"
-          GIT_COMMIT_USERNAME: "CI Bot"
-          GIT_COMMIT_MESSAGE: "Update bbl state dir"
-          BBL_GCP_SERVICE_ACCOUNT_KEY: ((GCP_SERVICE_ACCOUNT_KEY))
+          BBL_GCP_SERVICE_ACCOUNT_KEY: ((SWAN_ACCOUNT_JSON))
           BBL_GCP_REGION: us-east1
           BBL_IAAS: gcp
           BBL_ENV_NAME: gcp-test
