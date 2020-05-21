@@ -23,6 +23,10 @@ pushd "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
     rm -rf bosh-deployment jumpbox-deployment
     cp -a "${WORKSPACE_DIR}/bosh-deployment" "${WORKSPACE_DIR}/jumpbox-deployment" .
 
+    account-key-file="$(PWD)/gcp-service-account-key.json"
+    echo ${SWAN_ACCOUNT_JSON} > $account-key-file
+    export BBL_GCP_SERVICE_ACCOUNT_KEY=$account-key-file
+    
     trap commit ERR
     bbl up
 
