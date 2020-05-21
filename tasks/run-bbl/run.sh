@@ -16,7 +16,7 @@ git config --global user.email "${GIT_COMMIT_EMAIL}"
 
 mkdir -p "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
 pushd "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
-    account-key-file="$(PWD)/gcp-service-account-key.json"
+    account-key-file="${PWD}/gcp-service-account-key.json"
     echo ${SWAN_ACCOUNT_JSON} > $account-key-file
     export BBL_GCP_SERVICE_ACCOUNT_KEY=$account-key-file
 
