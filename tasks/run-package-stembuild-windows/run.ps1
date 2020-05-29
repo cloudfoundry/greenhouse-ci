@@ -19,4 +19,9 @@ $patch_version="$patch.$build$stemcellBuildNumber"
 
 .\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -patch-version $patch_version
 
-Move-Item *.tgz stembuild-built-stemcell
+$stembuild_exit_code=$LASTEXITCODE
+If (!($stembuild_exit_code -eq 0)) {
+    exit $stembuild_exit_code
+} Else {
+    Move-Item *.tgz stembuild-built-stemcell
+}
