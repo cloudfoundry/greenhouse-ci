@@ -33,7 +33,7 @@ jobs:
       - task: run-bbl
         file: ci/tasks/run-bbl/task.yml
         params:
-          SWAN_ACCOUNT_JSON: ((SWAN_ACCOUNT_JSON))
+          BBL_GCP_SERVICE_ACCOUNT_KEY: ((SWAN_ACCOUNT_JSON))
           BBL_GCP_REGION: us-east1
           BBL_IAAS: gcp
           BBL_ENV_NAME: gcp-test
@@ -61,25 +61,25 @@ jobs:
           repository: updated-greenhouse-private
           rebase: true
 
-  - name: create-azure-test
-    plan:
-    - in_parallel:
-      - get: ci
-      - get: bosh-deployment
-      - get: jumpbox-deployment
-      - get: greenhouse-private
-    - task: run-bbl-azure
-      file: ci/tasks/run-bbl/task.yml
-      params:
-        BBL_IAAS: azure
-#        AZURE_DEV_JSON: ((AZURE_DEV_JSON))
-        BBL_AZURE_CLIENT_ID:
-        BBL_AZURE_CLIENT_SECRET:
-        BBL_AZURE_REGION:
-        BBL_AZURE_SUBSCRIPTION_ID:
-        BBL_AZURE_TENANT_ID:
-        BBL_ENV_NAME: azure-test
-    - put: greenhouse-private
-      params:
-        repository: updated-greenhouse-private
-        rebase: true
+#   - name: create-azure-test
+#     plan:
+#     - in_parallel:
+#       - get: ci
+#       - get: bosh-deployment
+#       - get: jumpbox-deployment
+#       - get: greenhouse-private
+#     - task: run-bbl-azure
+#       file: ci/tasks/run-bbl/task.yml
+#       params:
+#         BBL_IAAS: azure
+# #        AZURE_DEV_JSON: ((AZURE_DEV_JSON))
+#         BBL_AZURE_CLIENT_ID:
+#         BBL_AZURE_CLIENT_SECRET:
+#         BBL_AZURE_REGION:
+#         BBL_AZURE_SUBSCRIPTION_ID:
+#         BBL_AZURE_TENANT_ID:
+#         BBL_ENV_NAME: azure-test
+#     - put: greenhouse-private
+#       params:
+#         repository: updated-greenhouse-private
+#         rebase: true

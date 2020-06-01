@@ -15,8 +15,7 @@ function commit(){
 function loadSecrets() {
   case "${BBL_IAAS}" in
   gcp)
-  echo "${SWAN_ACCOUNT_JSON}" > gcp-service-account-key.json
-  export BBL_GCP_SERVICE_ACCOUNT_KEY="${PWD}/gcp-service-account-key.json"
+#  echo "${BBL_GCP_SERVICE_ACCOUNT_KEY}" > gcp-service-account-key.json
   ;;
   aws)
   echo ${BBL_AWS_ACCESS_KEY_ID} > aws-access-key-id

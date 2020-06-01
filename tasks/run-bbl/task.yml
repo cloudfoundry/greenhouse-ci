@@ -22,7 +22,7 @@ params:
   GIT_COMMIT_EMAIL: "bosh-windows-eng@pivotal.io"
   GIT_COMMIT_USERNAME: "CI Bot"
   GIT_COMMIT_MESSAGE: "Update bbl state dir"
-  SWAN_ACCOUNT_JSON:
+  BBL_GCP_SERVICE_ACCOUNT_KEY:
   BBL_GCP_REGION:
   BBL_IAAS:
   BBL_ENV_NAME:
