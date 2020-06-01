@@ -41,3 +41,45 @@ jobs:
         params:
           repository: updated-greenhouse-private
           rebase: true
+  - name: create-aws-test
+    plan:
+      - in_parallel:
+          - get: ci
+          - get: bosh-deployment
+          - get: jumpbox-deployment
+          - get: greenhouse-private
+      - task: run-bbl-aws
+        file: ci/tasks/run-bbl/task.yml
+        params:
+          BBL_AWS_ACCESS_KEY_ID: ((access_key_id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((secret_access_key))
+          BBL_AWS_REGION: us-east-1
+          BBL_IAAS: aws
+          BBL_ENV_NAME: aws-test
+      - put: greenhouse-private
+        params:
+          repository: updated-greenhouse-private
+          rebase: true
+
+  - name: create-azure-test
+    plan:
+    - in_parallel:
+      - get: ci
+      - get: bosh-deployment
+      - get: jumpbox-deployment
+      - get: greenhouse-private
+    - task: run-bbl-azure
+      file: ci/tasks/run-bbl/task.yml
+      params:
+        BBL_IAAS: azure
+#        AZURE_DEV_JSON: ((AZURE_DEV_JSON))
+        BBL_AZURE_CLIENT_ID:
+        BBL_AZURE_CLIENT_SECRET:
+        BBL_AZURE_REGION:
+        BBL_AZURE_SUBSCRIPTION_ID:
+        BBL_AZURE_TENANT_ID:
+        BBL_ENV_NAME: azure-test
+    - put: greenhouse-private
+      params:
+        repository: updated-greenhouse-private
+        rebase: true
