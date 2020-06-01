@@ -37,10 +37,11 @@ jobs:
           BBL_GCP_REGION: us-east1
           BBL_IAAS: gcp
           BBL_ENV_NAME: gcp-test
-      - put: greenhouse-private
-        params:
-          repository: updated-greenhouse-private
-          rebase: true
+        ensure:
+          put: greenhouse-private
+          params:
+            repository: updated-greenhouse-private
+            rebase: true
   - name: create-aws-test
     plan:
       - in_parallel:
@@ -56,10 +57,11 @@ jobs:
           BBL_AWS_REGION: us-east-1
           BBL_IAAS: aws
           BBL_ENV_NAME: aws-test
-      - put: greenhouse-private
-        params:
-          repository: updated-greenhouse-private
-          rebase: true
+        ensure:
+          put: greenhouse-private
+          params:
+            repository: updated-greenhouse-private
+            rebase: true
 
 #   - name: create-azure-test
 #     plan:
