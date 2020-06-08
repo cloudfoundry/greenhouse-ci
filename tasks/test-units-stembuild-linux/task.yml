@@ -9,7 +9,4 @@ inputs:
   - name: ovftool
 
 run:
-  path: /bin/bash
-  args:
-    - -c
-    - ci/tasks/test-units-stembuild-linux/run.sh
+  path: ci/tasks/test-units-stembuild-linux/run.sh

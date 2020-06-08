@@ -18,7 +18,4 @@ params:
   STEMCELL_AUTOMATION_ZIP:
 
 run:
-  path: /bin/bash
-  args:
-    - -c
-    - ci/tasks/build-stembuild-linux/run.sh
+  path: ci/tasks/build-stembuild-linux/run.sh
