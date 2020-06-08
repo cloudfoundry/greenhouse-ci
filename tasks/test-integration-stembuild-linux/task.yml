@@ -10,10 +10,7 @@ inputs:
 - name: vcenter-ips
 
 run:
-  path: /bin/bash
-  args:
-  - -c
-  - ci/tasks/test-integration-stembuild-linux/run.sh
+  path: ci/tasks/test-integration-stembuild-linux/run.sh
 
 params:
   GOVC_INSECURE: 1
