@@ -43,7 +43,7 @@ pushd "greenhouse-private/dev-envs/${BBL_ENV_NAME}"
 
     rm -rf bosh-deployment jumpbox-deployment
     cp -a "${WORKSPACE_DIR}/bosh-deployment" "${WORKSPACE_DIR}/jumpbox-deployment" .
-
+    rm -rf {bosh,jumpbox}-deployment/.git
     trap commit ERR
     bbl up
 
