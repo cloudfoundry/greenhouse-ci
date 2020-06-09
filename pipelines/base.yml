@@ -165,7 +165,6 @@ resources:
   source:
     owner: cloudfoundry-incubator
     repository: stembuild
-    drafts: true
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: stemcell-builder-release
@@ -174,7 +173,6 @@ resources:
     user: cloudfoundry-incubator
     repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-    drafts: true
 
 - name: bosh-agent-release
   type: metalink-repository
@@ -2285,10 +2283,9 @@ jobs:
         - get: pivnet-release
           resource: pivnet-public-stemcells
           attempts: 5
-        - get: stembuild
-          passed: [ promote ]
     - task: set-stembuild-version
       file: ci/tasks/set-stembuild-version/task.yml
+      input_mapping: {main-version: version}
     - task: prepare-stembuild-for-upload
       file: ci/tasks/upload-to-pivnet/task.yml
       input_mapping: {source-folder: final-stembuilds}
@@ -2299,17 +2296,8 @@ jobs:
         override: true
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: 'pivnet-metadata/metadata'
-    - task: get-stembuild-commit-sha
-      file: ci/tasks/get-stembuild-commit-sha/task.yml
-    - put: post-stembuild-release
-      params:
-        name: final-stembuilds/tag
-        tag: final-stembuilds/tag
-        commitish: stembuild-commit/sha
-        globs:
-        - final-stembuilds/stembuild*
 
-- name: ship-bosh-stemcell-builder
+- name: publish-stembuild-and-stemcell-builder
   serial: true
   plan:
   - in_parallel:
@@ -2321,10 +2309,15 @@ jobs:
       - get: bosh-agent-release
         passed: [promote]
       - get: main-version
-        passed: [promote]
-        trigger: true
+        passed: [promote-stembuild]
       - get: bosh-psmodules-repo
         passed: [promote]
+      - get: stembuild
+        passed: [promote-stembuild]
+      - get: stembuild-untested-windows
+        passed: [promote-stembuild]
+      - get: stembuild-untested-linux
+        passed: [promote-stembuild]
   - task: shorten-stemcell-version
     file: ci/tasks/shorten-stemcell-version/task.yml
     input_mapping: { stemcells-main-version: main-version }
@@ -2348,13 +2341,24 @@ jobs:
       globs:
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
-  - put: main-version
-    params:
-      bump: minor
   - put: major-stemcell-s3
     resource: major-stemcell
     params:
       file: stemcell-info/((JSON_REGEX))
+  - task: set-stembuild-version
+    file: ci/tasks/set-stembuild-version/task.yml
+  - task: get-stembuild-commit-sha
+    file: ci/tasks/get-stembuild-commit-sha/task.yml
+  - put: post-stembuild-release
+    params:
+      name: final-stembuilds/tag
+      tag: final-stembuilds/tag
+      commitish: stembuild-commit/sha
+      globs:
+        - final-stembuilds/stembuild*
+  - put: main-version
+    params:
+      bump: minor
 
 
 
