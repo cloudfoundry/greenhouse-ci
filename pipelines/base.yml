@@ -31,6 +31,7 @@ groups:
   - test-stembuild-windows-stemcell
   - wuts-stembuild-windows-stemcell
   - test-bosh-psmodules
+  - test-stemcell-builder
 - name: aws
   jobs:
   - create-aws
@@ -539,7 +540,21 @@ jobs:
     put: test-psmodules-lock
     params:
       release: test-psmodules-lock
-
+- name: test-stemcell-builder
+  serial: true
+  plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: stemcell-builder
+        trigger: true
+      - get: bosh-agent-release
+      - get: bosh-psmodules-repo
+        passed: [test-bosh-psmodules]
+        trigger: true
+  - task: test-stemcell-builder
+    file: ci/tasks/test-stemcell-builder/task.yml
 - name: build
   serial: true
   serial_groups: [aws-version, azure-version, gcp-version]
@@ -550,6 +565,7 @@ jobs:
       - get: ci
       - get: stemcell-builder
         trigger: true
+        passed: [test-stemcell-builder]
       - get: stembuild
         trigger: true
       - get: bosh-psmodules-repo

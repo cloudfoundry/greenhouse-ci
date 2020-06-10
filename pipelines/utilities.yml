@@ -1,12 +1,8 @@
 groups:
 - name: all
   jobs:
-  - test-stemcell-builder
   - test-bosh-psmodules
   - build-event-log-release
-- name: stemcell-builder
-  jobs:
-  - test-stemcell-builder
 - name: bosh-psmodules
   jobs:
   - test-bosh-psmodules
@@ -28,20 +24,6 @@ resources:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 
-- name: stemcell-builder-develop
-  type: git
-  source:
-    branch: develop
-    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
-    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
-
-- name: stemcell-builder
-  type: git
-  source:
-    branch: master
-    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
-    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
-
 - name: event-log-release
   type: git
   source:
@@ -56,12 +38,6 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
 
 #releases
-- name: bosh-agent-release
-  type: metalink-repository
-  source:
-    uri: git+https://github.com/cloudfoundry/bosh-agent-index.git//
-    version: ((BOSH_AGENT_RELEASE_VERSION))
-
 - name: event-log-release-github
   type: github-release
   source:
@@ -89,31 +65,6 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 jobs:
-- name: test-stemcell-builder
-  serial: true
-  plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: stemcell-builder-develop
-        trigger: true
-      - get: stemcell-builder-master
-        resource: stemcell-builder
-      - get: bosh-agent-release
-      - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
-  - task: test-stemcell-builder
-    file: ci/tasks/test-stemcell-builder/task.yml
-    input_mapping: {stemcell-builder: stemcell-builder-develop}
-  - task: merge-to-master
-    input_mapping: { from-repo: stemcell-builder-develop, to-repo: stemcell-builder-master }
-    file: ci/tasks/merge-repo/task.yml
-    params:
-      FROM_BRANCH: develop
-  - put: stemcell-builder
-    params: { repository: merged-repo/to-repo }
-
 - name: test-bosh-psmodules
   serial: true
   plan:
