@@ -2146,10 +2146,6 @@ jobs:
       put: vsphere-director-lock
       params:
         release: vsphere-director-lock
-  - task: vsphere-set-stemcell-filename-version #TODO: Why do we run this step twice?
-    tags: [vsphere-linux-worker]
-    input_mapping: { bosh-windows-stemcell: stembuild-linux-stemcell }
-    file: ci/tasks/set-stemcell-version/task.yml
   - task: upload-to-pivnet
     file: ci/tasks/upload-to-pivnet/task.yml
     input_mapping: { source-folder: final-stemcell, pivnet-release: pivnet-internal-stemcells }
