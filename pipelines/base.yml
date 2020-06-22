@@ -21,7 +21,7 @@ groups:
   - promote-azure
   - promote-stembuild
   - print-azure-publishing-instructions
-  - ship-bosh-stemcell-builder
+  - publish-stembuild-and-stemcell-builder
   - stembuild-windows
   - stembuild-linux
   - create-stembuild-linux-stemcell
@@ -68,7 +68,7 @@ groups:
   - promote-azure
   - promote-stembuild
   - print-azure-publishing-instructions
-  - ship-bosh-stemcell-builder
+  - publish-stembuild-and-stemcell-builder
 
 resource_types:
 - name: pivnet
@@ -2313,7 +2313,7 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [promote]
       - get: stembuild
-        passed: [promote-stembuild]
+        passed: [promote]
       - get: stembuild-untested-windows
         passed: [promote-stembuild]
       - get: stembuild-untested-linux
