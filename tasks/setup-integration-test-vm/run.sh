@@ -16,5 +16,14 @@ govc vm.clone -u ${VCENTER_ADMIN_CREDENTIAL_URL} -vm ${BASE_VM_IPATH} -ds ${CLON
 govc vm.customize -u ${VCENTER_ADMIN_CREDENTIAL_URL} -vm.ipath /pizza-boxes-dc/vm/${VM_NAME} -ip ${VM_IP} ${VM_CUSTOMIZATION_NAME}
 govc vm.power -on -u ${VCENTER_ADMIN_CREDENTIAL_URL} -vm.ipath /pizza-boxes-dc/vm/${VM_NAME}
 
-time sudo arping -f ${VM_IP}
-## write the IP address and inventory path of the created VM to somewhere in /output
+echo Waiting for VM to be configured with expected IP address...
+SECONDS=0
+while [ "$VM_IP" != "$CURRENT_IP_ADDRESS" ]; do
+	sleep 10
+	CURRENT_IP_ADDRESS=$(govc vm.info -u "$VCENTER_ADMIN_CREDENTIAL_URL" -json /pizza-boxes-dc/vm/"$VM_NAME" | jq -r ".VirtualMachines[0].Guest.IpAddress")
+	echo Current IP Address is "$CURRENT_IP_ADDRESS"
+	if [ $SECONDS -gt 600 ] ; then
+		exit 1
+	fi
+done
+
