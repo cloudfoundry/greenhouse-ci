@@ -4,8 +4,8 @@ RUN apt-get update -qq && \
   ca-certificates \
   wget
 
-RUN wget "https://github.com/vmware/govmomi/releases/download/v0.21.0/govc_linux_amd64.gz"
-RUN echo "8ac96aeeef4f43f38baed6089f5f2159b0e7802e  govc_linux_amd64.gz" > sums
+RUN wget "https://github.com/vmware/govmomi/releases/download/v0.23.0/govc_linux_amd64.gz"
+RUN echo "ba777988af807e4a9aaea47339125f15cdbc8eea  govc_linux_amd64.gz" > sums
 RUN sha1sum --check sums
 RUN cat govc_linux_amd64.gz | gunzip > /usr/local/bin/govc
 RUN chmod 555 /usr/local/bin/govc
