@@ -16,3 +16,4 @@ params:
   CLONE_DATASTORE:
   CLONE_RESOURCE_POOL:
   VM_CUSTOMIZATION_NAME: Bosh-Windows-Base
+  CLONE_FOLDER: /pizza-boxes-dc/vm/bloodmyst
