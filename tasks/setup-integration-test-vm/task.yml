@@ -4,7 +4,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/govc
 
 inputs:
 - name: ci
-- name: vcenter-ips
+- name: vsphere-bloodmyst-ips
 
 run:
   path: ci/tasks/setup-integration-test-vm/run.sh

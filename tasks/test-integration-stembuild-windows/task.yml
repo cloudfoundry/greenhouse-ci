@@ -5,7 +5,7 @@ inputs:
 - name: stembuild
 - name: ci
 - name: version
-- name: vcenter-ips
+- name: vsphere-bloodmyst-ips
 
 outputs:
 - name: output

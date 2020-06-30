@@ -300,6 +300,13 @@ resources:
     pool: "vcenter-ips"
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+- name: vsphere-bloodmyst-ips
+  type: pool
+  source:
+    branch: master
+    pool: "vsphere-bloodmyst-ips"
+    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: test-psmodules-lock
   type: pool
   source:
@@ -665,6 +672,8 @@ jobs:
       - get: stembuild
         passed: [build]
       - get: ovftool
+      - put: vsphere-bloodmyst-ips
+        params: { acquire: true }
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -695,20 +704,18 @@ jobs:
           CONTRACT_TEST_VM_PATH: ((CONTRACT_BASE_VM_PATH))
           CONTRACT_TEST_VM_PASSWORD: ((CONTRACT_VM_PASSWORD))
           CONTRACT_TEST_VM_USERNAME: ((CONTRACT_VM_USERNAME))
+      - task: setup-integration-test-vm
+        tags: [vsphere-linux-worker]
+        file: ci/tasks/setup-integration-test-vm/task.yml
+        params:
+          VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
+          OS_LINE: ((PIPELINE_NAME))
+          CLONE_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
+          CLONE_RESOURCE_POOL: ((PIZZA_VCENTER_RESOURCE_POOL))
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
   - task: zip-files
     file: ci/tasks/zip-files/task.yml
-  - put: vcenter-ips
-    params: { acquire: true }
-  - task: setup-integration-test-vm
-    tags: [vsphere-stembuild-worker]
-    file: ci/tasks/setup-integration-test-vm/task.yml
-    params:
-      VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
-      OS_LINE: ((PIPELINE_NAME))
-      CLONE_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
-      CLONE_RESOURCE_POOL: ((PIZZA_VCENTER_RESOURCE_POOL))
   - task: integration
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/test-integration-stembuild-windows/task.yml
@@ -745,8 +752,8 @@ jobs:
     params:
       file: output/stembuild-windows-x86_64-*.exe
   ensure:
-    put: vcenter-ips
-    params: { release: vcenter-ips }
+    put: vsphere-bloodmyst-ips
+    params: { release: vsphere-bloodmyst-ips }
 
 - name: stembuild-linux
   serial: true

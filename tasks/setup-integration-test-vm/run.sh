@@ -7,7 +7,7 @@ export CLONE_NAME_PREFIX="construct-linux-integration-ci-${OS_LINE}"
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
-export VM_IP=`cat vcenter-ips/name`
+export VM_IP=`cat vsphere-bloodmyst-ips/name`
 export CLONE_NAME_SUFFIX=$(echo ${VM_IP} | cut -d . -f 4)
 export CLONE_NAME=${CLONE_NAME_PREFIX}${CLONE_NAME_SUFFIX}
 echo "Creating VM ${CLONE_NAME} with IP: ${VM_IP}"
