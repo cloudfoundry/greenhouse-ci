@@ -47,6 +47,8 @@ cat > config.json <<END_OF_CONFIG
   "network": "$NETWORK",
   "mount_ephemeral_disk": $MOUNT_EPHEMERAL_DISK,
   "ssh_disabled_by_default": $SSH_DISABLED_BY_DEFAULT,
+  "default_username" : $DEFAULT_USERNAME,
+  "default_password" : $DEFAULT_PASSWORD,
   "skip_ms_update_test": $SKIP_MS_UPDATE_TEST,
   "security_compliance_applied": $SECURITY_COMPLIANCE_APPLIED
 }

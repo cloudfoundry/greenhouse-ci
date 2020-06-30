@@ -964,6 +964,8 @@ jobs:
         VM_EXTENSIONS: 10GB_ephemeral_disk
         MOUNT_EPHEMERAL_DISK: true
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+        DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     ensure:
       put: vsphere-director-lock
       params:
@@ -1113,6 +1115,8 @@ jobs:
             VM_EXTENSIONS: 10GB_ephemeral_disk
             MOUNT_EPHEMERAL_DISK: true
             SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+            DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+            DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
       ensure:
         put: vsphere-director-lock
         params:
@@ -1285,6 +1289,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - put: aws-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
@@ -1454,6 +1460,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 10GB_ephemeral_disk
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - put: aws-govcloud-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
@@ -1633,6 +1641,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: "10GB_ephemeral_disk"
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - task: upload-stemcell-to-acceptance # TODO: WE SHOULDN'T DO THIS ANYMORE
     file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
     tags: [azure-linux-worker]
@@ -1815,6 +1825,8 @@ jobs:
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
         MOUNT_EPHEMERAL_DISK: true
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
+        DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+        DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     ensure:
       put: goose-lock
       params:
@@ -2009,6 +2021,8 @@ jobs:
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       SKIP_MS_UPDATE_TEST: true
+      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
@@ -2085,6 +2099,8 @@ jobs:
         VM_EXTENSIONS: "50GB_ephemeral_disk"
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
         SKIP_MS_UPDATE_TEST: true
+        DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+        DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     ensure:
       put: goose-lock
       params:
@@ -2162,6 +2178,8 @@ jobs:
         VM_TYPE: large # WARN: This is Cloud Config specific!!!
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
         SKIP_MS_UPDATE_TEST: true
+        DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+        DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
     ensure:
       put: vsphere-director-lock
       params:
@@ -2257,6 +2275,8 @@ jobs:
       VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       SKIP_MS_UPDATE_TEST: true
+      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
+      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
