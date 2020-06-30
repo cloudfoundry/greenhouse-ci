@@ -7,7 +7,7 @@ inputs:
 - name: ci
 - name: version
 - name: ovftool
-- name: vcenter-ips
+- name: vsphere-bloodmyst-ips
 
 run:
   path: ci/tasks/test-integration-stembuild-linux/run.sh

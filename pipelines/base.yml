@@ -293,13 +293,6 @@ resources:
     pool: ((VSPHERE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: vcenter-ips
-  type: pool
-  source:
-    branch: master
-    pool: "vcenter-ips"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-bloodmyst-ips
   type: pool
   source:
@@ -781,64 +774,75 @@ jobs:
       - get: stembuild
         passed: [build]
       - get: ovftool
+      - put: vsphere-bloodmyst-ips
+        params: { acquire: true }
   - put: version
     resource: stembuild-linux-build-number
     params:
       pre: build
-  - task: test-units-stemcell-automation
-    file: ci/tasks/test-units-stemcell-automation/task.yml
-  - task: build-agent
-    file: ci/tasks/build-agent-zip/task.yml
-  - task: build-psmodules
-    file: ci/tasks/build-psmodules-zip/task.yml
+  - in_parallel:
+      fail_fast: true
+      steps:
+      - task: test-units-stemcell-automation
+        file: ci/tasks/test-units-stemcell-automation/task.yml
+      - task: build-agent
+        file: ci/tasks/build-agent-zip/task.yml
+      - task: build-psmodules
+        file: ci/tasks/build-psmodules-zip/task.yml
+      - task: unit-test
+        file: ci/tasks/test-units-stembuild-linux/task.yml
+      - task: contract-test
+        file: ci/tasks/test-contract-stembuild-linux/task.yml
+        tags: [vsphere-linux-worker]
+        params:
+          VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
+          VM_FOLDER: ((VCENTER_VM_FOLDER))
+          PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
+          VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+          VCENTER_USERNAME: ((VCENTER_USERNAME))
+          VCENTER_PASSWORD: ((VCENTER_PASSWORD))
+          VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+          CONTRACT_TEST_VM_PATH: ((CONTRACT_BASE_VM_PATH))
+          CONTRACT_TEST_VM_PASSWORD: ((CONTRACT_VM_PASSWORD))
+          CONTRACT_TEST_VM_USERNAME: ((CONTRACT_VM_USERNAME))
+      - task: setup-integration-test-vm
+        tags: [vsphere-linux-worker]
+        file: ci/tasks/setup-integration-test-vm/task.yml
+        params:
+          VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
+          OS_LINE: ((PIPELINE_NAME))
+          CLONE_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
+          CLONE_RESOURCE_POOL: ((PIZZA_VCENTER_RESOURCE_POOL))
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
   - task: zip-files
     file: ci/tasks/zip-files/task.yml
-  - task: unit-test
-    file: ci/tasks/test-units-stembuild-linux/task.yml
-  - task: contract-test
-    file: ci/tasks/test-contract-stembuild-linux/task.yml
-    tags: [vsphere-linux-worker]
-    params:
-      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
-      VCENTER_USERNAME: ((VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
-      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
-      CONTRACT_TEST_VM_PATH: ((CONTRACT_BASE_VM_PATH))
-      CONTRACT_TEST_VM_PASSWORD: ((CONTRACT_VM_PASSWORD))
-      CONTRACT_TEST_VM_USERNAME: ((CONTRACT_VM_USERNAME))
-  - put: vcenter-ips
-    params: { acquire: true }
   - task: integration
     file: ci/tasks/test-integration-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
     params:
-      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
-      GOVC_DATASTORE: ((GOVC_DATASTORE))
-      GOVC_NETWORK: ((GOVC_NETWORK))
-      GOVC_RESOURCE_POOL: ((GOVC_RESOURCE_POOL))
-      VCENTER_ADMIN_CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-      VCENTER_STEMBUILD_USER: ((VCENTER_STEMBUILD_USER))
-      VCENTER_STEMBUILD_PASSWORD: ((VCENTER_STEMBUILD_PASSWORD))
-      GOVC_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_FOLDER: ((VCENTER_VM_FOLDER))
-      VM_USERNAME: ((VM_USERNAME))
-      VM_PASSWORD: ((VM_PASSWORD))
-      LOGOUT_INTEGRATION_TEST_VM_IP: ((INT_LINUX_LOGOUT_USERS_VM_IP))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((INT_LINUX_LOGOUT_USERS_VM_PATH))
+      VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
+      GOVC_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
+      GOVC_NETWORK: ((PIZZA_VCENTER_NETWORK))
+      GOVC_RESOURCE_POOL: ((PIZZA_VCENTER_RESOURCE_POOL))
+      VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
+      VCENTER_STEMBUILD_USER: ((PIZZA_VCENTER_USERNAME))
+      VCENTER_STEMBUILD_PASSWORD: ((PIZZA_VCENTER_PASSWORD))
+      GOVC_FOLDER: ((PIZZA_VCENTER_VM_FOLDER))
+      VM_FOLDER: ((PIZZA_VCENTER_VM_FOLDER))
+      VM_USERNAME: ((PIZZA_VM_USERNAME))
+      VM_PASSWORD: ((PIZZA_VM_PASSWORD))
+      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((PIZZA_INT_DEV_LOGOUT_USERS_VM_PATH))
+      LOGOUT_INTEGRATION_TEST_VM_IP: ((PIZZA_INT_DEV_LOGOUT_USERS_VM_IP))
       AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
       AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
       OVA_SOURCE_S3_REGION: ((OVA_SOURCE_S3_REGION))
       OVA_SOURCE_S3_BUCKET: ((OVA_SOURCE_S3_BUCKET))
       OVA_SOURCE_S3_FILENAME: ((OVA_SOURCE_S3_FILENAME))
-      OS_LINE: ((PIPELINE_NAME))
       PACKAGE_TEST_BASE_VM_NAME: ((PACKAGE_TEST_BASE_VM_NAME))
-      NETWORK_GATEWAY: "10.74.34.1"
-      SUBNET_MASK: "25"
+      OS_LINE: ((PIPELINE_NAME))
+      NETWORK_GATEWAY: ((PIZZA_VCENTER_NETWORK_GATEWAY))
+      SUBNET_MASK: ((PIZZA_VCENTER_NETWORK_SUBNET_MASK_BITS))
       ROOT_BUCKET: ((ROOT_BUCKET))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
@@ -848,8 +852,8 @@ jobs:
     params:
       file: output/stembuild-linux-x86_64-*
   ensure:
-    put: vcenter-ips
-    params: { release: vcenter-ips }
+    put: vsphere-bloodmyst-ips
+    params: { release: vsphere-bloodmyst-ips }
 
 - name: create-stembuild-linux-stemcell
   serial: true

@@ -8,7 +8,7 @@ export VM_NAME_PREFIX="construct-windows-integration-ci-${OS_LINE}"
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
-export USER_PROVIDED_IP=`cat vcenter-ips/name`
+export USER_PROVIDED_IP=`cat vsphere-bloodmyst-ips/name`
 echo "Using Exiting VM IP: ${EXISTING_VM_IP}"
 
 echo ***Installing VMWare OVF Tools***
