@@ -3,13 +3,13 @@
 set -ex
 
 export STEMBUILD_VERSION=`cat version/version`
-export VM_NAME_PREFIX="construct-windows-integration-ci-${OS_LINE}"
+export VM_NAME_PREFIX="construct-linux-integration-ci-${OS_LINE}"
 
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
 export USER_PROVIDED_IP=`cat vsphere-bloodmyst-ips/name`
-echo "Using Exiting VM IP: ${EXISTING_VM_IP}"
+echo "Using Existing VM IP: ${EXISTING_VM_IP}"
 
 echo ***Installing VMWare OVF Tools***
 chmod +x ./ovftool/VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle
