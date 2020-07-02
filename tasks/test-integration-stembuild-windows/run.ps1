@@ -12,7 +12,7 @@ $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
 
 
 $env:VM_NAME= cat $ROOT_DIR/integration-vm-name/name
-$env:BOSH_PSMODULES_REPO= $ROOT_DIR/bosh-psmodules-repo
+$env:BOSH_PSMODULES_REPO="$ROOT_DIR/bosh-psmodules-repo"
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"
 
