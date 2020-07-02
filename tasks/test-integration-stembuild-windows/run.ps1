@@ -11,7 +11,7 @@ $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
 
 
-$env:VM_NAME_PREFIX="construct-windows-integration-ci-${env:OS_LINE}"
+$env:VM_NAME= cat $ROOT_DIR/integration-vm-name/name
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"
 
@@ -31,7 +31,7 @@ Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 
-$env:USER_PROVIDED_IP = cat $ROOT_DIR/vsphere-bloodmyst-ips/name
+$env:TARGET_VM_IP = cat $ROOT_DIR/vsphere-bloodmyst-ips/name
 $env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
 
 $env:PATH="$env:GOPATH\bin;$env:PATH"

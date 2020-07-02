@@ -2,7 +2,7 @@
 
 set -ex
 
-export CLONE_NAME_PREFIX="construct-linux-integration-ci-${OS_LINE}"
+export CLONE_NAME_PREFIX="construct-${JOB_OS_NAME}-integration-ci-${OS_LINE}"
 
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
@@ -10,6 +10,8 @@ OUTPUT_DIR=${ROOT_DIR}/output
 export VM_IP=`cat vsphere-bloodmyst-ips/name`
 export CLONE_NAME_SUFFIX=$(echo ${VM_IP} | cut -d . -f 4)
 export CLONE_NAME=${CLONE_NAME_PREFIX}${CLONE_NAME_SUFFIX}
+mkdir integration-vm-name
+echo ${CLONE_NAME} > integration-vm-name/name
 echo "Creating VM ${CLONE_NAME} with IP: ${VM_IP}"
 
 govc vm.clone -u ${VCENTER_ADMIN_CREDENTIAL_URL} -vm ${BASE_VM_IPATH} -ds ${CLONE_DATASTORE} -pool ${CLONE_RESOURCE_POOL} -folder "$CLONE_FOLDER" -on=false "$CLONE_NAME"

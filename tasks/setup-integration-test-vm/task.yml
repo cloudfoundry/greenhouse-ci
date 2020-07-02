@@ -6,6 +6,9 @@ inputs:
 - name: ci
 - name: vsphere-bloodmyst-ips
 
+outputs:
+- name: integration-vm-name
+
 run:
   path: ci/tasks/setup-integration-test-vm/run.sh
 
@@ -17,3 +20,4 @@ params:
   CLONE_RESOURCE_POOL:
   VM_CUSTOMIZATION_NAME: Bosh-Windows-Base
   CLONE_FOLDER: /pizza-boxes-dc/vm/bloodmyst
+  JOB_OS_NAME:             # linux or windows
