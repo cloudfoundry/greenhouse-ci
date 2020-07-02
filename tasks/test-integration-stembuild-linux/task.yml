@@ -9,6 +9,7 @@ inputs:
 - name: ovftool
 - name: vsphere-bloodmyst-ips
 - name: integration-vm-name
+- name: bosh-psmodules-repo
 
 run:
   path: ci/tasks/test-integration-stembuild-linux/run.sh

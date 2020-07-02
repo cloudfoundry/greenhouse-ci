@@ -7,6 +7,7 @@ export VM_NAME=`cat integration-vm-name/name`
 
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
+BOSH_PSMODULES_REPO=${ROOT_DIR}/bosh-psmodules-repo
 
 export TARGET_VM_IP=`cat vsphere-bloodmyst-ips/name`
 echo "Using Existing VM IP: ${TARGET_VM_IP}"
