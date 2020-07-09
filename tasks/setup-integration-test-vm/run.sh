@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -eu
 
 export CLONE_NAME_PREFIX="construct-${JOB_OS_NAME}-integration-ci-${OS_LINE}"
 
@@ -19,12 +19,20 @@ govc vm.power -on -u ${VCENTER_ADMIN_CREDENTIAL_URL} -vm.ipath "$CLONE_FOLDER"/"
 
 echo Waiting for VM to be configured with expected IP address...
 SECONDS=0
-while [ "$VM_IP" != "$CURRENT_IP_ADDRESS" ]; do
+FOUND_IP_ADDRESS=
+while [ "$VM_IP" != "$FOUND_IP_ADDRESS" ]; do
 	sleep 10
-	CURRENT_IP_ADDRESS=$(govc vm.info -u "$VCENTER_ADMIN_CREDENTIAL_URL" -json "$CLONE_FOLDER"/"$CLONE_NAME" | jq -r ".VirtualMachines[0].Guest.IpAddress")
-	echo Current IP Address is "$CURRENT_IP_ADDRESS"
+	VM_INFO=$(govc vm.info -u "$VCENTER_ADMIN_CREDENTIAL_URL" -json "$CLONE_FOLDER"/"$CLONE_NAME")
+
+	FOUND_IP_ADDRESS=$(echo $VM_INFO |
+	    jq -r ".VirtualMachines[0].Guest.Net[0].IpAddress | .[]? |select(. == \"$VM_IP\")")
+
+    echo "Current IP Addresses:"
+	echo $VM_INFO | jq -r ".VirtualMachines[0].Guest.Net[0].IpAddress | .[]?"
+
 	if [ $SECONDS -gt 600 ] ; then
 		exit 1
 	fi
 done
+
 
