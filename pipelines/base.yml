@@ -300,13 +300,6 @@ resources:
     pool: "vsphere-bloodmyst-ips"
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: test-psmodules-lock
-  type: pool
-  source:
-    branch: master
-    pool: "test-psmodules"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
 - name: major-stemcell
@@ -521,9 +514,6 @@ jobs:
 - name: test-bosh-psmodules
   serial: true
   plan:
-    - put: test-psmodules-lock
-      params:
-        acquire: true
     - in_parallel:
         fail_fast: true
         steps:
@@ -534,10 +524,6 @@ jobs:
       file: ci/tasks/test-units-bosh-psmodules/task.yml
       tags:
         - vsphere-stembuild-worker
-  ensure:
-    put: test-psmodules-lock
-    params:
-      release: test-psmodules-lock
 - name: test-stemcell-builder
   serial: true
   plan:
