@@ -1,15 +1,3 @@
-groups:
-- name: all
-  jobs:
-  - test-bosh-psmodules
-  - build-event-log-release
-- name: bosh-psmodules
-  jobs:
-  - test-bosh-psmodules
-- name: event-log-release
-  jobs:
-  - build-event-log-release
-
 resource_types:
 - name: metalink-repository
   type: registry-image
@@ -31,12 +19,6 @@ resources:
     uri: git@github.com:cloudfoundry-incubator/event-log-release.git
     private_key: ((EVENT_LOG_RELEASE_DEPLOY_KEY))
 
-- name: bosh-psmodules-repo
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
-
 #releases
 - name: event-log-release-github
   type: github-release
@@ -55,37 +37,7 @@ resources:
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
     initial_version: "0.2.0"
 
-# locks
-- name: test-psmodules-lock
-  type: pool
-  source:
-    branch: master
-    pool: "test-psmodules"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-
 jobs:
-- name: test-bosh-psmodules
-  serial: true
-  plan:
-  - put: test-psmodules-lock
-    params:
-      acquire: true
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - get: ci
-      - get: bosh-psmodules-repo
-  - task: test-units-bosh-psmodules
-    file: ci/tasks/test-units-bosh-psmodules/task.yml
-    input_mapping: {bosh-psmodules: bosh-psmodules-repo}
-    tags:
-      - vsphere-stembuild-worker
-  ensure:
-    put: test-psmodules-lock
-    params:
-      release: test-psmodules-lock
-
 - name: build-event-log-release
   serial: true
   plan:
