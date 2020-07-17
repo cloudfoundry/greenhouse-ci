@@ -16,6 +16,7 @@ RUN apt-get update -qq && \
     curl \
     freerdp-x11 \
     g++ \
+    gawk \
     gcc \
     git \
     google-cloud-sdk \
