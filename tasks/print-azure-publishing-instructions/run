@@ -1,28 +1,61 @@
 #!/usr/bin/env bash
 
-set -ex
+set -euo pipefail
 
-version=`cat version/number`
-uri_filename="bosh-stemcell-*-azure-vhd-uri.txt"
-image_url=`cat azure-base-vhd-uri/$uri_filename`
+main_version=$( cat version/number )
+uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
+image_url=$( cat azure-base-vhd-uri/$uri_filename )
 
-def format_version {
-
+format_version() {
+  main_version=$1
+  version_regex='([0-9]+)\.([0-9]+)\.([0-9]+)-build\.([0-9]+)'
+  version_number_tokens=$(echo $main_version | sed -E  "s/^$version_regex$/\1  \2  \3  \4/")
+  echo $version_number_tokens | awk '{printf("%d.%d.%03d%03d", $1, $2, $3, $4)}'
 }
-vm_version=$(format_version)
-tenant_id=a288e0e4-4e8b-4fed-85ff-05f3ce84a057
-client_id=2a47ea93-2add-4d34-a6e1-0bc3cfd2a941
-client_secret='N0MjOjNMXTJ7dW5HOFJ0ODFBZEFqZ1F6bjJwNmM6cCk='
-grant_type=client_credentials
-resource=https://cloudpartner.azure.com
-token=$(curl -X POST "https://login.microsoftonline.com/$tenant_id/oauth2/token" -F "client_id=$client_id" -F "client_secret=$client_secret" -F "grant_type=$grant_type" -F "resource=$resource" 2>/dev/null | jq -r .access_token)
+
+image_version=$(format_version $main_version)
+echo "setting image version: $image_version"
+
+tenant_id=${PARTNER_PORTAL_TENANT_ID}
+client_id=${PARTNER_PORTAL_CLIENT_ID}
+client_secret=${PARTNER_PORTAL_CLIENT_SECRET}
+grant_type="client_credentials"
+resource="https://cloudpartner.azure.com"
+
+echo
+echo -n "authenticating with microsoft..."
+microsoft_auth_endpoint="https://login.microsoftonline.com/$tenant_id/oauth2/token"
+token=$(curl -X POST $microsoft_auth_endpoint \
+  -F "client_id=$client_id"  \
+  -F "client_secret=$client_secret"  \
+  -F "grant_type=$grant_type"  \
+  -F "resource=$resource" | jq -r .access_token
+)
+echo OK
 
 publisher_id=pivotal
 offer_id=bosh-windows-server-2019
-offer_config=$(curl -X GET "https://cloudpartner.azure.com/api/publishers/$publisher_id/offers/$offer_id?api-version=2017-10-31" -H "Authorization: Bearer $token" -H "Content-Type: application/json")
 
+echo
+echo "retrieving current offer details from the Partner Center API..."
+original_offer_json="$PWD/original_offer.json"
+echo "to debug, 'fly intercept -u <this job run url>' and 'cat $original_offer_json'"
+echo
+offer_id_endpoint="https://cloudpartner.azure.com/api/publishers/$publisher_id/offers/$offer_id?api-version=2017-10-31"
+
+curl -X GET $offer_id_endpoint \
+  -H "Authorization: Bearer $token" \
+  -H "Content-Type: application/json" > $original_offer_json
+
+echo
+echo "adding image version and vhd url to offer json:"
+modified_offer_json="$PWD/modified_offer.json"
+echo "to debug, 'fly intercept -u <this job run url>' and 'cat $modified_offer_json'"
+echo
 vm_image_path=".definition.plans[] | select(.planId == \"$SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
-new_vm_object="{\"$vm_version\": {\"osVhdUrl\":\"$image_url\", \"lunVhdDetails\": []}"
+new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$image_url\", \"lunVhdDetails\": []}"
 add_image_to_plan='('"$vm_image_path"') |= . + '"$new_vm_object"'}'
+jq "$add_image_to_plan" "$original_offer_json" > "$modified_offer_json"
 
-echo $offer_config | jq "$add_image_to_plan"
+#echo "modifying offer details by PUTting to Partner Center API..."
+
