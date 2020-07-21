@@ -699,6 +699,7 @@ jobs:
   - task: integration
     tags: [vsphere-stembuild-worker]
     file: ci/tasks/test-integration-stembuild-windows/task.yml
+    timeout: 3h
     params:
       VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
       GOVC_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
@@ -799,6 +800,7 @@ jobs:
   - task: integration
     file: ci/tasks/test-integration-stembuild-linux/task.yml
     tags: [vsphere-linux-worker]
+    timeout: 3h
     params:
       VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
       GOVC_DATASTORE: ((PIZZA_VCENTER_DATASTORE))
