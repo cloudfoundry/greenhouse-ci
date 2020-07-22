@@ -1,10 +1,37 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+script_path=$( realpath $0 )
+script_dir=$( dirname $script_path )
+
+pushd stemcell-builder
+  bundle install
+popd
 
 main_version=$( cat version/number )
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
-image_url=$( cat azure-base-vhd-uri/$uri_filename )
+#image_url=$( cat azure-base-vhd-uri/$uri_filename )
+
+echo "sku: $SKU"
+echo "tenant: $AZURE_TENANT_ID"
+echo "name: $AZURE_CONTAINER_NAME"
+
+image_url=$( $script_dir/get-image-url.rb )
+echo $image_url
+exit
+
+echo "********************************************************"
+echo "***legacy print-azure-publishing-instructions code,  ***"
+echo "***running for a few promotions to compare vhd output***"
+echo "********************************************************"
+
+pushd stemcell-builder
+  rake publish:staging:azure
+popd
+
+echo "*********************************************************"
+echo "***END legacy print-azure-publishing-instructions code***"
+echo "*********************************************************"
 
 format_version() {
   main_version=$1
