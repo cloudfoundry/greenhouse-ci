@@ -265,13 +265,6 @@ resources:
     pool: ((AZURE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: azure-download-lock
-  type: pool
-  source:
-    branch: master
-    pool: ((AZURE_LOCK))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: goose-lock
   type: pool
   source:
@@ -1575,22 +1568,14 @@ jobs:
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-azure]
-  - put: azure-download-lock
+  - task: download-heavy
+    file: ci/tasks/download-heavy-azure-stemcell/task.yml
+    tags: [azure-linux-worker]
+    timeout: 20m
     params:
-      acquire: true
-  - do:
-    - task: download-heavy
-      file: ci/tasks/download-heavy-azure-stemcell/task.yml
-      tags: [azure-linux-worker]
-      timeout: 20m
-      params:
-        STEMCELL_OS: ((AZURE_OS_VERSION))
-        DESTINATION_DIR: heavy-stemcell
-        WORKING_DIR: '.'
-    ensure:
-      put: azure-download-lock
-      params:
-        release: azure-download-lock
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      DESTINATION_DIR: heavy-stemcell
+      WORKING_DIR: '.'
   - task: run-bwats-azure-stemcell
     file: ci/tasks/run-bwats/task.yml
     input_mapping: {stemcell: heavy-stemcell}
@@ -1655,21 +1640,13 @@ jobs:
         passed: [test-azure]
       - get: bosh-agent-release
         passed: [test-azure]
-  - put: azure-download-lock
+  - task: download-heavy
+    file: ci/tasks/download-heavy-azure-stemcell/task.yml
+    tags: [azure-linux-worker]
+    timeout: 20m
     params:
-      acquire: true
-  - do:
-    - task: download-heavy
-      file: ci/tasks/download-heavy-azure-stemcell/task.yml
-      tags: [azure-linux-worker]
-      timeout: 20m
-      params:
-        STEMCELL_OS: ((AZURE_OS_VERSION))
-        DESTINATION_DIR: heavy-stemcell
-    ensure:
-      put: azure-download-lock
-      params:
-        release: azure-download-lock
+      STEMCELL_OS: ((AZURE_OS_VERSION))
+      DESTINATION_DIR: heavy-stemcell
   - put: azure-lock
     params:
       acquire: true
