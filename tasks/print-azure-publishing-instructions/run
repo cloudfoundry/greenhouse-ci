@@ -4,21 +4,10 @@ set -euo pipefail
 script_path=$( realpath $0 )
 script_dir=$( dirname $script_path )
 
-pushd stemcell-builder
-  bundle install
-popd
 
 main_version=$( cat version/number )
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
-#image_url=$( cat azure-base-vhd-uri/$uri_filename )
-
-echo "sku: $SKU"
-echo "tenant: $AZURE_TENANT_ID"
-echo "name: $AZURE_CONTAINER_NAME"
-
-image_url=$( $script_dir/get-image-url.rb )
-echo $image_url
-exit
+image_url=$( cat azure-base-vhd-uri/${uri_filename} )
 
 echo "********************************************************"
 echo "***legacy print-azure-publishing-instructions code,  ***"
@@ -26,18 +15,48 @@ echo "***running for a few promotions to compare vhd output***"
 echo "********************************************************"
 
 pushd stemcell-builder
+  bundle install
   rake publish:staging:azure
 popd
 
 echo "*********************************************************"
 echo "***END legacy print-azure-publishing-instructions code***"
+echo "***           Please do not follow them               ***"
 echo "*********************************************************"
+
+
+vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
+
+retrieve_blob_url=$(
+  az storage blob url \
+  --container-name ${AZURE_CONTAINER_NAME} \
+  --name ${vhd_path} \
+  --account-name ${AZURE_PUBLISHED_STORAGE_ACCOUNT} \
+  --account-key ${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}
+)
+
+blob_url=$(echo ${retrieve_blob_url}  | sed -E 's/"//g')
+
+iso8601_format='+%Y-%m-%dT%TZ'
+yesterday=$(date -u -v-1d $iso8601_format)
+in_two_years=$(date -u -v+2y $iso8601_format)
+
+azure_sas=$(
+  az storage container generate-sas --name ${AZURE_CONTAINER_NAME} \
+  --permissions rl \
+  --account-name ${AZURE_PUBLISHED_STORAGE_ACCOUNT} \
+  --account-key ${AZURE_PUBLISHED_STORAGE_ACCESS_KEY} \
+  --start ${yesterday} --expiry ${in_two_years}
+)
+
+sas_params=$(echo ${azure_sas}  | sed -E 's/"//g')
+vhd_url="${blob_url}?${sas_params}"
 
 format_version() {
   main_version=$1
   version_regex='([0-9]+)\.([0-9]+)\.([0-9]+)-build\.([0-9]+)'
   version_number_tokens=$(echo $main_version | sed -E  "s/^$version_regex$/\1  \2  \3  \4/")
-  echo $version_number_tokens | awk '{printf("%d.%d.%03d%03d", $1, $2, $3, $4)}'
+  echo $version_number_tokens | awk '{ printf("%d.%d.%03d%03d", $1, $2, $3, $4) } '
 }
 
 image_version=$(format_version $main_version)
@@ -79,10 +98,12 @@ echo "adding image version and vhd url to offer json:"
 modified_offer_json="$PWD/modified_offer.json"
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat $modified_offer_json'"
 echo
-vm_image_path=".definition.plans[] | select(.planId == \"$SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
-new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$image_url\", \"lunVhdDetails\": []}"
-add_image_to_plan='('"$vm_image_path"') |= . + '"$new_vm_object"'}'
+
+vm_image_path=".definition.plans[] | select(.planId == \"$AZURE_SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
+new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$image_url\", \"lunVhdDetails\": []}}"
+add_image_to_plan="($vm_image_path) |= . + $new_vm_object"
 jq "$add_image_to_plan" "$original_offer_json" > "$modified_offer_json"
+
 
 #echo "modifying offer details by PUTting to Partner Center API..."
 
