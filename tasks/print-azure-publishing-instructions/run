@@ -79,19 +79,17 @@ token=$(curl -X POST $microsoft_auth_endpoint \
 )
 echo OK
 
-publisher_id=pivotal
-offer_id=bosh-windows-server-2019
-
 echo
 echo "retrieving current offer details from the Partner Center API..."
 original_offer_json="$PWD/original_offer.json"
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat $original_offer_json'"
 echo
-offer_id_endpoint="https://cloudpartner.azure.com/api/publishers/$publisher_id/offers/$offer_id?api-version=2017-10-31"
+offer_id_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER?api-version=2017-10-31"
 
 curl -X GET $offer_id_endpoint \
   -H "Authorization: Bearer $token" \
   -H "Content-Type: application/json" > $original_offer_json
+echo OK
 
 echo
 echo "adding image version and vhd url to offer json:"
@@ -100,10 +98,16 @@ echo "to debug, 'fly intercept -u <this job run url>' and 'cat $modified_offer_j
 echo
 
 vm_image_path=".definition.plans[] | select(.planId == \"$AZURE_SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
-new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$image_url\", \"lunVhdDetails\": []}}"
+new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$vhd_url\", \"lunVhdDetails\": []}}"
 add_image_to_plan="($vm_image_path) |= . + $new_vm_object"
 jq "$add_image_to_plan" "$original_offer_json" > "$modified_offer_json"
 
 
-#echo "modifying offer details by PUTting to Partner Center API..."
+echo
+echo "modifying offer details by PUTting to Partner Center API..."
+echo "to debug, 'fly intercept -u <this job run url>' and 'cat endstate.json'"
+curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token" > "endstate_json"
+echo OK
 
