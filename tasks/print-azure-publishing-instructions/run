@@ -38,8 +38,8 @@ retrieve_blob_url=$(
 blob_url=$(echo ${retrieve_blob_url}  | sed -E 's/"//g')
 
 iso8601_format='+%Y-%m-%dT%TZ'
-yesterday=$(date -u -v-1d $iso8601_format)
-in_two_years=$(date -u -v+2y $iso8601_format)
+yesterday=$(date -u --date="-1 day" $iso8601_format)
+in_two_years=$(date -u --date="+2 years" $iso8601_format)
 
 azure_sas=$(
   az storage container generate-sas --name ${AZURE_CONTAINER_NAME} \
@@ -108,6 +108,6 @@ echo "modifying offer details by PUTting to Partner Center API..."
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat endstate.json'"
 curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $token" > "endstate_json"
+  -H "Authorization: Bearer $token" > "endstate.json"
 echo OK
 
