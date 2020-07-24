@@ -59,8 +59,6 @@ create_azure_sas() {
     echo $sas_params
 }
 
-vhd_url="$(retrieve_blob_url)?$(create_azure_sas)"
-
 format_version() {
   main_version=$1
   version_regex='([0-9]+)\.([0-9]+)\.([0-9]+)-build\.([0-9]+)'
@@ -68,8 +66,6 @@ format_version() {
   echo $version_number_tokens | awk '{ printf("%d.%d.%03d%03d", $1, $2, $3, $4) } '
 }
 
-image_version=$(format_version $main_version)
-echo "setting image version: $image_version"
 
 create_microsoft_token() {
     tenant_id=${PARTNER_PORTAL_TENANT_ID}
@@ -87,6 +83,27 @@ create_microsoft_token() {
     )
     echo $token
 }
+
+create_original_offer_json() {
+    curl -X GET $offer_id_endpoint \
+      -H "Authorization: Bearer $token" \
+      -H "Content-Type: application/json"
+}
+
+create_modified_offer_json() {
+
+    vm_image_path=".definition.plans[] | select(.planId == \"$AZURE_SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
+    new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$vhd_url\", \"lunVhdDetails\": []}}"
+    add_image_to_plan="($vm_image_path) |= . + $new_vm_object"
+    jq "$add_image_to_plan" "$original_offer_json"
+}
+
+update_offer() {
+curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token"
+}
+
 echo -n "authenticating with microsoft..."
 echo
 token=$(create_microsoft_token)
@@ -96,36 +113,25 @@ echo OK
 offer_id_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER?api-version=2017-10-31"
 
 echo
-create_original_offer_json() {
-    curl -X GET $offer_id_endpoint \
-      -H "Authorization: Bearer $token" \
-      -H "Content-Type: application/json" > $original_offer_json
-}
 echo "retrieving current offer details from the Partner Center API..."
 original_offer_json="$PWD/original_offer.json"
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat $original_offer_json'"
-create_original_offer_json
+create_original_offer_json > "$original_offer_json"
 echo OK
 
 echo
 echo "adding image version and vhd url to offer json:"
 modified_offer_json="$PWD/modified_offer.json"
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat $modified_offer_json'"
-
-create_modified_offer_json() {
-    vm_image_path=".definition.plans[] | select(.planId == \"$AZURE_SKU\") | .[\"microsoft-azure-virtualmachines.vmImages\"]"
-    new_vm_object="{\"$image_version\": {\"osVhdUrl\":\"$vhd_url\", \"lunVhdDetails\": []}}"
-    add_image_to_plan="($vm_image_path) |= . + $new_vm_object"
-    jq "$add_image_to_plan" "$original_offer_json"
-}
+image_version=$(format_version $main_version)
+echo "setting image version: $image_version"
+vhd_url="$(retrieve_blob_url)?$(create_azure_sas)"
+echo "VHD URL: $vhd_url"
 create_modified_offer_json > "$modified_offer_json"
 echo OK
 
 echo
 echo "modifying offer details by PUTting to Partner Center API..."
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat endstate.json'"
-curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $token" > "endstate.json"
+update_offer > "endstate.json"
 echo OK
-
