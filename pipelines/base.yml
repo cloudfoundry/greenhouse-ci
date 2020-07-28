@@ -1847,6 +1847,7 @@ jobs:
         - wuts-gcp
         - wuts-aws
         - wuts-azure
+        - wuts-aws-govcloud
       - get: stembuild-untested-linux
         passed: [ wuts-stembuild-linux-stemcell ]
       - get: stembuild-linux-stemcell
@@ -1862,6 +1863,7 @@ jobs:
         - wuts-gcp
         - wuts-aws
         - wuts-azure
+        - wuts-aws-govcloud
       - get: packer-output-ami
         passed: [wuts-aws]
       - get: packer-output-govcloud-ami
