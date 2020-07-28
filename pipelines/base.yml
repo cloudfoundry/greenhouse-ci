@@ -2149,6 +2149,7 @@ jobs:
         passed: [promote]
       - get: azure-tested
         passed: [promote]
+        trigger: true
       - get: azure-base-vhd-uri
         passed: [promote]
   - task: print-azure-publishing-instructions
