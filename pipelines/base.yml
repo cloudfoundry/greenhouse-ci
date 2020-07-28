@@ -2284,9 +2284,8 @@ jobs:
         passed: [promote-stembuild]
       - get: stembuild-untested-linux
         passed: [promote-stembuild]
-  - task: shorten-stemcell-version
-    file: ci/tasks/shorten-stemcell-version/task.yml
-    input_mapping: { stemcells-main-version: main-version }
+  - task: derive-stemcell-builder-version-from-stembuild
+    file: ci/tasks/derive-stemcell-builder-version-from-stembuild/task.yml
   - in_parallel:
       fail_fast: true
       steps:

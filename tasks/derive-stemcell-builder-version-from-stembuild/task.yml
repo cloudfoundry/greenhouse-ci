@@ -1,0 +1,12 @@
+---
+platform: linux
+image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+inputs:
+- name: stembuild-untested-linux
+outputs:
+- name: stemcell-builder-release-version
+run:
+  path: bash
+  args:
+  - "-c"
+  - "find stembuild-untested-linux -name stembuild-linux\\* -printf '%f' | sed -e 's#.*-\\([0-9]*\\.[0-9]*\\)\\.[0-9]*.*#\\1#' > stemcell-builder-release-version/version"
