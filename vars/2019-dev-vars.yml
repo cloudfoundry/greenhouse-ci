@@ -11,8 +11,6 @@ STEMCELL_INITIAL_VERSION: '2019.3000.0'
 VM_PREFIX: 'packer-2019-dev'
 VSPHERE_LOCK: 'vsphere-worker-lock-dev'
 PATCHFILE_OS_VERSION: 2019
-MAJOR_STEMCELL_FILE: '2019-stemcell-(.*).json'
-JSON_REGEX: '2019-stemcell-*.json'
 DOWNLOAD_TEXT: "Downloading bosh-stemcell-${VERSION}-vsphere-esxi-windows2019-go_agent.tgz"
 
 VHD_VMDK_BUCKET: "all-bosh-windows/2019/untested/vsphere/diffcell/inputs"

@@ -295,14 +295,6 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
-- name: major-stemcell
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/metadata/((MAJOR_STEMCELL_FILE))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-
 - name: stembuild-linux-stemcell
   type: s3
   source:
@@ -2301,9 +2293,6 @@ jobs:
         file: ci/tasks/build-agent-zip/task.yml
       - task: get-stemcell-builder-sha
         file: ci/tasks/get-stemcell-builder-sha/task.yml
-      - task: create-major-stemcell
-        file: ci/tasks/create-major-stemcell/task.yml
-        input_mapping: { version: stemcell-builder-release-version }
   - put: stemcell-builder-release
     params:
       name: stemcell-builder-release-version/version
@@ -2312,10 +2301,6 @@ jobs:
       globs:
       - bosh-psmodules/bosh-psmodules.zip
       - bosh-agent/agent.zip
-  - put: major-stemcell-s3
-    resource: major-stemcell
-    params:
-      file: stemcell-info/((JSON_REGEX))
   - task: set-stembuild-version
     file: ci/tasks/set-stembuild-version/task.yml
   - task: get-stembuild-commit-sha
