@@ -2009,8 +2009,6 @@ jobs:
       - get: gcp-tested
         passed: [promote]
         trigger: true
-      - get: stemcell-builder
-        passed: [promote]
       - get: version
         resource: main-version
         passed: [promote]
@@ -2090,8 +2088,6 @@ jobs:
       - get: stembuild-linux-stemcell
         passed: [ promote ]
         trigger: true
-      - get: stemcell-builder
-        passed: [promote]
       - get: version
         resource: main-version
         passed: [promote]
@@ -2178,8 +2174,6 @@ jobs:
         passed: [print-azure-publishing-instructions]
       - get: version
         resource: main-version
-        passed: [print-azure-publishing-instructions]
-      - get: stemcell-builder
         passed: [print-azure-publishing-instructions]
       - get: boshio-input
         resource: boshio
