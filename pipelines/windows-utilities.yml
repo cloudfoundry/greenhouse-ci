@@ -1,7 +1,6 @@
 variables:
 - &passed_all_wuts_jobs
   passed:
-  - run-wuts-vsphere-2012R2
   - run-wuts-aws-2019
   - run-wuts-azure-2019
   - run-wuts-gcp-2019
@@ -41,13 +40,6 @@ resources:
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 # s3
-- name: vsphere-2012R2-stemcell-rc
-  type: s3
-  source:
-    bucket: all-bosh-windows
-    regexp: 2012R2/tested/vsphere/internal/bosh-stemcell-(.*)-vsphere-esxi-windows2012R2-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: windows-utilities-release-semver
   type: semver
   source:
@@ -102,13 +94,6 @@ resources:
 
 
 # locks
-- name: vsphere-2012R2-lock
-  type: pool
-  source:
-    branch: master
-    pool: vsphere-2012R2
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-2019-lock
   type: pool
   source:
@@ -174,51 +159,6 @@ jobs:
   - task: test-utilities-release
     file: ci/tasks/test-utilities-release/task.yml
 
-- name: run-wuts-vsphere-2012R2
-  serial: true
-  plan:
-  - put: vsphere-2012R2-lock
-    params:
-      acquire: true
-  - do:
-    - in_parallel:
-        fail_fast: true
-        steps:
-        - get: ci
-        - get: windows-utilities-release
-          trigger: true
-          passed: [test-utilities-release]
-        - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
-          resource: windows-utilities-tests
-          passed: [test-wuts-release]
-        - get: bosh-windows-stemcell
-          resource: vsphere-2012R2-stemcell-rc
-        - get: sunday
-          trigger: true
-    - task: run-wuts
-      tags: [vsphere-linux-worker]
-      file: ci/tasks/run-wuts/task.yml
-      input_mapping: { stemcell: bosh-windows-stemcell }
-      params:
-        AZ: z1
-        BOSH_CA_CERT: ((regina_ca_cert))
-        BOSH_CLIENT: ((regina_client))
-        BOSH_CLIENT_SECRET: ((regina_client_secret))
-        BOSH_ENVIRONMENT: ((regina_environment))
-        BOSH_GW_USER: ((regina_gw_user))
-        NETWORK: default
-        SSH_TUNNEL_IP: ((regina_ssh_tunnel_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((regina_gw_private_key))
-        SSH_TUNNEL_USER: ((regina_gw_user))
-        STEMCELL_OS: windows2012R2
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-windows2012R2-go_agent.tgz
-        VM_EXTENSIONS: ""
-        VM_TYPE: default
-    ensure:
-      put: vsphere-2012R2-lock
-      params:
-        release: vsphere-2012R2-lock
-
 - name: run-wuts-gcp-2019
   serial: true
   plan:
@@ -231,6 +171,7 @@ jobs:
           steps:
           - get: ci
           - get: windows-utilities-release
+            passed: [test-utilities-release]
             trigger: true
           - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
             resource: windows-utilities-tests
@@ -273,6 +214,7 @@ jobs:
           steps:
           - get: ci
           - get: windows-utilities-release
+            passed: [test-utilities-release]
             trigger: true
           - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
             resource: windows-utilities-tests
@@ -317,6 +259,7 @@ jobs:
           steps:
           - get: ci
           - get: windows-utilities-release
+            passed: [test-utilities-release]
             trigger: true
           - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
             resource: windows-utilities-tests
@@ -360,6 +303,7 @@ jobs:
           - get: azure-2019-vhd-uri
           - get: windows-utilities-release
             trigger: true
+            passed: [test-utilities-release]
           - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
             resource: windows-utilities-tests
             passed: [test-wuts-release]
