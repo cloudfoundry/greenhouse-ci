@@ -2,7 +2,7 @@
 
 set -ex
 
-RELEASE_VERSION=$( cat main-version/version | cut -d '.' -f1-2 )
+RELEASE_VERSION=$( find stembuild-untested-linux -name stembuild-linux* -printf '%f' | cut -d '-' -f4 | cut -d '.' -f1-2 )
 BIN_DIRS=( stembuild-untested-windows stembuild-untested-linux )
 
 for DIR in "${BIN_DIRS[@]}"
