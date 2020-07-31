@@ -9,22 +9,6 @@ main_version=$( cat version/number )
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
 image_url=$( cat azure-base-vhd-uri/${uri_filename} )
 
-echo "********************************************************"
-echo "***legacy print-azure-publishing-instructions code,  ***"
-echo "***running for a few promotions to compare vhd output***"
-echo "********************************************************"
-
-pushd stemcell-builder
-  bundle install
-  rake publish:staging:azure
-popd
-
-echo "*********************************************************"
-echo "***END legacy print-azure-publishing-instructions code***"
-echo "***           Please do not follow them               ***"
-echo "*********************************************************"
-
-
 retrieve_blob_url() {
     vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
 
@@ -109,23 +93,36 @@ copy_blob_to_premiumstore() {
   # dupe
   vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
 
-  # az login
-
   az storage blob copy start
     --source-account-key "${AZURE_STORAGE_ACCESS_KEY}" \ 
     --source-account-name "${AZURE_STORAGE_ACCOUNT}" \ 
     --source-container "${AZURE_CONTAINER_NAME}" \
     --source-blob "${vhd_path}" \
     --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \ 
+    --account-key "${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}" \
     --destination-container "${AZURE_CONTAINER_NAME}" \ 
     --destination-blob "${vhd_path}"
 }
 
+publish_offer() {
+  jq -n --arg email "${OFFER_NOTIFICATION_EMAIL}" \
+    '{ "metadata": { "notification-emails": $email } }' > offer_emails.json
+
+  publish_offer_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/publish?api-version=2017-10-31"
+  curl -X POST -d "@offer_emails.json" $publish_offer_endpoint \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $token"
+}
 
 
-echo -n "authenticating with microsoft..."
+echo -n "Authenticating with Microsoft..."
 echo
 token=$(create_microsoft_token)
+echo OK
+
+echo
+echo "Copying Image from ${AZURE_STORAGE_ACCOUNT} to ${AZURE_PUBLISHED_STORAGE_ACCOUNT}"
+copy_blob_to_premiumstore
 echo OK
 
 
@@ -153,4 +150,9 @@ echo
 echo "modifying offer details by PUTting to Partner Center API..."
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat endstate.json'"
 update_offer > "endstate.json"
+echo OK
+
+echo
+echo "Publishing offer, will notify ${OFFER_NOTIFICATION_EMAIL}"
+publish_offer
 echo OK
