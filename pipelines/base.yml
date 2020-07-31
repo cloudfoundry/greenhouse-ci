@@ -2156,6 +2156,8 @@ jobs:
         passed: [promote]
   - task: print-azure-publishing-instructions
     file: ci/tasks/print-azure-publishing-instructions/task.yml
+  - task: review-and-publish-azure-offer
+    file: ci/tasks/review-and-publish-azure-offer/task.yml
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
 
