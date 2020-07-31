@@ -104,6 +104,25 @@ curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
   -H "Authorization: Bearer $token"
 }
 
+
+copy_blob_to_premiumstore() {
+  # dupe
+  vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
+
+  # az login
+
+  az storage blob copy start
+    --source-account-key "${AZURE_STORAGE_ACCESS_KEY}" \ 
+    --source-account-name "${AZURE_STORAGE_ACCOUNT}" \ 
+    --source-container "${AZURE_CONTAINER_NAME}" \
+    --source-blob "${vhd_path}" \
+    --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \ 
+    --destination-container "${AZURE_CONTAINER_NAME}" \ 
+    --destination-blob "${vhd_path}"
+}
+
+
+
 echo -n "authenticating with microsoft..."
 echo
 token=$(create_microsoft_token)
