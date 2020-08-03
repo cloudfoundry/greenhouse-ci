@@ -2164,14 +2164,14 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    fail_fast: true
-    steps:
-    - get: ci
-    - get: main-version
-      passed: [submit-azure-offer]
-    - get: azure-tested
-      passed: [submit-azure-offer]
-      trigger: true
+      fail_fast: true
+      steps:
+      - get: ci
+      - get: main-version
+        passed: [submit-azure-offer]
+      - get: azure-tested
+        passed: [submit-azure-offer]
+        trigger: true
   - task: wait-for-azure-publisher-signoff
     file: ci/tasks/wait-for-azure-publisher-signoff/task.yml
     timeout: 168h # 7 days
