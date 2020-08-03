@@ -20,7 +20,7 @@ groups:
   - promote-vsphere
   - promote-azure
   - promote-stembuild
-  - print-azure-publishing-instructions
+  - publish-azure-offer
   - publish-stembuild-and-stemcell-builder
   - stembuild-windows
   - stembuild-linux
@@ -67,7 +67,7 @@ groups:
   - promote-vsphere
   - promote-azure
   - promote-stembuild
-  - print-azure-publishing-instructions
+  - publish-azure-offer
   - publish-stembuild-and-stemcell-builder
 
 resource_types:
@@ -2135,7 +2135,8 @@ jobs:
       params:
         file: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
 
-- name: print-azure-publishing-instructions
+- name: publish-azure-offer
+  old_name: print-azure-publishing-instructions
   serial: true
   plan:
   - in_parallel:
@@ -2154,8 +2155,8 @@ jobs:
         trigger: true
       - get: azure-base-vhd-uri
         passed: [promote]
-  - task: print-azure-publishing-instructions
-    file: ci/tasks/print-azure-publishing-instructions/task.yml
+  - task: upload-image-and-start-publishing
+    file: ci/tasks/upload-image-and-start-publishing/task.yml
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
 
@@ -2168,10 +2169,10 @@ jobs:
       steps:
       - get: ci
       - get: azure-tested
-        passed: [print-azure-publishing-instructions]
+        passed: [publish-azure-offer]
       - get: version
         resource: main-version
-        passed: [print-azure-publishing-instructions]
+        passed: [publish-azure-offer]
       - get: boshio-input
         resource: boshio
       - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests

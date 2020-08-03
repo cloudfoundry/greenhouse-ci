@@ -10,7 +10,7 @@ inputs:
   - name: azure-base-vhd-uri
 
 run:
-  path: ci/tasks/print-azure-publishing-instructions/run
+  path: ci/tasks/upload-image-and-start-publishing/run
 
 params:
   AZURE_CLIENT_ID: ((AZURE_CLIENT_ID))
