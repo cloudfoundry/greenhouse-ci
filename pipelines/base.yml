@@ -20,6 +20,7 @@ groups:
   - promote-vsphere
   - promote-azure
   - promote-stembuild
+  - submit-azure-offer
   - publish-azure-offer
   - publish-stembuild-and-stemcell-builder
   - stembuild-windows
@@ -67,6 +68,7 @@ groups:
   - promote-vsphere
   - promote-azure
   - promote-stembuild
+  - submit-azure-offer
   - publish-azure-offer
   - publish-stembuild-and-stemcell-builder
 
@@ -2135,7 +2137,7 @@ jobs:
       params:
         file: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
 
-- name: publish-azure-offer
+- name: submit-azure-offer
   old_name: print-azure-publishing-instructions
   serial: true
   plan:
@@ -2157,6 +2159,22 @@ jobs:
         passed: [promote]
   - task: upload-image-and-start-publishing
     file: ci/tasks/upload-image-and-start-publishing/task.yml
+
+- name: publish-azure-offer
+  serial: true
+  plan:
+  - in_parallel:
+    fail_fast: true
+    steps:
+    - get: ci
+    - get: main-version
+      passed: [submit-azure-offer]
+    - get: azure-tested
+      passed: [submit-azure-offer]
+      trigger: true
+  - task: wait-for-azure-publisher-signoff
+    file: ci/tasks/wait-for-azure-publisher-signoff/task.yml
+    timeout: 168h # 7 days
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
 

@@ -25,28 +25,23 @@ retrieve_offer_status_json() {
     -H "Authorization: Bearer $token"
 }
 
-check_offer_is_live() {
+checking_status() {
   echo -n "authenticating with microsoft..."
   token=$(create_microsoft_token)
   retrieve_offer_status_json > offer_status_json
-  offer_status=$(jq -r .status offer_status_json)
-  live_step_status=$(jq -r ".steps[] | select(.id == \"live\") | .status" offer_status_json)
-  while [[ $offer_status != "succeeded" || $live_step_status != "complete" ]]; do
-    echo "At time $(date), offer is not live yet"
+  signoff_step_status=$(jq -r ".steps[] | select(.id == \"publisher-signoff\") | .status" offer_status_json)
+  while [[ $signoff_step_status != "waitingForPublisherReview" ]]; do
+    echo "At time $(date), offer is waiting for publisher sign off: ${signoff_step_status}"
     sleep 1h
     token=$(create_microsoft_token)
     retrieve_offer_status_json > offer_status_json
-    offer_status=$(jq -r .status offer_status_json)
-    live_step_status=$(jq -r ".steps[] | select(.id == \"live\") | .status" offer_status_json)
+    signoff_step_status=$(jq -r ".steps[] | select(.id == \"publisher-signoff\") | .status" offer_status_json)
   done
 }
 
 offer_status_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/status?api-version=2017-10-31"
 
 
-echo "Checking to see if the Marketplace Offer is live..."
-check_offer_is_live
-echo "The publish step has completed. It can take up to 4 more hours for the offer to be visible in the marketplace..."
-sleep 4h
-echo "Offer is Live!"
-
+echo "Waiting for 'Go Live' to be available..."
+checking_status
+echo "The 'Go Live' is available, clicking 'Go Live'"
