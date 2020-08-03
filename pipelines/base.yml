@@ -2175,6 +2175,8 @@ jobs:
   - task: wait-for-azure-publisher-signoff
     file: ci/tasks/wait-for-azure-publisher-signoff/task.yml
     timeout: 168h # 7 days
+  - task: signoff-azure-live
+    file: ci/tasks/signoff-azure-live/task.yml
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
 

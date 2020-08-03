@@ -44,4 +44,4 @@ offer_status_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBL
 
 echo "Waiting for 'Go Live' to be available..."
 checking_status
-echo "The 'Go Live' is available, clicking 'Go Live'"
+echo "The 'Go Live' is available."
