@@ -46,5 +46,7 @@ offer_status_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBL
 
 echo "Checking to see if the Marketplace Offer is live..."
 check_offer_is_live
+echo "The publish step has completed. It can take up to 4 more hours for the offer to be visible in the marketplace..."
+sleep 4h
 echo "Offer is Live!"
 
