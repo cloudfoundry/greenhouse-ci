@@ -59,7 +59,7 @@ create_microsoft_token() {
     resource="https://cloudpartner.azure.com"
 
     microsoft_auth_endpoint="https://login.microsoftonline.com/$tenant_id/oauth2/token"
-    token=$(curl -X POST $microsoft_auth_endpoint \
+    token=$(curl --fail -X POST $microsoft_auth_endpoint \
       -F "client_id=$client_id"  \
       -F "client_secret=$client_secret"  \
       -F "grant_type=$grant_type"  \
@@ -69,7 +69,7 @@ create_microsoft_token() {
 }
 
 create_original_offer_json() {
-    curl -X GET $offer_id_endpoint \
+    curl --fail -X GET $offer_id_endpoint \
       -H "Authorization: Bearer $token" \
       -H "Content-Type: application/json"
 }
@@ -83,7 +83,7 @@ create_modified_offer_json() {
 }
 
 update_offer() {
-curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
+curl --fail -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $token"
 }
@@ -92,15 +92,14 @@ curl -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
 copy_blob_to_premiumstore() {
   # dupe
   vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
-
-  az storage blob copy start
-    --source-account-key "${AZURE_STORAGE_ACCESS_KEY}" \ 
-    --source-account-name "${AZURE_STORAGE_ACCOUNT}" \ 
+  az storage blob copy start \
+    --source-account-key "${AZURE_STORAGE_ACCESS_KEY}" \
+    --source-account-name "${AZURE_STORAGE_ACCOUNT}" \
     --source-container "${AZURE_CONTAINER_NAME}" \
     --source-blob "${vhd_path}" \
-    --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \ 
+    --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \
     --account-key "${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}" \
-    --destination-container "${AZURE_CONTAINER_NAME}" \ 
+    --destination-container "${AZURE_CONTAINER_NAME}" \
     --destination-blob "${vhd_path}"
 }
 
@@ -109,7 +108,7 @@ publish_offer() {
     '{ "metadata": { "notification-emails": $email } }' > offer_emails.json
 
   publish_offer_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/publish?api-version=2017-10-31"
-  curl -X POST -d "@offer_emails.json" $publish_offer_endpoint \
+  curl --fail -X POST -d "@offer_emails.json" $publish_offer_endpoint \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $token"
 }
