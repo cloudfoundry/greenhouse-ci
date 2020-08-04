@@ -161,6 +161,7 @@ resources:
     owner: PowerShell
     repository: Win32-OpenSSH
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    tag_filter: v([^v].*)
 
 - name: post-stembuild-release
   type: github-release
