@@ -2221,6 +2221,7 @@ jobs:
       - get: ci
       - get: azure-tested
         passed: [publish-azure-offer]
+        trigger: true
       - get: version
         resource: main-version
         passed: [publish-azure-offer]
