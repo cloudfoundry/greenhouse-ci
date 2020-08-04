@@ -16,7 +16,7 @@ end
 puts "Comparing versions #{versions}"
 
 if versions.uniq.size > 1
-  abort "Unable to find the same major and minor version for the inputs #{stemcells} #{stembuilds}"
+  abort "Unable to find the same major, minor, and patch version for the inputs #{stemcells} #{stembuilds}"
 end
 
-puts "All stemcells have the same major and minor version."
+puts "All stemcells have the same major, minor, and patch version."
