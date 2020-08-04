@@ -1,0 +1,82 @@
+resources:
+- name: bsdtar
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/bsdtar.git
+    private_key: ((BOSH_WINDOWS_BSDTAR_REPO_PRIVATE_DEPLOY_KEY))
+
+- name: ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci
+
+- name: libarchive
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/libarchive/libarchive.git
+    tag_filter: v*
+
+- name: zlib
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/madler/zlib.git
+    tag_filter: v*
+
+- name: s3-bucket
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: tar-(.*).exe
+    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
+    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+
+jobs:
+- name: bump-submodules-tar
+  serial: true
+  plan:
+    - in_parallel:
+        - get: ci
+        - get: bsdtar
+        - get: libarchive
+          trigger: true
+        - get: zlib
+          trigger: true
+    - task: bump-libarchive
+      file: ci/tasks/bump-submodule/task.yml
+      params:
+        SUBMODULE: "libarchive"
+      input_mapping:
+        source-repo: bsdtar
+        module-repo: libarchive
+      output_mapping:
+        bumped-repo: bumped-libarchive
+    - task: bump-zlib
+      file: ci/tasks/bump-submodule/task.yml
+      params:
+        SUBMODULE: "zlib"
+      input_mapping:
+        source-repo: bumped-libarchive
+        module-repo: zlib
+      output_mapping:
+        bumped-repo: bumped-zlib
+    - put: bsdtar
+      params:
+        repository: bumped-zlib
+        rebase: true
+
+- name: build-tar
+  serial: true
+  plan:
+    - in_parallel:
+        - get: ci
+        - get: bsdtar
+          trigger: true
+    - task: build-tar
+      file: ci/tasks/build-tar/task.yml
+    - put: s3-bucket
+      params:
+        file: tar-output/tar-*.exe
