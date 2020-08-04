@@ -77,6 +77,8 @@ jobs:
           trigger: true
     - task: build-tar
       file: ci/tasks/build-tar/task.yml
+      tags:
+        - vsphere-stembuild-worker
     - put: s3-bucket
       params:
         file: tar-output/tar-*.exe
