@@ -2204,6 +2204,7 @@ jobs:
       PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_TENANT_ID))
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
+    timeout: 120h # 5 days
     params:
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
       AZURE_OFFER: ((AZURE_OFFER))
@@ -2330,7 +2331,12 @@ jobs:
       - get: bosh-agent-release
         passed: [promote]
       - get: main-version
-        passed: [promote-stembuild]
+        passed:
+        - promote-stembuild
+        - promote-aws
+        - promote-azure
+        - promote-gcp
+        trigger: true
       - get: bosh-psmodules-repo
         passed: [promote]
       - get: stembuild
