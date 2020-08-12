@@ -1,0 +1,14 @@
+---
+platform: linux
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/govc}}
+
+inputs:
+- name: ci
+- name: integration-vm-name
+
+run:
+  path: ci/tasks/delete-integration-test-vm/run.sh
+
+params:
+  VCENTER_ADMIN_CREDENTIAL_URL:
+  CLONE_FOLDER: /pizza-boxes-dc/vm/bloodmyst

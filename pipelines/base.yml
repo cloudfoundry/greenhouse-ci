@@ -712,8 +712,14 @@ jobs:
     params:
       file: output/stembuild-windows-x86_64-*.exe
   ensure:
-    put: vsphere-bloodmyst-ips
-    params: { release: vsphere-bloodmyst-ips }
+    do:
+    - task: delete-integration-test-vm
+      tags: [vsphere-linux-worker]
+      file: ci/tasks/delete-integration-test-vm/task.yml
+      params:
+        VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
+    - put: vsphere-bloodmyst-ips
+      params: { release: vsphere-bloodmyst-ips }
 
 - name: stembuild-linux
   serial: true
@@ -812,8 +818,14 @@ jobs:
     params:
       file: output/stembuild-linux-x86_64-*
   ensure:
-    put: vsphere-bloodmyst-ips
-    params: { release: vsphere-bloodmyst-ips }
+    do:
+    - task: delete-integration-test-vm
+      tags: [vsphere-linux-worker]
+      file: ci/tasks/delete-integration-test-vm/task.yml
+      params:
+        VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
+    - put: vsphere-bloodmyst-ips
+      params: { release: vsphere-bloodmyst-ips }
 
 - name: create-stembuild-linux-stemcell
   serial: true
