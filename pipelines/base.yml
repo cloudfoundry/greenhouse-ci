@@ -2121,29 +2121,21 @@ jobs:
   - task: wait-for-azure-publisher-signoff
     file: ci/tasks/wait-for-azure-publisher-signoff/task.yml
     timeout: 168h # 7 days
-    params:
+    params: &azure_publisher_information
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
       AZURE_OFFER: ((AZURE_OFFER))
       PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_TENANT_ID))
+      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_CLIENT_ID))
+      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_CLIENT_SECRET))
   - task: signoff-azure-live
     file: ci/tasks/signoff-azure-live/task.yml
     params:
-      AZURE_PUBLISHER: ((AZURE_PUBLISHER))
-      AZURE_OFFER: ((AZURE_OFFER))
-      PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_TENANT_ID))
+      <<: *azure_publisher_information
   - task: wait-for-azure-marketplace-offer-live
     file: ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
     timeout: 120h # 5 days
     params:
-      AZURE_PUBLISHER: ((AZURE_PUBLISHER))
-      AZURE_OFFER: ((AZURE_OFFER))
-      PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_TENANT_ID))
+      <<: *azure_publisher_information
 
 - name: promote-azure
   serial_groups: ["pivnet"]
