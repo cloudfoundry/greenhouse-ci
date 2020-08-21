@@ -24,9 +24,11 @@ click_go_live() {
   token=$(create_microsoft_token)
   curl --fail -X POST $go_live_endpoint \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $token"
+  -H "Authorization: Bearer $token" \
+  -d ""
 }
 
 echo "Clicking 'Go Live'..."
 click_go_live
 echo OK
+
