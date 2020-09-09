@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-cp ./lgpo/LGPO-*.zip ./lgpo/LGPO.zip
+cp ./lgpo-binary/LGPO-*.zip ./lgpo-binary/LGPO.zip
 
 cat <<EOF > deps-file/deps.json
 {
@@ -19,8 +19,8 @@ cat <<EOF > deps-file/deps.json
     "version": "$(cat version/version)"
   },
   "LGPO.zip": {
-    "sha": "$(shasum -a 256 lgpo/LGPO.zip | cut -d " " -f 1)",
-    "version": "$(cat lgpo/version)"
+    "sha": "$(shasum -a 256 lgpo-binary/LGPO.zip | cut -d " " -f 1)",
+    "version": "3"
   }
 }
 EOF

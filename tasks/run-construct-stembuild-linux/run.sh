@@ -6,7 +6,7 @@ pushd stembuild-untested-linux
 popd
 mv stembuild-untested-linux/stembuild .
 
-mv lgpo/LGPO*.zip LGPO.zip
+mv lgpo-binary/LGPO*.zip LGPO.zip
 
 chmod 500 stembuild
 ./stembuild construct \

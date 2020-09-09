@@ -10,7 +10,7 @@ popd
 
 Move-Item stembuild-untested-windows/stembuild.exe .
 
-Move-Item lgpo/LGPO*.zip LGPO.zip
+Move-Item lgpo-binary/LGPO*.zip LGPO.zip
 
 ICACLS stembuild.exe /grant:r "users:(RX)" /C
 

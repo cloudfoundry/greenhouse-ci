@@ -6,7 +6,7 @@ inputs:
   - name: ci
   - name: stembuild
   - name: open-ssh
-  - name: lgpo
+  - name: lgpo-binary
   - name: version
   - name: bosh-agent
   - name: bosh-psmodules

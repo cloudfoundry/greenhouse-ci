@@ -447,13 +447,6 @@ resources:
     regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
     access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
     secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
-- name: lgpo
-  type: s3
-  source:
-    bucket: ((ROOT_BUCKET))
-    regexp: external-dependencies/lgpo/LGPO-(.*).zip
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
 - name: ovftool
   type: s3
   source:
@@ -631,7 +624,7 @@ jobs:
         trigger: true
       - get: main-version
         passed: [build]
-      - get: lgpo
+      - get: lgpo-binary
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
@@ -739,7 +732,7 @@ jobs:
         trigger: true
       - get: main-version
         passed: [build]
-      - get: lgpo
+      - get: lgpo-binary
       - get: bosh-agent-release
         passed: [build]
       - get: bosh-psmodules-repo
@@ -833,7 +826,7 @@ jobs:
   plan:
   - in_parallel:
     - get: ci
-    - get: lgpo
+    - get: lgpo-binary
     - get: stembuild-untested-linux
       passed: [stembuild-linux]
       trigger: true
@@ -993,7 +986,7 @@ jobs:
   plan:
     - in_parallel:
         - get: ci
-        - get: lgpo
+        - get: lgpo-binary
         - get: stembuild-untested-windows
           passed: [stembuild-windows]
           trigger: true
