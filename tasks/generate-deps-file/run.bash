@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-cp ./lgpo-binary/LGPO*.zip ./lgpo-binary/LGPO.zip
-
 cat <<EOF > deps-file/deps.json
 {
   "OpenSSH-Win64.zip": {
