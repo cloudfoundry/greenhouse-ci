@@ -22,7 +22,6 @@ groups:
   - promote-stembuild
   - submit-azure-offer
   - publish-azure-offer
-  - publish-stembuild-and-stemcell-builder
   - stembuild-windows
   - stembuild-linux
   - create-stembuild-linux-stemcell
@@ -33,6 +32,8 @@ groups:
   - wuts-stembuild-windows-stemcell
   - test-bosh-psmodules
   - test-stemcell-builder
+  - github-release-stembuild
+  - bump-minor
 - name: aws
   jobs:
   - create-aws
@@ -60,6 +61,9 @@ groups:
   - create-stembuild-linux-stemcell
   - test-stembuild-linux-stemcell
   - wuts-stembuild-linux-stemcell
+  - create-stembuild-windows-stemcell
+  - test-stembuild-windows-stemcell
+  - wuts-stembuild-windows-stemcell
 - name: promote
   jobs:
   - promote
@@ -68,9 +72,10 @@ groups:
   - promote-vsphere
   - promote-azure
   - promote-stembuild
+  - github-release-stembuild
   - submit-azure-offer
   - publish-azure-offer
-  - publish-stembuild-and-stemcell-builder
+  - bump-minor
 
 resource_types:
 - name: pivnet
@@ -168,13 +173,6 @@ resources:
   source:
     owner: cloudfoundry-incubator
     repository: stembuild
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
-
-- name: stemcell-builder-release
-  type: github-release
-  source:
-    user: cloudfoundry-incubator
-    repository: bosh-windows-stemcell-builder
     access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
 
 - name: bosh-agent-release
@@ -2214,51 +2212,23 @@ jobs:
         file_glob: 'pivnet-metadata/*stem*'
         metadata_file: 'pivnet-metadata/metadata'
 
-- name: publish-stembuild-and-stemcell-builder
+- name: github-release-stembuild
+  old_name: publish-stembuild-and-stemcell-builder
   serial: true
   plan:
   - in_parallel:
       fail_fast: true
       steps:
       - get: ci
-      - get: stemcell-builder
-        passed: [promote]
-      - get: bosh-agent-release
-        passed: [promote]
       - get: main-version
-        passed:
-        - promote-stembuild
-        - promote-aws
-        - promote-azure
-        - promote-gcp
+        passed: [promote-stembuild]
         trigger: true
-      - get: bosh-psmodules-repo
-        passed: [promote]
       - get: stembuild
         passed: [promote]
       - get: stembuild-untested-windows
         passed: [promote-stembuild]
       - get: stembuild-untested-linux
         passed: [promote-stembuild]
-  - task: derive-stemcell-builder-version-from-stembuild
-    file: ci/tasks/derive-stemcell-builder-version-from-stembuild/task.yml
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - task: build-psmodules-zip
-        file: ci/tasks/build-psmodules-zip/task.yml
-      - task: build-agent-zip
-        file: ci/tasks/build-agent-zip/task.yml
-      - task: get-stemcell-builder-sha
-        file: ci/tasks/get-stemcell-builder-sha/task.yml
-  - put: stemcell-builder-release
-    params:
-      name: stemcell-builder-release-version/version
-      tag: stemcell-builder-release-version/version
-      commitish: stemcell-builder-commit/sha
-      globs:
-      - bosh-psmodules/bosh-psmodules.zip
-      - bosh-agent/agent.zip
   - task: set-stembuild-version
     file: ci/tasks/set-stembuild-version/task.yml
   - task: get-stembuild-commit-sha
@@ -2270,9 +2240,17 @@ jobs:
       commitish: stembuild-commit/sha
       globs:
         - final-stembuilds/stembuild*
+
+- name: bump-minor
+  serial: true
+  plan:
+  - get: main-version
+    passed:
+    - github-release-stembuild
+    - promote-azure
+    - promote-azure
+    - promote-gcp
+    trigger: true
   - put: main-version
     params:
       bump: minor
-
-
-
