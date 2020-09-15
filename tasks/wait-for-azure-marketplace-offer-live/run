@@ -44,6 +44,10 @@ check_offer_is_live() {
 offer_status_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/status?api-version=2017-10-31"
 
 
+echo "==============================================================================================="
+echo "This is a long running job that can run for up to 5 days before it reaches a Concourse timeout."
+echo "==============================================================================================="
+echo
 echo "Checking to see if the Marketplace Offer is live..."
 check_offer_is_live
 echo "The publish step has completed. It can take up to 4 more hours for the offer to be visible in the marketplace..."

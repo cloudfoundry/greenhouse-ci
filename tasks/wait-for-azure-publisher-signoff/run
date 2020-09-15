@@ -41,7 +41,10 @@ checking_status() {
 
 offer_status_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/status?api-version=2017-10-31"
 
-
+echo "==============================================================================================="
+echo "This is a long running job that can run for up to 7 days before it reaches a Concourse timeout."
+echo "==============================================================================================="
+echo
 echo "Waiting for 'Go Live' to be available..."
 checking_status
 echo "The 'Go Live' is available."
