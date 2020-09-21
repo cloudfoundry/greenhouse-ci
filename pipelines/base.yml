@@ -2247,7 +2247,7 @@ jobs:
   - get: main-version
     passed:
     - github-release-stembuild
-    - promote-azure
+    - promote-aws
     - promote-azure
     - promote-gcp
     trigger: true
