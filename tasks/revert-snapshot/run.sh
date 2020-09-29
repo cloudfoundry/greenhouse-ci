@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+set -exu
 
 cat > ca.crt <<END_OF_CERT
 $VCENTER_CA_CERT
