@@ -2,7 +2,7 @@
 set -eu
 
 echo $VCENTER_CA_CERT > ca.crt
-export GOVC_CERTIFICATE=ca.crt
+export GOVC_TLS_CA_CERTS=ca.crt
 
 echo "Retrieving device info to ensure vm has networking"
 if ! govc device.info  -u ${CREDENTIAL_URL} -vm.ipath=${VM_TO_REVERT} 'ethernet-*' ; then
