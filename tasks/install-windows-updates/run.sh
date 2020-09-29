@@ -2,6 +2,11 @@
 
 set -eu
 
+cat > ca.crt <<END_OF_CERT
+$VCENTER_CA_CERT
+END_OF_CERT
+export GOVC_TLS_CA_CERTS=ca.crt
+
 WINDOWS_UPDATE_POWERSHELL_MODULE_URL='http://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/file/41459/25/PSWindowsUpdate.zip'
 wget $WINDOWS_UPDATE_POWERSHELL_MODULE_URL -O PSWindowsUpdate.zip
 
