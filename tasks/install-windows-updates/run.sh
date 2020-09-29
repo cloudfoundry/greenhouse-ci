@@ -2,6 +2,11 @@
 
 set -eu
 
+cat > ca.crt <<END_OF_CERT
+$VCENTER_CA_CERT
+END_OF_CERT
+export GOVC_TLS_CA_CERTS=ca.crt
+
 WINDOWS_UPDATE_POWERSHELL_MODULE_URL='http://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/file/41459/25/PSWindowsUpdate.zip'
 wget $WINDOWS_UPDATE_POWERSHELL_MODULE_URL -O PSWindowsUpdate.zip
 
@@ -39,6 +44,7 @@ function run_pwsh_command_with_govc() {
   echo "${command} returned ${return}"
 }
 
+wait_for_vm_to_come_up
 govc guest.upload -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} PSWindowsUpdate.zip 'C:\PSWindowsUpdate.zip'
 
 run_pwsh_command_with_govc 'Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'

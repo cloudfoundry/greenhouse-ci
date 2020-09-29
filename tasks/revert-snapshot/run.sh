@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-set -eu
+set -exu
+
+cat > ca.crt <<END_OF_CERT
+$VCENTER_CA_CERT
+END_OF_CERT
+export GOVC_TLS_CA_CERTS=ca.crt
 
 echo "Retrieving device info to ensure vm has networking"
 if ! govc device.info  -u ${CREDENTIAL_URL} -vm.ipath=${VM_TO_REVERT} 'ethernet-*' ; then
     echo "No network device present, adding network device to VM"
-    govc vm.network.add  -u ${CREDENTIAL_URL} -vm.ipath=${VM_TO_REVERT} -net="calgary" -net.adapter="e1000e"
+    govc vm.network.add  -u ${CREDENTIAL_URL} -vm.ipath=${VM_TO_REVERT} -net="internal-network" -net.adapter="e1000e"
     govc device.info  -u ${CREDENTIAL_URL} -vm.ipath=${VM_TO_REVERT} 'ethernet-*'
 fi
 
