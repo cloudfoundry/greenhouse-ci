@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-echo $VCENTER_CA_CERT > ca.crt
+cat > ca.crt <<END_OF_CERT
+$VCENTER_CA_CERT
+END_OF_CERT
 export GOVC_TLS_CA_CERTS=ca.crt
 
 echo "Retrieving device info to ensure vm has networking"
