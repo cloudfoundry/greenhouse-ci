@@ -112,7 +112,7 @@ resources:
 - name: ci
   type: git
   source:
-    branch: ((CI_BRANCH))
+    branch: move-stembuilds-to-nimbus-worker #((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: stemcell-builder
   type: git
@@ -840,42 +840,45 @@ jobs:
       file: stemcell-build-number/count
   - task: revert-snapshot
     file: ci/tasks/revert-snapshot/task.yml
-    tags: [vsphere-linux-worker]
+    tags: [nimbus-linux]
     params:
-      CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-      DATACENTER: ((VCENTER_STEMBUILD_DC))
-      VM_TO_REVERT: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
+      CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+      DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
+      VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME))
       SNAPSHOT_NAME: "stembuild_ready_power_on"
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
   - task: install-windows-updates
     file: ci/tasks/install-windows-updates/task.yml
-    tags: [vsphere-linux-worker]
+    tags: [nimbus-linux]
     params:
-      CREDENTIAL_URL: ((VCENTER_ADMIN_CREDENTIAL_URL))
-      STEMBUILD_CONSTRUCT_TARGET_VM: ((VCENTER_VM_FOLDER))/((STEMBUILD_VM_NAME))
-      VM_USERNAME: ((STEMBUILD_VM_USERNAME))
-      VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+      CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+      STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME))
+      VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
+      VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
-    tags: [vsphere-linux-worker]
+    tags: [nimbus-linux]
     params:
-      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
-      VCENTER_USERNAME: ((VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
-      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
-      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
-      STEMBUILD_BASE_VM_IP: ((STEMBUILD_VM_IP))
-      STEMBUILD_BASE_VM_USERNAME: ((STEMBUILD_VM_USERNAME))
-      STEMBUILD_BASE_VM_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+      VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
+      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+      STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME))
+      STEMBUILD_BASE_VM_IP: ((NIMBUS_STEMBUILD_VM_IP))
+      STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
+      STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-package
     file: ci/tasks/run-package-stembuild-linux/task.yml
-    tags: [vsphere-linux-worker]
+    tags: [nimbus-linux]
     params:
-      VCENTER_BASE_URL: ((VCENTER_BASE_URL))
+      VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
       VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
-      VCENTER_USERNAME: ((VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((VCENTER_PASSWORD))
-      STEMBUILD_BASE_VM_NAME: ((STEMBUILD_VM_NAME))
-      VCENTER_VM_FOLDER: ((VCENTER_VM_FOLDER))
+      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME))
+      VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
   - &print-updates
     task: print-updates
     config:
