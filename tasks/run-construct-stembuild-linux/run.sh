@@ -4,7 +4,6 @@ set -ex
 cat > ca.crt <<END_OF_CERT
 $VCENTER_CA_CERT
 END_OF_CERT
-#export GOVC_TLS_CA_CERTS=ca.crt
 
 pushd stembuild-untested-linux
   mv stembuild* stembuild

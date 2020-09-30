@@ -2,6 +2,10 @@
 
 set -ex
 
+cat > ca.crt <<END_OF_CERT
+$VCENTER_CA_CERT
+END_OF_CERT
+
 pushd stembuild-untested-linux
   mv stembuild* stembuild
 popd
@@ -15,6 +19,7 @@ IFS='.' read -r -a array <<< "$version"
 patch_version="${array[2]}.${array[3]}${stemcellBuildNumber}"
 
 ./stembuild package \
+  -vcenter-ca-certs ca.crt \
   -vcenter-url ${VCENTER_BASE_URL} -vcenter-username ${VCENTER_USERNAME} -vcenter-password ${VCENTER_PASSWORD} -vm-inventory-path ${VCENTER_VM_FOLDER}/${STEMBUILD_BASE_VM_NAME} -patch-version ${patch_version}
 
 mv *.tgz stembuild-built-stemcell
