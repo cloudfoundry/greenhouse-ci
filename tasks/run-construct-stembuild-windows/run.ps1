@@ -4,7 +4,7 @@ trap { Exit 1 }
 Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
 
-$env:VCENTER_CA_CERT | Out-File "ca.crt"
+$env:VCENTER_CA_CERT.Replace("`r`n","`n") | Set-Content ca.crt
 
 pushd stembuild-untested-windows
     Move-Item stembuild* stembuild.exe
