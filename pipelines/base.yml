@@ -1003,7 +1003,7 @@ jobs:
         file: stemcell-build-number/count
     - task: revert-snapshot
       file: ci/tasks/revert-snapshot/task.yml
-      tags: [vsphere-linux-worker]
+      tags: [nimbus-linux]
       params:
         CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
         DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
@@ -1012,7 +1012,7 @@ jobs:
         VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: install-windows-updates
       file: ci/tasks/install-windows-updates/task.yml
-      tags: [vsphere-linux-worker]
+      tags: [nimbus-linux]
       params:
         CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
         STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME))
@@ -1021,7 +1021,7 @@ jobs:
         VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: run-stembuild-construct
       file: ci/tasks/run-construct-stembuild-windows/task.yml
-      tags: [vsphere-stembuild-worker]
+      tags: [nimbus-windows]
       params:
         VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
         VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
@@ -1034,7 +1034,7 @@ jobs:
         VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: run-stembuild-package
       file: ci/tasks/run-package-stembuild-windows/task.yml
-      tags: [vsphere-stembuild-worker]
+      tags: [nimbus-windows]
       params:
         VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
         VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
