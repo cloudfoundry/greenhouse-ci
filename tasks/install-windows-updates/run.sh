@@ -44,6 +44,9 @@ function run_pwsh_command_with_govc() {
   echo "${command} returned ${return}"
 }
 
+sleep 60
+
+govc guest.ls -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} 'C:\\'
 govc guest.upload -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_password} PSWindowsUpdate.zip 'C:\PSWindowsUpdate.zip'
 
 run_pwsh_command_with_govc 'Expand-Archive -Path C:/PSWindowsUpdate.zip -DestinationPath C:/Windows/System32/WindowsPowerShell/v1.0/Modules'
