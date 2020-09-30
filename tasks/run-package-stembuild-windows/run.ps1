@@ -4,6 +4,8 @@ trap { Exit 1 }
 Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
 
+$VCENTER_CA_CERT | Out-File "ca.crt"
+
 pushd stembuild-untested-windows
     Move-Item stembuild* stembuild.exe
 popd
@@ -17,7 +19,7 @@ $stemcellBuildNumber="$(cat .\stemcell-build-number\count)"
 $patch,$build=$version.split('.')[2,3]
 $patch_version="$patch.$build$stemcellBuildNumber"
 
-.\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -patch-version $patch_version
+.\stembuild.exe package -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -patch-version $patch_version -vcenter-ca-certs "ca.crt"
 
 $stembuild_exit_code=$LASTEXITCODE
 If (!($stembuild_exit_code -eq 0)) {
