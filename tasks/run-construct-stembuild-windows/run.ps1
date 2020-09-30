@@ -17,5 +17,5 @@ Move-Item lgpo-binary/LGPO*.zip LGPO.zip
 ICACLS stembuild.exe /grant:r "users:(RX)" /C
 
 Write-Host ".\stembuild.exe construct -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password <redacted> -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -vm-ip $env:STEMBUILD_BASE_VM_IP -vm-username $env:STEMBUILD_BASE_VM_USERNAME -vm-password <redacted>" -vcenter-ca-certs "ca.crt"
-.\stembuild.exe construct -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -vm-ip $env:STEMBUILD_BASE_VM_IP -vm-username $env:STEMBUILD_BASE_VM_USERNAME -vm-password $env:STEMBUILD_BASE_VM_PASSWORD
+.\stembuild.exe construct -vcenter-url $env:VCENTER_BASE_URL -vcenter-username $env:VCENTER_USERNAME -vcenter-password $env:VCENTER_PASSWORD -vm-inventory-path $env:VCENTER_VM_FOLDER/$env:STEMBUILD_BASE_VM_NAME -vm-ip $env:STEMBUILD_BASE_VM_IP -vm-username $env:STEMBUILD_BASE_VM_USERNAME -vm-password $env:STEMBUILD_BASE_VM_PASSWORD -vcenter-ca-certs "ca.crt"
 exit $LASTEXITCODE
