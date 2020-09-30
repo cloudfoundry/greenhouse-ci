@@ -846,7 +846,7 @@ jobs:
       DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
       VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME))
       SNAPSHOT_NAME: "stembuild_ready_power_on"
-      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: install-windows-updates
     file: ci/tasks/install-windows-updates/task.yml
     tags: [nimbus-linux]
@@ -855,7 +855,7 @@ jobs:
       STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME))
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
     tags: [nimbus-linux]
@@ -868,7 +868,7 @@ jobs:
       STEMBUILD_BASE_VM_IP: ((NIMBUS_STEMBUILD_VM_IP))
       STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      VCENTER_CA_CERT: ((VCENTER_ROOT_CA_CERT))
+      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-package
     file: ci/tasks/run-package-stembuild-linux/task.yml
     tags: [nimbus-linux]
