@@ -112,7 +112,7 @@ resources:
 - name: ci
   type: git
   source:
-    branch: move-stembuilds-to-nimbus-worker #((CI_BRANCH))
+    branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: stemcell-builder
   type: git
