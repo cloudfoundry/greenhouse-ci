@@ -79,12 +79,18 @@ jobs:
       image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       run:
         path: cp
-        args: ["-R", "go-dep", "ci-dockerfile/docker", "docker-build-dir"]
+        args:
+          - -R
+          - go-dep
+          - ci-dockerfile/docker
+          - docker-build-dir
   - put: ci-image
     params:
       build: docker-build-dir
       dockerfile: docker-build-dir/docker/Dockerfile.ci
       tag_as_latest: true
+      build_args:
+        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
 
 - name: build-and-push-govc
   plan:
