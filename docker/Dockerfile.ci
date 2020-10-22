@@ -90,8 +90,7 @@ RUN git clone https://github.com/portcullislabs/rdp-sec-check && mv rdp-sec-chec
 RUN export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
 
 # add contract test cert
-RUN mkdir /usr/local/share/ca-certificates/extra
-RUN echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/extra/vcenter.crt && update-ca-certificates
+RUN echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/vcenter.crt && update-ca-certificates
 
 # cleanup apt cache
 RUN rm -rf /var/lib/apt/lists/*
