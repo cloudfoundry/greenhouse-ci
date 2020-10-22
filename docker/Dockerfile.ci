@@ -1,6 +1,8 @@
 #docker pull pivotalgreenhouse/ci
 FROM ruby:2.5.1
 
+ARG VCENTER_CA_CERT
+
 ENV PACKER_URL "https://windows-bosh-private.s3.amazonaws.com/packer.zip"
 
 RUN apt-get update -qq && \
