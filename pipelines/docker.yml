@@ -101,4 +101,5 @@ jobs:
         build: govc-dockerfile/docker
         dockerfile: govc-dockerfile/docker/Dockerfile.govc
         tag_as_latest: true
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
+        build_args:
+          VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
