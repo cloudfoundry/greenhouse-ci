@@ -7,7 +7,7 @@ export CLONE_NAME_PREFIX="construct-${JOB_OS_NAME}-integration-ci-${OS_LINE}"
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 
-export VM_IP=`cat vsphere-bloodmyst-ips/name`
+export VM_IP=`cat nimbus-ips/name`
 export CLONE_NAME_SUFFIX=$(echo ${VM_IP} | cut -d . -f 4)
 export CLONE_NAME=${CLONE_NAME_PREFIX}${CLONE_NAME_SUFFIX}
 echo ${CLONE_NAME} > integration-vm-name/name

@@ -9,7 +9,7 @@ ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
 export BOSH_PSMODULES_REPO=${ROOT_DIR}/bosh-psmodules-repo
 
-export TARGET_VM_IP=`cat vsphere-bloodmyst-ips/name`
+export TARGET_VM_IP=`cat nimbus-ips/name`
 echo "Using Existing VM IP: ${TARGET_VM_IP}"
 
 echo ***Installing VMWare OVF Tools***

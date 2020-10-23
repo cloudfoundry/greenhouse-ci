@@ -4,7 +4,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/govc
 
 inputs:
 - name: ci
-- name: vsphere-bloodmyst-ips
+- name: nimbus-ips
 
 outputs:
 - name: integration-vm-name
@@ -15,9 +15,9 @@ run:
 params:
   VCENTER_ADMIN_CREDENTIAL_URL:
   OS_LINE:
-  BASE_VM_IPATH: /pizza-boxes-dc/vm/bloodmyst/base
+  BASE_VM_IPATH:
   CLONE_DATASTORE:
   CLONE_RESOURCE_POOL:
   VM_CUSTOMIZATION_NAME: Bosh-Windows-Base
-  CLONE_FOLDER: /pizza-boxes-dc/vm/bloodmyst
+  CLONE_FOLDER:
   JOB_OS_NAME:             # linux or windows
