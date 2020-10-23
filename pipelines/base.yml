@@ -649,19 +649,19 @@ jobs:
         file: ci/tasks/test-units-stembuild-windows/task.yml
         tags: [vsphere-stembuild-worker]
       - task: contract-test
-        tags: [vsphere-stembuild-worker]
+        tags: [nimbus-windows]
         file: ci/tasks/test-contract-stembuild-windows/task.yml
         params:
-          VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
-          VM_FOLDER: ((PIZZA_VCENTER_VM_FOLDER))
-          PACKAGE_TEST_VM_NAME: ((PIZZA_PACKAGE_TEST_VM_NAME))
-          VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
-          VCENTER_USERNAME: ((PIZZA_VCENTER_USERNAME))
-          VCENTER_PASSWORD: ((PIZZA_VCENTER_PASSWORD))
-          VCENTER_CA_CERT: ((PIZZA_VCENTER_ROOT_CA_CERT))
-          CONTRACT_TEST_VM_NAME: ((PIZZA_CONTRACT_TEST_VM_NAME))
-          CONTRACT_TEST_VM_PASSWORD: ((PIZZA_CONTRACT_TEST_VM_PASSWORD))
-          CONTRACT_TEST_VM_USERNAME: ((PIZZA_CONTRACT_TEST_VM_USERNAME))
+          VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+          VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+          PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
+          VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
+          VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
+          VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+          VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
+          CONTRACT_TEST_VM_NAME: ((NIMBUS_CONTRACT_TEST_VM_NAME))
+          CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
+          CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
         tags: [vsphere-linux-worker]
         file: ci/tasks/setup-integration-test-vm/task.yml
@@ -757,18 +757,18 @@ jobs:
         file: ci/tasks/test-units-stembuild-linux/task.yml
       - task: contract-test
         file: ci/tasks/test-contract-stembuild-linux/task.yml
-        tags: [vsphere-linux-worker]
+        tags: [nimbus-linux]
         params:
-          VCENTER_ADMIN_CREDENTIAL_URL: ((PIZZA_VCENTER_ADMIN_CREDENTIAL_URL))
-          VM_FOLDER: ((PIZZA_VCENTER_VM_FOLDER))
-          PACKAGE_TEST_VM_NAME: ((PIZZA_PACKAGE_TEST_VM_NAME))
-          VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
-          VCENTER_USERNAME: ((PIZZA_VCENTER_USERNAME))
-          VCENTER_PASSWORD: ((PIZZA_VCENTER_PASSWORD))
-          VCENTER_CA_CERT: ((PIZZA_VCENTER_ROOT_CA_CERT))
-          CONTRACT_TEST_VM_NAME: ((PIZZA_CONTRACT_TEST_VM_NAME))
-          CONTRACT_TEST_VM_PASSWORD: ((PIZZA_CONTRACT_TEST_VM_PASSWORD))
-          CONTRACT_TEST_VM_USERNAME: ((PIZZA_CONTRACT_TEST_VM_USERNAME))
+          VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+          VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+          PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
+          VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
+          VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
+          VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+          VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
+          CONTRACT_TEST_VM_NAME: ((NIMBUS_CONTRACT_TEST_VM_NAME))
+          CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
+          CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
         tags: [vsphere-linux-worker]
         file: ci/tasks/setup-integration-test-vm/task.yml
