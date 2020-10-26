@@ -11,4 +11,4 @@ run:
 
 params:
   VCENTER_ADMIN_CREDENTIAL_URL:
-  CLONE_FOLDER: /pizza-boxes-dc/vm/bloodmyst
+  CLONE_FOLDER:

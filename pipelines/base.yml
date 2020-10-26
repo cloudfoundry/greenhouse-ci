@@ -786,7 +786,7 @@ jobs:
           BASE_VM_IPATH: /dc0/vm/bosh-windows-ci-vms-and-templates/stembuild_base_vm_2019_
           CLONE_DATASTORE: ((NIMBUS_VCENTER_DATASTORE))
           CLONE_RESOURCE_POOL: ((NIMBUS_VCENTER_RESOURCE_POOL))
-          CLONE_FOLDER: /dc0/vm/clones
+          CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
           JOB_OS_NAME: "linux"
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
@@ -824,6 +824,7 @@ jobs:
       tags: [nimbus-linux]
       file: ci/tasks/delete-integration-test-vm/task.yml
       params:
+        CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
         VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
     - put: nimbus-ips
       params: { release: nimbus-ips }
