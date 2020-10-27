@@ -159,6 +159,13 @@ resources:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
 
+- name: legacy-ci-image
+  type: registry-image
+  source:
+    repository: dev.registry.pivotal.io/bosh-windows/legacy-ci
+    username: ((PIVNET_HARBOR_DEV_REGISTRY_USERNAME))
+    password: ((PIVNET_HARBOR_DEV_REGISTRY_PASSWORD))
+
 # releases
 - name: openssh-release
   type: github-release
@@ -748,6 +755,7 @@ jobs:
       - get: ovftool
       - put: nimbus-ips
         params: { acquire: true }
+      - get: legacy-ci-image
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -759,12 +767,16 @@ jobs:
         file: ci/tasks/test-units-stemcell-automation/task.yml
       - task: build-agent
         file: ci/tasks/build-agent-zip/task.yml
+        image: legacy-ci-image
       - task: build-psmodules
         file: ci/tasks/build-psmodules-zip/task.yml
+        image: legacy-ci-image
       - task: unit-test
         file: ci/tasks/test-units-stembuild-linux/task.yml
+        image: legacy-ci-image
       - task: contract-test
         file: ci/tasks/test-contract-stembuild-linux/task.yml
+        image: legacy-ci-image
         tags: [nimbus-linux]
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -790,10 +802,13 @@ jobs:
           JOB_OS_NAME: "linux"
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
+    image: legacy-ci-image
   - task: zip-files
     file: ci/tasks/zip-files/task.yml
+    image: legacy-ci-image
   - task: integration
     file: ci/tasks/test-integration-stembuild-linux/task.yml
+    image: legacy-ci-image
     tags: [nimbus-linux]
     timeout: 3h
     params:
@@ -813,6 +828,7 @@ jobs:
       OS_LINE: ((PIPELINE_NAME))
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
+    image: legacy-ci-image
     params:
       STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
   - put: stembuild-untested-linux
