@@ -656,20 +656,6 @@ jobs:
       - task: unit-test
         file: ci/tasks/test-units-stembuild-windows/task.yml
         tags: [nimbus-windows]
-      - task: contract-test
-        tags: [nimbus-windows]
-        file: ci/tasks/test-contract-stembuild-windows/task.yml
-        params:
-          VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
-          VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
-          PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
-          VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
-          VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-          VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
-          VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
-          CONTRACT_TEST_VM_NAME: ((NIMBUS_CONTRACT_TEST_VM_NAME))
-          CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
-          CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
         tags: [nimbus-linux]
         file: ci/tasks/setup-integration-test-vm/task.yml
