@@ -294,13 +294,6 @@ resources:
     pool: ((VSPHERE_POOL_NAME))
     private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
-- name: vsphere-bloodmyst-ips
-  type: pool
-  source:
-    branch: master
-    pool: "vsphere-bloodmyst-ips"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 - name: nimbus-ips
   type: pool
@@ -645,7 +638,7 @@ jobs:
       - get: stembuild
         passed: [build]
       - get: ovftool
-      - put: vsphere-bloodmyst-ips
+      - put: nimbus-ips
         params: { acquire: true }
   - put: version
     resource: stembuild-windows-build-number
@@ -662,7 +655,7 @@ jobs:
         file: ci/tasks/build-psmodules-zip/task.yml
       - task: unit-test
         file: ci/tasks/test-units-stembuild-windows/task.yml
-        tags: [vsphere-stembuild-worker]
+        tags: [nimbus-windows]
       - task: contract-test
         tags: [nimbus-windows]
         file: ci/tasks/test-contract-stembuild-windows/task.yml
@@ -678,36 +671,38 @@ jobs:
           CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
           CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
-        tags: [vsphere-linux-worker]
+        tags: [nimbus-linux]
         file: ci/tasks/setup-integration-test-vm/task.yml
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
           OS_LINE: ((PIPELINE_NAME))
+          BASE_VM_IPATH: /dc0/vm/bosh-windows-ci-vms-and-templates/stembuild_base_vm_2019_
           CLONE_DATASTORE: ((NIMBUS_VCENTER_DATASTORE))
           CLONE_RESOURCE_POOL: ((NIMBUS_VCENTER_RESOURCE_POOL))
+          CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
           JOB_OS_NAME: "windows"
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
   - task: zip-files
     file: ci/tasks/zip-files/task.yml
   - task: integration
-    tags: [vsphere-stembuild-worker]
+    tags: [nimbus-windows]
     file: ci/tasks/test-integration-stembuild-windows/task.yml
     timeout: 3h
     params:
-      VCENTER_BASE_URL: ((PIZZA_VCENTER_BASE_URL))
+      VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
       GOVC_DATASTORE: ((NIMBUS_VCENTER_DATASTORE))
-      GOVC_NETWORK: ((PIZZA_VCENTER_NETWORK))
+      GOVC_NETWORK: ((NIMBUS_VCENTER_NETWORK))
       GOVC_RESOURCE_POOL: ((NIMBUS_VCENTER_RESOURCE_POOL))
       VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
-      VCENTER_USERNAME: ((PIZZA_VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((PIZZA_VCENTER_PASSWORD))
-      VM_FOLDER: ((PIZZA_VCENTER_VM_FOLDER))
-      VM_USERNAME: ((PIZZA_VM_USERNAME))
-      VM_PASSWORD: ((PIZZA_VM_PASSWORD))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((PIZZA_INT_WINDOWS_LOGOUT_USERS_VM_PATH))
-      LOGOUT_INTEGRATION_TEST_VM_IP: ((PIZZA_INT_WINDOWS_LOGOUT_USERS_VM_IP))
-      PACKAGE_TEST_VM_NAME: ((PIZZA_PACKAGE_TEST_VM_NAME))
+      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
+      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+      VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
+      VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((NIMBUS_WINDOWS_LOGOUT_TEST_VM_PATH))
+      LOGOUT_INTEGRATION_TEST_VM_IP: ((NIMBUS_WINDOWS_LOGOUT_TEST_VM_IP))
+      PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
       OS_LINE: ((PIPELINE_NAME))
   - task: build
     tags: [vsphere-stembuild-worker]
@@ -720,12 +715,13 @@ jobs:
   ensure:
     do:
     - task: delete-integration-test-vm
-      tags: [vsphere-linux-worker]
+      tags: [nimbus-linux]
       file: ci/tasks/delete-integration-test-vm/task.yml
       params:
+        CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
         VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
-    - put: vsphere-bloodmyst-ips
-      params: { release: vsphere-bloodmyst-ips }
+    - put: nimbus-ips
+      params: { release: nimbus-ips }
 
 - name: stembuild-linux
   serial: true
