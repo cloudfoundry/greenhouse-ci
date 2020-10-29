@@ -32,7 +32,7 @@ Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 Write-Host ***Building ginkgo***
 go get github.com/onsi/ginkgo/ginkgo
 
-$env:TARGET_VM_IP = cat $ROOT_DIR/vsphere-bloodmyst-ips/name
+$env:TARGET_VM_IP = cat $ROOT_DIR/nimbus-ips/name
 $env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
 
 $env:PATH="$env:GOPATH\bin;$env:PATH"
