@@ -941,8 +941,8 @@ jobs:
         VM_EXTENSIONS: 10GB_ephemeral_disk
         MOUNT_EPHEMERAL_DISK: true
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-        DEFAULT_USERNAME: ((PIZZA_VM_USERNAME))
-        DEFAULT_PASSWORD: ((PIZZA_VM_PASSWORD))
+        DEFAULT_USERNAME: ((NIMBUS_VM_USERNAME))
+        DEFAULT_PASSWORD: ((NIMBUS_VM_PASSWORD))
     ensure:
       put: vsphere-director-lock
       params:
@@ -1095,8 +1095,8 @@ jobs:
             VM_EXTENSIONS: 10GB_ephemeral_disk
             MOUNT_EPHEMERAL_DISK: true
             SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-            DEFAULT_USERNAME: ((PIZZA_VM_USERNAME))
-            DEFAULT_PASSWORD: ((PIZZA_VM_PASSWORD))
+            DEFAULT_USERNAME: ((NIMBUS_VM_USERNAME))
+            DEFAULT_PASSWORD: ((NIMBUS_VM_PASSWORD))
       ensure:
         put: vsphere-director-lock
         params:
