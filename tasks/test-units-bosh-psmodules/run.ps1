@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 # Do not set error action preference let Pester handle it instead
 $result = 0
 
+Import-Module ./Pester/pester.psm1;
 $status = (Get-Service -Name "wuauserv").Status
 $startupType = Get-Service "wuauserv" | Select-Object -ExpandProperty StartType | Out-String
 "wuauserv status = * $status *"

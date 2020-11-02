@@ -504,13 +504,12 @@ jobs:
     - in_parallel:
         fail_fast: true
         steps:
+          - get: pester
           - get: ci
           - get: bosh-psmodules-repo
             trigger: true
     - task: test-units-bosh-psmodules
       file: ci/tasks/test-units-bosh-psmodules/task.yml
-      tags:
-        - vsphere-stembuild-worker
 - name: test-stemcell-builder
   serial: true
   plan:
