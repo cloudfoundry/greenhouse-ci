@@ -510,6 +510,7 @@ jobs:
             trigger: true
     - task: test-units-bosh-psmodules
       file: ci/tasks/test-units-bosh-psmodules/task.yml
+      tags: [nimbus-windows]
 - name: test-stemcell-builder
   serial: true
   plan:
@@ -691,7 +692,7 @@ jobs:
       PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
       OS_LINE: ((PIPELINE_NAME))
   - task: build
-    tags: [vsphere-stembuild-worker]
+    tags: [nimbus-windows]
     file: ci/tasks/build-stembuild-windows/task.yml
     params:
       STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
