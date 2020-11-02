@@ -39,7 +39,7 @@ $env:PATH="$env:GOPATH\bin;$env:PATH"
 Set-Location $STEMBUILD_DIR
 
 Write-Host ***Runninng integration tests***
-make integration/withoutconstruct
+make integration
 if ($lastexitcode -ne 0)
 {
     throw "integration specs failed"
