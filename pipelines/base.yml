@@ -1615,18 +1615,6 @@ jobs:
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
       DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
-  - task: upload-stemcell-to-acceptance # TODO: WE SHOULDN'T DO THIS ANYMORE
-    file: ci/tasks/pm-acceptance-upload-azure-stemcell/task.yml
-    tags: [azure-linux-worker]
-    input_mapping: {heavy_stemcell_dir: heavy-stemcell}
-    params:
-      BOSH_CA_CERT: ((PM_ACCEPTANCE_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((PM_ACCEPTANCE_BOSH_CLIENT_ID))
-      BOSH_CLIENT_SECRET: ((PM_ACCEPTANCE_BOSH_CLIENT_SECRET))
-      BOSH_ENVIRONMENT: ((PM_ACCEPTANCE_BOSH_DIRECTOR))
-      SSH_TUNNEL_IP: ((PM_ACCEPTANCE_SSH_TUNNEL_IP))
-      SSH_TUNNEL_PRIVATE_KEY: ((PM_ACCEPTANCE_SSH_TUNNEL_PRIVATE_KEY))
-      SSH_TUNNEL_USER: ((PM_ACCEPTANCE_SSH_TUNNEL_USER))
   - put: azure-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
