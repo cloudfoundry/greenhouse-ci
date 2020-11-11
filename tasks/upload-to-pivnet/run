@@ -48,7 +48,7 @@ cat > pivnet-metadata/metadata <<EOF
 release:
   version: "${release_version}"
   release_type: Security Release
-  eula_slug: "pivotal_software_eula"
+  eula_slug: "vmware_software_eula"
   availability: Admins Only
   user_group_ids:
     - 164
