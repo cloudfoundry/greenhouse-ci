@@ -172,7 +172,7 @@ resources:
   source:
     owner: PowerShell
     repository: Win32-OpenSSH
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    access_token: ((BOSH_WINDOWS_CI_ACCESS_TOKEN))
     tag_filter: v([^v].*)
 
 - name: post-stembuild-release
@@ -180,7 +180,7 @@ resources:
   source:
     owner: cloudfoundry-incubator
     repository: stembuild
-    access_token: ((GREENHOUSE_CI_ACCESS_TOKEN))
+    access_token: ((BOSH_WINDOWS_CI_ACCESS_TOKEN))
 
 - name: bosh-agent-release
   type: metalink-repository
