@@ -1,6 +1,9 @@
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
+# Instead of retooling the job/pipeline, use a copy of the old makefile
+Copy-Item ci/tasks/build-stembuild-windows/old-Makefile stembuild/Makefile -Recurse -Force
+
 $ROOT_DIR=Get-Location
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)

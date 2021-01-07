@@ -2,6 +2,9 @@
 
 set -ex
 
+# Instead of retooling the job/pipeline, use a copy of the old makefile
+mv ci/tasks/build-stembuild-linux/old-Makefile  stembuild/Makefile
+
 VERSION=`cat version/version`
 ROOT_DIR=$(pwd)
 OUTPUT_DIR=${ROOT_DIR}/output
