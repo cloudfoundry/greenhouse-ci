@@ -76,8 +76,11 @@ while [[ updates_remaining -ne 0 ]]; do
   updates_remaining=
   while [[ -z "$updates_remaining" ]] ; do
     echo "Trying to discover how many updates remain..."
+    # ignore failures here since the vmware tools agent may be down while updates are being applied
+    set +e
     get_update_count_pid=$($govc_pwsh_cmd ${returnWindowsUpdateCount})
     updates_remaining=$(govc guest.ps -vm.ipath="${vm_ipath}" -l="${vm_username}:${vm_password}" -p=${get_update_count_pid} -X -json | jq '.ProcessInfo[0].ExitCode')
+    set -e
   done
   echo "Updates remaining: $updates_remaining"
 done
