@@ -166,6 +166,12 @@ resources:
     username: ((PIVNET_HARBOR_DEV_REGISTRY_USERNAME))
     password: ((PIVNET_HARBOR_DEV_REGISTRY_PASSWORD))
 
+- name: govc-image
+  type: registry-image
+  source:
+    repository: pivotalgreenhouse/govc
+    username: ((DOCKER_USERNAME))
+    password: ((DOCKER_PASSWORD))
 # releases
 - name: openssh-release
   type: github-release
@@ -640,6 +646,7 @@ jobs:
       - get: ovftool
       - put: nimbus-ips
         params: { acquire: true }
+      - get: govc-image
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -658,6 +665,7 @@ jobs:
         tags: [nimbus-windows]
       - task: setup-integration-test-vm
         tags: [nimbus-linux]
+        image: govc-image
         file: ci/tasks/setup-integration-test-vm/task.yml
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -704,6 +712,7 @@ jobs:
     - task: delete-integration-test-vm
       tags: [nimbus-linux]
       file: ci/tasks/delete-integration-test-vm/task.yml
+      image: govc-image
       params:
         CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
         VCENTER_ADMIN_CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -739,6 +748,7 @@ jobs:
       - put: nimbus-ips
         params: { acquire: true }
       - get: legacy-ci-image
+      - get: govc-image
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -773,6 +783,7 @@ jobs:
           CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
           CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
+        image: govc-image
         tags: [nimbus-linux]
         file: ci/tasks/setup-integration-test-vm/task.yml
         params:
@@ -822,6 +833,7 @@ jobs:
     do:
     - task: delete-integration-test-vm
       tags: [nimbus-linux]
+      image: govc-image
       file: ci/tasks/delete-integration-test-vm/task.yml
       params:
         CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
@@ -846,11 +858,14 @@ jobs:
       resource: stembuild-linux-stemcell-build-number
       params:
         inc: true
+    - get: govc-image
+    - get: legacy-ci-image
   - put: stembuild-linux-stemcell-build-number
     params:
       file: stemcell-build-number/count
   - task: revert-snapshot
     file: ci/tasks/revert-snapshot/task.yml
+    image: govc-image
     tags: [nimbus-linux]
     params:
       CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -860,6 +875,7 @@ jobs:
       VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: install-windows-updates
     file: ci/tasks/install-windows-updates/task.yml
+    image: govc-image
     tags: [nimbus-linux]
     params:
       CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -869,6 +885,7 @@ jobs:
       VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
+    image: legacy-ci-image
     tags: [nimbus-linux]
     params:
       VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
@@ -882,6 +899,7 @@ jobs:
       VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-package
     file: ci/tasks/run-package-stembuild-linux/task.yml
+    image: legacy-ci-image
     tags: [nimbus-linux]
     params:
       VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
@@ -919,12 +937,14 @@ jobs:
       - get: stembuild-linux-stemcell
         passed: [create-stembuild-linux-stemcell]
         trigger: true
+      - get: legacy-ci-image
   - put: vsphere-director-lock
     params:
       acquire: true
   - do:
     - task: run-bwats-stembuild-linux
       file: ci/tasks/run-bwats/task.yml
+      image: legacy-ci-image
       tags: [nimbus-linux]
       input_mapping: { stemcell: stembuild-linux-stemcell }
       params:
@@ -964,12 +984,14 @@ jobs:
         - get: stembuild-linux-stemcell
           trigger: true
           passed: [test-stembuild-linux-stemcell]
+        - get: legacy-ci-image
   - put: vsphere-director-lock
     params:
       acquire: true
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
+      image: legacy-ci-image
       tags: [nimbus-linux]
       input_mapping: { stemcell: stembuild-linux-stemcell }
       params:
@@ -1009,11 +1031,14 @@ jobs:
           resource: stembuild-windows-stemcell-build-number
           params:
             inc: true
+        - get: govc-image
+        - get: legacy-ci-image
     - put: stembuild-windows-stemcell-build-number
       params:
         file: stemcell-build-number/count
     - task: revert-snapshot
       file: ci/tasks/revert-snapshot/task.yml
+      image: govc-image
       tags: [nimbus-linux]
       params:
         CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -1023,6 +1048,7 @@ jobs:
         VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: install-windows-updates
       file: ci/tasks/install-windows-updates/task.yml
+      image: govc-image
       tags: [nimbus-linux]
       params:
         CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
@@ -1073,12 +1099,14 @@ jobs:
           - get: stembuild-windows-stemcell
             passed: [create-stembuild-windows-stemcell]
             trigger: true
+          - get: legacy-ci-image
     - put: vsphere-director-lock
       params:
         acquire: true
     - do:
         - task: run-bwats-stembuild-windows
           file: ci/tasks/run-bwats/task.yml
+          image: legacy-ci-image
           tags: [nimbus-linux]
           input_mapping: { stemcell: stembuild-windows-stemcell }
           params:
@@ -1118,12 +1146,14 @@ jobs:
           - get: stembuild-windows-stemcell
             trigger: true
             passed: [test-stembuild-windows-stemcell]
+          - get: legacy-ci-image
     - put: vsphere-director-lock
       params:
         acquire: true
     - do:
         - task: run-wuts
           file: ci/tasks/run-wuts/task.yml
+          image: legacy-ci-image
           tags: [nimbus-linux]
           input_mapping: { stemcell: stembuild-windows-stemcell }
           params:
