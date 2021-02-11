@@ -73,7 +73,7 @@ while [[ updates_remaining -ne 0 ]]; do
   wait_for_vm_to_come_up
 
   echo "VM reachable"
-  unset updates_remaining
+  updates_remaining=
   while [[ -z "$updates_remaining" ]] ; do
     echo "Trying to discover how many updates remain..."
     get_update_count_pid=$($govc_pwsh_cmd ${returnWindowsUpdateCount})
