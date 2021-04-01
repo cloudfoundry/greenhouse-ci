@@ -100,7 +100,8 @@ copy_blob_to_premiumstore() {
     --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \
     --account-key "${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}" \
     --destination-container "${AZURE_CONTAINER_NAME}" \
-    --destination-blob "${vhd_path}"
+    --destination-blob "${vhd_path}" \
+    --requires-sync true
 }
 
 publish_offer() {
