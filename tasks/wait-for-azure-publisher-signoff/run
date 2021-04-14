@@ -38,11 +38,11 @@ checking_status() {
     token=$(create_microsoft_token)
     retrieve_offer_status_json > offer_status_json
     publishing_version=$(jq -r ".publishingVersion" offer_status_json)
-    if [["${original_publishing_version}" -gt "${publishing_version}" ]]; do
+    if [[ "${original_publishing_version}" -gt "${publishing_version}" ]]; then
       echo "The offer no longer exists, it was probably rejected"
       exit 1
     fi
-    if [["${original_publishing_version}" -lt "${publishing_version}" ]]; do
+    if [[ "${original_publishing_version}" -lt "${publishing_version}" ]]; then
       echo "The offer has been superseded by a newer offer. We are now waiting for that offering to be successful"
       original_publishing_version=${publishing_version}
     fi
