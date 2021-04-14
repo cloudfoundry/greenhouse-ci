@@ -29,7 +29,7 @@ checking_status() {
   echo -n "authenticating with microsoft..."
   token=$(create_microsoft_token)
   retrieve_offer_status_json > offer_status_json
-  echo "Full offer status json response is: ${offer_status_json}"
+  echo "Full offer status json response is: $(cat offer_status_json)"
   signoff_step_status=$(jq -r ".steps[] | select(.id == \"publisher-signoff\") | .status" offer_status_json)
   while [[ $signoff_step_status != "waitingForPublisherReview" ]]; do
     echo "At time $(date), offer is waiting for publisher sign off: ${signoff_step_status}"
@@ -37,7 +37,7 @@ checking_status() {
     token=$(create_microsoft_token)
     retrieve_offer_status_json > offer_status_json
     signoff_step_status=$(jq -r ".steps[] | select(.id == \"publisher-signoff\") | .status" offer_status_json)
-    echo "Full offer status json response is: ${offer_status_json}"
+    echo "Full offer status json response is: $(cat offer_status_json)"
   done
 }
 
