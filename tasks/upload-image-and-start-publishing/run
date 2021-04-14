@@ -8,10 +8,9 @@ script_dir=$( dirname $script_path )
 main_version=$( cat version/number )
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
 image_url=$( cat azure-base-vhd-uri/${uri_filename} )
+vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
 
 retrieve_blob_url() {
-    vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
-
     retrieve_blob_url=$(
       az storage blob url \
       --container-name ${AZURE_CONTAINER_NAME} \
@@ -90,8 +89,6 @@ curl --fail -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
 
 
 copy_blob_to_premiumstore() {
-  # dupe
-  vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
   az storage blob copy start \
     --source-account-key "${AZURE_STORAGE_ACCESS_KEY}" \
     --source-account-name "${AZURE_STORAGE_ACCOUNT}" \
@@ -100,8 +97,32 @@ copy_blob_to_premiumstore() {
     --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \
     --account-key "${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}" \
     --destination-container "${AZURE_CONTAINER_NAME}" \
-    --destination-blob "${vhd_path}" \
-    --requires-sync true
+    --destination-blob "${vhd_path}"
+}
+
+wait_for_copy_blob_to_premiumstore() {
+  while true; do
+    copy_status="$(get_copy_blob_status)"
+    case "${copy_status}" in
+      failed | aborted)
+        echo "Copy ${copy_status}"
+        exit 1
+        ;;
+      success)
+        break
+        ;;
+      *)
+        sleep 5
+    esac
+  done
+}
+
+get_copy_blob_status() {
+  az storage blob show \
+    --container-name "${AZURE_CONTAINER_NAME}" \
+    --name "${vhd_path}" \
+    --account-name "${AZURE_PUBLISHED_STORAGE_ACCOUNT}" \
+    --account-key "${AZURE_PUBLISHED_STORAGE_ACCESS_KEY}" | jq -r ".properties.copy.status"
 }
 
 publish_offer() {
@@ -123,6 +144,11 @@ echo OK
 echo
 echo "Copying Image from ${AZURE_STORAGE_ACCOUNT} to ${AZURE_PUBLISHED_STORAGE_ACCOUNT}"
 copy_blob_to_premiumstore
+echo OK
+
+echo
+echo "Waiting for copy to finish from ${AZURE_STORAGE_ACCOUNT} to ${AZURE_PUBLISHED_STORAGE_ACCOUNT}"
+wait_for_copy_blob_to_premiumstore
 echo OK
 
 
@@ -156,3 +182,5 @@ echo
 echo "Publishing offer, will notify ${OFFER_NOTIFICATION_EMAIL}"
 publish_offer
 echo OK
+
+}
