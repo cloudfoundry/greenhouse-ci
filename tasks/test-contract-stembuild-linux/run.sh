@@ -13,7 +13,7 @@ export VCENTER_CA_CERT="$(openssl s_client -showcerts -connect ${VCENTER_BASE_UR
 
 # We use an additional dns redirect that will cause TLS to fail
 # So we fetch the hostname we're supposed to be using from the Cert
-export VCENTER_BASE_URL=$(openssl x509 -noout -subject -in <(echo "$VCENTER_CA_CERT") | sed -e 's/^subject.*CN=\([a-zA-Z0-9\.\-]*\).*$/\1/')
+export VCENTER_BASE_URL=$(openssl x509 -noout -subject -in <(echo "$VCENTER_CA_CERT") | sed -e 's/^subject.*CN\s*=\s*\([a-zA-Z0-9\.\-]*\).*$/\1/')
 
 CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
 STEMBUILD_DIR=${ROOT_DIR}/stembuild
