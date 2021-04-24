@@ -11,5 +11,6 @@ run:
   path: ci/tasks/delete-integration-test-vm/run.sh
 
 params:
+  GOVC_INSECURE: 1
   VCENTER_ADMIN_CREDENTIAL_URL:
   CLONE_FOLDER:
