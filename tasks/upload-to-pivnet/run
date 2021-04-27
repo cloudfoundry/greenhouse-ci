@@ -43,14 +43,26 @@ EOF
 
 release_version=$( cat version/version | cut -d '.' -f1-2 )
 
+# User group IDs are as follows:
+# 194 = "PKS Internal Early Access"
+# 102 = "PEZ Early Access"
+# 110 = "Pivotal Platform Provider"
+# 152 = "Stemcells for PCF, Windows,"
+#   6 = "VMware Internal Early Access"
+# 164 = "Tanzu Release Reliability"
 cat > pivnet-metadata/metadata <<EOF
 ---
 release:
   version: "${release_version}"
   release_type: Security Release
   eula_slug: "vmware_eula"
-  availability: Admins Only
+  availability: Selected User Groups Only
   user_group_ids:
+    - 194
+    - 102
+    - 110
+    - 152
+    - 6
     - 164
   eccn: "5D002"
   license_exception: "ECCN"
