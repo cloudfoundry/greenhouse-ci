@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 export VCENTER_CA_CERT="$(openssl s_client -showcerts -connect ${VCENTER_BASE_URL}:443 2>/dev/null </dev/null | \
  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p')"
 echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/vcenter.crt && update-ca-certificates
