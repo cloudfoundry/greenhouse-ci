@@ -869,7 +869,6 @@ jobs:
       DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
       VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       SNAPSHOT_NAME: "stembuild-ready-power-on"
-      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: install-windows-updates
     file: ci/tasks/install-windows-updates/task.yml
     image: govc-image
@@ -1042,7 +1041,6 @@ jobs:
         DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
         VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         SNAPSHOT_NAME: "stembuild-ready-power-on"
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: install-windows-updates
       file: ci/tasks/install-windows-updates/task.yml
       image: govc-image
