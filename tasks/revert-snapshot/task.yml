@@ -9,9 +9,7 @@ run:
   path: ci/tasks/revert-snapshot/run.sh
 
 params:
-  CREDENTIAL_URL:
+  GOVC_URL:
   DATACENTER:
   VM_TO_REVERT:
   SNAPSHOT_NAME:
-  VCENTER_CA_CERT:
-

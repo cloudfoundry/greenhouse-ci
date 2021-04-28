@@ -865,7 +865,7 @@ jobs:
     image: govc-image
     tags: [nimbus-linux]
     params:
-      CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+      GOVC_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
       DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
       VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       SNAPSHOT_NAME: "stembuild-ready-power-on"
@@ -1038,7 +1038,7 @@ jobs:
       image: govc-image
       tags: [nimbus-linux]
       params:
-        CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+        GOVC_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
         DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
         VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         SNAPSHOT_NAME: "stembuild-ready-power-on"
