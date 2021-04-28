@@ -17,6 +17,3 @@ RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -
 
 # cleanup
 RUN rm -rf /var/lib/apt/lists/*
-
-# add vsphere CA cert
-RUN echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/vcenter.crt && update-ca-certificates

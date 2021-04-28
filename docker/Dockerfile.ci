@@ -91,8 +91,5 @@ RUN apt-get install cf-cli
 RUN git clone https://github.com/portcullislabs/rdp-sec-check && mv rdp-sec-check/rdp-sec-check.pl /usr/local/bin && rm -rf rdp-sec-check
 RUN export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
 
-# add contract test cert
-RUN echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/vcenter.crt && update-ca-certificates
-
 # cleanup apt cache
 RUN rm -rf /var/lib/apt/lists/*

@@ -38,13 +38,6 @@ resources:
     username: {{DOCKER_USERNAME}}
     password: {{DOCKER_PASSWORD}}
 
-- name: legacy-ci-image
-  type: docker-image
-  source:
-    repository: dev.registry.pivotal.io/bosh-windows/legacy-ci
-    username: {{PIVNET_HARBOR_DEV_REGISTRY_USERNAME}}
-    password: {{PIVNET_HARBOR_DEV_REGISTRY_PASSWORD}}
-
 - name: govc-image
   type: docker-image
   source:
@@ -96,15 +89,6 @@ jobs:
       build: docker-build-dir
       dockerfile: docker-build-dir/docker/Dockerfile.ci
       tag_as_latest: true
-      build_args:
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
-  - put: legacy-ci-image
-    params:
-      build: docker-build-dir
-      dockerfile: docker-build-dir/docker/Dockerfile.ci
-      tag_as_latest: true
-      build_args:
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
 
 - name: build-and-push-govc
   plan:
@@ -115,5 +99,3 @@ jobs:
         build: govc-dockerfile/docker
         dockerfile: govc-dockerfile/docker/Dockerfile.govc
         tag_as_latest: true
-        build_args:
-          VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
