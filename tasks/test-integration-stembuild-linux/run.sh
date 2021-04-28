@@ -2,19 +2,15 @@
 
 set -ex
 
+ROOT_DIR=$(pwd)
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+OUTPUT_DIR=${ROOT_DIR}/output
+
+source ${SCRIPT_DIR}/../../common-scripts/updates_nimbus_urls_and_cert.sh
+
 export STEMBUILD_VERSION=`cat version/version`
 export VM_NAME=`cat integration-vm-name/name`
 
-export VCENTER_CA_CERT="$(openssl s_client -showcerts -connect ${VCENTER_BASE_URL}:443 2>/dev/null </dev/null | \
- sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p')"
-
-# We use an additional dns redirect that will cause TLS to fail
-# So we fetch the hostname we're supposed to be using from the Cert
-export VCENTER_BASE_URL=$(openssl x509 -noout -subject -in <(echo "$VCENTER_CA_CERT") | sed -e 's/^subject.*CN\s*=\s*\([a-zA-Z0-9\.\-]*\).*$/\1/')
-export VCENTER_ADMIN_CREDENTIAL_URL=$(echo $VCENTER_ADMIN_CREDENTIAL_URL | sed "s/\(.*\)vcenter-nimbus.*/\1${VCENTER_BASE_URL}/")
-
-ROOT_DIR=$(pwd)
-OUTPUT_DIR=${ROOT_DIR}/output
 export BOSH_PSMODULES_REPO=${ROOT_DIR}/bosh-psmodules-repo
 
 export TARGET_VM_IP=`cat nimbus-ips/name`

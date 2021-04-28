@@ -3,17 +3,13 @@
 set -euo pipefail
 
 ROOT_DIR=$(pwd)
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+source ${SCRIPT_DIR}/../../common-scripts/updates_nimbus_urls_and_cert.sh
 
 echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
-
-export VCENTER_CA_CERT="$(openssl s_client -showcerts -connect ${VCENTER_BASE_URL}:443 2>/dev/null </dev/null | \
- sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p')"
-
-# We use an additional dns redirect that will cause TLS to fail
-# So we fetch the hostname we're supposed to be using from the Cert
-export VCENTER_BASE_URL=$(openssl x509 -noout -subject -in <(echo "$VCENTER_CA_CERT") | sed -e 's/^subject.*CN\s*=\s*\([a-zA-Z0-9\.\-]*\).*$/\1/')
 
 CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
 STEMBUILD_DIR=${ROOT_DIR}/stembuild
