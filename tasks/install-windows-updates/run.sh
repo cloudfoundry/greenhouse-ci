@@ -2,12 +2,14 @@
 
 set -eu
 
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+source ${SCRIPT_DIR}/../../common-scripts/update_nimbus_urls_and_cert.sh
+
 cat > ca.crt <<END_OF_CERT
 $VCENTER_CA_CERT
 END_OF_CERT
 export GOVC_TLS_CA_CERTS=ca.crt
-
-export GOVC_URL="${CREDENTIAL_URL}"
 
 vm_ipath=${STEMBUILD_CONSTRUCT_TARGET_VM}
 vm_username=${VM_USERNAME}

@@ -874,11 +874,11 @@ jobs:
     image: govc-image
     tags: [nimbus-linux]
     params:
-      CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+      GOVC_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+      VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
       STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
     image: ci-image
@@ -1046,11 +1046,11 @@ jobs:
       image: govc-image
       tags: [nimbus-linux]
       params:
-        CREDENTIAL_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+        GOVC_URL: ((NIMBUS_VCENTER_ADMIN_CREDENTIAL_URL))
+        VCENTER_BASE_URL: ((NIMBUS_VCENTER_BASE_URL))
         STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
         VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: run-stembuild-construct
       file: ci/tasks/run-construct-stembuild-windows/task.yml
       tags: [nimbus-windows]
