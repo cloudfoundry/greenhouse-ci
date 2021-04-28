@@ -11,8 +11,8 @@ echo "${VCENTER_CA_CERT}" > /usr/local/share/ca-certificates/vcenter.crt && upda
 export VCENTER_BASE_URL=$(openssl x509 -noout -subject -in <(echo "$VCENTER_CA_CERT") | sed -e 's/^subject.*CN\s*=\s*\([a-zA-Z0-9\.\-]*\).*$/\1/')
 
 if [ -n "${VCENTER_ADMIN_CREDENTIAL_URL:-}" ]; then
-  export VCENTER_ADMIN_CREDENTIAL_URL=$(echo $VCENTER_ADMIN_CREDENTIAL_URL | sed "s/\(.*\)vcenter-nimbus.*/\1${VCENTER_BASE_URL}/")
+  export VCENTER_ADMIN_CREDENTIAL_URL=$(echo ${VCENTER_ADMIN_CREDENTIAL_URL} | sed "s/\(.*\)vcenter-nimbus.*/\1${VCENTER_BASE_URL}/")
 fi
 if [ -n "${GOVC_URL:-}" ]; then
-  export GOVC_URL=$(echo GOVC_URL | sed "s/\(.*\)vcenter-nimbus.*/\1${VCENTER_BASE_URL}/")
+  export GOVC_URL=$(echo ${GOVC_URL} | sed "s/\(.*\)vcenter-nimbus.*/\1${VCENTER_BASE_URL}/")
 fi
