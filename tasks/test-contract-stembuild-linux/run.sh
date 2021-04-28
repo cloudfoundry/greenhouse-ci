@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-source ${SCRIPT_DIR}/../../common-scripts/updates_nimbus_urls_and_cert.sh
+source ${SCRIPT_DIR}/../../common-scripts/update_nimbus_urls_and_cert.sh
 
 echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath

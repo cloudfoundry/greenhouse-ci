@@ -6,7 +6,7 @@ ROOT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 OUTPUT_DIR=${ROOT_DIR}/output
 
-source ${SCRIPT_DIR}/../../common-scripts/updates_nimbus_urls_and_cert.sh
+source ${SCRIPT_DIR}/../../common-scripts/update_nimbus_urls_and_cert.sh
 
 export STEMBUILD_VERSION=`cat version/version`
 export VM_NAME=`cat integration-vm-name/name`
