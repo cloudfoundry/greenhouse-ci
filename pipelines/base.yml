@@ -892,7 +892,6 @@ jobs:
       STEMBUILD_BASE_VM_IP: ((NIMBUS_STEMBUILD_VM_IP_LINUX))
       STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
   - task: run-stembuild-package
     file: ci/tasks/run-package-stembuild-linux/task.yml
     image: ci-image
@@ -1063,7 +1062,6 @@ jobs:
         STEMBUILD_BASE_VM_IP: ((NIMBUS_STEMBUILD_VM_IP_WINDOWS))
         STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
         STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-        VCENTER_CA_CERT: ((NIMBUS_VCENTER_ROOT_CA_CERT))
     - task: run-stembuild-package
       file: ci/tasks/run-package-stembuild-windows/task.yml
       tags: [nimbus-windows]

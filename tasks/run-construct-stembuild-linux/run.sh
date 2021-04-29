@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+source ${SCRIPT_DIR}/../../common-scripts/update_nimbus_urls_and_cert.sh
+
 cat > ca.crt <<END_OF_CERT
 $VCENTER_CA_CERT
 END_OF_CERT

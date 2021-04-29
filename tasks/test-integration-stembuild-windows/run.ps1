@@ -3,28 +3,13 @@ trap { Exit 1 }
 
 Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
+Set-VCenterHostAndCert
 
 $ROOT_DIR=Get-Location
 Write-Host "ROOT: $ROOT_DIR"
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
 $STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
-
-$request = [System.Net.HttpWebRequest]::Create("https://$env:VCENTER_BASE_URL")
-try { $request.GetResponse().Dispose() } catch {}
-
-$ca_cert=new-object System.Text.StringBuilder
-$ca_cert.AppendLine("-----BEGIN CERTIFICATE-----")
-$ca_cert.AppendLine([System.Convert]::ToBase64String($request.ServicePoint.Certificate.GetRawCertData(), 1))
-$ca_cert.AppendLine("-----END CERTIFICATE-----")
-$env:VCENTER_CA_CERT=$ca_cert.ToString()
-
-$base_url=$request.ServicePoint.Certificate.Subject.Split("=").Get(2)
-
-# We use an additional dns redirect that will cause TLS to fail
-# So we fetch the hostname we're supposed to be using from the Cert
-$env:VCENTER_ADMIN_CREDENTIAL_URL=$env:VCENTER_ADMIN_CREDENTIAL_URL.replace($env:VCENTER_BASE_URL, $base_url)
-$env:VCENTER_BASE_URL=$base_url
 
 $env:VM_NAME= cat $ROOT_DIR/integration-vm-name/name
 $env:BOSH_PSMODULES_REPO="$ROOT_DIR/bosh-psmodules-repo"
