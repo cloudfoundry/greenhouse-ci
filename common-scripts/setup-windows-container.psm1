@@ -22,7 +22,7 @@ function Set-VCenterHostAndCert
 
     # We use an additional dns redirect that will cause TLS to fail
     # So we fetch the hostname we're supposed to be using from the Cert
-    if (Test-Path $env:VCENTER_ADMIN_CREDENTIAL_URL) {
+    if (Test-Path 'env:VCENTER_ADMIN_CREDENTIAL_URL') {
       $env:VCENTER_ADMIN_CREDENTIAL_URL=$env:VCENTER_ADMIN_CREDENTIAL_URL.replace($env:VCENTER_BASE_URL, $base_url)
     }
     $env:VCENTER_BASE_URL=$base_url
