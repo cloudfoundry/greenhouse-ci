@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 set +x
-source ./ci/common-scripts/setup_bosh_proxy.sh
 
-setup_bosh_proxy "${SSH_TUNNEL_USER}" "${SSH_TUNNEL_IP}" "${SSH_TUNNEL_PRIVATE_KEY}"
+if [ -n "${SSH_TUNNEL_USER}" ]; then
+  source ./ci/common-scripts/setup_bosh_proxy.sh
+  setup_bosh_proxy "${SSH_TUNNEL_USER}" "${SSH_TUNNEL_IP}" "${SSH_TUNNEL_PRIVATE_KEY}"
+fi
 
 set -ex
 
