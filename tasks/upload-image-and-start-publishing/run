@@ -182,5 +182,3 @@ echo
 echo "Publishing offer, will notify ${OFFER_NOTIFICATION_EMAIL}"
 publish_offer
 echo OK
-
-}
