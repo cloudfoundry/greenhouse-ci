@@ -50,6 +50,7 @@ resources:
 - name: go-dep
   type: github-release
   source:
+    access_token: ((github_read_only_token))
     owner: golang
     repository: dep
 jobs:
