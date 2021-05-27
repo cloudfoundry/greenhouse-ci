@@ -1782,15 +1782,15 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_BWATS_1))
-        BOSH_CA_CERT: ((gcp_bwats_1_ca_cert))
-        BOSH_CLIENT: ((gcp_bwats_1_client))
-        BOSH_CLIENT_SECRET: ((gcp_bwats_1_client_secret))
-        BOSH_ENVIRONMENT: ((gcp_bwats_1_environment))
+        AZ: az1
+        BOSH_CA_CERT: ((iaas_directors_gcp-director_bosh_ca_cert.ca))
+        BOSH_CLIENT: ((iaas_directors_gcp-director_bosh_client.username))
+        BOSH_CLIENT_SECRET: ((iaas_directors_gcp-director_bosh_client.password))
+        BOSH_ENVIRONMENT: ((iaas_directors_gcp-director_bosh_environment))
         IAAS: gcp
-        NETWORK: private
-        SSH_TUNNEL_IP: ((gcp_bwats_1_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((gcp_bwats_1_gw_private_key))
-        SSH_TUNNEL_USER: ((gcp_bwats_1_gw_user))
+        SSH_TUNNEL_IP: ((iaas_directors_gcp-director_bosh_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_gcp-director_bosh_jumpbox_ssh.private_key))
+        SSH_TUNNEL_USER: ((iaas_directors_gcp-director_bosh_jumpbox_username))
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
@@ -1834,19 +1834,19 @@ jobs:
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        AZ: z1
-        BOSH_CA_CERT: ((gcp_wuts_1_ca_cert))
-        BOSH_CLIENT: ((gcp_wuts_1_client))
-        BOSH_CLIENT_SECRET: ((gcp_wuts_1_client_secret))
-        BOSH_ENVIRONMENT: ((gcp_wuts_1_environment))
-        BOSH_GW_USER: ((gcp_wuts_1_gw_user))
+        AZ: az1
+        BOSH_CA_CERT: ((iaas_directors_gcp-director_bosh_ca_cert.ca))
+        BOSH_CLIENT: ((iaas_directors_gcp-director_bosh_client.username))
+        BOSH_CLIENT_SECRET: ((iaas_directors_gcp-director_bosh_client.password))
+        BOSH_ENVIRONMENT: ((iaas_directors_gcp-director_bosh_environment))
+        BOSH_GW_USER: ((iaas_directors_gcp-director_bosh_jumpbox_username))
         NETWORK: default
-        SSH_TUNNEL_IP: ((gcp_wuts_1_jumpbox_ip))
-        SSH_TUNNEL_PRIVATE_KEY: ((gcp_wuts_1_gw_private_key))
-        SSH_TUNNEL_USER: ((gcp_wuts_1_gw_user))
+        SSH_TUNNEL_IP: ((iaas_directors_gcp-director_bosh_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_gcp-director_bosh_jumpbox_ssh.private_key))
+        SSH_TUNNEL_USER: ((iaas_directors_gcp-director_bosh_jumpbox_username))
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
-        VM_EXTENSIONS: "100GB_ephemeral_disk"
+        VM_EXTENSIONS: "50GB_ephemeral_disk"
         VM_TYPE: default
     ensure:
       put: gcp-lock
