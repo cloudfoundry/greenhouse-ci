@@ -144,7 +144,6 @@ resources:
 - name: pester
   type: git
   source:
-    branch: master
     uri: https://github.com/pester/Pester.git
     tag_filter: 4.4.0
 - name: stembuild
