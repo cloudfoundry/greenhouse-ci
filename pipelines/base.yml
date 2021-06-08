@@ -114,6 +114,17 @@ resources:
   source:
     branch: ((CI_BRANCH))
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+- name: bosh-ecosystem-concourse
+  type: git
+  source:
+    uri: git@github.com:pivotal/bosh-ecosystem-concourse.git
+    private_key: ((github_deploy_key_bosh_ecosystem_concourse.private_key))
+- name: bosh-ecosystem-docker-image
+  type: docker-image
+  source:
+    repository: bosh/bosh-ecosystem-concourse
+    username: ((docker.username))
+    password: ((docker.password))
 - name: stemcell-builder
   type: git
   source:
@@ -539,6 +550,8 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
+      - get: bosh-ecosystem-concourse
+      - get: bosh-ecosystem-docker-image
       - get: stemcell-builder
         trigger: true
         passed: [test-stemcell-builder]
@@ -554,6 +567,18 @@ jobs:
       - get: midnight
         trigger: true
       - get: bosh-agent-release
+  - task: configure-windows-firewall-rules
+    file: bosh-ecosystem-concourse/tasks/deploy-concourse/configure-windows-firewall-rules.yml
+    image: bosh-ecosystem-docker-image
+    params:
+      AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
+      AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      CONCOURSE_GCP_CREDENTIALS_JSON: ((gcp_credentials_json))
+      GOVCLOUD_AWS_ACCESS_KEY_ID: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      GOVLCOUD_AWS_DEFAULT_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
+      GOVCLOUD_AWS_SECRET_ACCES_KEY: ((GOVCLOUD_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      WINDOWS_STEMCELLS_GCP_CREDENTIALS_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
   - put: main-version
     params:
       file: version/number
