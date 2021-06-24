@@ -1302,17 +1302,17 @@ jobs:
     file: ci/tasks/run-bwats/task.yml
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
-      BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
-      BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
-      BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
-      BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
-      SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
-      SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
-      SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
+      BOSH_CA_CERT: ((iaas_directors_aws-director_bosh_ca_cert.ca))
+      BOSH_CLIENT: ((iaas_directors_aws-director_bosh_client.username))
+      BOSH_CLIENT_SECRET: ((iaas_directors_aws-director_bosh_client.password))
+      BOSH_ENVIRONMENT: ((iaas_directors_aws-director_bosh_environment))
+      SSH_TUNNEL_IP: ((iaas_directors_aws-director_bosh_jumpbox_ip))
+      SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_aws-director_bosh_jumpbox_ssh.private_key))
+      SSH_TUNNEL_USER: ((iaas_directors_aws-director_bosh_jumpbox_username))
       STEMCELL_OS: ((STEMCELL_OS_NAME))
       STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
       MOUNT_EPHEMERAL_DISK: true
-      VM_EXTENSIONS: 10GB_ephemeral_disk
+      VM_EXTENSIONS: 50GB_ephemeral_disk
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
       DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
       DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
@@ -1353,15 +1353,14 @@ jobs:
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
-        BOSH_CA_CERT: ((AWS_BWATS_BOSH_TARGET_CERT))
-        BOSH_CLIENT: ((AWS_BWATS_BOSH_USER))
-        BOSH_CLIENT_SECRET: ((AWS_BWATS_BOSH_PASSWORD))
-        BOSH_ENVIRONMENT: ((AWS_BWATS_DIRECTOR_IP))
-        BOSH_GW_USER: ((AWS_BWATS_GW_USER))
+        BOSH_CA_CERT: ((iaas_directors_aws-director_bosh_ca_cert.ca))
+        BOSH_CLIENT: ((iaas_directors_aws-director_bosh_client.username))
+        BOSH_CLIENT_SECRET: ((iaas_directors_aws-director_bosh_client.password))
+        BOSH_ENVIRONMENT: ((iaas_directors_aws-director_bosh_environment))
         NETWORK: default
-        SSH_TUNNEL_IP: ((AWS_BWATS_JUMPBOX_IP))
-        SSH_TUNNEL_PRIVATE_KEY: ((AWS_BWATS_GW_PRIVATE_KEY))
-        SSH_TUNNEL_USER: ((AWS_BWATS_GW_USER))
+        SSH_TUNNEL_IP: ((iaas_directors_aws-director_bosh_jumpbox_ip))
+        SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_aws-director_bosh_jumpbox_ssh.private_key))
+        SSH_TUNNEL_USER: ((iaas_directors_aws-director_bosh_jumpbox_username))
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
