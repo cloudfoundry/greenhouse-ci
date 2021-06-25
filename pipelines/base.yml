@@ -1234,7 +1234,7 @@ jobs:
         - "-c"
         - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
       params:
-        PACKER_CI: ((bosh_windows_packer_ci_private_key.private_key))
+        PACKER_CI: ((bosh_windows_aws_packer_ci_private_key.private_key))
   - task: create-aws-stemcell
     attempts: 3
     timeout: 2h
@@ -1409,14 +1409,14 @@ jobs:
         - "-c"
         - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
       params:
-        PACKER_CI: ((bosh_windows_packer_ci_private_key.private_key))
+        PACKER_CI: ((bosh_windows_aws_govcloud_packer_ci_private_key.private_key))
   - task: create-aws-govcloud-stemcell
     attempts: 3
     timeout: 1h30m
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
       AWS_ACCESS_KEY: ((aws_govcloud_credentials_json.access_key_id))
-      AWS_REGION: ((us-gov-west-1))
+      AWS_REGION: us-gov-west-1
       AWS_SECRET_KEY: ((aws_govcloud_credentials_json.secret_access_key))
       PACKER_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
       OS_VERSION: ((STEMCELL_OS_NAME))
