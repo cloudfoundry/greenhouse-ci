@@ -1,6 +1,7 @@
 groups:
 - name: all
   jobs:
+  - clean-up-pre-release-blobstore
   - build
   - create-aws
   - test-aws
@@ -518,7 +519,7 @@ jobs:
   serial: true
   plan:
   - get: ci
-  - task:
+  - task: clean-up-blobstore
     file: ci/tasks/clean-up-pre-release-blobstore/task.yml
     params:
       AZURE_PUBLISHED_STORAGE_ACCOUNT: ((AZURE_PUBLISHED_STORAGE_ACCOUNT))
