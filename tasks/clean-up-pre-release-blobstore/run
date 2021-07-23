@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "If you see the following error don't worry everything is working, the images got deleted, but some did not need to be deleted:"
+echo "'X of Y blobs not deleted due to Failed Precondition'"
+
 az storage blob delete-batch \
   --auth-mode key \
   --account-key $AZURE_STORAGE_ACCESS_KEY \
