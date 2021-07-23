@@ -514,17 +514,25 @@ resources:
     stop: 1:00 AM
     location: America/New_York
 
+- name: weekly
+  type: time
+  source:
+    start: 3:00 -0700
+    stop: 4:30 -0700
+    days: [Saturday]
+
 jobs:
 - name: clean-up-pre-release-blobstore
   serial: true
   plan:
   - get: ci
+  - get: weekly
+    trigger: true
   - task: clean-up-blobstore
     file: ci/tasks/clean-up-pre-release-blobstore/task.yml
     params:
       AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
       AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
-      SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
 
 - name: test-bosh-psmodules
   serial: true

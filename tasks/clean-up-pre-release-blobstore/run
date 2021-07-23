@@ -5,5 +5,4 @@ az storage blob delete-batch \
   --account-key $AZURE_STORAGE_ACCESS_KEY \
   --account-name $AZURE_STORAGE_ACCOUNT \
   --source=images --pattern="*.vhd" \
-  --if-unmodified-since=$(date -d "90 days ago" '+%Y-%m-%dT%H:%MZ') \
-  --dryrun
+  --if-unmodified-since=$(date -d "90 days ago" '+%Y-%m-%dT%H:%MZ')
