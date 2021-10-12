@@ -16,8 +16,7 @@ STEMBUILD_DIR=${ROOT_DIR}/stembuild
 mkdir -p ${CF_INC_DIR}
 cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
 
-# install ginkgo
-go get github.com/onsi/ginkgo/ginkgo
+# install vcsim for vCenter manager and client contract integration tests
 go get -u github.com/vmware/govmomi/vcsim
 
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild

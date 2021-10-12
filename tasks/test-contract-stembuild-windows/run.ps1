@@ -17,10 +17,6 @@ New-Item $GO_DIR -ItemType Directory
 Write-Host ***Cloning stembuild***
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
-Write-Host ***Building ginkgo***
-go get github.com/onsi/ginkgo/ginkgo
-go install github.com/onsi/ginkgo/ginkgo
-
 $env:PATH="${GO_DIR}/bin;$env:PATH"
 
 Write-Host ***Test Stembuild Code***
