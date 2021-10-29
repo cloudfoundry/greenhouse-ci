@@ -1,0 +1,25 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+
+inputs:
+  - name: ci
+  - name: default-ami
+  - name: stemcell-builder
+  - name: version
+
+run:
+  path: ci/tasks/label-aws-stemcell-for-production/run
+
+params:
+  AWS_ACCESS_KEY:
+  AWS_SECRET_KEY:
+  AWS_REGION:
+
+  VERSION_DIR: ../version
+  AMIS_DIR: ../default-ami
+

@@ -13,5 +13,4 @@ EOF
 
 cd stemcell-builder
 bundle install --without test
-rake build:validate_ami
-rake aws:label:for_test
+rake aws:label:for_production

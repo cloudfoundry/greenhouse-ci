@@ -2012,6 +2012,12 @@ jobs:
       OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
+  - task: label-aws-stemcell-for-production
+    file: ci/tasks/label-aws-stemcell-for-production/task.yml
+    params:
+      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
