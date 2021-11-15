@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+- name: ci
+
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_REGION:
+
+run:
+  path: ci/tasks/cleanup-unpublished-aws-amis/run

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -ex
+
+AWS_CREDS_FILE=~/.aws/credentials
+mkdir -p ~/.aws
+
+cat > ${AWS_CREDS_FILE} << EOF
+[default]
+aws_access_key_id = ${AWS_ACCESS_KEY}
+aws_secret_access_key = ${AWS_SECRET_KEY}
+EOF
+
+AWS_OWNER=$(aws sts get-caller-identity | jq -r .Account)
+# We only delete AMIs older than two weeks to avoid deleting an AMI working its way through the pipeline
+TWO_WEEKS_AGO=`date -r $(( $(date +%s) - 60 * 60 * 24 * 14 )) +%Y-%m-%d`
+# There's only one region where unpublished stemcells exist ($AWS_REGION)
+unpublished_amis=$(aws ec2 \
+  describe-images \
+  --region $AWS_REGION \
+  --owners $AWS_OWNER \
+  --filters "Name=tag:published,Values=false" \
+  --query='Images[?CreationDate<=`'$TWO_WEEKS_AGO'`]' \
+  | jq -r '.[].ImageId')
+
+for AMI in $unpublished_amis; do
+  snapshot_ids=$(aws ec2 --region $AWS_REGION describe-images --image-id $AMI | jq -r '.Images[].BlockDeviceMappings[].Ebs.SnapshotId | select(. != null)')
+  # We need to deregister before we delete, lest we error "The snapshot snap-xxx is currently in use by ami-yyy"
+  aws ec2 deregister-image --image-id $AMI
+  for SNAPSHOT_ID in $snapshot_ids; do
+    aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID
+  done
+done
