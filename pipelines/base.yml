@@ -2106,6 +2106,10 @@ jobs:
       params:
         repository: boshio-output
         rebase: true
+  - task: cleanup-unpublished-gcp-images
+    file: ci/tasks/cleanup-unpublished-gcp-images/task.yml
+    params:
+      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
 
 - name: promote-vsphere
   serial_groups: ["vsphere"]
