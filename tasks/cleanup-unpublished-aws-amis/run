@@ -26,8 +26,8 @@ unpublished_amis=$(aws ec2 \
 for AMI in $unpublished_amis; do
   snapshot_ids=$(aws ec2 --region $AWS_REGION describe-images --image-id $AMI | jq -r '.Images[].BlockDeviceMappings[].Ebs.SnapshotId | select(. != null)')
   # We need to deregister before we delete, lest we error "The snapshot snap-xxx is currently in use by ami-yyy"
-  aws ec2 deregister-image --image-id $AMI
+  aws ec2 deregister-image --region $AWS_REGION --image-id $AMI
   for SNAPSHOT_ID in $snapshot_ids; do
-    aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID
+    aws ec2 delete-snapshot --region $AWS_REGION --snapshot-id $SNAPSHOT_ID
   done
 done
