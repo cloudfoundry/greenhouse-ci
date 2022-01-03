@@ -12,15 +12,15 @@ aws_secret_access_key = ${AWS_SECRET_KEY}
 EOF
 
 AWS_OWNER=$(aws sts get-caller-identity | jq -r .Account)
-# We only delete AMIs older than two weeks to avoid deleting an AMI working its way through the pipeline
-TWO_WEEKS_AGO=`date -r $(( $(date +%s) - 60 * 60 * 24 * 14 )) +%Y-%m-%d`
+# We only delete AMIs older than three weeks to avoid deleting an AMI working its way through the pipeline
+THREE_WEEKS_AGO=`date --date='3 weeks ago' +%Y-%m-%d`
 # There's only one region where unpublished stemcells exist ($AWS_REGION)
 unpublished_amis=$(aws ec2 \
   describe-images \
   --region $AWS_REGION \
   --owners $AWS_OWNER \
   --filters "Name=tag:published,Values=false" \
-  --query='Images[?CreationDate<=`'$TWO_WEEKS_AGO'`]' \
+  --query='Images[?CreationDate<=`'$THREE_WEEKS_AGO'`]' \
   | jq -r '.[].ImageId')
 
 for AMI in $unpublished_amis; do
