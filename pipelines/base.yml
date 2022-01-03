@@ -1,3 +1,4 @@
+# ~/workspace/greenhouse-private/dotfiles-scripts/fly-base-pipeline
 groups:
 - name: all
   jobs:
@@ -2044,12 +2045,13 @@ jobs:
       params:
         repository: boshio-output
         rebase: true
-  - task: cleanup-unpublished-aws-amis
-    file: ci/tasks/cleanup-unpublished-aws-amis/task.yml
-    params:
-      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+  - try:
+      task: cleanup-unpublished-aws-amis
+      file: ci/tasks/cleanup-unpublished-aws-amis/task.yml
+      params:
+        AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
 
 
 - name: promote-gcp
