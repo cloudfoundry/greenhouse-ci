@@ -1,3 +1,4 @@
+# ~/workspace/greenhouse-private/dotfiles-scripts/fly-docker-images
 resources:
 # dockerfiles
 
@@ -22,6 +23,13 @@ resources:
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
     paths: [ docker/Dockerfile.govc ]
 
+- name: ci-azcopy-dockerfile
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    paths: [ docker/Dockerfile.azcopy ]
+
 # docker build resources
 
 - name: pivnet-image
@@ -42,6 +50,13 @@ resources:
   type: docker-image
   source:
     repository: pivotalgreenhouse/govc
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
+
+- name: ci-azcopy-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci-azcopy
     username: {{DOCKER_USERNAME}}
     password: {{DOCKER_PASSWORD}}
 
@@ -99,4 +114,14 @@ jobs:
       params:
         build: govc-dockerfile/docker
         dockerfile: govc-dockerfile/docker/Dockerfile.govc
+        tag_as_latest: true
+
+- name: build-and-push-ci-azcopy
+  plan:
+    - get: ci-azcopy-dockerfile
+      trigger: true
+    - put: ci-azcopy-image
+      params:
+        build: ci-azcopy-dockerfile/docker
+        dockerfile: ci-azcopy-dockerfile/docker/Dockerfile.azcopy
         tag_as_latest: true
