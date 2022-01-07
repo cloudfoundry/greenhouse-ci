@@ -110,7 +110,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/pivotal-cf-experimental/azstemcell.git
+    uri: https://github.com/pivotal-cf/azstemcell.git
 - name: ci
   type: git
   source:
