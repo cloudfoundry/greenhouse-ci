@@ -82,9 +82,10 @@ create_modified_offer_json() {
 }
 
 update_offer() {
-curl --fail -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $token"
+    sleep 10
+    curl --fail -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $token"
 }
 
 
