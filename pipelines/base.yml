@@ -497,13 +497,13 @@ resources:
 - name: pivnet-public-stemcells
   type: pivnet
   source:
-    api_token: ((PIVNET_BOT_API_TOKEN))
+    api_token: ((pivnet_bot_api_token))
     product_slug: stemcells-windows-server
     product_version: ((BOSHIO_OS_VERSION)).*
 - name: pivnet-internal-stemcells
   type: pivnet
   source:
-    api_token: ((PIVNET_BOT_API_TOKEN))
+    api_token: ((pivnet_bot_api_token))
     product_slug: stemcells-windows-server-internal
     product_version: ((BOSHIO_OS_VERSION)).*
 
