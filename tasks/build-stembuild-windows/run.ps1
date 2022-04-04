@@ -9,7 +9,7 @@ $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
-$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
+$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry/stembuild"
 
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"

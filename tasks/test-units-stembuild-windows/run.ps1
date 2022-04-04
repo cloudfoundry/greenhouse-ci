@@ -7,7 +7,7 @@ Set-TmpDir
 $ROOT_DIR=Get-Location
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
-$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
+$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry/stembuild"
 
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"

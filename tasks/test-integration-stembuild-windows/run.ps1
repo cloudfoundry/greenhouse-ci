@@ -9,7 +9,7 @@ $ROOT_DIR=Get-Location
 Write-Host "ROOT: $ROOT_DIR"
 
 $GO_DIR=Join-Path $ROOT_DIR go-work
-$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry-incubator/stembuild"
+$STEMBUILD_DIR="$GO_DIR/src/github.com/cloudfoundry/stembuild"
 
 $env:VM_NAME= cat $ROOT_DIR/integration-vm-name/name
 $env:BOSH_PSMODULES_REPO="$ROOT_DIR/bosh-psmodules-repo"
