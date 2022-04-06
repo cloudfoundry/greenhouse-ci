@@ -226,62 +226,62 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/aws-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: azure-build-number
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/azure-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: gcp-build-number
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/gcp-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: stembuild-linux-build-number
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: stembuild-windows-build-number
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-((PIPELINE_NAME))
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: stembuild-windows-stemcell-build-number
   type: counter-resource
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-stemcell-((PIPELINE_NAME))
-    aws_access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    aws_secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    aws_access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    aws_secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: stembuild-linux-stemcell-build-number
   type: counter-resource
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-stemcell-((PIPELINE_NAME))
-    aws_access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    aws_secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    aws_access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    aws_secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: main-version
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
     key: ((BASE_FOLDER_NAME))/versions/main
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
     initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # locks
@@ -335,39 +335,39 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/stembuild-linux-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 
 - name: stembuild-windows-stemcell
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/stembuild-windows-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 
 - name: stembuild-linux-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-private
     regexp: ((BASE_FOLDER_NAME))/promoted-stembuild-linux-stemcells/bosh-stemcell-(.*)-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: azure-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: packer-output-ami
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/packer-output-ami-(.*).txt
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: packer-output-china-ami
   type: s3
   source:
@@ -389,8 +389,8 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: aws-china-untested
   type: s3
   source:
@@ -412,8 +412,8 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: aws-china-tested
   type: s3
   source:
@@ -436,15 +436,15 @@ resources:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: base-windows-ami
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-((BASE_IMAGE_OS))-(.*).json
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: base-china-ami
   type: s3
   source:
@@ -466,72 +466,72 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/gcp/inputs/base-gcp-image-((BASE_IMAGE_OS))-(.*).json
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: gcp-untested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/gcp/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: gcp-tested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/gcp/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: gcp-stemcell-final
   type: s3
   source:
     bucket: bosh-windows-stemcells-production
     region_name: us-east-2
     regexp: ((BASE_FOLDER_NAME))/light-bosh-stemcell-(.*)-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: azure-untested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: azure-base-vhd-uri
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/azure/inputs/bosh-stemcell-(.*)-azure-vhd-uri.txt
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: azure-tested
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/azure/light-bosh-stemcell-(.*)-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: ovftool
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: stembuild/dependencies/VMware-ovftool-(.*)-lin.x86_64.bundle
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: stembuild-untested-linux
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: stembuild/untested/stembuild-linux-x86_64-(((BOSHIO_OS_VERSION)).*)
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 - name: stembuild-untested-windows
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
     regexp: stembuild/untested/stembuild-windows-x86_64-(((BOSHIO_OS_VERSION)).*).exe
-    access_key_id: ((BOSH_WINDOWS_BOSH_CI_S3_ACCESS_KEY_ID))
-    secret_access_key: ((BOSH_WINDOWS_BOSH_CI_S3_SECRET_ACCESS_KEY))
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
 
 #pivnet
 - name: pivnet-public-stemcells
