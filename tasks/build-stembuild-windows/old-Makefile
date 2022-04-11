@@ -28,7 +28,7 @@ integration-badger : generate
 	go run github.com/onsi/ginkgo/ginkgo -r -v -randomizeAllSpecs -untilItFails integration
 
 generate: $(GOSRC) $(AUTOMATION_PATH)
-	go get -u github.com/go-bindata/go-bindata/...
+	go install github.com/go-bindata/go-bindata/go-bindata@latest
 	go-bindata -o assets/stemcell_automation.go -pkg assets -prefix $(AUTOMATION_PREFIX) $(AUTOMATION_PATH)
 
 out/stembuild : generate $(GOSRC)
