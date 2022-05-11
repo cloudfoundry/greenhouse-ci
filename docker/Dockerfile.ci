@@ -47,7 +47,7 @@ RUN unzip packer.zip && mv packer /usr/local/bin/packer && rm packer.zip
 RUN gem install bundler
 
 # bosh Golang CLI
-RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' 2>&1 | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') && \
+RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' -I 2>&1 | grep -Fi 'Location:' | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') && \
   curl "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${version_number}-linux-amd64" -o /usr/local/bin/bosh && \
   chmod 755 /usr/local/bin/bosh
 
