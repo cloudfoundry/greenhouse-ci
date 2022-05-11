@@ -11,16 +11,10 @@ echo "***Creating GOPATH environment & structure ***"
 export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
-CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
-STEMBUILD_DIR=${ROOT_DIR}/stembuild
-mkdir -p ${CF_INC_DIR}
-cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
-
 # install vcsim for vCenter manager and client contract integration tests
-go get -u github.com/vmware/govmomi/vcsim
+go install github.com/vmware/govmomi/vcsim@latest
 
-GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
-pushd ${GO_STEMBUILD_DIR}
+pushd ${ROOT_DIR}/stembuild
   echo ***Test Stembuild Code***
 
   make contract
