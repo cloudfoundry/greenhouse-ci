@@ -79,9 +79,6 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 755 "$GOPATH/bin"
 
-COPY go-dep /go-dep/
-RUN cd /go-dep/ && sha256sum dep-linux-amd64.sha256 && chmod +x dep-linux-amd64 && mv dep-linux-amd64 "$GOPATH/bin/dep" && cd -
-
 #install CF CLI
 RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add -
 RUN echo "deb http://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list

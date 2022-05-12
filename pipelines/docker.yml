@@ -62,12 +62,6 @@ resources:
 
 # dependency resources
 
-- name: go-dep
-  type: github-release
-  source:
-    access_token: ((github_public_repo_token))
-    owner: golang
-    repository: dep
 jobs:
 - name: build-and-push-pivnet
   plan:
@@ -83,23 +77,6 @@ jobs:
   plan:
   - get: ci-dockerfile
     trigger: true
-  - get: go-dep
-  - task: copy-dep
-    config:
-      inputs:
-        - name: go-dep
-        - name: ci-dockerfile
-      outputs:
-        - name: docker-build-dir
-      platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
-      run:
-        path: cp
-        args:
-          - -R
-          - go-dep
-          - ci-dockerfile/docker
-          - docker-build-dir
   - put: ci-image
     params:
       build: docker-build-dir
