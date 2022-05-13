@@ -19,8 +19,6 @@ popd
 cd stemcell-builder
 
 bundle install
-rake package:agent
-rake package:psmodules
 rake build:aws_ami
 
 mv copied-regional-stemcells/*.tgz ../copied-regional-stemcells
