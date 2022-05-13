@@ -1588,6 +1588,7 @@ jobs:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
+      tags: [asia]
       params:
         AZ: z1
         BOSH_CA_CERT: ((iaas_directors_aws-china-director_bosh_ca_cert.ca))
