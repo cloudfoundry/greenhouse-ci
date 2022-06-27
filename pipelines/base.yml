@@ -978,6 +978,15 @@ jobs:
       STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+  - task: update-snapshot
+    file: ci/tasks/update-snapshot/task.yml
+    image: govc-image
+    tags: [windows-nimbus]
+    params:
+      GOVC_URL: ((nimbus_windows_auth_url))
+      DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
+      VM_TO_SNAPSHOT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
+      SNAPSHOT_NAME: "stembuild-ready-power-on"
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
     image: ci-image
@@ -1147,6 +1156,15 @@ jobs:
         STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
         VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+    - task: update-snapshot
+      file: ci/tasks/update-snapshot/task.yml
+      image: govc-image
+      tags: [windows-nimbus]
+      params:
+        GOVC_URL: ((nimbus_windows_auth_url))
+        DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
+        VM_TO_SNAPSHOT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
+        SNAPSHOT_NAME: "stembuild-ready-power-on"
     - task: run-stembuild-construct
       file: ci/tasks/run-construct-stembuild-windows/task.yml
       tags: [windows-nimbus]

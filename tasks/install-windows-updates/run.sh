@@ -90,3 +90,5 @@ done
 run_pwsh_command_with_govc "Get-Hotfix > C:\\hotfix.log"
 
 govc guest.download -l ${vm_username}:${vm_password} -vm=${vm_ipath} "C:\\hotfix.log" hotfix-log/hotfixes.log
+
+$govc_pwsh_cmd Dism.exe /online /Cleanup-Image /StartComponentCleanup
