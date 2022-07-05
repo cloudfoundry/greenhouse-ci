@@ -144,8 +144,7 @@ resources:
 - name: bosh-psmodules-repo
   type: git
   source:
-    branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-psmodules.git
+    uri: https://github.com/cloudfoundry/bosh-psmodules.git
 - name: boshio
   type: git
   source:
