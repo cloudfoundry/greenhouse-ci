@@ -631,6 +631,9 @@ jobs:
     file: bosh-ecosystem-concourse/tasks/deploy-concourse/configure-windows-firewall-rules.yml
     image: bosh-ecosystem-docker-image
     params:
+      CHINA_AWS_ACCESS_KEY_ID: ((aws_china_credentials_json.access_key_id))
+      CHINA_AWS_DEFAULT_REGION: cn-north-1
+      CHINA_AWS_SECRET_ACCESS_KEY: ((aws_china_credentials_json.secret_access_key))
       COMMERCIAL_AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
       COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
