@@ -3,7 +3,7 @@
 echo "If you see the following error don't worry everything is working, the images got deleted, but some did not need to be deleted (they are less than 90 days old):"
 echo "'X of Y blobs not deleted due to Failed Precondition'"
 
-echo "Deleting blobs from `images`"
+echo "Deleting blobs from images"
 az storage blob delete-batch \
   --auth-mode key \
   --account-key $AZURE_STORAGE_ACCESS_KEY \
@@ -11,7 +11,7 @@ az storage blob delete-batch \
   --source=images --pattern="*.vhd" \
   --if-unmodified-since=$(date -d "90 days ago" '+%Y-%m-%dT%H:%MZ')
 
-echo "Deleting blobs from `system`"
+echo "Deleting blobs from system"
 az storage blob delete-batch \
   --auth-mode key \
   --account-key $AZURE_STORAGE_ACCESS_KEY \
