@@ -23,6 +23,7 @@ RUN apt-get update -qq && \
     git \
     google-cloud-sdk \
     libc6-dev \
+    libncursesw5 \
     libpopt-dev \
     lsb-release \
     make \
