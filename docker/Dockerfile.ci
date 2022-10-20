@@ -1,5 +1,5 @@
 #docker pull pivotalgreenhouse/ci
-FROM ruby:2.5.1
+FROM ruby:2.7.6
 
 ARG VCENTER_CA_CERT
 
@@ -16,13 +16,14 @@ RUN apt-get update -qq && \
     ca-certificates \
     cmake \
     curl \
-    freerdp-x11 \
+    freerdp2-x11 \
     g++ \
     gawk \
     gcc \
     git \
     google-cloud-sdk \
     libc6-dev \
+    libncursesw5 \
     libpopt-dev \
     lsb-release \
     make \
@@ -30,9 +31,9 @@ RUN apt-get update -qq && \
     nano \
     netcat-openbsd \
     pkg-config \
-    python-all \
-    python-dev \
-    python-pip \
+    python3-all \
+    python3-dev \
+    python3-pip \
     python-setuptools \
     rlwrap \
     rsync \
