@@ -8,6 +8,9 @@ inputs:
   - name: stemcell-builder
   - name: bosh-agent-release
   - name: bosh-psmodules-repo
+  - name: blobstore-dav-cli
+  - name: blobstore-s3-cli
+  - name: windows-bsdtar
 
 run:
   path: ci/tasks/test-stemcell-builder/run

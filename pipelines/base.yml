@@ -580,6 +580,9 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
         trigger: true
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: windows-bsdtar
   - task: test-stemcell-builder
     file: ci/tasks/test-stemcell-builder/task.yml
 - name: build
