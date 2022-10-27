@@ -819,6 +819,9 @@ jobs:
         params: { acquire: true }
       - get: ci-image
       - get: govc-image
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: windows-bsdtar
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -1463,6 +1466,9 @@ jobs:
         passed: [wuts-aws]
       - get: bosh-psmodules-repo
         passed: [build]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: windows-bsdtar
   - task: create-packer-ci-key
     privileged: true
     config:
