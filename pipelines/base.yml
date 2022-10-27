@@ -333,6 +333,12 @@ resources:
     bucket: davcli
     regexp: davcli-(.*)-windows-amd64.exe
 
+- name: blobstore-gcs-cli
+  type: s3
+  source:
+    bucket: bosh-gcscli
+    regexp: bosh-gcscli-(.*)-windows-amd64.exe
+
 - name: windows-bsdtar
   type: s3
   source:
@@ -582,6 +588,7 @@ jobs:
         trigger: true
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - task: test-stemcell-builder
     file: ci/tasks/test-stemcell-builder/task.yml
@@ -716,6 +723,7 @@ jobs:
       - get: govc-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - put: version
     resource: stembuild-windows-build-number
@@ -821,6 +829,7 @@ jobs:
       - get: govc-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - put: version
     resource: stembuild-linux-build-number
@@ -1286,6 +1295,7 @@ jobs:
         passed: [build]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - put: version
     resource: aws-build-number
@@ -1468,6 +1478,7 @@ jobs:
         passed: [build]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - task: create-packer-ci-key
     privileged: true
@@ -1631,6 +1642,7 @@ jobs:
         passed: [build]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - put: version
     resource: azure-build-number
@@ -1817,6 +1829,7 @@ jobs:
         passed: [build]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - put: version
     resource: gcp-build-number
@@ -2043,6 +2056,7 @@ jobs:
         passed: [promote]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
       - get: windows-bsdtar
   - get: pivnet-public-stemcells
     attempts: 5
