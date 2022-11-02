@@ -7,13 +7,13 @@ RUN apt-get update -qq && \
   ca-certificates \
   wget
 
-RUN wget "https://github.com/vmware/govmomi/releases/download/v0.23.0/govc_linux_amd64.gz"
-RUN echo "ba777988af807e4a9aaea47339125f15cdbc8eea  govc_linux_amd64.gz" > sums
+RUN wget "https://github.com/vmware/govmomi/releases/download/v0.29.0/govc_Linux_x86_64.tar.gz"
+RUN echo "686573989d49f3aab1f0225cd421975d105c8992  govc_Linux_x86_64.tar.gz" > sums
 RUN sha1sum --check sums
-RUN cat govc_linux_amd64.gz | gunzip > /usr/local/bin/govc
+RUN tar xzf govc_Linux_x86_64.tar.gz govc && mv govc /usr/local/bin/
 RUN chmod 555 /usr/local/bin/govc
 
-RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
+RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
 
 # cleanup
 RUN rm -rf /var/lib/apt/lists/*
