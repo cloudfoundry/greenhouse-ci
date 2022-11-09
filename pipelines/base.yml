@@ -329,6 +329,32 @@ resources:
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
+- name: blobstore-s3-cli
+  type: s3
+  source:
+    bucket: s3cli-artifacts
+    regexp: s3cli-(.*)-windows-amd64.exe
+
+- name: blobstore-dav-cli
+  type: s3
+  source:
+    bucket: davcli
+    regexp: davcli-(.*)-windows-amd64.exe
+
+- name: blobstore-gcs-cli
+  type: s3
+  source:
+    bucket: bosh-gcscli
+    regexp: bosh-gcscli-(.*)-windows-amd64.exe
+
+- name: windows-bsdtar
+  type: s3
+  source:
+    bucket: bosh-windows-dependencies
+    regexp: tar-(.*).exe
+    access_key_id: ((bosh_windows_ci_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_aws_access_key.password))
+
 - name: stembuild-linux-stemcell
   type: s3
   source:
@@ -600,6 +626,10 @@ jobs:
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
         trigger: true
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - task: test-stemcell-builder
     file: ci/tasks/test-stemcell-builder/task.yml
 - name: build
@@ -746,6 +776,10 @@ jobs:
       - put: nimbus-ips
         params: { acquire: true }
       - get: govc-image
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -848,6 +882,10 @@ jobs:
         params: { acquire: true }
       - get: ci-image
       - get: govc-image
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -1310,6 +1348,10 @@ jobs:
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - put: version
     resource: aws-build-number
     params:
@@ -1650,6 +1692,10 @@ jobs:
         passed: [wuts-aws]
       - get: bosh-psmodules-repo
         passed: [build]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1810,6 +1856,10 @@ jobs:
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - put: version
     resource: azure-build-number
     params:
@@ -1993,6 +2043,10 @@ jobs:
         passed: [build]
       - get: bosh-psmodules-repo
         passed: [build]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - put: version
     resource: gcp-build-number
     params:
@@ -2228,6 +2282,10 @@ jobs:
         passed: [promote]
       - get: bosh-psmodules-repo
         passed: [promote]
+      - get: blobstore-dav-cli
+      - get: blobstore-s3-cli
+      - get: blobstore-gcs-cli
+      - get: windows-bsdtar
   - get: pivnet-public-stemcells
     attempts: 5
   - task: copy-public-stemcells
