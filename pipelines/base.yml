@@ -2185,7 +2185,7 @@ jobs:
         STEMCELL_OS: ((STEMCELL_OS_NAME))
         STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk"
-        VM_TYPE: default
+        VM_TYPE: large
     ensure:
       put: gcp-lock
       params:
