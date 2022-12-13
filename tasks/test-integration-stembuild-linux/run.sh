@@ -33,5 +33,5 @@ GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Test Stembuild Code***
 
-  make integration | tee integration-output.log
+  make integration
 popd
