@@ -833,8 +833,8 @@ jobs:
       GOVC_NETWORK: ((NIMBUS_VCENTER_NETWORK))
       GOVC_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
       VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VCENTER_USERNAME: ((nimbus_windows_user.username))
+      VCENTER_PASSWORD: ((nimbus_windows_user.password))
       VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
@@ -924,8 +924,8 @@ jobs:
           VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
           PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
           VCENTER_BASE_URL: ((nimbus_windows_base_url))
-          VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-          VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+          VCENTER_USERNAME: ((nimbus_windows_user.username))
+          VCENTER_PASSWORD: ((nimbus_windows_user.password))
           CONTRACT_TEST_VM_NAME: ((NIMBUS_CONTRACT_TEST_VM_NAME))
           CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
           CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
@@ -958,8 +958,8 @@ jobs:
       GOVC_NETWORK: ((NIMBUS_VCENTER_NETWORK))
       GOVC_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
       VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VCENTER_USERNAME: ((nimbus_windows_user.username))
+      VCENTER_PASSWORD: ((nimbus_windows_user.password))
       VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
@@ -1043,8 +1043,8 @@ jobs:
     tags: [windows-nimbus]
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
-      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VCENTER_USERNAME: ((nimbus_windows_user.username))
+      VCENTER_PASSWORD: ((nimbus_windows_user.password))
       VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
       STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       STEMBUILD_BASE_VM_IP: 192.168.111.31
@@ -1056,8 +1056,8 @@ jobs:
     tags: [windows-nimbus]
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
-      VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-      VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+      VCENTER_USERNAME: ((nimbus_windows_user.username))
+      VCENTER_PASSWORD: ((nimbus_windows_user.password))
       STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_LINUX))
       VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
   - &print-updates
@@ -1220,8 +1220,8 @@ jobs:
       tags: [windows-nimbus]
       params:
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
-        VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-        VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+        VCENTER_USERNAME: ((nimbus_windows_user.username))
+        VCENTER_PASSWORD: ((nimbus_windows_user.password))
         VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
         STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         STEMBUILD_BASE_VM_IP: 192.168.111.32
@@ -1232,8 +1232,8 @@ jobs:
       tags: [windows-nimbus]
       params:
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
-        VCENTER_USERNAME: ((NIMBUS_VCENTER_USERNAME))
-        VCENTER_PASSWORD: ((NIMBUS_VCENTER_PASSWORD))
+        VCENTER_USERNAME: ((nimbus_windows_user.username))
+        VCENTER_PASSWORD: ((nimbus_windows_user.password))
         STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
         VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
     - *print-updates
@@ -2120,7 +2120,7 @@ jobs:
       file: ci/tasks/run-bwats/task.yml
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
-        ACCOUNT_JSON: ((SERVICE_ACCOUNT_GCP_BWATS_1))
+        ACCOUNT_JSON: ((cf-bosh-windows-swan_gcp-bwats-1_gcp_credentials_json))
         AZ: az1
         BOSH_CA_CERT: ((iaas_directors_gcp-director_bosh_ca_cert.ca))
         BOSH_CLIENT: ((iaas_directors_gcp-director_bosh_client.username))
