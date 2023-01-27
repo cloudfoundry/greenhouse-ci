@@ -150,7 +150,7 @@ resources:
   source:
     branch: ((STEMCELL_BUILDER_BRANCH))
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
-    private_key: ((CLOUDFOUNDRYINCUBATOR_BOSH_WINDOWS_STEMCELL_BUILDER_DEPLOY_KEY))
+    private_key: ((github_deploy_key_bosh-windows-stemcell-builder.private_key))
 - name: bosh-psmodules-repo
   type: git
   source:
@@ -160,7 +160,7 @@ resources:
   source:
     branch: master
     uri: git@github.com:bosh-io/stemcells-windows-index.git
-    private_key: ((BOSH_WINDOWS_BOSHIO_DEPLOY_KEY))
+    private_key: ((github_deploy_key_stemcells-windows-index.private_key))
 - name: windows-utilities-release
   type: git
   source:
@@ -299,35 +299,35 @@ resources:
   source:
     branch: master
     pool: ((AWS_POOL_NAME))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: azure-lock
   type: pool
   source:
     branch: master
     pool: ((AZURE_POOL_NAME))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: goose-lock
   type: pool
   source:
     branch: master
     pool: ((GOOSE_POOL_NAME))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: gcp-lock
   type: pool
   source:
     branch: master
     pool: ((GCP_POOL_NAME))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 - name: vsphere-director-lock
   type: pool
   source:
     branch: master
     pool: ((VSPHERE_POOL_NAME))
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 - name: nimbus-ips
@@ -335,7 +335,7 @@ resources:
   source:
     branch: master
     pool: "nimbus-ips"
-    private_key: ((BOSH-WINDOWS-LOCKS-CI_KEY))
+    private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
 
 # s3 buckets
@@ -408,8 +408,8 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/packer-output-ami-(.*).txt
-    access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-    secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    access_key_id: ((awschina00_aws_access_key.username))
+    secret_access_key: ((awschina00_aws_access_key.password))
     region_name: ((AWS_CHINA_PACKER_REGION))
 - name: packer-output-govcloud-ami
   type: s3
@@ -431,8 +431,8 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-    access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-    secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    access_key_id: ((awschina00_aws_access_key.username))
+    secret_access_key: ((awschina00_aws_access_key.password))
     region_name: ((AWS_CHINA_PACKER_REGION))
 - name: aws-govcloud-untested
   type: s3
@@ -455,8 +455,8 @@ resources:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
     region_name: ((AWS_CHINA_PACKER_REGION))
-    access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-    secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    access_key_id: ((awschina00_aws_access_key.username))
+    secret_access_key: ((awschina00_aws_access_key.password))
 - name: aws-govcloud-tested
   type: s3
   source:
@@ -485,8 +485,8 @@ resources:
   source:
     bucket: ((ROOT_BUCKET))
     regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-((BASE_IMAGE_OS))-(.*).json
-    access_key_id: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-    secret_access_key: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+    access_key_id: ((awschina00_aws_access_key.username))
+    secret_access_key: ((awschina00_aws_access_key.password))
     region_name: ((AWS_CHINA_PACKER_REGION))
 - name: base-govcloud-ami
   type: s3
@@ -674,14 +674,14 @@ jobs:
       CHINA_AWS_ACCESS_KEY_ID: ((aws_china_credentials_json.access_key_id))
       CHINA_AWS_DEFAULT_REGION: cn-north-1
       CHINA_AWS_SECRET_ACCESS_KEY: ((aws_china_credentials_json.secret_access_key))
-      COMMERCIAL_AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
+      COMMERCIAL_AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
-      COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
       CONCOURSE_GCP_CREDENTIALS_JSON: ((gcp_credentials_json))
       GOVCLOUD_AWS_ACCESS_KEY_ID: ((aws_govcloud_credentials_json.access_key_id))
       GOVCLOUD_AWS_DEFAULT_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
       GOVCLOUD_AWS_SECRET_ACCESS_KEY: ((aws_govcloud_credentials_json.secret_access_key))
-      WINDOWS_STEMCELLS_GCP_CREDENTIALS_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      WINDOWS_STEMCELLS_GCP_CREDENTIALS_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
   - put: main-version
     params:
       file: version/number
@@ -710,8 +710,8 @@ jobs:
         file: ci/tasks/collect-base-amis/task.yml
         output_mapping: { base-amis: windows-amis }
         params:
-          AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_ACCESS_KEY_ID))
-          AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_READ_VPC_EC2_SECRET_ACCESS_KEY))
+          AWS_ACCESS_KEY_ID: ((read-vpc-ec2_aws_access_key.username))
+          AWS_SECRET_ACCESS_KEY: ((read-vpc-ec2_aws_access_key.password))
           BASE_AMI: ((BASE_IMAGE_OS))
           BASE_AMI_NAME: ((BASE_AMI_NAME))
           PACKER_REGION: ((AWS_PACKER_REGION))
@@ -719,8 +719,8 @@ jobs:
         file: ci/tasks/collect-base-amis/task.yml
         output_mapping: { base-amis: china-amis }
         params:
-          AWS_ACCESS_KEY_ID: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-          AWS_SECRET_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+          AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
+          AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
           BASE_AMI: ((BASE_IMAGE_OS))
           BASE_AMI_NAME: ((BASE_AMI_NAME))
           PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
@@ -737,7 +737,7 @@ jobs:
         file: ci/tasks/collect-gcp-image/task.yml
         output_mapping: { base-gcp-image: windows-gcp-image }
         params:
-          ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+          ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
           BASE_OS: ((BASE_IMAGE_OS))
           BASE_IMAGE_REGEX: ((BASE_IMAGE_REGEX))
           IMAGE_FAMILY: ((IMAGE_FAMILY))
@@ -1385,9 +1385,9 @@ jobs:
     timeout: 2h
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+      AWS_REGION: us-east-1
+      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
       PACKER_REGION: ((AWS_PACKER_REGION))
       OS_VERSION: ((STEMCELL_OS_NAME))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
@@ -1397,8 +1397,8 @@ jobs:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
       params:
-        AWS_ACCESS_KEY_ID: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_SECRET_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
+        AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
         IAAS: aws
         REGIONS: "us-east-1,us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,eu-central-1,eu-west-1,eu-west-2,sa-east-1"
         VM_PREFIX: ((VM_PREFIX))
@@ -1406,9 +1406,9 @@ jobs:
   - task: wait-for-ami-availability
     file: ci/tasks/wait-for-ami-availability/task.yml
     params:
-      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
   - in_parallel:
       fail_fast: true
       steps:
@@ -1887,14 +1887,14 @@ jobs:
       CLIENT_ID: ((AZURE_CLIENT_ID))
       CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
       LOCATION: ((AZURE_LOCATION))
-      OBJECT_ID: ((AZURE_OBJECT_ID))
+      OBJECT_ID: ((koala_azure_credentials_json.object_id))
       OFFER: ((AZURE_OFFER))
       OS_VERSION: ((AZURE_OS_VERSION))
       PUBLISHER: ((AZURE_PUBLISHER))
-      RESOURCE_GROUP_NAME: ((AZURE_RESOURCE_GROUP_NAME))
+      RESOURCE_GROUP_NAME: ((koala_azure_credentials_json.resource_group_name))
       SKU: ((AZURE_SKU))
       STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+      SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
       TENANT_ID: ((AZURE_TENANT_ID))
       VM_SIZE: ((AZURE_VM_SIZE))
       VM_PREFIX: ((VM_PREFIX))
@@ -1906,7 +1906,7 @@ jobs:
         CLIENT_ID: ((AZURE_CLIENT_ID))
         CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
         IAAS: azure
-        SUBSCRIPTION_ID: ((AZURE_SUBSCRIPTION_ID))
+        SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
         TENANT_ID: ((AZURE_TENANT_ID))
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
@@ -2070,14 +2070,14 @@ jobs:
     file: ci/tasks/create-gcp-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
-      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
       VM_PREFIX: ((VM_PREFIX))
       MOUNT_EPHEMERAL_DISK: true
     ensure:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
       params:
-        ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+        ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
         IAAS: gcp
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
@@ -2085,7 +2085,7 @@ jobs:
     file: ci/tasks/publish-gcp-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
-      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
   - put: gcp-untested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2310,8 +2310,8 @@ jobs:
     file: ci/tasks/copy-aws-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
       REGIONS: "us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-2,eu-west-3,sa-east-1"
   - task: copy-govcloud-stemcells
     timeout: 1h30m
@@ -2332,9 +2332,9 @@ jobs:
     file: ci/tasks/copy-aws-stemcell/task.yml
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
-      AWS_ACCESS_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
-      REGIONS: ((CHINA_BOSH_WINDOWS_AWS_STEMCELLS_REGION))
+      AWS_ACCESS_KEY: ((awschina00_aws_access_key.username))
+      AWS_SECRET_KEY: ((awschina00_aws_access_key.password))
+      REGIONS: cn-north-1
   - task: aggregate-stemcells
     file: ci/tasks/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number, amis: default-ami }
@@ -2346,9 +2346,9 @@ jobs:
   - task: label-aws-stemcell-for-production
     file: ci/tasks/label-aws-stemcell-for-production/task.yml
     params:
-      AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-      AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-      AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
@@ -2379,9 +2379,9 @@ jobs:
       task: cleanup-unpublished-aws-amis
       file: ci/tasks/cleanup-unpublished-aws-amis/task.yml
       params:
-        AWS_REGION: ((BOSH_WINDOWS_AWS_STEMCELLS_REGION))
-        AWS_ACCESS_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_ACCESS_KEY_ID))
-        AWS_SECRET_KEY: ((BOSH_WINDOWS_AWS_STEMCELLS_SECRET_ACCESS_KEY))
+        AWS_REGION: us-east-1
+        AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+        AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
 
 
 - name: promote-gcp
@@ -2411,7 +2411,7 @@ jobs:
     file: ci/tasks/label-gcp-stemcell-for-production/task.yml
     input_mapping: { bosh-windows-stemcell: gcp-tested }
     params:
-      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
@@ -2441,7 +2441,7 @@ jobs:
   - task: cleanup-unpublished-gcp-images
     file: ci/tasks/cleanup-unpublished-gcp-images/task.yml
     params:
-      ACCOUNT_JSON: ((WINDOWS-STEMCELLS_ACCOUNT_JSON))
+      ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
 
 - name: promote-vsphere
   serial_groups: ["vsphere"]

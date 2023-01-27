@@ -37,8 +37,6 @@ AWS_GOVCLOUD_PACKER_REGION: 'us-gov-west-1'
 #GCP Base Image Info
 BASE_IMAGE_REGEX: 'windows-server-2019-dc-core-v.*'
 IMAGE_FAMILY: 'windows-2019-core'
-#GCP Packer Info
-WINDOWS-STEMCELLS_ACCOUNT_JSON: '((CFF-BOSH-WINDOWS-STEMCELLS_ACCOUNT_JSON))'
 
 #Azure Create & Publish Variables
 AZURE_BASE_IMAGE: '2019-Datacenter-Core-smalldisk'
