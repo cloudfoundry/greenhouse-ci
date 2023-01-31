@@ -1887,7 +1887,6 @@ jobs:
       CLIENT_ID: ((AZURE_CLIENT_ID))
       CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
       LOCATION: ((AZURE_LOCATION))
-      OBJECT_ID: ((koala_azure_credentials_json.object_id))
       OFFER: ((AZURE_OFFER))
       OS_VERSION: ((AZURE_OS_VERSION))
       PUBLISHER: ((AZURE_PUBLISHER))
