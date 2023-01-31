@@ -671,9 +671,9 @@ jobs:
     file: bosh-ecosystem-concourse/tasks/deploy-concourse/configure-windows-firewall-rules.yml
     image: bosh-ecosystem-docker-image
     params:
-      CHINA_AWS_ACCESS_KEY_ID: ((aws_china_credentials_json.access_key_id))
+      CHINA_AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
       CHINA_AWS_DEFAULT_REGION: cn-north-1
-      CHINA_AWS_SECRET_ACCESS_KEY: ((aws_china_credentials_json.secret_access_key))
+      CHINA_AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
       COMMERCIAL_AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
       COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
@@ -1565,9 +1565,9 @@ jobs:
     timeout: 1h30m
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
-      AWS_ACCESS_KEY: ((aws_china_credentials_json.access_key_id))
+      AWS_ACCESS_KEY: ((awschina00_aws_access_key.username))
       AWS_REGION: ((AWS_CHINA_PACKER_REGION))
-      AWS_SECRET_KEY: ((aws_china_credentials_json.secret_access_key))
+      AWS_SECRET_KEY: ((awschina00_aws_access_key.password))
       PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
       OS_VERSION: ((STEMCELL_OS_NAME))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
@@ -1578,8 +1578,8 @@ jobs:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
       params:
-        AWS_ACCESS_KEY_ID: ((aws_china_credentials_json.access_key_id))
-        AWS_SECRET_ACCESS_KEY: ((aws_china_credentials_json.secret_access_key))
+        AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
+        AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
         IAAS: aws
         REGIONS: ((AWS_CHINA_PACKER_REGION))
         VM_PREFIX: ((VM_PREFIX))
