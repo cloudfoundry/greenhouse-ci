@@ -608,7 +608,7 @@ jobs:
     file: ci/tasks/clean-up-pre-release-blobstore/task.yml
     params:
       AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 
 - name: test-bosh-psmodules
   serial: true
@@ -1884,8 +1884,8 @@ jobs:
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
-      CLIENT_ID: ((AZURE_CLIENT_ID))
-      CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+      CLIENT_ID: ((koala_azure_credentials_json.client_id))
+      CLIENT_SECRET: ((koala_azure_credentials_json.client_secret))
       LOCATION: ((AZURE_LOCATION))
       OFFER: ((AZURE_OFFER))
       OS_VERSION: ((AZURE_OS_VERSION))
@@ -1894,7 +1894,7 @@ jobs:
       SKU: ((AZURE_SKU))
       STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
       SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
-      TENANT_ID: ((AZURE_TENANT_ID))
+      TENANT_ID: ((koala_azure_credentials_json.tenant_id))
       VM_SIZE: ((AZURE_VM_SIZE))
       VM_PREFIX: ((VM_PREFIX))
       MOUNT_EPHEMERAL_DISK: true
@@ -1902,11 +1902,11 @@ jobs:
       task: delete-orphan-vms
       file: ci/tasks/delete-vms/task.yml
       params:
-        CLIENT_ID: ((AZURE_CLIENT_ID))
-        CLIENT_SECRET: ((AZURE_CLIENT_SECRET))
+        CLIENT_ID: ((koala_azure_credentials_json.client_id))
+        CLIENT_SECRET: ((koala_azure_credentials_json.client_secret))
         IAAS: azure
         SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
-        TENANT_ID: ((AZURE_TENANT_ID))
+        TENANT_ID: ((koala_azure_credentials_json.tenant_id))
         VM_PREFIX: ((VM_PREFIX))
   - *print-updates
   - put: azure-untested
@@ -2499,9 +2499,9 @@ jobs:
   - task: upload-image-and-start-publishing
     file: ci/tasks/upload-image-and-start-publishing/task.yml
     params:
-      AZURE_STORAGE_ACCESS_KEY: ((AZURE_STORAGE_ACCESS_KEY))
+      AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
       AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
-      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((AZURE_PUBLISHED_STORAGE_ACCESS_KEY))
+      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
       AZURE_PUBLISHED_STORAGE_ACCOUNT: ((AZURE_PUBLISHED_STORAGE_ACCOUNT))
       AZURE_CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
       AZURE_SKU: ((AZURE_SKU))
