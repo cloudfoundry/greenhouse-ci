@@ -129,6 +129,11 @@ resources:
   source:
     branch: master
     uri: https://github.com/pivotal-cf/azstemcell.git
+- name: bosh-stemcells-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-stemcells-ci
 - name: ci
   type: git
   source:
@@ -140,7 +145,7 @@ resources:
     uri: git@github.com:pivotal/bosh-ecosystem-concourse.git
     private_key: ((github_deploy_key_bosh_ecosystem_concourse.private_key))
 - name: bosh-ecosystem-docker-image
-  type: docker-image
+  type: registry-image
   source:
     repository: bosh/bosh-ecosystem-concourse
     username: ((docker.username))
@@ -2270,6 +2275,8 @@ jobs:
         passed: [promote]
       - get: aws-china-tested
         passed: [promote]
+      - get: bosh-ecosystem-docker-image
+      - get: bosh-stemcells-ci
       - get: stemcell-builder
         passed: [promote]
       - get: version
@@ -2342,12 +2349,33 @@ jobs:
       OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
     file: ci/tasks/set-stemcell-version/task.yml
-  - task: label-aws-stemcell-for-production
-    file: ci/tasks/label-aws-stemcell-for-production/task.yml
+  - task: tag-published-aws-ami-light-stemcells
+    file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
+    image: bosh-ecosystem-docker-image
+    input_mapping:
+      candidate-aws-light-stemcell: final-stemcell
     params:
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
-      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
+      AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
+      AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
+      GREP_PATTERN: grep -v 'gov-\|cn-'
+  - task: tag-gov-published-aws-ami-light-stemcells
+    file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
+    image: bosh-ecosystem-docker-image
+    input_mapping:
+      candidate-aws-light-stemcell: final-stemcell
+    params:
+      AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
+      AWS_SECRET_ACCESS_KEY: ((packer_user_gov_aws_access_key.password))
+      GREP_PATTERN: grep 'gov-'
+  - task: tag-china-published-aws-ami-light-stemcells
+    file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
+    image: bosh-ecosystem-docker-image
+    input_mapping:
+      candidate-aws-light-stemcell: final-stemcell
+    params:
+      AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
+      AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
+      GREP_PATTERN: grep 'cn-'
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
