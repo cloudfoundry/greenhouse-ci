@@ -717,6 +717,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((read-vpc-ec2_aws_access_key.username))
           AWS_SECRET_ACCESS_KEY: ((read-vpc-ec2_aws_access_key.password))
+          AWS_ROLE_ARN: ((read-vpc-ec2_aws_access_key.role_arn))
           BASE_AMI: ((BASE_IMAGE_OS))
           BASE_AMI_NAME: ((BASE_AMI_NAME))
           PACKER_REGION: ((AWS_PACKER_REGION))

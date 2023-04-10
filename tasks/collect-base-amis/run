@@ -2,6 +2,32 @@
 
 require 'json'
 
+if ENV['AWS_ROLE_ARN'] && !ENV['AWS_ROLE_ARN'].empty?
+  aws_config_dir="#{ENV['HOME']}/.aws"
+  Dir.mkdir(aws_config_dir)
+  File.open("#{aws_config_dir}/credentials", mode: 'a') do |file|
+    file.write(<<~EOF
+      [service-credentials]
+      aws_access_key_id = #{ENV['AWS_ACCESS_KEY_ID']}
+      aws_secret_access_key = #{ENV['AWS_SECRET_ACCESS_KEY']}
+    EOF
+    )
+  end
+
+  File.open("#{aws_config_dir}/config", mode: 'a') do |file|
+    file.write(<<~EOF
+      [profile assume-role]
+      role_arn = #{ENV['AWS_ROLE_ARN']}
+      source_profile = service-credentials
+    EOF
+    )
+  end
+
+  ENV['AWS_PROFILE'] = 'assume-role'
+  ENV.delete('AWS_ACCESS_KEY_ID')
+  ENV.delete('AWS_SECRET_ACCESS_KEY')
+end
+
 supported_base_ami = %w[windows2019]
 
 # Helper method
