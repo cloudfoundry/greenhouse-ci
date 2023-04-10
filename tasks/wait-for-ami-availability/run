@@ -2,14 +2,20 @@
 
 set -ex
 
-AWS_CREDS_FILE=~/.aws/credentials
-mkdir -p ~/.aws
-
-cat > ${AWS_CREDS_FILE} << EOF
-[default]
-aws_access_key_id = ${AWS_ACCESS_KEY}
-aws_secret_access_key = ${AWS_SECRET_KEY}
-EOF
+if [ -n "${AWS_ROLE_ARN}" ]; then
+  aws configure --profile creds_account set aws_access_key_id "${AWS_ACCESS_KEY}"
+  aws configure --profile creds_account set aws_secret_access_key "${AWS_SECRET_KEY}"
+  aws configure --profile resource_account set source_profile "creds_account"
+  aws configure --profile resource_account set role_arn "${AWS_ROLE_ARN}"
+  aws configure --profile resource_account set region "${AWS_REGION}"
+  unset AWS_ACCESS_KEY
+  unset AWS_SECRET_KEY
+  unset AWS_REGION
+  export AWS_PROFILE=resource_account
+else
+  aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+  aws configure set aws_secret_access_key "${AWS_SECRET_KEY}"
+fi
 
 cd stemcell-builder
 bundle install --without test

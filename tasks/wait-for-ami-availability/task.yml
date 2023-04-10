@@ -16,6 +16,7 @@ params:
   AWS_ACCESS_KEY:
   AWS_SECRET_KEY:
   AWS_REGION:
+  AWS_ROLE_ARN:
 
   VERSION_DIR: ../version
   AMIS_DIR: ../amis

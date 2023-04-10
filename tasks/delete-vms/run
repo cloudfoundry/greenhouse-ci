@@ -8,6 +8,17 @@ require 'tempfile'
 module DeleteVms
   class Aws
     def self.delete(vm_prefix)
+      if ENV['AWS_ROLE_ARN'] && !ENV['AWS_ROLE_ARN'].empty?
+        `aws configure --profile creds_account set aws_access_key_id "#{ENV['AWS_ACCESS_KEY']}"`
+        `aws configure --profile creds_account set aws_secret_access_key "#{ENV['AWS_SECRET_KEY']}"`
+        `aws configure --profile resource_account set source_profile "creds_account"`
+        `aws configure --profile resource_account set role_arn "#{ENV['AWS_ROLE_ARN']}"`
+
+        ENV['AWS_PROFILE'] = 'resource_account'
+        ENV.delete('AWS_ACCESS_KEY')
+        ENV.delete('AWS_SECRET_KEY')
+      end
+
       puts "Deleting AWS vms with prefix #{vm_prefix}"
       regions = ENV['REGIONS'].split(',')
       regions.each do |region|

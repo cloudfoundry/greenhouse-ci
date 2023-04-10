@@ -26,6 +26,7 @@ run:
 params:
   OS_VERSION:
   AWS_ACCESS_KEY:
+  AWS_ROLE_ARN:
   AWS_SECRET_KEY:
   REGIONS:
   VERSION_DIR: ../version
