@@ -79,8 +79,8 @@ jobs:
     trigger: true
   - put: ci-image
     params:
-      build: docker-build-dir
-      dockerfile: docker-build-dir/docker/Dockerfile.ci
+      build: ci-dockerfile/docker/
+      dockerfile: ci-dockerfile/docker/Dockerfile.ci
       tag_as_latest: true
 
 - name: build-and-push-govc
