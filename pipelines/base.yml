@@ -1392,10 +1392,10 @@ jobs:
     timeout: 2h
     file: ci/tasks/create-aws-stemcell/task.yml
     params:
-      AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
       AWS_REGION: us-east-1
       AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
-      AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
+      PACKER_AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
+      PACKER_AWS_SECRET_KEY: ((aws-stemcells_aws_access_key.password))
       PACKER_REGION: ((AWS_PACKER_REGION))
       OS_VERSION: ((STEMCELL_OS_NAME))
       OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
