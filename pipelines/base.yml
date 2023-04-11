@@ -1374,7 +1374,6 @@ jobs:
     params:
       pre: build
   - task: create-packer-ci-key
-    privileged: true
     config:
       platform: linux
       image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
