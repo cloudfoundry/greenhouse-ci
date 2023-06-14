@@ -1,6 +1,6 @@
 # docker pull pivotalgreenhouse/ci-azcopy
 
-FROM ubuntu:focal
+FROM ubuntu
 
 LABEL maintainer="bosh-ecosystem@groups.vmware.com"
 
