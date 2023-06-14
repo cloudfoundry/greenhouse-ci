@@ -28,7 +28,7 @@ module DeleteVms
           i.tags.any? { |t| t.key == 'Name' && t.value.start_with?(vm_prefix) }
         end.map(&:instance_id)
         if instances.any?
-          puts "Deleting #{instances.to_s} in region #{region}"
+          puts "Deleting #{instances} in region #{region}"
           ec2.terminate_instances({
             dry_run: false,
             instance_ids: instances
