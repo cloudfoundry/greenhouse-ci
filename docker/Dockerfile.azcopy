@@ -7,9 +7,8 @@ LABEL maintainer="bosh-ecosystem@groups.vmware.com"
 # We don't want apt to try to set the tzdata
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN \
-  apt update; \
-  apt install -y \
+RUN apt-get update \
+  && apt-get install -y \
     apt-transport-https \
     build-essential \
     ca-certificates \
@@ -28,26 +27,28 @@ RUN \
     software-properties-common \
     wget
 
-# PowerShell & Azure CLI
-RUN \
-  wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb; \
-  dpkg -i packages-microsoft-prod.deb; \
-  apt update; \
-  apt install -y powershell azure-cli
+RUN LSB_RELEASE=artful \
+    && echo "Using 'artful' because Azure doesn't yet support 'bookworm'" \
+    && ARCH=$(dpkg --print-architecture) \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
+    | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg \
+    && chmod go+r /etc/apt/keyrings/microsoft.gpg \
+    && echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ ${LSB_RELEASE} main" \
+    > /etc/apt/sources.list.d/azure-cli.list \
+    && apt-get update \
+    && apt-get install -y azure-cli powershell
 
 # azcopy https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
-RUN \
-  curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux; \
-  tar xzvf /tmp/azcopy.tgz -C /tmp/; \
-  mv /tmp/*/azcopy /usr/bin
+RUN curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux \
+    && tar xzvf /tmp/azcopy.tgz -C /tmp/ \
+    && install /tmp/*/azcopy /usr/bin
 
 # The following has been cargo-culted from the earlier incarnation of this file & is probably not needed
-RUN \
-  gem install azure_mgmt_resources
+RUN gem install azure_mgmt_resources
 
 # azstemcell
-RUN \
-  git clone https://github.com/pivotal-cf/azstemcell && \
+RUN git clone https://github.com/pivotal-cf/azstemcell && \
   cd azstemcell && \
   go build && \
   mv azstemcell /usr/bin
