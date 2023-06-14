@@ -22,8 +22,7 @@ RUN \
     lsb-release \
     neovim \
     pigz \
-    python \
-    python2 \
+    python3 \
     ruby \
     ruby-dev \
     software-properties-common \
