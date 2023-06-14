@@ -27,8 +27,7 @@ RUN apt-get update \
     software-properties-common \
     wget
 
-RUN LSB_RELEASE=artful \
-    && echo "Using 'artful' because Azure doesn't yet support 'bookworm'" \
+RUN LSB_RELEASE=$(lsb_release -cs) \
     && ARCH=$(dpkg --print-architecture) \
     && mkdir -p /etc/apt/keyrings \
     && curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
