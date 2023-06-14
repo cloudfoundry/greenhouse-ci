@@ -36,7 +36,14 @@ RUN LSB_RELEASE=$(lsb_release -cs) \
     && echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ ${LSB_RELEASE} main" \
     > /etc/apt/sources.list.d/azure-cli.list \
     && apt-get update \
-    && apt-get install -y azure-cli powershell
+    && apt-get install -y azure-cli
+
+RUN deb_filename='packages-microsoft-prod.deb' \
+    && curl -LO "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/${deb_filename}" \
+    && dpkg -i ${deb_filename} \
+    && rm ${deb_filename} \
+    && apt-get update \
+    && apt-get install -y powershell
 
 # azcopy https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
 RUN curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux \
