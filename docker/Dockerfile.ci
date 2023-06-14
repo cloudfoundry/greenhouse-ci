@@ -3,15 +3,20 @@ FROM ruby:3.1
 
 ARG VCENTER_CA_CERT
 
+COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
         ca-certificates \
         curl \
         gnupg \
+        software-properties-common \
         sudo \
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+    && curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
+    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
     && apt-get update  \
     && apt-get install -y --no-install-recommends \
         apt-utils \
@@ -33,6 +38,7 @@ RUN apt-get update \
         mingw-w64 \
         nano \
         netcat-openbsd \
+        packer \
         pkg-config \
         python3-all \
         python3-dev \
@@ -44,20 +50,7 @@ RUN apt-get update \
         unzip \
         vim \
         wget \
-        zip
-
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
-    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-    && apt-get update && apt-get install -y packer
-
-RUN gem install bundler
-
-# bosh Golang CLI
-RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' -I 2>&1 \
-    | grep -Fi 'Location:' \
-    | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') \
-    && curl "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${version_number}-linux-amd64" -o /usr/local/bin/bosh  \
-    && chmod 755 /usr/local/bin/bosh
+        zip \
 
 RUN LSB_RELEASE=artful \
     && echo "Using 'artful' because Azure doesn't yet support 'bookworm'" \
@@ -71,37 +64,34 @@ RUN LSB_RELEASE=artful \
     && apt-get update \
     && apt-get install -y azure-cli
 
+RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq \
+    && chmod +x /usr/local/bin/jq \
+    && wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq \
+    && chmod +x /usr/local/bin/yq
 
-RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
-RUN wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-
-RUN pip install wheel --upgrade --user
-RUN pip install awscli
-RUN gem install aws-sdk
-RUN gem install azure_mgmt_resources
-
-ENV GOLANG_VERSION 1.18.2
-ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA256 e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc
-
-RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
-    && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
-    && tar -C /usr/local -xzf golang.tar.gz \
-    && rm golang.tar.gz
-
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
-
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 755 "$GOPATH/bin"
+# bosh Golang CLI
+RUN version_number=$(curl 'https://github.com/cloudfoundry/bosh-cli/releases/latest' -I 2>&1 \
+    | grep -Fi 'Location:' \
+    | egrep -o '([0-9]+\.[0-9]+\.[0-9]+)') \
+    && curl "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${version_number}-linux-amd64" -o /usr/local/bin/bosh  \
+    && chmod 755 /usr/local/bin/bosh
 
 #install CF CLI
-RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add -
-RUN echo "deb http://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
-RUN apt-get update
-RUN apt-get install cf-cli
+RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - \
+    && echo "deb http://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list \
+    && apt-get update \
+    && apt-get install cf-cli
 
-RUN git clone https://github.com/portcullislabs/rdp-sec-check && mv rdp-sec-check/rdp-sec-check.pl /usr/local/bin && rm -rf rdp-sec-check
-RUN export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
+RUN pip install wheel --upgrade --user \
+    && pip install awscli \
+    && gem install bundler \
+    && gem install aws-sdk \
+    && gem install azure_mgmt_resources
+
+RUN git clone https://github.com/portcullislabs/rdp-sec-check \
+    && mv rdp-sec-check/rdp-sec-check.pl /usr/local/bin \
+    && rm -rf rdp-sec-check \
+    && export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
 
 # cleanup apt cache
 RUN rm -rf /var/lib/apt/lists/*
