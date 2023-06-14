@@ -4,6 +4,7 @@ FROM ruby:3.1
 ARG VCENTER_CA_CERT
 
 COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
+ENV GOROOT=/usr/local/go PATH=/usr/local/go/bin:$PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
