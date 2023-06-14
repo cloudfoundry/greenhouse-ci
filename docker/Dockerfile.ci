@@ -50,7 +50,7 @@ RUN apt-get update \
         unzip \
         vim \
         wget \
-        zip \
+        zip
 
 RUN LSB_RELEASE=artful \
     && echo "Using 'artful' because Azure doesn't yet support 'bookworm'" \
