@@ -20,6 +20,7 @@ RUN apt-get update \
     && apt-get update  \
     && apt-get install -y --no-install-recommends \
         apt-utils \
+        awscli \
         build-essential \
         ca-certificates \
         cmake \
@@ -82,9 +83,7 @@ RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.k
     && apt-get update \
     && apt-get install cf-cli
 
-RUN pip install wheel --upgrade --user \
-    && pip install awscli \
-    && gem install bundler \
+RUN gem install bundler \
     && gem install aws-sdk \
     && gem install azure_mgmt_resources
 
