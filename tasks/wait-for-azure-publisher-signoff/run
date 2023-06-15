@@ -34,6 +34,10 @@ checking_status() {
   signoff_step_status=$(jq -r ".steps[] | select(.id == \"publisher-signoff\") | .status" offer_status_json)
   while [[ $signoff_step_status != "waitingForPublisherReview" ]]; do
     echo "At time $(date), offer is waiting for publisher sign off: ${signoff_step_status}"
+    if [[ "$signoff_step_status" == "complete" ]]; then
+      echo "Status is marked as 'complete'. We are expecting the status to become 'waitingForPublisherReview'. We may be trying to re-publish a previously published version."
+      exit 1
+    fi
     sleep 1h
     token=$(create_microsoft_token)
     retrieve_offer_status_json > offer_status_json
