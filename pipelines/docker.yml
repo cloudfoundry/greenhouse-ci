@@ -71,6 +71,7 @@ resources:
 
 jobs:
 - name: build-and-push-pivnet
+  serial: true
   plan:
   - get: ci-pivnet-dockerfile
     trigger: true
@@ -81,6 +82,7 @@ jobs:
       tag_as_latest: true
 
 - name: build-and-push-ci
+  serial: true
   plan:
   - get: ci-dockerfile
     trigger: true
@@ -93,6 +95,7 @@ jobs:
       tag_as_latest: true
 
 - name: build-and-push-govc
+  serial: true
   plan:
     - get: govc-dockerfile
       trigger: true
@@ -103,6 +106,7 @@ jobs:
         tag_as_latest: true
 
 - name: build-and-push-ci-azcopy
+  serial: true
   plan:
     - get: ci-azcopy-dockerfile
       trigger: true
