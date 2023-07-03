@@ -106,6 +106,8 @@ jobs:
   plan:
     - get: ci-azcopy-dockerfile
       trigger: true
+    - get: golang-release-image
+      trigger: true
     - put: ci-azcopy-image
       params:
         build: ci-azcopy-dockerfile/docker

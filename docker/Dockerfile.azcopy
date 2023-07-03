@@ -15,7 +15,6 @@ RUN apt-get update \
     curl \
     git \
     gnupg \
-    golang \
     jq \
     less \
     lsb-release \
@@ -52,6 +51,10 @@ RUN curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux \
 
 # The following has been cargo-culted from the earlier incarnation of this file & is probably not needed
 RUN gem install azure_mgmt_resources
+
+# Use latest available golang version
+COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
+ENV GOROOT=/usr/local/go PATH=/usr/local/go/bin:$PATH
 
 # azstemcell
 RUN git clone https://github.com/pivotal-cf/azstemcell \
