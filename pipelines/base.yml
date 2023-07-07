@@ -362,7 +362,7 @@ resources:
 - name: blobstore-s3-cli
   type: s3
   source:
-    bucket: s3cli-artifacts
+    bucket: bosh-s3cli-artifacts
     regexp: s3cli-(.*)-windows-amd64.exe
 
 - name: blobstore-dav-cli
