@@ -374,7 +374,7 @@ resources:
 - name: blobstore-gcs-cli
   type: s3
   source:
-    bucket: bosh-gcscli
+    bucket: bosh-gcscli-artifacts
     regexp: bosh-gcscli-(.*)-windows-amd64.exe
 
 - name: windows-bsdtar
