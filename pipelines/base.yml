@@ -170,8 +170,8 @@ resources:
 - name: boshio
   type: git
   source:
-    branch: master
-    uri: git@github.com:bosh-io/stemcells-windows-index.git
+    branch: main
+    uri: git@github.com:cloudfoundry/bosh-io-stemcells-windows-index.git
     private_key: ((github_deploy_key_stemcells-windows-index.private_key))
 - name: windows-utilities-release
   type: git
