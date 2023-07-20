@@ -39,5 +39,6 @@ Write-Host ***Runninng integration tests***
 make integration
 if ($lastexitcode -ne 0)
 {
+    Write-Host "Last exit code: ", $lastexitcode
     throw "integration specs failed"
 }
