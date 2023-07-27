@@ -368,7 +368,7 @@ resources:
 - name: blobstore-dav-cli
   type: s3
   source:
-    bucket: davcli
+    bucket: bosh-davcli-artifacts
     regexp: davcli-(.*)-windows-amd64.exe
 
 - name: blobstore-gcs-cli
