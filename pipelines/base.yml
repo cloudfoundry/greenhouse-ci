@@ -685,6 +685,7 @@ jobs:
       image: ci-image
     - task: unit-test
       file: ci/tasks/test-units-stembuild-windows/task.yml
+      tags: [windows-nimbus]
   - put: stembuild
     params:
       rebase: true
