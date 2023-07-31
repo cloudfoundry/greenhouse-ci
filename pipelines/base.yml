@@ -670,7 +670,7 @@ jobs:
       resource: main-version
     - get: weekly
       trigger: true
-  - task: unit-test
+  - task: generate-fake-assets
     file: ci/tasks/stembuild-generate-fake-assets/task.yml
     image: ci-image
   - task: bump-deps
