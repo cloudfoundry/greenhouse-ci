@@ -689,6 +689,7 @@ jobs:
   - put: stembuild
     params:
       rebase: true
+      repository: stembuild
 
 - name: test-bosh-psmodules
   serial: true
