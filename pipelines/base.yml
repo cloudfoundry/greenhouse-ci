@@ -3,6 +3,7 @@ groups:
 - name: all
   jobs:
   - clean-up-pre-release-blobstore
+  - bump-stembuild-deps
   - build
   - create-aws
   - test-aws
@@ -157,6 +158,11 @@ resources:
     repository: bosh/bosh-ecosystem-concourse
     username: ((docker.username))
     password: ((docker.password))
+- name: golang-release
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
+    branch: main
 - name: stemcell-builder
   type: git
   source:
@@ -192,8 +198,9 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/stembuild.git
+    uri: git@github.com:cloudfoundry/stembuild.git
     ignore_paths: [version/version]
+    private_key: ((github_deploy_key_stembuild.private_key))
 - name: bosh-windows-acceptance-tests
   type: git
   source:
@@ -650,6 +657,38 @@ jobs:
       AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 
+- name: bump-stembuild-deps
+  serial: true
+  plan:
+  - in_parallel:
+    - get: ci
+    - get: ci-image
+    - get: golang-release
+    - get: ovftool
+    - get: stembuild
+    - get: version
+      resource: main-version
+    - get: weekly
+      trigger: true
+  - task: unit-test
+    file: ci/tasks/stembuild-generate-fake-assets/task.yml
+    image: ci-image
+  - task: bump-deps
+    file: golang-release/ci/tasks/shared/bump-deps.yml
+    input_mapping:
+      input_repo: stembuild
+    output_mapping:
+      output_repo: stembuild
+  - in_parallel:
+    - task: unit-test
+      file: ci/tasks/test-units-stembuild-linux/task.yml
+      image: ci-image
+    - task: unit-test
+      file: ci/tasks/test-units-stembuild-windows/task.yml
+  - put: stembuild
+    params:
+      rebase: true
+
 - name: test-bosh-psmodules
   serial: true
   plan:
@@ -696,7 +735,6 @@ jobs:
         trigger: true
         passed: [test-stemcell-builder]
       - get: stembuild
-        trigger: true
       - get: bosh-psmodules-repo
         passed: [test-bosh-psmodules]
       - get: lgpo-binary
