@@ -24,7 +24,7 @@ STEMCELL_AUTOMATION_ZIP=${ROOT_DIR}/StemcellAutomation.zip
 GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
 pushd ${GO_STEMBUILD_DIR}
   echo ***Building Stembuild***
-  make STEMCELL_VERSION=${VERSION} AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
+  make CGO_ENABLED=0 STEMCELL_VERSION=${VERSION} AUTOMATION_PATH=${STEMCELL_AUTOMATION_ZIP} build
 popd
 
 echo ***Copying stembuild to output directory***

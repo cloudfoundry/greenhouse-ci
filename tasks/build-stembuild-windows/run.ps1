@@ -30,7 +30,7 @@ $NEW_STEMCELL_AUTOMATION_ZIP=Join-Path $ROOT_DIR "StemcellAutomation.zip"
 Move-Item -Path $STEMCELL_AUTOMATION_ZIP -Destination $NEW_STEMCELL_AUTOMATION_ZIP
 
 Write-Host "Using stemcell automation script: $NEW_STEMCELL_AUTOMATION_ZIP"
-make STEMCELL_VERSION=${VERSION} COMMAND=out/stembuild.exe AUTOMATION_PATH=${NEW_STEMCELL_AUTOMATION_ZIP} build
+make CGO_ENABLED=0 STEMCELL_VERSION=${VERSION} COMMAND=out/stembuild.exe AUTOMATION_PATH=${NEW_STEMCELL_AUTOMATION_ZIP} build
 
 Write-Host ***Copying stembuild to output directory***
 Copy-Item out/stembuild.exe $OUTPUT_DIR/stembuild-windows-x86_64-$VERSION.exe
