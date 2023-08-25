@@ -145,7 +145,7 @@ resources:
 - name: ci
   type: git
   source:
-    branch: ((CI_BRANCH))
+    branch: master
     uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
 - name: bosh-ecosystem-concourse
   type: git
@@ -166,7 +166,7 @@ resources:
 - name: stemcell-builder
   type: git
   source:
-    branch: ((STEMCELL_BUILDER_BRANCH))
+    branch: master
     uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
     private_key: ((github_deploy_key_bosh-windows-stemcell-builder.private_key))
 - name: bosh-psmodules-repo
@@ -253,7 +253,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/aws-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/aws-2019
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -262,7 +262,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/azure-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/azure-2019
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -271,7 +271,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/gcp-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/gcp-2019
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -280,7 +280,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-2019
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -289,7 +289,7 @@ resources:
   type: semver
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-2019
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -298,7 +298,7 @@ resources:
   type: counter-resource
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-stemcell-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-stemcell-2019
     aws_access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     aws_secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -306,7 +306,7 @@ resources:
   type: counter-resource
   source:
     bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-stemcell-((PIPELINE_NAME))
+    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-stemcell-2019
     aws_access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     aws_secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
@@ -654,7 +654,7 @@ jobs:
   - task: clean-up-blobstore
     file: ci/tasks/clean-up-pre-release-blobstore/task.yml
     params:
-      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_STORAGE_ACCOUNT: unpublishedpremiumstore
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 
 - name: bump-stembuild-deps
@@ -895,11 +895,11 @@ jobs:
         file: ci/tasks/setup-integration-test-vm/task.yml
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-          OS_LINE: ((PIPELINE_NAME))
+          OS_LINE: 2019
           BASE_VM_IPATH: /dc0/vm/bosh-windows-ci-vms-and-templates/stembuild_base_vm_2019_
           CLONE_DATASTORE: ((nimbus_windows_ds))
           CLONE_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
-          CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+          CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
           JOB_OS_NAME: "windows"
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
@@ -912,18 +912,18 @@ jobs:
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
       GOVC_DATASTORE: ((nimbus_windows_ds))
-      GOVC_NETWORK: ((NIMBUS_VCENTER_NETWORK))
+      GOVC_NETWORK: internal-network
       GOVC_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
       VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
-      VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+      VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((NIMBUS_WINDOWS_LOGOUT_TEST_VM_PATH))
+      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-windows-logged-in-vm
       LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.35
-      PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
-      OS_LINE: ((PIPELINE_NAME))
+      PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
+      OS_LINE: 2019
   - task: build
     tags: [windows-nimbus]
     file: ci/tasks/build-stembuild-windows/task.yml
@@ -939,7 +939,7 @@ jobs:
       file: ci/tasks/delete-integration-test-vm/task.yml
       image: govc-image
       params:
-        CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+        CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
     - put: nimbus-ips
       params: { release: nimbus-ips }
@@ -1003,12 +1003,12 @@ jobs:
         tags: [windows-nimbus]
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-          VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
-          PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
+          VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
+          PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
           VCENTER_BASE_URL: ((nimbus_windows_base_url))
           VCENTER_USERNAME: ((nimbus_windows_user.username))
           VCENTER_PASSWORD: ((nimbus_windows_user.password))
-          CONTRACT_TEST_VM_NAME: ((NIMBUS_CONTRACT_TEST_VM_NAME))
+          CONTRACT_TEST_VM_NAME: stembuild_base_vm_2019_
           CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
           CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
       - task: setup-integration-test-vm
@@ -1017,11 +1017,11 @@ jobs:
         file: ci/tasks/setup-integration-test-vm/task.yml
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-          OS_LINE: ((PIPELINE_NAME))
+          OS_LINE: 2019
           BASE_VM_IPATH: /dc0/vm/bosh-windows-ci-vms-and-templates/stembuild_base_vm_2019_
           CLONE_DATASTORE: ((nimbus_windows_ds))
           CLONE_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
-          CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+          CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
           JOB_OS_NAME: "linux"
   - task: generate-deps-file
     file: ci/tasks/generate-deps-file/task.yml
@@ -1037,18 +1037,18 @@ jobs:
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
       GOVC_DATASTORE: ((nimbus_windows_ds))
-      GOVC_NETWORK: ((NIMBUS_VCENTER_NETWORK))
+      GOVC_NETWORK: internal-network
       GOVC_RESOURCE_POOL: /dc0/host/concourse_cluster/Resources
       VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
-      VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+      VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: ((NIMBUS_LINUX_LOGOUT_TEST_VM_PATH))
+      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-linux-logged-in-vm
       LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.34
-      PACKAGE_TEST_VM_NAME: ((NIMBUS_PACKAGE_TEST_VM_NAME))
-      OS_LINE: ((PIPELINE_NAME))
+      PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
+      OS_LINE: 2019
   - task: build
     file: ci/tasks/build-stembuild-linux/task.yml
     image: ci-image
@@ -1064,7 +1064,7 @@ jobs:
       image: govc-image
       file: ci/tasks/delete-integration-test-vm/task.yml
       params:
-        CLONE_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+        CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
     - put: nimbus-ips
       params: { release: nimbus-ips }
@@ -1097,8 +1097,8 @@ jobs:
     tags: [windows-nimbus]
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
-      DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
-      VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
+      DATACENTER: dc0
+      VM_TO_REVERT: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-linux
       SNAPSHOT_NAME: "stembuild-ready-power-on"
   - task: install-windows-updates
     file: ci/tasks/install-windows-updates/task.yml
@@ -1107,7 +1107,7 @@ jobs:
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
-      STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
+      STEMBUILD_CONSTRUCT_TARGET_VM: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-linux
       VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
   - task: update-snapshot
@@ -1116,8 +1116,8 @@ jobs:
     tags: [windows-nimbus]
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
-      DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
-      VM_TO_SNAPSHOT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_LINUX))
+      DATACENTER: dc0
+      VM_TO_SNAPSHOT: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-linux
       SNAPSHOT_NAME: "stembuild-ready-power-on"
   - task: run-stembuild-construct
     file: ci/tasks/run-construct-stembuild-linux/task.yml
@@ -1127,8 +1127,8 @@ jobs:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
-      VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
-      STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_LINUX))
+      VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
+      STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-linux
       STEMBUILD_BASE_VM_IP: 192.168.111.31
       STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
       STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
@@ -1140,8 +1140,8 @@ jobs:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
-      STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_LINUX))
-      VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+      STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-linux
+      VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
   - &print-updates
     task: print-updates
     config:
@@ -1275,8 +1275,8 @@ jobs:
       tags: [windows-nimbus]
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
-        DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
-        VM_TO_REVERT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
+        DATACENTER: dc0
+        VM_TO_REVERT: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-windows
         SNAPSHOT_NAME: "stembuild-ready-power-on"
     - task: install-windows-updates
       file: ci/tasks/install-windows-updates/task.yml
@@ -1285,7 +1285,7 @@ jobs:
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
-        STEMBUILD_CONSTRUCT_TARGET_VM: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
+        STEMBUILD_CONSTRUCT_TARGET_VM: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-windows
         VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
         VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
     - task: update-snapshot
@@ -1294,8 +1294,8 @@ jobs:
       tags: [windows-nimbus]
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
-        DATACENTER: ((NIMBUS_VCENTER_STEMBUILD_DC))
-        VM_TO_SNAPSHOT: ((NIMBUS_VCENTER_VM_FOLDER))/((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
+        DATACENTER: dc0
+        VM_TO_SNAPSHOT: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-windows
         SNAPSHOT_NAME: "stembuild-ready-power-on"
     - task: run-stembuild-construct
       file: ci/tasks/run-construct-stembuild-windows/task.yml
@@ -1304,8 +1304,8 @@ jobs:
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
         VCENTER_USERNAME: ((nimbus_windows_user.username))
         VCENTER_PASSWORD: ((nimbus_windows_user.password))
-        VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
-        STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
+        VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
+        STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-windows
         STEMBUILD_BASE_VM_IP: 192.168.111.32
         STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
         STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
@@ -1316,8 +1316,8 @@ jobs:
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
         VCENTER_USERNAME: ((nimbus_windows_user.username))
         VCENTER_PASSWORD: ((nimbus_windows_user.password))
-        STEMBUILD_BASE_VM_NAME: ((NIMBUS_STEMBUILD_VM_NAME_WINDOWS))
-        VCENTER_VM_FOLDER: ((NIMBUS_VCENTER_VM_FOLDER))
+        STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-windows
+        VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
     - *print-updates
     - put: stembuild-windows-stemcell
       params:
@@ -1976,7 +1976,7 @@ jobs:
       PUBLISHER: ((AZURE_PUBLISHER))
       RESOURCE_GROUP_NAME: ((koala_azure_credentials_json.resource_group_name))
       SKU: ((AZURE_SKU))
-      STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      STORAGE_ACCOUNT: unpublishedpremiumstore
       SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
       TENANT_ID: ((koala_azure_credentials_json.tenant_id))
       VM_SIZE: ((AZURE_VM_SIZE))
@@ -2610,9 +2610,9 @@ jobs:
     file: ci/tasks/upload-image-and-start-publishing/task.yml
     params:
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
-      AZURE_STORAGE_ACCOUNT: ((AZURE_STORAGE_ACCOUNT))
+      AZURE_STORAGE_ACCOUNT: unpublishedpremiumstore
       AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
-      AZURE_PUBLISHED_STORAGE_ACCOUNT: ((AZURE_PUBLISHED_STORAGE_ACCOUNT))
+      AZURE_PUBLISHED_STORAGE_ACCOUNT: koalapremiumstore
       AZURE_CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
       AZURE_SKU: ((AZURE_SKU))
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
@@ -2620,7 +2620,7 @@ jobs:
       PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
       PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_CLIENT_ID))
       PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_CLIENT_SECRET))
-      OFFER_NOTIFICATION_EMAIL: ((OFFER_NOTIFICATION_EMAIL))
+      OFFER_NOTIFICATION_EMAIL: boshwindows@groups.vmware.com
 
 - name: publish-azure-offer
   serial: true
