@@ -918,8 +918,8 @@ jobs:
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
       VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
-      VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-      VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      VM_USERNAME: ((stembuild_vm_user.username))
+      VM_PASSWORD: ((stembuild_vm_user.password))
       LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-windows-logged-in-vm
       LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.35
       PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
@@ -1009,8 +1009,8 @@ jobs:
           VCENTER_USERNAME: ((nimbus_windows_user.username))
           VCENTER_PASSWORD: ((nimbus_windows_user.password))
           CONTRACT_TEST_VM_NAME: stembuild_base_vm_2019_
-          CONTRACT_TEST_VM_PASSWORD: ((NIMBUS_CONTRACT_TEST_VM_PASSWORD))
-          CONTRACT_TEST_VM_USERNAME: ((NIMBUS_CONTRACT_TEST_VM_USERNAME))
+          CONTRACT_TEST_VM_PASSWORD: ((stembuild_vm_user.password))
+          CONTRACT_TEST_VM_USERNAME: ((stembuild_vm_user.username))
       - task: setup-integration-test-vm
         image: govc-image
         tags: [windows-nimbus]
@@ -1043,8 +1043,8 @@ jobs:
       VCENTER_USERNAME: ((nimbus_windows_user.username))
       VCENTER_PASSWORD: ((nimbus_windows_user.password))
       VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
-      VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-      VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      VM_USERNAME: ((stembuild_vm_user.username))
+      VM_PASSWORD: ((stembuild_vm_user.password))
       LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-linux-logged-in-vm
       LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.34
       PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
@@ -1108,8 +1108,8 @@ jobs:
       GOVC_URL: ((nimbus_windows_auth_url))
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
       STEMBUILD_CONSTRUCT_TARGET_VM: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-linux
-      VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-      VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      VM_USERNAME: ((stembuild_vm_user.username))
+      VM_PASSWORD: ((stembuild_vm_user.password))
   - task: update-snapshot
     file: ci/tasks/update-snapshot/task.yml
     image: govc-image
@@ -1130,8 +1130,8 @@ jobs:
       VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
       STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-linux
       STEMBUILD_BASE_VM_IP: 192.168.111.31
-      STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-      STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+      STEMBUILD_BASE_VM_USERNAME: ((stembuild_vm_user.username))
+      STEMBUILD_BASE_VM_PASSWORD: ((stembuild_vm_user.password))
   - task: run-stembuild-package
     file: ci/tasks/run-package-stembuild-linux/task.yml
     image: ci-image
@@ -1195,8 +1195,8 @@ jobs:
         VM_EXTENSIONS: 10GB_ephemeral_disk
         MOUNT_EPHEMERAL_DISK: true
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-        DEFAULT_USERNAME: ((NIMBUS_VM_USERNAME))
-        DEFAULT_PASSWORD: ((NIMBUS_VM_PASSWORD))
+        DEFAULT_USERNAME: ((stembuild_vm_user.username))
+        DEFAULT_PASSWORD: ((stembuild_vm_user.password))
     ensure:
       put: vsphere-director-lock
       params:
@@ -1286,8 +1286,8 @@ jobs:
         GOVC_URL: ((nimbus_windows_auth_url))
         VCENTER_BASE_URL: ((nimbus_windows_base_url))
         STEMBUILD_CONSTRUCT_TARGET_VM: /dc0/vm/bosh-windows-ci-vms-and-templates/windows-server-2019-base-vm-windows
-        VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-        VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+        VM_USERNAME: ((stembuild_vm_user.username))
+        VM_PASSWORD: ((stembuild_vm_user.password))
     - task: update-snapshot
       file: ci/tasks/update-snapshot/task.yml
       image: govc-image
@@ -1307,8 +1307,8 @@ jobs:
         VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         STEMBUILD_BASE_VM_NAME: windows-server-2019-base-vm-windows
         STEMBUILD_BASE_VM_IP: 192.168.111.32
-        STEMBUILD_BASE_VM_USERNAME: ((NIMBUS_STEMBUILD_VM_USERNAME))
-        STEMBUILD_BASE_VM_PASSWORD: ((NIMBUS_STEMBUILD_VM_PASSWORD))
+        STEMBUILD_BASE_VM_USERNAME: ((stembuild_vm_user.username))
+        STEMBUILD_BASE_VM_PASSWORD: ((stembuild_vm_user.password))
     - task: run-stembuild-package
       file: ci/tasks/run-package-stembuild-windows/task.yml
       tags: [windows-nimbus]
@@ -1362,8 +1362,8 @@ jobs:
             VM_EXTENSIONS: 10GB_ephemeral_disk
             MOUNT_EPHEMERAL_DISK: true
             SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-            DEFAULT_USERNAME: ((NIMBUS_VM_USERNAME))
-            DEFAULT_PASSWORD: ((NIMBUS_VM_PASSWORD))
+            DEFAULT_USERNAME: ((stembuild_vm_user.username))
+            DEFAULT_PASSWORD: ((stembuild_vm_user.password))
       ensure:
         put: vsphere-director-lock
         params:
@@ -1543,8 +1543,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 50GB_ephemeral_disk
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
-      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+      DEFAULT_USERNAME: ((stembuild_bwats_vm_user.username))
+      DEFAULT_PASSWORD: ((stembuild_bwats_vm_user.password))
   - put: aws-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
@@ -1882,8 +1882,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: 50GB_ephemeral_disk
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
-      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+      DEFAULT_USERNAME: ((stembuild_bwats_vm_user.username))
+      DEFAULT_PASSWORD: ((stembuild_bwats_vm_user.password))
   - put: aws-govcloud-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
@@ -2053,8 +2053,8 @@ jobs:
       MOUNT_EPHEMERAL_DISK: true
       VM_EXTENSIONS: "50GB_ephemeral_disk"
       SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-      DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
-      DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+      DEFAULT_USERNAME: ((stembuild_bwats_vm_user.username))
+      DEFAULT_PASSWORD: ((stembuild_bwats_vm_user.password))
   - put: azure-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-azure-hyperv-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2218,8 +2218,8 @@ jobs:
         VM_EXTENSIONS: "50GB_ephemeral_disk" # WARN: Cloud Config specific
         MOUNT_EPHEMERAL_DISK: true
         SECURITY_COMPLIANCE_APPLIED: ((SECURITY_COMPLIANCE_APPLIED))
-        DEFAULT_USERNAME: ((STEMBUILD_VM_USERNAME))
-        DEFAULT_PASSWORD: ((STEMBUILD_VM_PASSWORD))
+        DEFAULT_USERNAME: ((stembuild_bwats_vm_user.username))
+        DEFAULT_PASSWORD: ((stembuild_bwats_vm_user.password))
     ensure:
       put: goose-lock
       params:
@@ -2617,9 +2617,9 @@ jobs:
       AZURE_SKU: ((AZURE_SKU))
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
       AZURE_OFFER: ((AZURE_OFFER))
-      PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_CLIENT_ID))
-      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_CLIENT_SECRET))
+      PARTNER_PORTAL_TENANT_ID: ((azure_partner_portal.tenant_id))
+      PARTNER_PORTAL_CLIENT_ID: ((azure_partner_portal.client_id))
+      PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
       OFFER_NOTIFICATION_EMAIL: boshwindows@groups.vmware.com
 
 - name: publish-azure-offer
@@ -2640,9 +2640,9 @@ jobs:
     params: &azure_publisher_information
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
       AZURE_OFFER: ((AZURE_OFFER))
-      PARTNER_PORTAL_TENANT_ID: ((PARTNER_PORTAL_TENANT_ID))
-      PARTNER_PORTAL_CLIENT_ID: ((PARTNER_PORTAL_CLIENT_ID))
-      PARTNER_PORTAL_CLIENT_SECRET: ((PARTNER_PORTAL_CLIENT_SECRET))
+      PARTNER_PORTAL_TENANT_ID: ((azure_partner_portal.tenant_id))
+      PARTNER_PORTAL_CLIENT_ID: ((azure_partner_portal.client_id))
+      PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
   - task: signoff-azure-live
     file: ci/tasks/signoff-azure-live/task.yml
     params:
