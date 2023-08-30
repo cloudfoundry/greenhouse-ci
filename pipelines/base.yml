@@ -40,6 +40,7 @@ groups:
   - test-stemcell-builder
   - github-release-stembuild
   - bump-minor
+  - notify-rn-to-docs-team
 - name: aws
   jobs:
   - create-aws
@@ -87,6 +88,7 @@ groups:
   - submit-azure-offer
   - publish-azure-offer
   - bump-minor
+  - notify-rn-to-docs-team
 
 resource_types:
 - name: pivnet
@@ -128,7 +130,11 @@ resource_types:
     tag: 1.6
     username: ((docker.username))
     password: ((docker.password))
-
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
 
 resources:
 # repos
@@ -643,6 +649,12 @@ resources:
     start: 3:00 -0700
     stop: 4:30 -0700
     days: [Saturday]
+
+# slack-notification
+- name: tas-docs-team-slack-message
+  type: slack-notification
+  source:
+    url: ((slack-webhook-url-tas-docs-team))
 
 jobs:
 - name: clean-up-pre-release-blobstore
@@ -2779,3 +2791,19 @@ jobs:
   - put: main-version
     params:
       bump: minor
+
+- name: notify-rn-to-docs-team
+  serial: true
+  plan:
+  - get: main-version
+    passed:
+      - github-release-stembuild
+      - promote-aws
+      - promote-azure
+      - promote-gcp
+    trigger: true
+  - put: tas-docs-team-slack-message
+    params:
+      text: |
+        :windows: Hi <@W0144KN3CHX> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
+    attempts: 3
