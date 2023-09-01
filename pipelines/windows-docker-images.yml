@@ -1,4 +1,4 @@
-# ~/workspace/greenhouse-private/dotfiles-scripts/fly-docker-images
+# To configure this pipeline: pipelines/configure.sh windows-docker-images
 resources:
 # dockerfiles
 
