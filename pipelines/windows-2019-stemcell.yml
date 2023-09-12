@@ -1428,7 +1428,6 @@ jobs:
 
 - name: create-aws
   serial: true
-  serial_groups: [aws-version]
   plan:
   - in_parallel:
       fail_fast: true
@@ -1613,7 +1612,6 @@ jobs:
 
 - name: create-aws-china
   serial: true
-  serial_groups: [aws-version]
   plan:
   - in_parallel:
       fail_fast: true
@@ -1778,7 +1776,6 @@ jobs:
 
 - name: create-aws-govcloud
   serial: true
-  serial_groups: [aws-version]
   plan:
   - in_parallel:
       fail_fast: true
