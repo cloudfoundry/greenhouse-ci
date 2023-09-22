@@ -13,7 +13,6 @@ build : out/stembuild
 clean :
 	rm -r version/version.go || true
 	rm -r $(wildcard out/*) || true
-	rm -r assets/stemcell_automation.go || true
 
 format :
 	go fmt ./...
@@ -28,8 +27,7 @@ integration-badger : generate
 	go run github.com/onsi/ginkgo/ginkgo -r -v -randomizeAllSpecs -untilItFails integration
 
 generate: $(GOSRC) $(AUTOMATION_PATH)
-	go install github.com/go-bindata/go-bindata/go-bindata@latest
-	go-bindata -o assets/stemcell_automation.go -pkg assets -prefix $(AUTOMATION_PREFIX) $(AUTOMATION_PATH)
+	cp $(AUTOMATION_PATH) assets/
 
 out/stembuild : generate $(GOSRC)
 	go build -o $(COMMAND) -ldflags $(LD_FLAGS) .
