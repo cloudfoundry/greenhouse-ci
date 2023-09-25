@@ -884,6 +884,7 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: ci-image
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -898,9 +899,13 @@ jobs:
         file: ci/tasks/build-agent-zip/task.yml
       - task: build-psmodules
         file: ci/tasks/build-psmodules-zip/task.yml
-      - task: unit-test
-        file: ci/tasks/test-units-stembuild-windows/task.yml
-        tags: [windows-nimbus]
+      - do:
+        - task: generate-fake-assets
+          file: ci/tasks/stembuild-generate-fake-assets/task.yml
+          image: ci-image
+        - task: unit-test
+          file: ci/tasks/test-units-stembuild-windows/task.yml
+          tags: [windows-nimbus]
       - task: setup-integration-test-vm
         tags: [windows-nimbus]
         image: govc-image
