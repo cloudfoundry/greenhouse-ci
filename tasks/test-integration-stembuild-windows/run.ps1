@@ -5,6 +5,8 @@ Import-Module ./ci/common-scripts/setup-windows-container.psm1
 Set-TmpDir
 Set-VCenterHostAndCert
 
+$env:PATH += ";c:\var\vcap\packages\git\usr\bin"
+
 $ROOT_DIR=Get-Location
 Write-Host "ROOT: $ROOT_DIR"
 
