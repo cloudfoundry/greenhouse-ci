@@ -20,6 +20,7 @@ Write-Host ***Cloning stembuild***
 Copy-Item stembuild $STEMBUILD_DIR -Recurse -Force
 
 $env:PATH="${GO_DIR}/bin;$env:PATH"
+$env:PATH += ";c:\var\vcap\packages\git\usr\bin"
 
 Write-Host ***Building Stembuild***
 Set-Location $STEMBUILD_DIR
