@@ -6,28 +6,28 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci
     paths: [ docker/Dockerfile.pivnet ]
 
 - name: ci-dockerfile
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci
     paths: [ docker/Dockerfile.ci ]
 
 - name: govc-dockerfile
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci
     paths: [ docker/Dockerfile.govc ]
 
 - name: ci-azcopy-dockerfile
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci
     paths: [ docker/Dockerfile.azcopy ]
 
 # docker build resources
