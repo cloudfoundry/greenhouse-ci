@@ -12,7 +12,7 @@ set -ex
 echo "Set GOPATH to $(pwd)"
 export GOPATH=$(pwd)
 
-pushd src/github.com/cloudfoundry-incubator/windows-utilities-tests
+pushd src/github.com/cloudfoundry/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
   cat > "${CONFIG_JSON}" <<- EOL

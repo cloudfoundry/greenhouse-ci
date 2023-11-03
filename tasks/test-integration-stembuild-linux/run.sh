@@ -1,37 +1,31 @@
 #!/usr/bin/env bash
-
-set -ex
+set -eu -o pipefail
+set -x
 
 ROOT_DIR=$(pwd)
-SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-OUTPUT_DIR=${ROOT_DIR}/output
 
-source ${SCRIPT_DIR}/../../common-scripts/update_nimbus_urls_and_cert.sh
+VERSION=$(cat version/version)
+STEMBUILD_DIR="${ROOT_DIR}/stembuild"
+OUTPUT_DIR="${ROOT_DIR}/output"
 
-export STEMBUILD_VERSION=`cat version/version`
-export VM_NAME=`cat integration-vm-name/name`
+source "ci/common-scripts/update_nimbus_urls_and_cert.sh"
 
-export BOSH_PSMODULES_REPO=${ROOT_DIR}/bosh-psmodules-repo
-
-export TARGET_VM_IP=`cat nimbus-ips/name`
-echo "Using Existing VM IP: ${TARGET_VM_IP}"
-
-echo ***Installing VMWare OVF Tools***
+echo '***Installing VMWare OVF Tools***'
 chmod +x ./ovftool/VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle
 ./ovftool/VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle --eulas-agreed --required
 
-echo "***Creating GOPATH environment & structure ***"
-export GOPATH=$PWD/gopath
-export PATH=${GOPATH}/bin:$PATH
+export BOSH_PSMODULES_REPO="${ROOT_DIR}/bosh-psmodules-repo"
+export STEMBUILD_VERSION
+export TARGET_VM_IP
+export VM_NAME
 
-CF_INC_DIR=${GOPATH}/src/github.com/cloudfoundry-incubator
-STEMBUILD_DIR=${ROOT_DIR}/stembuild
-mkdir -p ${CF_INC_DIR}
-cp -r ${STEMBUILD_DIR} ${CF_INC_DIR}
+STEMBUILD_VERSION=$(cat version/version)
+TARGET_VM_IP=$(cat nimbus-ips/name)
+VM_NAME=$(cat integration-vm-name/name)
 
-GO_STEMBUILD_DIR=${CF_INC_DIR}/stembuild
-pushd ${GO_STEMBUILD_DIR}
-  echo ***Test Stembuild Code***
+echo "Using Existing VM IP/Name: ${TARGET_VM_IP}/${VM_NAME}"
 
+pushd "${STEMBUILD_DIR}"
+  echo '***Test Stembuild Code***'
   make integration
 popd

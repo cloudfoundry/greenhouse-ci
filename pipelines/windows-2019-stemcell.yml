@@ -152,7 +152,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry-incubator/greenhouse-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
 - name: bosh-ecosystem-concourse
   type: git
   source:
@@ -173,7 +173,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry-incubator/bosh-windows-stemcell-builder.git
+    uri: git@github.com:cloudfoundry/bosh-windows-stemcell-builder.git
     private_key: ((github_deploy_key_bosh-windows-stemcell-builder.private_key))
 - name: bosh-psmodules-repo
   type: git
@@ -189,12 +189,12 @@ resources:
   type: git
   source:
     tag_filter: "*"
-    uri: https://github.com/cloudfoundry-incubator/windows-utilities-release.git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
 - name: windows-utilities-tests-released
   type: git
   source:
     tag_filter: "*"
-    uri: https://github.com/cloudfoundry-incubator/windows-utilities-tests.git
+    uri: https://github.com/cloudfoundry/windows-utilities-tests.git
 - name: pester
   type: git
   source:
@@ -211,7 +211,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests.git
+    uri: https://github.com/cloudfoundry/bosh-windows-acceptance-tests.git
 
 - name: ci-image
   type: registry-image
@@ -1173,7 +1173,7 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: stembuild-untested-linux
         passed: [create-stembuild-linux-stemcell]
@@ -1220,7 +1220,7 @@ jobs:
       steps:
         - get: ci
         - get: windows-utilities-release
-        - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+        - get: src/github.com/cloudfoundry/windows-utilities-tests
           resource: windows-utilities-tests-released
         - get: stembuild-untested-linux
           passed: [test-stembuild-linux-stemcell]
@@ -1340,7 +1340,7 @@ jobs:
         fail_fast: true
         steps:
           - get: ci
-          - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+          - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
             resource: bosh-windows-acceptance-tests
           - get: stembuild-untested-windows
             passed: [create-stembuild-windows-stemcell]
@@ -1387,7 +1387,7 @@ jobs:
         steps:
           - get: ci
           - get: windows-utilities-release
-          - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+          - get: src/github.com/cloudfoundry/windows-utilities-tests
             resource: windows-utilities-tests-released
           - get: stembuild-untested-windows
             passed: [test-stembuild-windows-stemcell]
@@ -1531,7 +1531,7 @@ jobs:
         passed: [create-aws]
       - get: packer-output-ami
         passed: [create-aws]
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-aws]
@@ -1565,7 +1565,7 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      - get: src/github.com/cloudfoundry/windows-utilities-tests
         resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: aws-tested
@@ -1706,7 +1706,7 @@ jobs:
         passed: [create-aws-china]
       - get: packer-output-china-ami
         passed: [create-aws-china]
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-aws-china]
@@ -1735,7 +1735,7 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      - get: src/github.com/cloudfoundry/windows-utilities-tests
         resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: aws-china-tested
@@ -1868,7 +1868,7 @@ jobs:
         passed: [create-aws-govcloud]
       - get: packer-output-govcloud-ami
         passed: [create-aws-govcloud]
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-aws-govcloud]
@@ -1902,7 +1902,7 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      - get: src/github.com/cloudfoundry/windows-utilities-tests
         resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: aws-govcloud-tested
@@ -2029,7 +2029,7 @@ jobs:
         resource: azure-build-number
         passed: [create-azure]
         trigger: true
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-azure]
@@ -2073,7 +2073,7 @@ jobs:
       - get: ci
       - get: azstemcell
       - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      - get: src/github.com/cloudfoundry/windows-utilities-tests
         resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: azure-tested
@@ -2197,7 +2197,7 @@ jobs:
         trigger: true
       - get: main-version
         passed: [create-gcp]
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [create-gcp]
@@ -2242,7 +2242,7 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: src/github.com/cloudfoundry-incubator/windows-utilities-tests
+      - get: src/github.com/cloudfoundry/windows-utilities-tests
         resource: windows-utilities-tests-released
       - get: bosh-windows-stemcell
         resource: gcp-tested
@@ -2381,7 +2381,7 @@ jobs:
       - get: china-ami
         passed: [promote]
         resource: packer-output-china-ami
-      - get: src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+      - get: src/github.com/cloudfoundry/bosh-windows-acceptance-tests
         resource: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [promote]

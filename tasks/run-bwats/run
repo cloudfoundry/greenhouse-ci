@@ -30,7 +30,7 @@ fi
 
 export GOPATH=$(pwd)
 
-cd src/github.com/cloudfoundry-incubator/bosh-windows-acceptance-tests
+cd src/github.com/cloudfoundry/bosh-windows-acceptance-tests
 
 cat > config.json <<END_OF_CONFIG
 {
