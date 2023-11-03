@@ -152,7 +152,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci-ci.git
+    uri: https://github.com/cloudfoundry/greenhouse-ci.git
 - name: bosh-ecosystem-concourse
   type: git
   source:
