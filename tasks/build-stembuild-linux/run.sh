@@ -8,6 +8,8 @@ VERSION=$(cat version/version)
 STEMBUILD_DIR="${ROOT_DIR}/stembuild"
 OUTPUT_DIR="${ROOT_DIR}/output"
 
+NON_GLOB_STEMCELL_AUTOMATION_ZIP="$(ls "${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP}")"
+
 # Instead of retooling the job/pipeline, use a copy of the old makefile
 mv ci/tasks/build-stembuild-linux/old-Makefile  "${STEMBUILD_DIR}/Makefile"
 
@@ -16,7 +18,7 @@ pushd "${STEMBUILD_DIR}"
   make \
     CGO_ENABLED=0 \
     STEMCELL_VERSION="${VERSION}" \
-    AUTOMATION_PATH="${ROOT_DIR}/${STEMCELL_AUTOMATION_ZIP}" \
+    AUTOMATION_PATH="${NON_GLOB_STEMCELL_AUTOMATION_ZIP}" \
     build
 popd
 
