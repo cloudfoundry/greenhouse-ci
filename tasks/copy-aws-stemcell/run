@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-
-set -ex
+set -eu -o pipefail
+set -x
 
 if [ -n "${AWS_ROLE_ARN}" ]; then
   aws configure --profile creds_account set aws_access_key_id "${AWS_ACCESS_KEY}"
+  set +x
   aws configure --profile creds_account set aws_secret_access_key "${AWS_SECRET_KEY}"
+  set -x
   aws configure --profile resource_account set source_profile "creds_account"
   aws configure --profile resource_account set role_arn "${AWS_ROLE_ARN}"
   unset AWS_ACCESS_KEY
@@ -12,7 +14,9 @@ if [ -n "${AWS_ROLE_ARN}" ]; then
   export AWS_PROFILE=resource_account
 else
   aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+  set +x
   aws configure set aws_secret_access_key "${AWS_SECRET_KEY}"
+  set -x
 fi
 
 pushd bosh-agent-release
@@ -21,17 +25,17 @@ pushd bosh-agent-release
   mv bosh-agent*.exe bosh-agent.exe
 popd
 
-cd stemcell-builder
+pushd stemcell-builder
+  pushd src/github.com/cloudfoundry/bosh-agent
+    git fetch
+    git checkout "v${BOSH_AGENT_VERSION}"
+  popd
 
-bundle install
+  bundle install
 
-pushd src/github.com/cloudfoundry/bosh-agent
-  git fetch
-  git checkout "v${BOSH_AGENT_VERSION}"
+  rake package:agent
+  rake package:psmodules
+  rake build:aws_ami
+
+  mv copied-regional-stemcells/*.tgz ../copied-regional-stemcells
 popd
-
-rake package:agent
-rake package:psmodules
-rake build:aws_ami
-
-mv copied-regional-stemcells/*.tgz ../copied-regional-stemcells
