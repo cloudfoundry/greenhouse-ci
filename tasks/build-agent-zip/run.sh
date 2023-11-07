@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
+set -eu -o pipefail
+set -x
 
-set -ex
-
-export BOSH_AGENT_DIR="$(pwd)/$BOSH_AGENT_DIR"
-
+BOSH_AGENT_DIR="$(pwd)/${BOSH_AGENT_DIR}"
+export BOSH_AGENT_DIR
 pushd "${BOSH_AGENT_DIR}"
-  CURRENT_VERSION=$(cat .resource/version)
+  BOSH_AGENT_VERSION=$(cat .resource/version)
   mv bosh-agent-pipe*.exe pipe.exe
   mv bosh-agent*.exe bosh-agent.exe
 popd
@@ -13,9 +13,12 @@ popd
 pushd stemcell-builder
   pushd src/github.com/cloudfoundry/bosh-agent
     git fetch
-    git checkout "v$CURRENT_VERSION"
+    git checkout "v${BOSH_AGENT_VERSION}"
   popd
-  bundle
+
+  bundle install --without test
+
   rake package:agent
+
   mv build/*.zip ../bosh-agent
 popd
