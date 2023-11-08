@@ -8,6 +8,7 @@ $ROOT_DIR=Get-Location
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
 
+$GO_DIR=Join-Path $ROOT_DIR go-work
 $env:GOPATH = $GO_DIR
 Write-Host "GOPATH: $env:GOPATH"
 New-Item $GO_DIR -ItemType Directory
