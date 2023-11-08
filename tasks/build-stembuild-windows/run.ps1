@@ -1,3 +1,5 @@
+Set-PSDebug -Trace 1
+
 $ErrorActionPreference = "Stop";
 trap { Exit 1 }
 
@@ -8,12 +10,6 @@ $ROOT_DIR=Get-Location
 $OUTPUT_DIR=Join-Path $ROOT_DIR output
 $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
 
-$GO_DIR=Join-Path $ROOT_DIR go-work
-$env:GOPATH = $GO_DIR
-Write-Host "GOPATH: $env:GOPATH"
-New-Item $GO_DIR -ItemType Directory
-$env:PATH="${GO_DIR}/bin;$env:PATH"
-
 $env:PATH += ";c:\var\vcap\packages\git\usr\bin"
 
 Write-Host ***Building Stembuild***
@@ -22,9 +18,9 @@ Set-Location stembuild
 $INPUT_ZIP_GLOB=Join-Path $ROOT_DIR $env:STEMCELL_AUTOMATION_ZIP
 $RENAMED_ZIP_PATH=Join-Path $ROOT_DIR "StemcellAutomation.zip"
 
-Copy-Item -Path $INPUT_ZIP_GLOB $NEW_STEMCELL_AUTOMATION_ZIP -Recurse -Force
+Copy-Item -Path $INPUT_ZIP_GLOB $RENAMED_ZIP_PATH -Recurse -Force
 
-Write-Host "Using stemcell automation script: $NEW_STEMCELL_AUTOMATION_ZIP"
+Write-Host "Using stemcell automation script: $RENAMED_ZIP_PATH"
 make CGO_ENABLED=0 STEMCELL_VERSION=${VERSION} COMMAND=out/stembuild.exe AUTOMATION_PATH=${RENAMED_ZIP_PATH} build
 
 Write-Host ***Copying stembuild to output directory***
