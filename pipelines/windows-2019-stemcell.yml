@@ -189,7 +189,7 @@ resources:
   type: git
   source:
     tag_filter: "*"
-    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    uri: https://github.com/cloudfoundry/windows-utilities-release.git
 - name: windows-utilities-tests-released
   type: git
   source:
