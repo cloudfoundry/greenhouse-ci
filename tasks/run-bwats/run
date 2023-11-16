@@ -9,7 +9,8 @@ fi
 
 set -exu
 
-export STEMCELL_PATH=$(readlink -f ${STEMCELL_PATH})
+STEMCELL_PATH=$(readlink -f "${STEMCELL_PATH}")
+export STEMCELL_PATH
 export BOSH_TARGET="${BOSH_ENVIRONMENT}"
 
 if [ "$MOUNT_EPHEMERAL_DISK" != "true" ] ; then
@@ -28,9 +29,10 @@ if [ "$SECURITY_COMPLIANCE_APPLIED" != "true" ] ; then
   SECURITY_COMPLIANCE_APPLIED="false"
 fi
 
-export GOPATH=$(pwd)
+GOPATH=$(pwd)
+export GOPATH
 
-cd src/github.com/cloudfoundry/bosh-windows-acceptance-tests
+cd bosh-windows-acceptance-tests
 
 cat > config.json <<END_OF_CONFIG
 {
@@ -58,5 +60,4 @@ END_OF_CONFIG
 
 go build -o ginkgo ./vendor/github.com/onsi/ginkgo/ginkgo
 
-CONFIG_JSON=config.json ./ginkgo --focus="$GINKGO_FOCUS" --skip="$GINKGO_SKIP" -r -v .
-
+CONFIG_JSON=config.json ./ginkgo --focus="${GINKGO_FOCUS}" --skip="${GINKGO_SKIP}" -r -v .

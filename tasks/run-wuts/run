@@ -10,9 +10,10 @@ fi
 set -ex
 
 echo "Set GOPATH to $(pwd)"
-export GOPATH=$(pwd)
+GOPATH=$(pwd)
+export GOPATH
 
-pushd src/github.com/cloudfoundry/windows-utilities-tests
+pushd windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
   cat > "${CONFIG_JSON}" <<- EOL
