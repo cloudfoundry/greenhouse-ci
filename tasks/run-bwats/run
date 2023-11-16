@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 set +x
-
 if [ -n "${SSH_TUNNEL_USER}" ]; then
   source ./ci/common-scripts/setup_bosh_proxy.sh
   setup_bosh_proxy "${SSH_TUNNEL_USER}" "${SSH_TUNNEL_IP}" "${SSH_TUNNEL_PRIVATE_KEY}"
 fi
+set -x
 
-set -exu
-
-STEMCELL_PATH=$(readlink -f "${STEMCELL_PATH}")
-export STEMCELL_PATH
-export BOSH_TARGET="${BOSH_ENVIRONMENT}"
+# shellcheck disable=SC2086
+RESOLVED_STEMCELL_PATH=$(readlink -f ${STEMCELL_PATH})
 
 if [ "$MOUNT_EPHEMERAL_DISK" != "true" ] ; then
   MOUNT_EPHEMERAL_DISK="false"
@@ -29,35 +27,31 @@ if [ "$SECURITY_COMPLIANCE_APPLIED" != "true" ] ; then
   SECURITY_COMPLIANCE_APPLIED="false"
 fi
 
-GOPATH=$(pwd)
-export GOPATH
-
-cd bosh-windows-acceptance-tests
-
-cat > config.json <<END_OF_CONFIG
-{
-  "bosh": {
-    "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
-    "client": "$BOSH_CLIENT",
-    "client_secret": "$BOSH_CLIENT_SECRET",
-    "target": "$BOSH_TARGET"
-  },
-  "stemcell_path": "$STEMCELL_PATH",
-  "stemcell_os": "$STEMCELL_OS",
-  "az": "$AZ",
-  "vm_type": "$VM_TYPE",
-  "root_ephemeral_vm_type": "$ROOT_EPHEMERAL_VM_TYPE",
-  "vm_extensions": "$VM_EXTENSIONS",
-  "network": "$NETWORK",
-  "mount_ephemeral_disk": $MOUNT_EPHEMERAL_DISK,
-  "ssh_disabled_by_default": $SSH_DISABLED_BY_DEFAULT,
-  "default_username" : "$DEFAULT_USERNAME",
-  "default_password" : "$DEFAULT_PASSWORD",
-  "skip_ms_update_test": $SKIP_MS_UPDATE_TEST,
-  "security_compliance_applied": $SECURITY_COMPLIANCE_APPLIED
-}
+pushd bosh-windows-acceptance-tests
+  export CONFIG_JSON=config.json
+  cat > "${CONFIG_JSON}" <<-END_OF_CONFIG
+  {
+    "bosh": {
+      "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
+      "client": "$BOSH_CLIENT",
+      "client_secret": "$BOSH_CLIENT_SECRET",
+      "target": "$BOSH_ENVIRONMENT"
+    },
+    "stemcell_path": "$RESOLVED_STEMCELL_PATH",
+    "stemcell_os": "$STEMCELL_OS",
+    "az": "$AZ",
+    "vm_type": "$VM_TYPE",
+    "root_ephemeral_vm_type": "$ROOT_EPHEMERAL_VM_TYPE",
+    "vm_extensions": "$VM_EXTENSIONS",
+    "network": "$NETWORK",
+    "mount_ephemeral_disk": $MOUNT_EPHEMERAL_DISK,
+    "ssh_disabled_by_default": $SSH_DISABLED_BY_DEFAULT,
+    "default_username" : "$DEFAULT_USERNAME",
+    "default_password" : "$DEFAULT_PASSWORD",
+    "skip_ms_update_test": $SKIP_MS_UPDATE_TEST,
+    "security_compliance_applied": $SECURITY_COMPLIANCE_APPLIED
+  }
 END_OF_CONFIG
 
-go build -o ginkgo ./vendor/github.com/onsi/ginkgo/ginkgo
-
-CONFIG_JSON=config.json ./ginkgo --focus="${GINKGO_FOCUS}" --skip="${GINKGO_SKIP}" -r -v .
+  go run github.com/onsi/ginkgo/ginkgo --focus="${GINKGO_FOCUS}" --skip="${GINKGO_SKIP}" -r -v .
+popd

@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 set +x
-
-if [ -n "${SSH_TUNNEL_USER}" ]; then
+if [ -n "${SSH_TUNNEL_USER:-}" ]; then
   source ./ci/common-scripts/setup_bosh_proxy.sh
   setup_bosh_proxy "${SSH_TUNNEL_USER}" "${SSH_TUNNEL_IP}" "${SSH_TUNNEL_PRIVATE_KEY}"
 fi
+set -x
 
-set -ex
-
-echo "Set GOPATH to $(pwd)"
-GOPATH=$(pwd)
-export GOPATH
+ROOT_DIR=$(pwd)
 
 pushd windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
-  cat > "${CONFIG_JSON}" <<- EOL
+  cat > "${CONFIG_JSON}" <<-END_OF_CONFIG
   {
     "bosh": {
       "ca_cert": "$(ruby -e "puts ENV['BOSH_CA_CERT'].split(\"\n\").join('\n')")",
@@ -27,8 +24,8 @@ pushd windows-utilities-tests
       "gw_user": "${SSH_TUNNEL_USER}",
       "gw_private_key": "$(ruby -e "puts ENV['SSH_TUNNEL_PRIVATE_KEY'].split(\"\n\").join('\n')")"
     },
-    "stemcell_path": "${GOPATH}/${STEMCELL_PATH}",
-    "windows_utilities_path": "../../../../windows-utilities-release",
+    "stemcell_path": "${ROOT_DIR}/${STEMCELL_PATH}",
+    "windows_utilities_path": "${ROOT_DIR}/windows-utilities-release",
     "stemcell_os": "${STEMCELL_OS}",
     "az": "${AZ}",
     "vm_type": "${VM_TYPE}",
@@ -36,12 +33,7 @@ pushd windows-utilities-tests
     "network": "${NETWORK}",
     "skip_cleanup_on_rdp_fail": false
   }
-EOL
+END_OF_CONFIG
 
-  echo "Build ginkgo"
-  ginkgo_dir='./vendor/github.com/onsi/ginkgo/ginkgo'
-  go build -o ginkgo "${ginkgo_dir}"
-
-  echo "Run ginkgo"
-  ./ginkgo -v -nodes "${NODES}"
+  go run github.com/onsi/ginkgo/ginkgo -v -nodes "${NODES}"
 popd
