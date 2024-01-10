@@ -93,5 +93,10 @@ RUN git clone https://github.com/portcullislabs/rdp-sec-check \
     && rm -rf rdp-sec-check \
     && export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
 
+RUN packer plugins install github.com/hashicorp/amazon \
+    && packer plugins install github.com/hashicorp/azure \
+    && packer plugins install github.com/hashicorp/googlecompute \
+    && packer plugins install github.com/hashicorp/vsphere
+
 # cleanup apt cache
 RUN rm -rf /var/lib/apt/lists/*
