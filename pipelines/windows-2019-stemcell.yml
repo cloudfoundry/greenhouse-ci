@@ -242,6 +242,14 @@ resources:
     repository: stembuild
     access_token: ((bosh_windows_ci_personal_access_token))
 
+- name: winsw-release
+  type: github-release
+  source:
+    owner: winsw
+    repository: winsw
+    access_token: ((bosh_windows_ci_personal_access_token))
+    semver_constraint: "~2"
+
 - name: bosh-agent-release
   type: metalink-repository
   source:
@@ -730,6 +738,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - task: test-stemcell-builder
     file: ci/tasks/test-stemcell-builder/task.yml
 - name: build
@@ -881,6 +893,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - put: version
     resource: stembuild-windows-build-number
     params:
@@ -987,6 +1003,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - put: version
     resource: stembuild-linux-build-number
     params:
@@ -1448,6 +1468,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - put: version
     resource: aws-build-number
     params:
@@ -1630,6 +1654,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1792,6 +1820,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - task: create-packer-ci-key
     privileged: true
     config:
@@ -1954,6 +1986,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - put: version
     resource: azure-build-number
     params:
@@ -2138,6 +2174,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - put: version
     resource: gcp-build-number
     params:
@@ -2376,6 +2416,10 @@ jobs:
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
+      - get: winsw-release
+        params:
+          globs:
+            - "WinSW.NET461.exe"
   - get: pivnet-public-stemcells
     attempts: 5
   - task: copy-public-stemcells

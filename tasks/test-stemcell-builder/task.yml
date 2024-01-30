@@ -12,6 +12,7 @@ inputs:
   - name: blobstore-s3-cli
   - name: blobstore-gcs-cli
   - name: windows-bsdtar
+  - name: winsw-release
 
 run:
   path: ci/tasks/test-stemcell-builder/run
