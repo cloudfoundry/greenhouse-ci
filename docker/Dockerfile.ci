@@ -1,5 +1,5 @@
 #docker pull pivotalgreenhouse/ci
-FROM ruby:3.1
+FROM ruby:3.2
 
 ARG VCENTER_CA_CERT
 
