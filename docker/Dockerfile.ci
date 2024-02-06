@@ -14,7 +14,7 @@ RUN apt-get update \
         gnupg \
         software-properties-common \
         sudo \
-    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
     && curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
     && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
@@ -31,7 +31,7 @@ RUN apt-get update \
         gawk \
         gcc \
         git \
-        google-cloud-sdk \
+        google-cloud-cli \
         libc6-dev \
         libncursesw5 \
         libpopt-dev \
