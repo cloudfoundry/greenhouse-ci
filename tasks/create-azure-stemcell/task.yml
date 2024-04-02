@@ -15,7 +15,7 @@ inputs:
   - name: blobstore-s3-cli
   - name: blobstore-gcs-cli
   - name: windows-bsdtar
-  - name: winsw-release
+  - name: windows-winsw
 
 
 outputs:
