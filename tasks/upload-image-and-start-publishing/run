@@ -148,6 +148,11 @@ copy_blob_to_premiumstore
 echo OK
 
 echo
+echo "Waiting 60 seconds for copy to start"
+sleep 60
+echo OK
+
+echo
 echo "Waiting for copy to finish from ${AZURE_STORAGE_ACCOUNT} to ${AZURE_PUBLISHED_STORAGE_ACCOUNT}"
 wait_for_copy_blob_to_premiumstore
 echo OK
