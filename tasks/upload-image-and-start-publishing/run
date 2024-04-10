@@ -148,8 +148,8 @@ copy_blob_to_premiumstore
 echo OK
 
 echo
-echo "Waiting 60 seconds for copy to start"
-sleep 60
+echo "Waiting 600 seconds for copy to start"
+sleep 600
 echo OK
 
 echo
