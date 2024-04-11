@@ -2803,5 +2803,5 @@ jobs:
   - put: tas-docs-team-slack-message
     params:
       text: |
-        :windows: Hi <@W0144KN3CHX> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
+        :windows: Hi <@U045WT6RC4R> <@U02HSGWELSK> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
     attempts: 3
