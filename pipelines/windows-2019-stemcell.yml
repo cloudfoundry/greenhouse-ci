@@ -8,9 +8,6 @@ groups:
   - create-aws
   - test-aws
   - wuts-aws
-#  - create-aws-china
-#  - test-aws-china
-#  - wuts-aws-china
   - create-aws-govcloud
   - test-aws-govcloud
   - wuts-aws-govcloud
@@ -46,11 +43,6 @@ groups:
   - create-aws
   - test-aws
   - wuts-aws
-#- name: aws-china
-#  jobs:
-#  - create-aws-china
-#  - test-aws-china
-#  - wuts-aws-china
 - name: aws-govcloud
   jobs:
   - create-aws-govcloud
@@ -451,14 +443,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-#- name: packer-output-china-ami
-#  type: s3
-#  source:
-#    bucket: ((ROOT_BUCKET))
-#    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/packer-output-ami-(.*).txt
-#    access_key_id: ((awschina00_aws_access_key.username))
-#    secret_access_key: ((awschina00_aws_access_key.password))
-#    region_name: ((AWS_CHINA_PACKER_REGION))
 - name: packer-output-govcloud-ami
   type: s3
   source:
@@ -475,14 +459,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-#- name: aws-china-untested
-#  type: s3
-#  source:
-#    bucket: ((ROOT_BUCKET))
-#    regexp: ((BASE_FOLDER_NAME))/untested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-#    access_key_id: ((awschina00_aws_access_key.username))
-#    secret_access_key: ((awschina00_aws_access_key.password))
-#    region_name: ((AWS_CHINA_PACKER_REGION))
 - name: aws-govcloud-untested
   type: s3
   source:
@@ -499,14 +475,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-#- name: aws-china-tested
-#  type: s3
-#  source:
-#    bucket: ((ROOT_BUCKET))
-#    regexp: ((BASE_FOLDER_NAME))/tested/aws/light-bosh-stemcell-(.*)-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-#    region_name: ((AWS_CHINA_PACKER_REGION))
-#    access_key_id: ((awschina00_aws_access_key.username))
-#    secret_access_key: ((awschina00_aws_access_key.password))
 - name: aws-govcloud-tested
   type: s3
   source:
@@ -532,14 +500,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-#- name: base-china-ami
-#  type: s3
-#  source:
-#    bucket: ((ROOT_BUCKET))
-#    regexp: ((BASE_FOLDER_NAME))/untested/aws/inputs/base-amis-((BASE_IMAGE_OS))-(.*).json
-#    access_key_id: ((awschina00_aws_access_key.username))
-#    secret_access_key: ((awschina00_aws_access_key.password))
-#    region_name: ((AWS_CHINA_PACKER_REGION))
 - name: base-govcloud-ami
   type: s3
   source:
@@ -770,9 +730,6 @@ jobs:
     file: bosh-ecosystem-concourse/tasks/deploy-concourse/configure-windows-firewall-rules.yml
     image: bosh-ecosystem-docker-image
     params:
-#      CHINA_AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
-#      CHINA_AWS_DEFAULT_REGION: cn-north-1
-#      CHINA_AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
       COMMERCIAL_AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
       COMMERCIAL_AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
@@ -816,15 +773,6 @@ jobs:
           BASE_AMI: ((BASE_IMAGE_OS))
           BASE_AMI_NAME: ((BASE_AMI_NAME))
           PACKER_REGION: ((AWS_PACKER_REGION))
-#      - task: collect-china-amis
-#        file: ci/tasks/collect-base-amis/task.yml
-#        output_mapping: { base-amis: china-amis }
-#        params:
-#          AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
-#          AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
-#          BASE_AMI: ((BASE_IMAGE_OS))
-#          BASE_AMI_NAME: ((BASE_AMI_NAME))
-#          PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
       - task: collect-govcloud-amis
         file: ci/tasks/collect-base-amis/task.yml
         output_mapping: { base-amis: govcloud-amis }
@@ -848,9 +796,6 @@ jobs:
       - put: base-windows-ami
         params:
           file: windows-amis/base-amis-((BASE_IMAGE_OS))-*.json
-#      - put: base-china-ami
-#        params:
-#          file: china-amis/base-amis-((BASE_IMAGE_OS))-*.json
       - put: base-govcloud-ami
         params:
           file: govcloud-amis/base-amis-((BASE_IMAGE_OS))-*.json
@@ -1614,169 +1559,6 @@ jobs:
       params:
         release: aws-lock
 
-#- name: create-aws-china
-#  serial: true
-#  plan:
-#  - in_parallel:
-#      fail_fast: true
-#      steps:
-#      - get: ci
-#      - get: stemcell-builder
-#        passed: [wuts-aws]
-#      - get: base-amis
-#        resource: base-china-ami
-#        passed: [build]
-#      - get: lgpo-binary
-#      - get: version
-#        passed: [wuts-aws]
-#        resource: aws-build-number
-#        trigger: true
-#      - get: main-version
-#        passed: [wuts-aws]
-#      - get: sshd
-#        resource: openssh-release
-#      - get: bosh-agent-release
-#        passed: [wuts-aws]
-#      - get: bosh-psmodules-repo
-#        passed: [build]
-#      - get: blobstore-dav-cli
-#      - get: blobstore-s3-cli
-#      - get: blobstore-gcs-cli
-#      - get: windows-bsdtar
-#      - get: windows-winsw
-#  - task: create-packer-ci-key
-#    privileged: true
-#    config:
-#      platform: linux
-#      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
-#      outputs:
-#      - name: packer-ci-private-key
-#      run:
-#        path: bash
-#        args:
-#        - "-c"
-#        - 'echo "$PACKER_CI" > packer-ci-private-key/key && chmod 600 packer-ci-private-key/key'
-#      params:
-#        PACKER_CI: ((bosh_windows_aws_china_packer_ci_private_key.private_key))
-#  - task: create-aws-china-stemcell
-#    attempts: 3
-#    tags: [asia]
-#    timeout: 1h30m
-#    file: ci/tasks/create-aws-stemcell/task.yml
-#    params:
-#      PACKER_AWS_ACCESS_KEY: ((awschina00_aws_access_key.username))
-#      AWS_REGION: ((AWS_CHINA_PACKER_REGION))
-#      PACKER_AWS_SECRET_KEY: ((awschina00_aws_access_key.password))
-#      PACKER_REGION: ((AWS_CHINA_PACKER_REGION))
-#      OS_VERSION: ((STEMCELL_OS_NAME))
-#      OUTPUT_BUCKET_NAME: ((AWS_REGIONAL_BUCKET))
-#      OUTPUT_BUCKET_REGION: ((AWS_CHINA_PACKER_REGION))
-#      VM_PREFIX: ((VM_PREFIX))
-#      MOUNT_EPHEMERAL_DISK: true
-#    ensure:
-#      task: delete-orphan-vms
-#      file: ci/tasks/delete-vms/task.yml
-#      params:
-#        AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
-#        AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
-#        IAAS: aws
-#        REGIONS: ((AWS_CHINA_PACKER_REGION))
-#        VM_PREFIX: ((VM_PREFIX))
-#  - *print-updates
-#  - in_parallel:
-#      fail_fast: true
-#      steps:
-#      - put: aws-china-untested
-#        params:
-#          file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-#      - put: packer-output-china-ami
-#        params:
-#          file: amis/packer-output-ami-*.txt
-#
-## Run BWATS against China stemcell
-#- name: test-aws-china
-#  serial: true
-#  plan:
-#  - in_parallel:
-#      fail_fast: true
-#      steps:
-#      - get: bosh-windows-stemcell
-#        resource: aws-china-untested
-#        passed: [create-aws-china]
-#      - get: ci
-#      - get: stemcell-builder
-#        passed: [create-aws-china]
-#      - get: version
-#        resource: aws-build-number
-#        passed: [create-aws-china]
-#        trigger: true
-#      - get: main-version
-#        passed: [create-aws-china]
-#      - get: packer-output-china-ami
-#        passed: [create-aws-china]
-#      - get: bosh-windows-acceptance-tests
-#      - get: bosh-agent-release
-#        passed: [create-aws-china]
-#  - task: skip-bwats-aws-china-stemcell
-#    config:
-#      image_resource:
-#        source:
-#          repository: pivotalgreenhouse/ci
-#        type: docker-image
-#      platform: linux
-#      run:
-#        path: /bin/bash
-#        args:
-#        - -xc
-#        - |
-#          echo "Explicitly skipping running bwats in the China region. The default NTP server (time.google.com) is failing in China AWS and attempts to reconfigure bosh-deployment with a China-based one have failed. We don't believe the additional testing is worth the cost here."
-#  - put: aws-china-tested
-#    params:
-#      file: bosh-windows-stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-#
-#- name: wuts-aws-china
-#  serial: true
-#  plan:
-#  - in_parallel:
-#      fail_fast: true
-#      steps:
-#      - get: ci
-#      - get: windows-utilities-release
-#      - get: windows-utilities-tests
-#      - get: bosh-windows-stemcell
-#        resource: aws-china-tested
-#        passed: [test-aws-china]
-#        trigger: true
-#      - get: stemcell-builder
-#        passed: [test-aws-china]
-#      - get: main-version
-#        passed: [test-aws-china]
-#      - get: packer-output-china-ami
-#        passed: [test-aws-china]
-#      - get: aws-build-number
-#        passed: [test-aws-china]
-#      - get: bosh-agent-release
-#        passed: [test-aws-china]
-#  - do:
-#    - task: run-wuts
-#      file: ci/tasks/run-wuts/task.yml
-#      input_mapping: { stemcell: bosh-windows-stemcell }
-#      tags: [asia]
-#      params:
-#        AZ: z1
-#        BOSH_CA_CERT: ((iaas_directors_aws-china-director_bosh_ca_cert.ca))
-#        BOSH_CLIENT: ((iaas_directors_aws-china-director_bosh_client.username))
-#        BOSH_CLIENT_SECRET: ((iaas_directors_aws-china-director_bosh_client.password))
-#        BOSH_ENVIRONMENT: ((iaas_directors_aws-china-director_bosh_environment))
-#        SSH_TUNNEL_IP: ((iaas_directors_aws-china-director_bosh_jumpbox_ip))
-#        SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_aws-china-director_bosh_jumpbox_ssh.private_key))
-#        SSH_TUNNEL_USER: ((iaas_directors_aws-china-director_bosh_jumpbox_username))
-#        NETWORK: default
-#        STEMCELL_OS: ((STEMCELL_OS_NAME))
-#        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_CHINA_PACKER_REGION)).tgz
-#        VM_EXTENSIONS: ""
-#        VM_TYPE: large
-
 - name: create-aws-govcloud
   serial: true
   plan:
@@ -2308,7 +2090,6 @@ jobs:
         - wuts-aws
         - wuts-azure
         - wuts-aws-govcloud
-#        - wuts-aws-china
       - get: stembuild-untested-linux
         passed: [ wuts-stembuild-linux-stemcell ]
       - get: stembuild-linux-stemcell
@@ -2325,24 +2106,18 @@ jobs:
         - wuts-aws
         - wuts-azure
         - wuts-aws-govcloud
-#        - wuts-aws-china
       - get: packer-output-ami
         passed: [wuts-aws]
       - get: packer-output-govcloud-ami
         passed: [wuts-aws-govcloud]
       - get: aws-build-number
         passed: [wuts-aws]
-#      - get: aws-china-tested
-#        passed: [wuts-aws-china]
-#      - get: packer-output-china-ami
-#        passed: [wuts-aws-china]
       - get: bosh-agent-release
         passed:
           - wuts-gcp
           - wuts-aws
           - wuts-azure
           - wuts-aws-govcloud
-#          - wuts-aws-china
       - get: bosh-psmodules-repo
         passed: [build]
   - task: ensure-versions-match
@@ -2361,8 +2136,6 @@ jobs:
         passed: [promote]
       - get: aws-govcloud-tested
         passed: [promote]
-#      - get: aws-china-tested
-#        passed: [promote]
       - get: bosh-ecosystem-docker-image
       - get: bosh-stemcells-ci
       - get: stemcell-builder
@@ -2381,9 +2154,6 @@ jobs:
       - get: govcloud-ami
         passed: [promote]
         resource: packer-output-govcloud-ami
-#      - get: china-ami
-#        passed: [promote]
-#        resource: packer-output-china-ami
       - get: bosh-windows-acceptance-tests
       - get: bosh-agent-release
         passed: [promote]
@@ -2419,22 +2189,10 @@ jobs:
       AWS_ACCESS_KEY: ((packer_user_gov_aws_access_key.username))
       AWS_SECRET_KEY: ((packer_user_gov_aws_access_key.password))
       REGIONS: "us-gov-east-1"
-#  - task: copy-china-stemcells
-#    timeout: 1h30m
-#    attempts: 3
-#    input_mapping: { version: aws-build-number, default-stemcell: aws-china-tested, amis: china-ami}
-#    output_mapping: {copied-regional-stemcells: aws-china-stemcells}
-#    file: ci/tasks/copy-aws-stemcell/task.yml
-#    params:
-#      OS_VERSION: ((STEMCELL_OS_NAME))
-#      AWS_ACCESS_KEY: ((awschina00_aws_access_key.username))
-#      AWS_SECRET_KEY: ((awschina00_aws_access_key.password))
-#      REGIONS: cn-north-1
   - task: aggregate-stemcells
     file: ci/tasks/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number, amis: default-ami }
     params:
-#      COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells,../aws-china-stemcells'
       COPIED_STEMCELL_DIRECTORIES: '../aws-public-stemcells,../aws-govcloud-stemcells'
       OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
@@ -2458,15 +2216,6 @@ jobs:
       AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
       AWS_SECRET_ACCESS_KEY: ((packer_user_gov_aws_access_key.password))
       GREP_PATTERN: grep 'gov-'
-#  - task: tag-china-published-aws-ami-light-stemcells
-#    file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
-#    image: bosh-ecosystem-docker-image
-#    input_mapping:
-#      candidate-aws-light-stemcell: final-stemcell
-#    params:
-#      AWS_ACCESS_KEY_ID: ((awschina00_aws_access_key.username))
-#      AWS_SECRET_ACCESS_KEY: ((awschina00_aws_access_key.password))
-#      GREP_PATTERN: grep 'cn-'
   - in_parallel:
     - task: upload-to-pivnet
       file: ci/tasks/upload-to-pivnet/task.yml
