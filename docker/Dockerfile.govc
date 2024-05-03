@@ -2,18 +2,15 @@ FROM ubuntu
 
 ARG VCENTER_CA_CERT
 
-RUN apt-get update -qq && \
-  apt-get install -qqy --no-install-recommends \
-  ca-certificates \
-  wget
+RUN apt-get update -qq \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        jq \
+        wget
 
-RUN wget "https://github.com/vmware/govmomi/releases/download/v0.29.0/govc_Linux_x86_64.tar.gz"
-RUN echo "686573989d49f3aab1f0225cd421975d105c8992  govc_Linux_x86_64.tar.gz" > sums
-RUN sha1sum --check sums
-RUN tar xzf govc_Linux_x86_64.tar.gz govc && mv govc /usr/local/bin/
-RUN chmod 555 /usr/local/bin/govc
-
-RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -O /usr/local/bin/jq && chmod +x /usr/local/bin/jq
-
-# cleanup
-RUN rm -rf /var/lib/apt/lists/*
+RUN wget "https://github.com/vmware/govmomi/releases/download/v0.29.0/govc_Linux_x86_64.tar.gz" \
+    && echo "686573989d49f3aab1f0225cd421975d105c8992  govc_Linux_x86_64.tar.gz"  \
+      | sha1sum --check \
+    && tar xzf govc_Linux_x86_64.tar.gz govc \
+    && rm govc_Linux_x86_64.tar.gz \
+    && install govc /usr/local/bin/

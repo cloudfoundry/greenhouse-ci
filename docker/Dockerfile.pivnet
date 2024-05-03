@@ -1,9 +1,12 @@
 FROM ubuntu
 
-RUN apt-get update && apt-get install -y wget jq
-# apt cleanup
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      jq \
+      wget
 
-RUN wget -q https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.57/pivnet-linux-amd64-0.0.57 -O /usr/local/bin/pivnet
-RUN echo '4f7ba30c2e9125439b40b5623226878e9530c81987224817acd36ea227fdabe2  /usr/local/bin/pivnet' | sha256sum --check
-RUN chmod 500 /usr/local/bin/pivnet
+RUN wget -q https://github.com/pivotal-cf/pivnet-cli/releases/download/v4.1.1/pivnet-linux-amd64-4.1.1 -O pivnet \
+    && echo '5462367e67836cda6ecf3fb87b72d22947dcb385aeb217bf896bcc05b99559eb  pivnet' \
+      | sha256sum --check \
+    && install pivnet /usr/local/bin/

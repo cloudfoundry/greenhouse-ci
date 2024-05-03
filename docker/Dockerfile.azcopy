@@ -1,32 +1,34 @@
 # docker pull pivotalgreenhouse/ci-azcopy
-
 FROM ubuntu
 
-LABEL maintainer="bosh-ecosystem@groups.vmware.com"
+# Use latest available golang version
+COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
+ENV GOROOT=/usr/local/go PATH=/usr/local/go/bin:$PATH
 
 # We don't want apt to try to set the tzdata
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-  && apt-get install -y \
-    apt-transport-https \
-    build-essential \
-    ca-certificates \
-    curl \
-    git \
-    gnupg \
-    jq \
-    less \
-    lsb-release \
-    neovim \
-    pigz \
-    python3 \
-    ruby \
-    ruby-dev \
-    software-properties-common \
-    wget
+RUN apt-get update  \
+    && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        gnupg \
+        jq \
+        less \
+        lsb-release \
+        neovim \
+        pigz \
+        python3 \
+        ruby \
+        ruby-dev \
+        software-properties-common \
+        wget
 
-RUN LSB_RELEASE=$(lsb_release -cs) \
+RUN LSB_RELEASE=jammy \
+    && echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
     && ARCH=$(dpkg --print-architecture) \
     && mkdir -p /etc/apt/keyrings \
     && curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
@@ -51,10 +53,6 @@ RUN curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux \
 
 # The following has been cargo-culted from the earlier incarnation of this file & is probably not needed
 RUN gem install azure_mgmt_resources
-
-# Use latest available golang version
-COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
-ENV GOROOT=/usr/local/go PATH=/usr/local/go/bin:$PATH
 
 # azstemcell
 RUN git clone https://github.com/pivotal-cf/azstemcell \

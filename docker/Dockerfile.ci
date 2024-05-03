@@ -32,6 +32,7 @@ RUN apt-get update \
         gcc \
         git \
         google-cloud-cli \
+        jq \
         libc6-dev \
         libncursesw5 \
         libpopt-dev \
@@ -54,32 +55,32 @@ RUN apt-get update \
         wget \
         zip
 
-RUN LSB_RELEASE=artful \
-    && echo "Using 'artful' because Azure doesn't yet support 'bookworm'" \
+RUN LSB_RELEASE=jammy \
+    && echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
     && ARCH=$(dpkg --print-architecture) \
     && mkdir -p /etc/apt/keyrings \
     && curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
-    | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg \
+      | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg \
     && chmod go+r /etc/apt/keyrings/microsoft.gpg \
     && echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ ${LSB_RELEASE} main" \
-    > /etc/apt/sources.list.d/azure-cli.list \
+      > /etc/apt/sources.list.d/azure-cli.list \
     && apt-get update \
-    && apt-get install -y azure-cli
+    && apt-get install -y \
+     azure-cli
 
-RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq \
-    && chmod +x /usr/local/bin/jq \
-    && wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq \
+#install CF CLI
+RUN wget -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - \
+    && echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list \
+    && apt-get update \
+    && apt-get install cf-cli
+
+RUN wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq \
     && chmod +x /usr/local/bin/yq
 
 # bosh Golang CLI
-RUN curl -sL $(curl -s https://api.github.com/repos/cloudfoundry/bosh-cli/releases/latest | jq -r '.assets[] | select(.name | contains ("linux-amd64")) | .browser_download_url') > /usr/local/bin/bosh  \
+RUN curl -sL $(curl -s https://api.github.com/repos/cloudfoundry/bosh-cli/releases/latest | jq -r '.assets[] | select(.name | contains ("linux-amd64")) | .browser_download_url') \
+      > /usr/local/bin/bosh  \
     && chmod 755 /usr/local/bin/bosh
-
-#install CF CLI
-RUN wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - \
-    && echo "deb http://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list \
-    && apt-get update \
-    && apt-get install cf-cli
 
 RUN gem install bundler \
     && gem install aws-sdk \
@@ -88,12 +89,10 @@ RUN gem install bundler \
 RUN git clone https://github.com/portcullislabs/rdp-sec-check \
     && mv rdp-sec-check/rdp-sec-check.pl /usr/local/bin \
     && rm -rf rdp-sec-check \
-    && export PERL_MM_USE_DEFAULT=1 && cpan Encoding::BER
+    && export PERL_MM_USE_DEFAULT=1 \
+    && cpan Encoding::BER
 
 RUN packer plugins install github.com/hashicorp/amazon \
     && packer plugins install github.com/hashicorp/azure \
     && packer plugins install github.com/hashicorp/googlecompute \
     && packer plugins install github.com/hashicorp/vsphere
-
-# cleanup apt cache
-RUN rm -rf /var/lib/apt/lists/*
