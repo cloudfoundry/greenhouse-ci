@@ -1,12 +1,11 @@
 # docker pull pivotalgreenhouse/ci-azcopy
-FROM ubuntu
+FROM ubuntu:jammy
+# TODO: Stop forcing Jammy since Azure / Microsft don't yet support Noble
 
-# Use latest available golang version
+ENV DEBIAN_FRONTEND=noninteractive
+
 COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
 ENV GOROOT=/usr/local/go PATH=/usr/local/go/bin:$PATH
-
-# We don't want apt to try to set the tzdata
-ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update  \
     && apt-get install -y --no-install-recommends \
@@ -27,24 +26,19 @@ RUN apt-get update  \
         software-properties-common \
         wget
 
-RUN LSB_RELEASE=jammy \
-    && echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
-    && ARCH=$(dpkg --print-architecture) \
+RUN curl -LO "https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/packages-microsoft-prod.deb" \
+    && dpkg -i *.deb \
+    && rm *.deb \
     && mkdir -p /etc/apt/keyrings \
     && curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
-    | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg \
+      | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg \
     && chmod go+r /etc/apt/keyrings/microsoft.gpg \
-    && echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ ${LSB_RELEASE} main" \
-    > /etc/apt/sources.list.d/azure-cli.list \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -sc) main" \
+      > /etc/apt/sources.list.d/azure-cli.list \
     && apt-get update \
-    && apt-get install -y azure-cli
-
-RUN deb_filename='packages-microsoft-prod.deb' \
-    && curl -LO "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/${deb_filename}" \
-    && dpkg -i ${deb_filename} \
-    && rm ${deb_filename} \
-    && apt-get update \
-    && apt-get install -y powershell
+    && apt-get install -y \
+      azure-cli \
+      powershell
 
 # azcopy https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
 RUN curl -L -o /tmp/azcopy.tgz https://aka.ms/downloadazcopy-v10-linux \
