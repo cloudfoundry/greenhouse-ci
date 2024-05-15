@@ -38,7 +38,7 @@ checking_status() {
       echo "Status is marked as 'complete'. We are expecting the status to become 'waitingForPublisherReview'. We may be trying to re-publish a previously published version."
       exit 1
     fi
-    sleep 1h
+    sleep 30m
     token=$(create_microsoft_token)
     retrieve_offer_status_json > offer_status_json
     publishing_version=$(jq -r ".publishingVersion" offer_status_json)
