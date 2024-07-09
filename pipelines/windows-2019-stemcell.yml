@@ -588,7 +588,7 @@ resources:
   type: s3
   source:
     bucket: ((ROOT_BUCKET))
-    regexp: ((BASE_FOLDER_NAME))/license/open_source_license_stemcells-windows-server-2019.*.txt
+    regexp: ((BASE_FOLDER_NAME))/license/open_source_license_stemcells-windows-server-(((BOSHIO_OS_VERSION)).*).txt
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
