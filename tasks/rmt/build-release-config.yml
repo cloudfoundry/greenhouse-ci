@@ -7,8 +7,7 @@ inputs:
   - name: aws-stemcell-final
   - name: gcp-stemcell-final
   - name: azure-stemcell-final
-  - name: stembuild-linux
-  - name: stembuild-windows
+  - name: final-stembuilds
   - name: license-file
 
 outputs:

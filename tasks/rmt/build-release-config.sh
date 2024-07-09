@@ -53,10 +53,9 @@ stembuilders=(
 )
 
 for os in "${!stembuilders[@]}"; do
-  stembuild_dir="stembuild-${os}"
-  cp "${stembuild_dir}"/* release-files/
+  cp final-stembuilds/"stembuild-${os}*" release-files/
   cat <<EOF >>./release-config/release.yml
-- file: "../release-files/$(basename "${stembuild_dir}"/*)"
+- file: "../release-files/$(basename final-stembuilds/"stembuild-${os}*")"
   description: "vSphere Stembuild CLI - ${stembuilders[$os]}"
 EOF
 done

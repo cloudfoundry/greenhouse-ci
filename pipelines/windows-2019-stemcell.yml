@@ -2467,6 +2467,7 @@ jobs:
           - promote-azure
           - github-release-stembuild
         trigger: true
+      - get: bosh-ecosystem-docker-image
       - get: aws-stemcell-final
         passed: [promote-aws]
       - get: gcp-stemcell-final
@@ -2478,12 +2479,11 @@ jobs:
       - get: stembuild-untested-linux
         passed: [github-release-stembuild]
       - get: license-file
+  - task: set-stembuild-version
+    file: ci/tasks/set-stembuild-version/task.yml
   - task: build-release-config
     file: ci/tasks/rmt/build-release-config.yml
     image: bosh-ecosystem-docker-image
-    input_mapping:
-      stembuild-linux: stembuild-untested-linux
-      stembuild-windows: stembuild-untested-windows
     params:
       RELEASE_CONTACT: "maya.rosecrance@broadcom.com"
       RELEASE_TITLE: Stemcells (Windows)
