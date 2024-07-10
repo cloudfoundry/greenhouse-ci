@@ -199,6 +199,12 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/bosh-windows-acceptance-tests.git
+- name: gormt-repo
+  type: git
+  source:
+    uri: git@github.com:pivotal/gormt.git
+    branch: main
+    private_key: ((github_deploy_key_gormt.private_key))
 
 - name: ci-image
   type: registry-image
@@ -2459,6 +2465,8 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
+      - get: gormt-repo
+      - get: bosh-ecosystem-docker-image
       - get: version
         resource: main-version
         passed:
@@ -2467,7 +2475,6 @@ jobs:
           - promote-azure
           - github-release-stembuild
         trigger: true
-      - get: bosh-ecosystem-docker-image
       - get: aws-stemcell-final
         passed: [promote-aws]
       - get: gcp-stemcell-final
@@ -2494,6 +2501,39 @@ jobs:
       RELEASE_END_OF_SUPPORT: "04/01/2025"
       RELEASE_UPGRADE_SPECIFIER: "2019.*"
       RELEASE_SKU: TNZ-UN
+  - task: create-rmt-release
+    image: bosh-ecosystem-docker-image
+    tags: [ broadcom ]
+    file: gormt-repo/concourse_examples/tasks/create-release.yml
+    params: &rmt_params
+      RMT_RMT_EMAIL: "maya.rosecrance@broadcom.com"
+      RMT_RMT_HOST: ((rmt-prod-host))
+      RMT_RMT_USERNAME: ((rmt-prod-user.username))
+      RMT_RMT_PASSWORD: ((rmt-prod-user.password))
+      RMT_SFTP_HOST: ((sftp-prod-host))
+      RMT_SFTP_USERNAME: ((sftp-prod-user.username))
+      RMT_SFTP_PASSWORD: ((sftp-prod-user.password))
+      RMT_VERBOSE: true
+    on_failure:
+      task: cleanup-rmt-please-instructions
+      config:
+        platform: linux
+        image: bosh-ecosystem-docker-image
+        run:
+          path: bash
+          args:
+            - -exc
+            - |
+              echo "Make sure any failed releases in RMT are cleaned up!"
+  - task: release-file-update
+    attempts: 5
+    image: bosh-ecosystem-docker-image
+    input_mapping:
+      release-update-config: release-config
+    tags: [ broadcom ]
+    file: gormt-repo/concourse_examples/tasks/release-file-update.yml
+    params:
+      <<: *rmt_params
 
 - name: bump-minor
   serial: true
