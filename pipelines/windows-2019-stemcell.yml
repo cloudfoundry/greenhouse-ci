@@ -3,7 +3,7 @@ groups:
 - name: all
   jobs:
   - clean-up-pre-release-blobstore
-  - bump-stembuild-deps
+  - bump-deps
   - build
   - create-aws
   - test-aws
@@ -194,11 +194,18 @@ resources:
     uri: git@github.com:cloudfoundry/stembuild.git
     ignore_paths: [version/version]
     private_key: ((github_deploy_key_stembuild.private_key))
+- name: bosh-windows-acceptance-tests-src-out
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/bosh-windows-acceptance-tests.git
+    private_key: ((github_deploy_key_bosh-windows-acceptance-tests.private_key))
 - name: bosh-windows-acceptance-tests
   type: git
   source:
     branch: master
-    uri: https://github.com/cloudfoundry/bosh-windows-acceptance-tests.git
+    uri: git@github.com:cloudfoundry/bosh-windows-acceptance-tests.git
+    private_key: ((github_deploy_key_bosh-windows-acceptance-tests.private_key))
 - name: gormt-repo
   type: git
   source:
@@ -633,10 +640,11 @@ jobs:
       AZURE_STORAGE_ACCOUNT: unpublishedpremiumstore
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 
-- name: bump-stembuild-deps
+- name: bump-deps
   serial: true
   plan:
   - in_parallel:
+    - get: bosh-windows-acceptance-tests
     - get: ci
     - get: ci-image
     - get: golang-release
@@ -646,7 +654,7 @@ jobs:
       resource: main-version
     - get: weekly
       trigger: true
-  - task: bump-deps
+  - task: bump-stembuild-deps
     file: golang-release/ci/tasks/shared/bump-deps.yml
     input_mapping:
       input_repo: stembuild
@@ -663,6 +671,29 @@ jobs:
     params:
       rebase: true
       repository: stembuild
+  - task: bump-bosh-windows-acceptance-tests-deps
+    file: golang-release/ci/tasks/shared/bump-deps.yml
+    input_mapping:
+      input_repo: bosh-windows-acceptance-tests
+    output_mapping:
+      output_repo: bosh-windows-acceptance-tests-src-out
+  - task: build-test
+    config:
+      image_resource:
+        type: registry-image
+        source:
+          repository: bosh/integration
+          username: ((docker-hub.username))
+          password: ((docker-hub.password))
+      inputs:
+        - name: bosh-windows-acceptance-tests
+      platform: linux
+      run:
+        path: "bosh-windows-acceptance-tests/bin/build-test.sh"
+  - put: bosh-windows-acceptance-tests-src-out
+    params:
+      repository: bosh-windows-acceptance-tests-src-out
+      rebase: true
 
 - name: test-bosh-psmodules
   serial: true
