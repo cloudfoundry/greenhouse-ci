@@ -25,8 +25,6 @@ end_of_support_date_mm/dd/yyyy: ${RELEASE_END_OF_SUPPORT}
 export_control_status: SCREENING_REQUIRED
 upgrade_specifiers:
 - specifier: ${RELEASE_UPGRADE_SPECIFIER}
-skus:
-- code: ${RELEASE_SKU}
 EOF
 
 declare -A iaases
@@ -65,6 +63,13 @@ cat <<EOF >>./release-config/release.yml
 - file: "../release-files/$(basename "license-file"/*.txt)"
   description: "Stemcells for PCF (Windows) License"
 EOF
+
+if [ -n "$RELEASE_SKU" ]; then
+  cat <<SKUS >>./release-config/release.yml
+skus:
+- code: ${RELEASE_SKU}
+SKUS
+fi
 
 echo "RMT release file:"
 cat release-config/release.yml

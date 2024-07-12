@@ -2531,7 +2531,6 @@ jobs:
       RELEASE_STATUS: GA
       RELEASE_END_OF_SUPPORT: "04/01/2025"
       RELEASE_UPGRADE_SPECIFIER: "2019.*"
-      RELEASE_SKU: TNZ-UN
   - task: create-rmt-release
     image: bosh-ecosystem-docker-image
     tags: [ broadcom ]
