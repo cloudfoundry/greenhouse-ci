@@ -661,10 +661,10 @@ jobs:
     output_mapping:
       output_repo: stembuild
   - in_parallel:
-    - task: unit-test
+    - task: unit-test-on-linux
       file: ci/tasks/test-units-stembuild-linux/task.yml
       image: ci-image
-    - task: unit-test
+    - task: unit-test-on-windows
       file: ci/tasks/test-units-stembuild-windows/task.yml
       tags: [windows-nimbus]
   - put: stembuild
