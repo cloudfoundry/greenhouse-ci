@@ -3,6 +3,13 @@ FROM ruby:3.2
 
 ARG VCENTER_CA_CERT
 
+ENV YQ_VERSION=2.3.0
+ENV YQ_CHECKSUM=TODO
+ENV YQ_BIN_PATH=/usr/local/bin/yq
+ENV METALINK_VERSION=0.5.0
+ENV METALINK_CHECKSUM=9f3ff22e1ac3a8b4a667a9505dce2a224e099475ab69a02b23813ad073e27e01
+ENV METALINK_BIN_PATH=/usr/local/bin/meta4
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 COPY --from=bosh/golang-release /var/vcap/packages/golang-1-linux /usr/local/go
@@ -71,13 +78,20 @@ RUN LSB_RELEASE=jammy \
      azure-cli
 
 #install CF CLI
-RUN wget -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - \
+RUN curl -sL https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - \
     && echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list \
     && apt-get update \
     && apt-get install cf-cli
 
-RUN wget -q https://github.com/mikefarah/yq/releases/download/2.3.0/yq_linux_amd64 -O /usr/local/bin/yq \
-    && chmod +x /usr/local/bin/yq
+RUN curl -sL "https://github.com/dpb587/metalink/releases/download/v${METALINK_VERSION}/meta4-${METALINK_VERSION}-linux-amd64"  \
+      > "${METALINK_BIN_PATH}" \
+    && echo "${METALINK_CHECKSUM} ${METALINK_BIN_PATH}" \
+      | sha256sum -c - \
+    && chmod +x "${METALINK_BIN_PATH}"
+
+RUN curl -sL https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 \
+      > "${YQ_BIN_PATH}" \
+    && chmod +x "${YQ_BIN_PATH}"
 
 # bosh Golang CLI
 RUN curl -sL $(curl -s https://api.github.com/repos/cloudfoundry/bosh-cli/releases/latest | jq -r '.assets[] | select(.name | contains ("linux-amd64")) | .browser_download_url') \
