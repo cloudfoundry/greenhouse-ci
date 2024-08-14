@@ -117,11 +117,14 @@ resource_types:
     tag: 1.6
     username: ((docker.username))
     password: ((docker.password))
-- name: slack-notification
-  type: docker-image
+- name: gchat-notification
+  type: registry-image
+  check_every: 168h
   source:
-    repository: cfcommunity/slack-notification-resource
-    tag: latest
+    repository: springio/google-chat-notify-resource
+    username: ((docker.username))
+    password: ((docker.password))
+    tag: 0.0.1-SNAPSHOT
 
 resources:
 # repos
@@ -621,11 +624,10 @@ resources:
     stop: 4:30 -0700
     days: [Saturday]
 
-# slack-notification
-- name: tas-docs-team-slack-message
-  type: slack-notification
+- name: tas-docs-team-gchat-message
+  type: gchat-notification
   source:
-    url: ((slack-webhook-url-tas-docs-team))
+    url: ((gchat-webhook-url-tas-docs-team))
 
 jobs:
 - name: clean-up-pre-release-blobstore
@@ -2581,8 +2583,8 @@ jobs:
   - get: main-version
     passed: [upload-to-rmt]
     trigger: true
-  - put: tas-docs-team-slack-message
+  - put: tas-docs-team-gchat-message
     params:
       text: |
-        :windows: Hi <@U045WT6RC4R> <@U02HSGWELSK> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
+        :windows: Hi <users/115311248591248242920> <users/100238588888174693564> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
     attempts: 3
