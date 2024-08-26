@@ -2586,5 +2586,5 @@ jobs:
   - put: tas-docs-team-gchat-message
     params:
       text: |
-        :windows: Hi <users/115311248591248242920> <users/100238588888174693564> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
+        :windows: Hi <users/115311248591248242920> <users/100963210707072263034> ! A new *Windows* Stemcell is about to be released in the next hour. The Robots are building the release notes which should be available for publishing at about the same time. Thank you! :windows:
     attempts: 3
