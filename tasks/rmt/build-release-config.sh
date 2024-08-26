@@ -23,6 +23,7 @@ ga_date_mm/dd/yyyy: ${today}
 published_date_mm/dd/yyyy: ${today}
 end_of_support_date_mm/dd/yyyy: ${RELEASE_END_OF_SUPPORT}
 export_control_status: SCREENING_REQUIRED
+product_slug: ${RELEASE_PRODUCT_SLUG}
 upgrade_specifiers:
 - specifier: ${RELEASE_UPGRADE_SPECIFIER}
 EOF
