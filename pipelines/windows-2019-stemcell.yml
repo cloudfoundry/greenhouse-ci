@@ -211,10 +211,12 @@ resources:
     private_key: ((github_deploy_key_bosh-windows-acceptance-tests.private_key))
 - name: gormt-repo
   type: git
+  tags: [ broadcom ]
   source:
-    uri: git@github.com:pivotal/gormt.git
+    uri: https://github.gwd.broadcom.net/TNZ/gormt.git
     branch: main
-    private_key: ((github_deploy_key_gormt.private_key))
+    username: svc.bosh-ecosystem@broadcom.net
+    password: ((svc-bosh-ecosystem-ghe-personal-access-token))
 
 - name: ci-image
   type: registry-image
@@ -2499,6 +2501,7 @@ jobs:
       steps:
       - get: ci
       - get: gormt-repo
+        tags: [ broadcom ]
       - get: bosh-ecosystem-docker-image
       - get: version
         resource: main-version
