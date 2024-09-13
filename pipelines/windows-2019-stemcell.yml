@@ -1,4 +1,9 @@
 # To configure this pipeline: pipelines/configure.sh windows-2019-stemcell
+
+secrets:
+#! Access token for our service account user in Github Enterprise. Used to pull repos and open PRs.
+- &ghe_svc_account_personal_access_token ((svc-bosh-ecosystem-ghe-personal-access-token))
+
 groups:
 - name: all
   jobs:
@@ -145,9 +150,12 @@ resources:
     uri: https://github.com/cloudfoundry/greenhouse-ci.git
 - name: bosh-ecosystem-concourse
   type: git
+  tags: [ broadcom ]
   source:
-    uri: git@github.com:pivotal/bosh-ecosystem-concourse.git
+    uri: https://github.gwd.broadcom.net/TNZ/bosh-ecosystem-concourse.git
     private_key: ((github_deploy_key_bosh_ecosystem_concourse.private_key))
+    username: svc.bosh-ecosystem@broadcom.net
+    password: *ghe_svc_account_personal_access_token
 - name: bosh-ecosystem-docker-image
   type: registry-image
   source:
@@ -216,7 +224,7 @@ resources:
     uri: https://github.gwd.broadcom.net/TNZ/gormt.git
     branch: main
     username: svc.bosh-ecosystem@broadcom.net
-    password: ((svc-bosh-ecosystem-ghe-personal-access-token))
+    password: *ghe_svc_account_personal_access_token
 
 - name: ci-image
   type: registry-image
@@ -334,47 +342,52 @@ resources:
 # locks
 - name: aws-lock
   type: pool
+  tags: [ broadcom ]
   source:
     branch: master
     pool: ((AWS_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: azure-lock
   type: pool
   source:
     branch: master
     pool: ((AZURE_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: goose-lock
   type: pool
+  tags: [ broadcom ]
   source:
     branch: master
     pool: ((GOOSE_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: gcp-lock
   type: pool
+  tags: [ broadcom ]
   source:
     branch: master
     pool: ((GCP_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: vsphere-director-lock
   type: pool
+  tags: [ broadcom ]
   source:
     branch: master
     pool: ((VSPHERE_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 
 - name: nimbus-ips
   type: pool
+  tags: [ broadcom ]
   source:
     branch: master
     pool: "nimbus-ips"
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
-    uri: git@github.com:pivotal-cf-experimental/Bosh-Windows-Locks
+    uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 
 # s3 buckets
 - name: blobstore-s3-cli
@@ -741,6 +754,7 @@ jobs:
       steps:
       - get: ci
       - get: bosh-ecosystem-concourse
+        tags: [ broadcom ]
       - get: bosh-ecosystem-docker-image
       - get: stemcell-builder
         trigger: true
@@ -860,7 +874,9 @@ jobs:
         passed: [build]
       - get: ovftool
       - put: nimbus-ips
+        inputs: detect
         params: { acquire: true }
+        tags: [ broadcom ]
       - get: govc-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
@@ -937,7 +953,9 @@ jobs:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
     - put: nimbus-ips
+      inputs: detect
       params: { release: nimbus-ips }
+      tags: [ broadcom ]
 
 - name: stembuild-linux
   serial: true
@@ -966,7 +984,9 @@ jobs:
         passed: [build]
       - get: ovftool
       - put: nimbus-ips
+        inputs: detect
         params: { acquire: true }
+        tags: [ broadcom ]
       - get: ci-image
       - get: govc-image
       - get: blobstore-dav-cli
@@ -1063,7 +1083,9 @@ jobs:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
     - put: nimbus-ips
+      inputs: detect
       params: { release: nimbus-ips }
+      tags: [ broadcom ]
 
 - name: create-stembuild-linux-stemcell
   serial: true
@@ -1168,8 +1190,10 @@ jobs:
         trigger: true
       - get: ci-image
   - put: vsphere-director-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-bwats-stembuild-linux
       file: ci/tasks/run-bwats/task.yml
@@ -1194,8 +1218,10 @@ jobs:
         DEFAULT_PASSWORD: ((stembuild_vm_user.password))
     ensure:
       put: vsphere-director-lock
+      inputs: detect
       params:
         release: vsphere-director-lock
+      tags: [ broadcom ]
 
 - name: wuts-stembuild-linux-stemcell
   serial: true
@@ -1214,8 +1240,10 @@ jobs:
           passed: [test-stembuild-linux-stemcell]
         - get: ci-image
   - put: vsphere-director-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -1238,8 +1266,10 @@ jobs:
         VM_TYPE: default # TODO: Add "put" output of this passing test to release candidates bucket (?)
     ensure:
       put: vsphere-director-lock
+      inputs: detect
       params:
         release: vsphere-director-lock
+      tags: [ broadcom ]
 
 - name: create-stembuild-windows-stemcell
   serial: true
@@ -1333,8 +1363,10 @@ jobs:
             trigger: true
           - get: ci-image
     - put: vsphere-director-lock
+      inputs: detect
       params:
         acquire: true
+      tags: [ broadcom ]
     - do:
         - task: run-bwats-stembuild-windows
           file: ci/tasks/run-bwats/task.yml
@@ -1359,8 +1391,10 @@ jobs:
             DEFAULT_PASSWORD: ((stembuild_vm_user.password))
       ensure:
         put: vsphere-director-lock
+        inputs: detect
         params:
           release: vsphere-director-lock
+        tags: [ broadcom ]
 
 - name: wuts-stembuild-windows-stemcell
   serial: true
@@ -1379,8 +1413,10 @@ jobs:
             passed: [test-stembuild-windows-stemcell]
           - get: ci-image
     - put: vsphere-director-lock
+      inputs: detect
       params:
         acquire: true
+      tags: [ broadcom ]
     - do:
         - task: run-wuts
           file: ci/tasks/run-wuts/task.yml
@@ -1403,8 +1439,10 @@ jobs:
             VM_TYPE: default
       ensure:
         put: vsphere-director-lock
+        inputs: detect
         params:
           release: vsphere-director-lock
+        tags: [ broadcom ]
 
 - name: create-aws
   serial: true
@@ -1564,8 +1602,10 @@ jobs:
       - get: bosh-agent-release
         passed: [test-aws]
   - put: aws-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -1586,8 +1626,10 @@ jobs:
         VM_TYPE: large
     ensure:
       put: aws-lock
+      inputs: detect
       params:
         release: aws-lock
+      tags: [ broadcom ]
 
 - name: create-aws-govcloud
   serial: true
@@ -1912,8 +1954,10 @@ jobs:
       STEMCELL_OS: ((AZURE_OS_VERSION))
       DESTINATION_DIR: heavy-stemcell
   - put: azure-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -1934,8 +1978,10 @@ jobs:
         VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
     ensure:
       put: azure-lock
+      inputs: detect
       params:
         release: azure-lock
+      tags: [ broadcom ]
 - name: create-gcp
   serial: true
   serial_groups: [gcp-version]
@@ -2018,8 +2064,10 @@ jobs:
       - get: bosh-agent-release
         passed: [create-gcp]
   - put: goose-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-bwats-gcp-stemcell
       file: ci/tasks/run-bwats/task.yml
@@ -2044,8 +2092,10 @@ jobs:
         DEFAULT_PASSWORD: ((stembuild_bwats_vm_user.password))
     ensure:
       put: goose-lock
+      inputs: detect
       params:
         release: goose-lock
+      tags: [ broadcom ]
   - put: gcp-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2070,8 +2120,10 @@ jobs:
       - get: bosh-agent-release
         passed: [test-gcp]
   - put: gcp-lock
+    inputs: detect
     params:
       acquire: true
+    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: ci/tasks/run-wuts/task.yml
@@ -2092,8 +2144,10 @@ jobs:
         VM_TYPE: large
     ensure:
       put: gcp-lock
+      inputs: detect
       params:
         release: gcp-lock
+      tags: [ broadcom ]
 
 - name: promote
   serial: true
