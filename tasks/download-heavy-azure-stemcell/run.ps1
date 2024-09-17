@@ -63,13 +63,13 @@ $newpath += $env:PATH
 
 $env:PATH = $newpath
 
-if (-Not (Test-Path "$PWD\azstemcell")) {
+if (-Not (Test-Path "$PWD\ci\azstemcell")) {
     Write-Error "Missing azstemcell repository"
 }
 
-$MainPath=(Get-ChildItem -Recurse -Path "$PWD\azstemcell" | where { $_.Name -eq 'main.go' })
+$MainPath=(Get-ChildItem -Recurse -Path "$PWD\ci\azstemcell" | where { $_.Name -eq 'main.go' })
 if ($MainPath -eq $null) {
-    Write-Error "Failed to find 'main.go' in $PWD\azstemcell"
+    Write-Error "Failed to find 'main.go' in $PWD\ci\azstemcell"
 }
 go build -o "/usr/bin/azstemcell" $MainPath.FullName
 if ($LASTEXITCODE -ne 0) {

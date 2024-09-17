@@ -133,11 +133,6 @@ resource_types:
 
 resources:
 # repos
-- name: azstemcell
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/pivotal-cf/azstemcell.git
 - name: bosh-stemcells-ci
   type: git
   source:
@@ -1873,7 +1868,6 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
-      - get: azstemcell
       - get: stemcell-builder
         passed: [create-azure]
       - get: azure-build-number
@@ -1930,7 +1924,6 @@ jobs:
       fail_fast: true
       steps:
       - get: ci
-      - get: azstemcell
       - get: windows-utilities-release
       - get: windows-utilities-tests
       - get: bosh-windows-stemcell
