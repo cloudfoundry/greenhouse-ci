@@ -619,14 +619,6 @@ resources:
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
 
-# time
-- name: midnight
-  type: time
-  source:
-    start: 12:00 AM
-    stop: 1:00 AM
-    location: America/New_York
-
 - name: weekly
   type: time
   source:
@@ -762,7 +754,7 @@ jobs:
         resource: main-version
         params:
           bump: patch
-      - get: midnight
+      - get: weekly
         trigger: true
       - get: bosh-agent-release
   - task: configure-windows-firewall-rules
