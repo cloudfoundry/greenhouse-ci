@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "If you see the following error don't worry everything is working, the images got deleted, but some did not need to be deleted (they are less than 90 days old):"
+echo "If you see the following error don't worry everything is working, the images got deleted, but some did not need to be deleted (they are less than 30 days old):"
 echo "'X of Y blobs not deleted due to Failed Precondition'"
 
 echo "Deleting blobs from images"
