@@ -641,7 +641,7 @@ jobs:
   - task: clean-up-blobstore
     file: ci/tasks/clean-up-pre-release-blobstore/task.yml
     params:
-      AZURE_STORAGE_ACCOUNT: unpublishedpremiumstore
+      AZURE_STORAGE_ACCOUNT: unpublishedstemcells
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 
 - name: bump-deps
@@ -1829,7 +1829,7 @@ jobs:
       PUBLISHER: ((AZURE_PUBLISHER))
       RESOURCE_GROUP_NAME: ((koala_azure_credentials_json.resource_group_name))
       SKU: ((AZURE_SKU))
-      STORAGE_ACCOUNT: unpublishedpremiumstore
+      STORAGE_ACCOUNT: unpublishedstemcells
       SUBSCRIPTION_ID: ((koala_azure_credentials_json.subscription_id))
       TENANT_ID: ((koala_azure_credentials_json.tenant_id))
       VM_SIZE: ((AZURE_VM_SIZE))
@@ -2402,9 +2402,9 @@ jobs:
     file: ci/tasks/upload-image-and-start-publishing/task.yml
     params:
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
-      AZURE_STORAGE_ACCOUNT: unpublishedpremiumstore
+      AZURE_STORAGE_ACCOUNT: unpublishedstemcells
       AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
-      AZURE_PUBLISHED_STORAGE_ACCOUNT: koalapremiumstore
+      AZURE_PUBLISHED_STORAGE_ACCOUNT: publishedstemcells
       AZURE_CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
       AZURE_SKU: ((AZURE_SKU))
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
