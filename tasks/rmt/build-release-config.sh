@@ -17,6 +17,8 @@ display_group: ${RELEASE_DISPLAY_GROUP}
 version: ${version}
 type: ${RELEASE_TYPE}
 status: ${RELEASE_STATUS}
+third_party_classification: N
+oct_request_id: 3930 # https://docs.google.com/spreadsheets/d/1xLPEyngkFvDnAA3RwMw61V3zjNF2YKxTiF_VcRweY2g/
 lang: EN
 docs_link: "${docs_link}"
 ga_date_mm/dd/yyyy: ${today}
