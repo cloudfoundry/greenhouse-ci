@@ -687,8 +687,8 @@ jobs:
         type: registry-image
         source:
           repository: bosh/integration
-          username: ((docker-hub.username))
-          password: ((docker-hub.password))
+          username: ((docker.username))
+          password: ((docker.password))
       inputs:
         - name: bosh-windows-acceptance-tests
       platform: linux
