@@ -5,6 +5,7 @@ image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
 inputs:
 - name: stembuild
 - name: ci
+- name: govmomi
 
 run:
   path: ci/tasks/test-contract-stembuild-linux/run.sh

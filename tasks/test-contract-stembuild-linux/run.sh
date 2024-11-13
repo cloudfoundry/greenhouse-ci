@@ -12,7 +12,7 @@ export GOPATH=$PWD/gopath
 export PATH=${GOPATH}/bin:$PATH
 
 # install vcsim for vCenter manager and client contract integration tests
-go install github.com/vmware/govmomi/vcsim@latest
+go -C govmomi/vcsim install
 
 pushd ${ROOT_DIR}/stembuild
   echo ***Test Stembuild Code***

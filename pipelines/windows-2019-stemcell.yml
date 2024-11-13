@@ -220,6 +220,11 @@ resources:
     branch: main
     username: svc.bosh-ecosystem@broadcom.net
     password: *ghe_svc_account_personal_access_token
+- name: govmomi
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/vmware/govmomi.git
 
 - name: ci-image
   type: registry-image
@@ -981,6 +986,7 @@ jobs:
       - get: blobstore-gcs-cli
       - get: windows-bsdtar
       - get: windows-winsw
+      - get: govmomi
   - put: version
     resource: stembuild-linux-build-number
     params:
