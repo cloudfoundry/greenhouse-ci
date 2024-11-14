@@ -223,7 +223,6 @@ resources:
 - name: govmomi
   type: git
   source:
-    branch: master
     uri: https://github.com/vmware/govmomi.git
 
 - name: ci-image
