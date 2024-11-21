@@ -21,6 +21,10 @@ govc_pwsh_cmd="govc guest.start -vm.ipath=${vm_ipath} -l=${vm_username}:${vm_pas
 
 # get wu-install /wu-update set up to work on the vm...
 
+function apply_customizations() {
+  govc vm.customize -vm.ipath=${vm_ipath} ${VM_CUSTOMIZATION_NAME}
+}
+
 function wait_for_vm_to_come_up() {
   result=-1
   set +e
@@ -43,6 +47,7 @@ function run_pwsh_command_with_govc() {
   echo "${command} returned ${return}"
 }
 
+apply_customizations
 wait_for_vm_to_come_up
 
 run_pwsh_command_with_govc 'Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force'

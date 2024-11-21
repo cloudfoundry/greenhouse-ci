@@ -11,5 +11,5 @@ if ! govc device.info -vm.ipath=${VM_TO_REVERT} 'ethernet-*' ; then
 fi
 
 echo "Reverting ${VM_TO_REVERT} to snapshot ${SNAPSHOT_NAME}"
-govc snapshot.revert -s=true -dc=${DATACENTER} -vm=${VM_TO_REVERT} "${SNAPSHOT_NAME}"
+govc snapshot.revert -s=true -dc=${DATACENTER} -vm=${VM_TO_REVERT} "${SNAPSHOT_NAME}" || true
 govc vm.power -dc=${DATACENTER} -on=true ${VM_TO_REVERT}
