@@ -1100,6 +1100,7 @@ jobs:
     - get: govc-image
     - get: ci-image
   - put: stembuild-linux-stemcell-build-number
+    inputs: detect
     params:
       file: stemcell-build-number/count
   - task: revert-snapshot
@@ -1284,6 +1285,7 @@ jobs:
         - get: govc-image
         - get: ci-image
     - put: stembuild-windows-stemcell-build-number
+      inputs: detect
       params:
         file: stemcell-build-number/count
     - task: revert-snapshot
