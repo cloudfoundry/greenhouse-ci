@@ -923,8 +923,6 @@ jobs:
       VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
       VM_USERNAME: ((stembuild_vm_user.username))
       VM_PASSWORD: ((stembuild_vm_user.password))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-windows-vm
-      LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.35
       PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
       OS_LINE: 2019
   - task: build
@@ -1054,8 +1052,6 @@ jobs:
       VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
       VM_USERNAME: ((stembuild_vm_user.username))
       VM_PASSWORD: ((stembuild_vm_user.password))
-      LOGOUT_INTEGRATION_TEST_VM_INVENTORY_PATH: /dc0/vm/bosh-windows-ci-vms-and-templates/int-linux-vm
-      LOGOUT_INTEGRATION_TEST_VM_IP: 192.168.111.34
       PACKAGE_TEST_VM_NAME: stembuild-package-integration-tests-base-vm
       OS_LINE: 2019
   - task: build
