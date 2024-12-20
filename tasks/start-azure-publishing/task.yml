@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: ci
+  - name: version
+  - name: stemcell-builder
+  - name: azure-base-vhd-uri
+
+run:
+  path: ci/tasks/start-azure-publishing/run
+
+params:
+  AZURE_PUBLISHED_STORAGE_ACCESS_KEY:
+  AZURE_PUBLISHED_STORAGE_ACCOUNT:
+  AZURE_CONTAINER_NAME:
+  AZURE_SKU:
+  AZURE_PUBLISHER:
+  AZURE_OFFER:
+  PARTNER_PORTAL_TENANT_ID:
+  PARTNER_PORTAL_CLIENT_ID:
+  PARTNER_PORTAL_CLIENT_SECRET:
+  OFFER_NOTIFICATION_EMAIL:
+
