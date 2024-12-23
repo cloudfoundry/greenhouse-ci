@@ -24,9 +24,9 @@ CONCOURSE_ROOT="$(pwd)"
 BOSH_AGENT_DIR="${CONCOURSE_ROOT}/${BOSH_AGENT_DIR}"
 export BOSH_AGENT_DIR
 
-pushd stemcell-builder
-  tasks/build-agent-zip/run.sh
+"${CONCOURSE_ROOT}/ci/tasks/build-agent-zip/run.sh"
 
+pushd stemcell-builder
   bundle install --without test
 
   rake package:psmodules
