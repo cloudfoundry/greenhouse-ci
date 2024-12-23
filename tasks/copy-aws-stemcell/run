@@ -19,21 +19,16 @@ else
   set -x
 fi
 
-pushd bosh-agent-release
-  BOSH_AGENT_VERSION=$(cat .resource/version)
-  mv bosh-agent-pipe*.exe pipe.exe
-  mv bosh-agent*.exe bosh-agent.exe
-popd
+CONCOURSE_ROOT="$(pwd)"
+
+BOSH_AGENT_DIR="${CONCOURSE_ROOT}/${BOSH_AGENT_DIR}"
+export BOSH_AGENT_DIR
 
 pushd stemcell-builder
-  pushd src/github.com/cloudfoundry/bosh-agent
-    git fetch
-    git checkout "v${BOSH_AGENT_VERSION}"
-  popd
+  tasks/build-agent-zip/run.sh
 
   bundle install --without test
 
-  rake package:agent
   rake package:psmodules
   rake build:aws_ami
 

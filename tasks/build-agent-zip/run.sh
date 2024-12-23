@@ -32,7 +32,5 @@ cp "${CONCOURSE_ROOT}"/windows-bsdtar/tar-*.exe "${zip_deps_dir}/tar.exe"
 cp "${CONCOURSE_ROOT}"/windows-winsw/WinSW.NET461.exe "${zip_deps_dir}/job-service-wrapper.exe"
 
 pushd "${zip_dir}"
-  bundle install --without test
-
   zip -r "${CONCOURSE_ROOT}/bosh-agent/agent.zip" ./*
 popd
