@@ -44,4 +44,4 @@ params:
   BASE_IMAGE_OFFER:
   VM_PREFIX:
   BOSH_AGENT_DIR: bosh-agent-release
-  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
+  BOSH_PSMODULES_DIR: bosh-psmodules-repo

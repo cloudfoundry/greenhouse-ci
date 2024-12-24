@@ -44,4 +44,4 @@ params:
   OUTPUT_BUCKET_NAME: aws-regional-stemcells
   OUTPUT_BUCKET_REGION: us-east-1
   BOSH_AGENT_DIR: bosh-agent-release
-  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
+  BOSH_PSMODULES_DIR: bosh-psmodules-repo
