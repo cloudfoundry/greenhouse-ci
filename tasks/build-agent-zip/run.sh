@@ -5,18 +5,17 @@ set -x
 CONCOURSE_ROOT="$(pwd)"
 
 bosh_agent_resource_dir="${CONCOURSE_ROOT}/${BOSH_AGENT_DIR}"
-
-zip_dir="${CONCOURSE_ROOT}/zip-dir-root/"
-zip_deps_dir="${zip_dir}/deps/"
-
-mkdir -p "${zip_dir}"
-mkdir -p "${zip_deps_dir}"
+bosh_agent_resource_version="$(cat "${bosh_agent_resource_dir}/.resource/version")"
 
 zip_output_dir="${CONCOURSE_ROOT}/${ZIP_OUTPUT_DIR:-"stemcell-builder/build"}"
 
 mkdir -p "${zip_output_dir}"
 
-bosh_agent_resource_version="$(cat "${bosh_agent_resource_dir}/.resource/version")"
+zip_dir="${zip_output_dir}/compiled-agent"
+zip_deps_dir="${zip_dir}/deps/"
+
+mkdir -p "${zip_dir}"
+mkdir -p "${zip_deps_dir}"
 
 # agent-zip root
 cp "${bosh_agent_resource_dir}/bosh-agent-${bosh_agent_resource_version}-windows-amd64.exe" "${zip_dir}/bosh-agent.exe"
