@@ -1,6 +1,10 @@
 ---
 platform: linux
-image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+
 inputs:
 - name: stemcell-builder
 - name: bosh-agent-release
@@ -13,8 +17,10 @@ inputs:
 
 outputs:
 - name: bosh-agent
+
 run:
   path: ci/tasks/build-agent-zip/run.sh
 
 params:
   BOSH_AGENT_DIR: bosh-agent-release
+  ZIP_OUTPUT_DIR: bosh-agent

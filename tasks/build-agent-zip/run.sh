@@ -12,6 +12,10 @@ zip_deps_dir="${zip_dir}/deps/"
 mkdir -p "${zip_dir}"
 mkdir -p "${zip_deps_dir}"
 
+zip_output_dir="${CONCOURSE_ROOT}/${ZIP_OUTPUT_DIR:-"stemcell-builder/build"}"
+
+mkdir -p "${zip_output_dir}"
+
 bosh_agent_resource_version="$(cat "${bosh_agent_resource_dir}/.resource/version")"
 
 # agent-zip root
@@ -31,5 +35,5 @@ cp "${CONCOURSE_ROOT}"/windows-bsdtar/tar-*.exe "${zip_deps_dir}/tar.exe"
 cp "${CONCOURSE_ROOT}"/windows-winsw/WinSW.NET461.exe "${zip_deps_dir}/job-service-wrapper.exe"
 
 pushd "${zip_dir}"
-  zip -r "${CONCOURSE_ROOT}/bosh-agent/agent.zip" ./*
+  zip -r "${zip_output_dir}/agent.zip" ./*
 popd
