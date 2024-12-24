@@ -726,10 +726,6 @@ jobs:
       - get: ci
       - get: stemcell-builder
         trigger: true
-      - get: bosh-agent-release
-      - get: bosh-psmodules-repo
-        passed: [test-bosh-psmodules]
-        trigger: true
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
