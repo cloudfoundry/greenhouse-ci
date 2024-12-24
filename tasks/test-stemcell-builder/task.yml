@@ -1,7 +1,10 @@
 ---
 platform: linux
 
-image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
 
 inputs:
   - name: ci
@@ -19,4 +22,3 @@ run:
 
 params:
   BOSH_AGENT_DIR: bosh-agent-release
-  BOSH_PSMODULES_DIR: "../bosh-psmodules-repo"
