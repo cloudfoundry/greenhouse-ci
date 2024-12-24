@@ -26,11 +26,11 @@ popd
 CONCOURSE_ROOT="$(pwd)"
 
 "${CONCOURSE_ROOT}/ci/tasks/build-agent-zip/run.sh"
+"${CONCOURSE_ROOT}/ci/tasks/build-psmodules-zip/run.sh"
 
 pushd stemcell-builder
   bundle install --without test
 
-  rake package:psmodules
   rake build:aws
 
   mv bosh-windows-stemcell/* ../bosh-windows-stemcell
