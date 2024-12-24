@@ -723,9 +723,10 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
-      - get: ci
       - get: stemcell-builder
         trigger: true
+      - get: ci
+      - get: ci-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
