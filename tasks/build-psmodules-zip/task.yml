@@ -6,8 +6,9 @@ image_resource:
     repository: pivotalgreenhouse/ci
 
 inputs:
-- name: stemcell-builder
 - name: bosh-psmodules-repo
+- name: ci
+- name: stemcell-builder
 
 outputs:
 - name: bosh-psmodules
