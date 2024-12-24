@@ -20,7 +20,8 @@ bosh_agent_resource_version="$(cat "${bosh_agent_resource_dir}/.resource/version
 
 # agent-zip root
 cp "${bosh_agent_resource_dir}/bosh-agent-${bosh_agent_resource_version}-windows-amd64.exe" "${zip_dir}/bosh-agent.exe"
-cp "${bosh_agent_resource_dir}/git-sha" "${zip_dir}/"
+# `sha` filename expected by `bosh-windows-stemcell-builder` rake tasks; TODO: reduce coupling
+cp "${bosh_agent_resource_dir}/git-sha" "${zip_dir}/sha"
 cp "${bosh_agent_resource_dir}/service_wrapper.xml" "${zip_dir}/service_wrapper.xml"
 
 cp "${CONCOURSE_ROOT}"/windows-winsw/WinSW.NET461.exe "${zip_dir}/service_wrapper.exe"
