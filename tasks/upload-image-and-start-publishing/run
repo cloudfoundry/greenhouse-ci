@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
-script_path=$( realpath $0 )
-script_dir=$( dirname $script_path )
 
-
-main_version=$( cat version/number )
+main_version=$(cat version/number)
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
-image_url=$( cat azure-base-vhd-uri/${uri_filename} )
-vhd_path=$(echo ${image_url} | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
+image_url=$(cat "azure-base-vhd-uri/${uri_filename}")
+vhd_path=$(echo "${image_url}" | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
 
 retrieve_blob_url() {
     retrieve_blob_url=$(
@@ -49,7 +45,6 @@ format_version() {
   echo $version_number_tokens | awk '{ printf("%d.%d.%03d%03d", $1, $2, $3, $4) } '
 }
 
-
 create_microsoft_token() {
     tenant_id=${PARTNER_PORTAL_TENANT_ID}
     client_id=${PARTNER_PORTAL_CLIENT_ID}
@@ -58,7 +53,7 @@ create_microsoft_token() {
     resource="https://cloudpartner.azure.com"
 
     microsoft_auth_endpoint="https://login.microsoftonline.com/$tenant_id/oauth2/token"
-    token=$(curl --fail -X POST $microsoft_auth_endpoint \
+    token=$(curl --fail -X POST "$microsoft_auth_endpoint" \
       -F "client_id=$client_id"  \
       -F "client_secret=$client_secret"  \
       -F "grant_type=$grant_type"  \
@@ -68,7 +63,7 @@ create_microsoft_token() {
 }
 
 create_original_offer_json() {
-    curl --fail -X GET $offer_id_endpoint \
+    curl --fail -X GET "$offer_id_endpoint" \
       -H "Authorization: Bearer $token" \
       -H "Content-Type: application/json"
 }
@@ -83,7 +78,7 @@ create_modified_offer_json() {
 
 update_offer() {
     sleep 10
-    curl --fail -X PUT -d "@$modified_offer_json" $offer_id_endpoint \
+    curl --fail -X PUT -d "@$modified_offer_json" "$offer_id_endpoint" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $token"
 }
@@ -131,11 +126,10 @@ publish_offer() {
     '{ "metadata": { "notification-emails": $email } }' > offer_emails.json
 
   publish_offer_endpoint="https://cloudpartner.azure.com/api/publishers/$AZURE_PUBLISHER/offers/$AZURE_OFFER/publish?api-version=2017-10-31"
-  curl --fail -X POST -d "@offer_emails.json" -vv $publish_offer_endpoint \
+  curl --fail -X POST -d "@offer_emails.json" -vv "$publish_offer_endpoint" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $token"
 }
-
 
 echo -n "Authenticating with Microsoft..."
 echo
@@ -166,7 +160,7 @@ echo
 echo "adding image version and vhd url to offer json:"
 modified_offer_json="$PWD/modified_offer.json"
 echo "to debug, 'fly intercept -u <this job run url>' and 'cat $modified_offer_json'"
-image_version=$(format_version $main_version)
+image_version=$(format_version "$main_version")
 echo "setting image version: $image_version"
 vhd_url="$(retrieve_blob_url)?$(create_azure_sas)"
 echo "VHD URL: $vhd_url"
