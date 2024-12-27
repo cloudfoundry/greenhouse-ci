@@ -2400,7 +2400,7 @@ jobs:
       - get: azure-base-vhd-uri
         passed: [promote]
   - task: upload-image-and-start-publishing
-    file: ci/tasks/upload-image-and-start-publishing/task.yml
+    file: ci/tasks/azure-image-upload-and-start-publishing/task.yml
     params:
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
       AZURE_STORAGE_ACCOUNT: unpublishedstemcells

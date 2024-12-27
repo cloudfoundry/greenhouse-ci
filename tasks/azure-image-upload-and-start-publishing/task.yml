@@ -10,7 +10,7 @@ inputs:
   - name: azure-base-vhd-uri
 
 run:
-  path: ci/tasks/upload-image-and-start-publishing/run
+  path: ci/tasks/azure-image-upload-and-start-publishing/run
 
 params:
   AZURE_STORAGE_ACCESS_KEY:
