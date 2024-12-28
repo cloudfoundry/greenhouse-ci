@@ -2399,6 +2399,7 @@ jobs:
         trigger: true
       - get: azure-base-vhd-uri
         passed: [promote]
+# TODO: delete `ci/tasks/azure-image-upload-and-start-publishing/` once this task is replaced by the two below
   - task: upload-image-and-start-publishing
     file: ci/tasks/azure-image-upload-and-start-publishing/task.yml
     params:
@@ -2414,6 +2415,32 @@ jobs:
       PARTNER_PORTAL_CLIENT_ID: ((azure_partner_portal.client_id))
       PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
       OFFER_NOTIFICATION_EMAIL: boshwindows@groups.vmware.com
+# TODO: replace `upload-image-and-start-publishing` with the two tasks below
+#  - task: azure-image-upload
+#    file: ci/tasks/azure-image-upload/task.yml
+#    params:
+#      AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
+#      AZURE_STORAGE_ACCOUNT: unpublishedstemcells
+#      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
+#      AZURE_PUBLISHED_STORAGE_ACCOUNT: publishedstemcells
+#      AZURE_CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+#      AZURE_OFFER: ((AZURE_OFFER))
+#      PARTNER_PORTAL_TENANT_ID: ((azure_partner_portal.tenant_id))
+#      PARTNER_PORTAL_CLIENT_ID: ((azure_partner_portal.client_id))
+#      PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
+#  - task: azure-start-publishing
+#    file: ci/tasks/azure-start-publishing/task.yml
+#    params:
+#      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
+#      AZURE_PUBLISHED_STORAGE_ACCOUNT: publishedstemcells
+#      AZURE_CONTAINER_NAME: ((AZURE_CONTAINER_NAME))
+#      AZURE_SKU: ((AZURE_SKU))
+#      AZURE_PUBLISHER: ((AZURE_PUBLISHER))
+#      AZURE_OFFER: ((AZURE_OFFER))
+#      PARTNER_PORTAL_TENANT_ID: ((azure_partner_portal.tenant_id))
+#      PARTNER_PORTAL_CLIENT_ID: ((azure_partner_portal.client_id))
+#      PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
+#      OFFER_NOTIFICATION_EMAIL: boshwindows@groups.vmware.com
 
 - name: publish-azure-offer
   serial: true
