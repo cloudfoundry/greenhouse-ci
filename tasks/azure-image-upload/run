@@ -61,7 +61,7 @@ get_copy_blob_status() {
 
 echo -n "Authenticating with Microsoft..."
 echo
-token=${(}create_microsoft_token)
+token=$(create_microsoft_token)
 echo OK
 
 echo
