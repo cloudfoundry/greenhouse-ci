@@ -10,7 +10,7 @@ set -x
 
 ROOT_DIR=$(pwd)
 
-pushd windows-utilities-tests
+pushd windows-utilities-release/src/windows-utilities-tests
   echo "Write config.json"
   export CONFIG_JSON=config.json
   cat > "${CONFIG_JSON}" <<-END_OF_CONFIG

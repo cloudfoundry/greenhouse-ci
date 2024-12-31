@@ -183,11 +183,6 @@ resources:
   source:
     tag_filter: "*"
     uri: https://github.com/cloudfoundry/windows-utilities-release.git
-- name: windows-utilities-tests
-  type: git
-  source:
-    tag_filter: "*"
-    uri: https://github.com/cloudfoundry/windows-utilities-tests.git
 - name: pester
   type: git
   source:
@@ -1219,7 +1214,6 @@ jobs:
       steps:
         - get: ci
         - get: windows-utilities-release
-        - get: windows-utilities-tests
         - get: stembuild-untested-linux
           passed: [test-stembuild-linux-stemcell]
         - get: stembuild-linux-stemcell
@@ -1393,7 +1387,6 @@ jobs:
         steps:
           - get: ci
           - get: windows-utilities-release
-          - get: windows-utilities-tests
           - get: stembuild-untested-windows
             passed: [test-stembuild-windows-stemcell]
           - get: stembuild-windows-stemcell
@@ -1574,7 +1567,6 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: aws-tested
         passed: [test-aws]
@@ -1750,7 +1742,6 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: aws-govcloud-tested
         passed: [test-aws-govcloud]
@@ -1918,7 +1909,6 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: azure-tested
         passed: [test-azure]
@@ -2094,7 +2084,6 @@ jobs:
       steps:
       - get: ci
       - get: windows-utilities-release
-      - get: windows-utilities-tests
       - get: bosh-windows-stemcell
         resource: gcp-tested
         passed: [test-gcp]
