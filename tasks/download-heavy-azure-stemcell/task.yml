@@ -22,4 +22,4 @@ run:
 params:
   STEMCELL_OS:
   WORKING_DIR: '/'
-  DESTINATION_DIR:
+  DESTINATION_DIR: heavy-stemcell
