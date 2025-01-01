@@ -35,5 +35,5 @@ pushd windows-utilities-release/src/windows-utilities-tests
   }
 END_OF_CONFIG
 
-  go run github.com/onsi/ginkgo/ginkgo -v -nodes "${NODES}"
+  go run github.com/onsi/ginkgo/v2/ginkgo -v -nodes "${NODES}"
 popd
