@@ -157,6 +157,12 @@ resources:
     repository: bosh/bosh-ecosystem-concourse
     username: ((docker.username))
     password: ((docker.password))
+- name: bosh-integration-registry-image
+  type: registry-image
+  source:
+    repository: bosh/integration
+    username: ((docker.username))
+    password: ((docker.password))
 - name: golang-release
   type: git
   source:
@@ -181,7 +187,6 @@ resources:
 - name: windows-utilities-release
   type: git
   source:
-    tag_filter: "*"
     uri: https://github.com/cloudfoundry/windows-utilities-release.git
 - name: pester
   type: git
@@ -1219,7 +1224,7 @@ jobs:
         - get: stembuild-linux-stemcell
           trigger: true
           passed: [test-stembuild-linux-stemcell]
-        - get: ci-image
+        - get: bosh-integration-registry-image
   - put: vsphere-director-lock
     inputs: detect
     params:
@@ -1227,8 +1232,8 @@ jobs:
     tags: [ broadcom ]
   - do:
     - task: run-wuts
-      file: ci/tasks/run-wuts/task.yml
-      image: ci-image
+      file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+      image: bosh-integration-registry-image
       tags: [windows-nimbus]
       input_mapping: { stemcell: stembuild-linux-stemcell }
       params:
@@ -1241,8 +1246,6 @@ jobs:
         SSH_TUNNEL_IP: ((nimbus_windows_bosh_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((nimbus_windows_bosh_jumpbox_ssh.private_key))
         SSH_TUNNEL_USER: ((nimbus_windows_bosh_jumpbox_username))
-        STEMCELL_OS: ((STEMCELL_OS_NAME))
-        STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: default # TODO: Add "put" output of this passing test to release candidates bucket (?)
     ensure:
@@ -1392,7 +1395,7 @@ jobs:
           - get: stembuild-windows-stemcell
             trigger: true
             passed: [test-stembuild-windows-stemcell]
-          - get: ci-image
+          - get: bosh-integration-registry-image
     - put: vsphere-director-lock
       inputs: detect
       params:
@@ -1400,8 +1403,8 @@ jobs:
       tags: [ broadcom ]
     - do:
         - task: run-wuts
-          file: ci/tasks/run-wuts/task.yml
-          image: ci-image
+          file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+          image: bosh-integration-registry-image
           tags: [windows-nimbus]
           input_mapping: { stemcell: stembuild-windows-stemcell }
           params:
@@ -1414,8 +1417,6 @@ jobs:
             SSH_TUNNEL_IP: ((nimbus_windows_bosh_jumpbox_ip))
             SSH_TUNNEL_PRIVATE_KEY: ((nimbus_windows_bosh_jumpbox_ssh.private_key))
             SSH_TUNNEL_USER: ((nimbus_windows_bosh_jumpbox_username))
-            STEMCELL_OS: ((STEMCELL_OS_NAME))
-            STEMCELL_PATH: stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
             VM_EXTENSIONS: ""
             VM_TYPE: default
       ensure:
@@ -1581,6 +1582,7 @@ jobs:
         passed: [test-aws]
       - get: bosh-agent-release
         passed: [test-aws]
+      - get: bosh-integration-registry-image
   - put: aws-lock
     inputs: detect
     params:
@@ -1588,7 +1590,8 @@ jobs:
     tags: [ broadcom ]
   - do:
     - task: run-wuts
-      file: ci/tasks/run-wuts/task.yml
+      file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+      image: bosh-integration-registry-image
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
@@ -1600,8 +1603,6 @@ jobs:
         SSH_TUNNEL_IP: ((iaas_directors_aws-director_bosh_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_aws-director_bosh_jumpbox_ssh.private_key))
         SSH_TUNNEL_USER: ((iaas_directors_aws-director_bosh_jumpbox_username))
-        STEMCELL_OS: ((STEMCELL_OS_NAME))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
     ensure:
@@ -1756,9 +1757,11 @@ jobs:
         passed: [test-aws-govcloud]
       - get: bosh-agent-release
         passed: [test-aws-govcloud]
+      - get: bosh-integration-registry-image
   - do:
     - task: run-wuts
-      file: ci/tasks/run-wuts/task.yml
+      file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+      image: bosh-integration-registry-image
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: z1
@@ -1770,8 +1773,6 @@ jobs:
         SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_aws-govcloud-director_bosh_jumpbox_ssh.private_key))
         SSH_TUNNEL_USER: ((iaas_directors_aws-govcloud-director_bosh_jumpbox_username))
         NETWORK: default
-        STEMCELL_OS: ((STEMCELL_OS_NAME))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-aws-xen-hvm-((STEMCELL_OS_NAME))-go_agent-((AWS_GOVCLOUD_PACKER_REGION)).tgz
         VM_EXTENSIONS: ""
         VM_TYPE: large
 
@@ -1923,6 +1924,7 @@ jobs:
         passed: [test-azure]
       - get: bosh-agent-release
         passed: [test-azure]
+      - get: bosh-integration-registry-image
   - task: download-heavy
     file: ci/tasks/download-heavy-azure-stemcell/task.yml
     timeout: 6h
@@ -1936,7 +1938,8 @@ jobs:
     tags: [ broadcom ]
   - do:
     - task: run-wuts
-      file: ci/tasks/run-wuts/task.yml
+      file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+      image: bosh-integration-registry-image
       input_mapping: { stemcell: heavy-stemcell }
       params:
         AZ: ((AZURE_HEAVY_AZ))
@@ -1948,8 +1951,6 @@ jobs:
         SSH_TUNNEL_IP: ((iaas_directors_azure-director_bosh_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_azure-director_bosh_jumpbox_ssh.private_key))
         SSH_TUNNEL_USER: ((iaas_directors_azure-director_bosh_jumpbox_username))
-        STEMCELL_OS: ((AZURE_OS_VERSION))
-        STEMCELL_PATH: stemcell/*.tgz
         VM_EXTENSIONS: ""
         VM_TYPE: ((AZURE_HEAVY_VM_TYPE))
     ensure:
@@ -2094,6 +2095,7 @@ jobs:
         passed: [test-gcp]
       - get: bosh-agent-release
         passed: [test-gcp]
+      - get: bosh-integration-registry-image
   - put: gcp-lock
     inputs: detect
     params:
@@ -2101,7 +2103,8 @@ jobs:
     tags: [ broadcom ]
   - do:
     - task: run-wuts
-      file: ci/tasks/run-wuts/task.yml
+      file: windows-utilities-release/ci/tasks/run-wuts/task.yml
+      image: bosh-integration-registry-image
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         AZ: az1
@@ -2113,8 +2116,6 @@ jobs:
         SSH_TUNNEL_IP: ((iaas_directors_gcp-director_bosh_jumpbox_ip))
         SSH_TUNNEL_PRIVATE_KEY: ((iaas_directors_gcp-director_bosh_jumpbox_ssh.private_key))
         SSH_TUNNEL_USER: ((iaas_directors_gcp-director_bosh_jumpbox_username))
-        STEMCELL_OS: ((STEMCELL_OS_NAME))
-        STEMCELL_PATH: stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
         VM_EXTENSIONS: "50GB_ephemeral_disk"
         VM_TYPE: large
     ensure:
