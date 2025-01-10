@@ -131,10 +131,13 @@ resource_types:
     password: ((docker.password))
     tag: 0.0.1-SNAPSHOT
 - name: artifactory-path-version-resource
-  type: docker-image
+  type: registry-image
   source:
-    repository: gcr.io/tas-ppe/artifactory-path-version-resource
-    tag: latest
+    repository: tas-ecosystem-docker-virtual.usw1.packages.broadcom.com/artifactory-path-version-resource
+    username: svc.bosh-ecosystem
+    password: ((broadcom_artifactory_api_key))
+  tags:
+    - broadcom
 
 resources:
 # repos
