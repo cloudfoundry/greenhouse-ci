@@ -3,7 +3,7 @@ set -euo pipefail
 
 main_version=$(cat version/number)
 uri_filename='bosh-stemcell-*-azure-vhd-uri.txt'
-image_url=$(cat "azure-base-vhd-uri/${uri_filename}")
+image_url=$(cat azure-base-vhd-uri/${uri_filename})
 vhd_path=$(echo "${image_url}" | sed -E 's/^.*(Microsoft\.Compute\/Images\/.*vhd).*$/\1/')
 
 retrieve_blob_url() {
