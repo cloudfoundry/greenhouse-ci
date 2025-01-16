@@ -2379,6 +2379,8 @@ jobs:
     params:
       file_pattern: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
       strip_path_prefix: final-stemcell
+    tags:
+      - broadcom
 
 - name: submit-azure-offer
   old_name: print-azure-publishing-instructions
