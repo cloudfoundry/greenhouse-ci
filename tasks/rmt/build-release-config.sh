@@ -24,7 +24,7 @@ docs_link: "${docs_link}"
 ga_date_mm/dd/yyyy: ${today}
 published_date_mm/dd/yyyy: ${today}
 end_of_support_date_mm/dd/yyyy: ${RELEASE_END_OF_SUPPORT}
-export_control_status: SCREENING_REQUIRED
+export_control_status: ENTITLEMENT_REQUIRED
 product_slug: ${RELEASE_PRODUCT_SLUG}
 upgrade_specifiers:
 - specifier: ${RELEASE_UPGRADE_SPECIFIER}
@@ -67,11 +67,15 @@ cat <<EOF >>./release-config/release.yml
   description: "Stemcells for PCF (Windows) License"
 EOF
 
-if [ -n "$RELEASE_SKU" ]; then
+if [ -n "$RELEASE_SKUS" ]; then
   cat <<SKUS >>./release-config/release.yml
 skus:
-- code: ${RELEASE_SKU}
 SKUS
+  IFS=',' ;for i in ${RELEASE_SKUS}; do
+  cat >> "${ROOT_DIR}/release-config/release.yml" <<SKU_CODE
+- code: "${i}"
+SKU_CODE
+  done
 fi
 
 echo "RMT release file:"
