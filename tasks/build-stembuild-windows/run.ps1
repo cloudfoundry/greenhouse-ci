@@ -14,7 +14,7 @@ Set-Location stembuild
 
 $INPUT_ZIP_GLOB=Join-Path $ROOT_DIR $env:STEMCELL_AUTOMATION_ZIP
 
-Copy-Item -Path $INPUT_ZIP_GLOB "assets\StemcellAutomation.zip"" -Recurse -Force
+Copy-Item -Path $INPUT_ZIP_GLOB "assets\StemcellAutomation.zip" -Recurse -Force
 
 make STEMCELL_VERSION=${VERSION} build
 
