@@ -26,7 +26,7 @@ $env:TEMP=$TMP_DIR
 $env:TARGET_VM_IP = cat $ROOT_DIR/nimbus-ips/name
 $env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
 
-$env:GODEBUG="winsymlink=0"
+$env:GODEBUG="winsymlink=0,winreadlinkvolume=0"
 
 Set-Location stembuild
 
