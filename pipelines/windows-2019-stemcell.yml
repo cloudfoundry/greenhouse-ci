@@ -950,10 +950,11 @@ jobs:
       params:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-    - put: nimbus-ips
-      inputs: detect
-      params: { release: nimbus-ips }
-      tags: [ broadcom ]
+      ensure:
+        put: nimbus-ips
+        inputs: detect
+        params: { release: nimbus-ips }
+        tags: [ broadcom ]
 
 - name: stembuild-linux
   serial: true
@@ -1079,10 +1080,11 @@ jobs:
       params:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
-    - put: nimbus-ips
-      inputs: detect
-      params: { release: nimbus-ips }
-      tags: [ broadcom ]
+      ensure:
+        put: nimbus-ips
+        inputs: detect
+        params: { release: nimbus-ips }
+        tags: [ broadcom ]
 
 - name: create-stembuild-linux-stemcell
   serial: true
