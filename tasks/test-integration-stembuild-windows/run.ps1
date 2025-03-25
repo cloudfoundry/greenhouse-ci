@@ -22,11 +22,10 @@ New-Item $TMP_DIR -ItemType Directory
 
 $env:TMP=$TMP_DIR
 $env:TEMP=$TMP_DIR
+$env:SystemTemp=$TMP_DIR
 
 $env:TARGET_VM_IP = cat $ROOT_DIR/nimbus-ips/name
 $env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
-
-$env:GODEBUG="winsymlink=0,winreadlinkvolume=0"
 
 Set-Location stembuild
 

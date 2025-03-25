@@ -5,6 +5,7 @@ function Set-TmpDir
     $temp_directory=Join-Path -Path $working_directory.path -ChildPath "temp-$guid"
     New-Item -Path $temp_directory -ItemType Directory
     $env:TMP=$temp_directory
+    $env:SystemTemp=$temp_directory
 }
 
 function Set-VCenterHostAndCert
