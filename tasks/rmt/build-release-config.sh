@@ -2,6 +2,7 @@
 
 set -eux
 
+ROOT_DIR=$(pwd)
 version=$( cat version/version | cut -d '.' -f1-2 )
 
 docs_link="https://docs.vmware.com/en/Stemcells-for-VMware-Tanzu/services/release-notes/windows-stemcell-v2019x.html"
