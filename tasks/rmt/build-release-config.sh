@@ -23,7 +23,6 @@ oct_request_id: 3930 # https://docs.google.com/spreadsheets/d/1xLPEyngkFvDnAA3Rw
 lang: EN
 docs_link: "${docs_link}"
 ga_date_mm/dd/yyyy: ${today}
-published_date_mm/dd/yyyy: ${today}
 end_of_support_date_mm/dd/yyyy: ${RELEASE_END_OF_SUPPORT}
 export_control_status: ENTITLEMENT_REQUIRED
 product_slug: ${RELEASE_PRODUCT_SLUG}
