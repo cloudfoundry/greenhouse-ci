@@ -153,7 +153,6 @@ resources:
     uri: https://github.com/cloudfoundry/greenhouse-ci.git
 - name: bosh-ecosystem-concourse
   type: git
-  tags: [ broadcom ]
   source:
     uri: https://github.gwd.broadcom.net/TNZ/bosh-ecosystem-concourse.git
     private_key: ((github_deploy_key_bosh_ecosystem_concourse.private_key))
@@ -180,8 +179,9 @@ resources:
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry/bosh-windows-stemcell-builder.git
-    private_key: ((github_deploy_key_bosh-windows-stemcell-builder.private_key))
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: bosh-psmodules-repo
   type: git
   source:
@@ -190,8 +190,9 @@ resources:
   type: git
   source:
     branch: main
-    uri: git@github.com:cloudfoundry/bosh-io-stemcells-windows-index.git
-    private_key: ((github_deploy_key_stemcells-windows-index.private_key))
+    uri: https://github.com/cloudfoundry/bosh-io-stemcells-windows-index.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: windows-utilities-release
   type: git
   source:
@@ -205,24 +206,26 @@ resources:
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry/stembuild.git
+    uri: https://github.com/cloudfoundry/stembuild.git
     ignore_paths: [version/version]
-    private_key: ((github_deploy_key_stembuild.private_key))
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: bosh-windows-acceptance-tests-src-out
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry/bosh-windows-acceptance-tests.git
-    private_key: ((github_deploy_key_bosh-windows-acceptance-tests.private_key))
+    uri: https://github.com/cloudfoundry/bosh-windows-acceptance-tests.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: bosh-windows-acceptance-tests
   type: git
   source:
     branch: master
-    uri: git@github.com:cloudfoundry/bosh-windows-acceptance-tests.git
-    private_key: ((github_deploy_key_bosh-windows-acceptance-tests.private_key))
+    uri: https://github.com/cloudfoundry/bosh-windows-acceptance-tests.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: gormt-repo
   type: git
-  tags: [ broadcom ]
   source:
     uri: https://github.gwd.broadcom.net/TNZ/gormt.git
     branch: main
@@ -349,7 +352,6 @@ resources:
 # locks
 - name: aws-lock
   type: pool
-  tags: [ broadcom ]
   source:
     branch: master
     pool: ((AWS_POOL_NAME))
@@ -364,7 +366,6 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: goose-lock
   type: pool
-  tags: [ broadcom ]
   source:
     branch: master
     pool: ((GOOSE_POOL_NAME))
@@ -372,7 +373,6 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: gcp-lock
   type: pool
-  tags: [ broadcom ]
   source:
     branch: master
     pool: ((GCP_POOL_NAME))
@@ -380,7 +380,6 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: vsphere-director-lock
   type: pool
-  tags: [ broadcom ]
   source:
     branch: master
     pool: ((VSPHERE_POOL_NAME))
@@ -389,7 +388,6 @@ resources:
 
 - name: nimbus-ips
   type: pool
-  tags: [ broadcom ]
   source:
     branch: master
     pool: "nimbus-ips"
@@ -754,7 +752,6 @@ jobs:
       steps:
       - get: ci
       - get: bosh-ecosystem-concourse
-        tags: [ broadcom ]
       - get: bosh-ecosystem-docker-image
       - get: stemcell-builder
         trigger: true
@@ -778,7 +775,7 @@ jobs:
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
       COMMERCIAL_AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
       COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
-      CONCOURSE_GCP_CREDENTIALS_JSON: ((gcp_credentials_json))
+      CONCOURSE_GCP_CREDENTIALS_JSON: ((broadcom_gcp_credentials_json))
       GOVCLOUD_AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
       GOVCLOUD_AWS_DEFAULT_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
       GOVCLOUD_AWS_SECRET_ACCESS_KEY: ((packer_user_gov_aws_access_key.password))
@@ -876,7 +873,6 @@ jobs:
       - put: nimbus-ips
         inputs: detect
         params: { acquire: true }
-        tags: [ broadcom ]
       - get: govc-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
@@ -954,7 +950,6 @@ jobs:
         put: nimbus-ips
         inputs: detect
         params: { release: nimbus-ips }
-        tags: [ broadcom ]
 
 - name: stembuild-linux
   serial: true
@@ -985,7 +980,6 @@ jobs:
       - put: nimbus-ips
         inputs: detect
         params: { acquire: true }
-        tags: [ broadcom ]
       - get: ci-image
       - get: govc-image
       - get: blobstore-dav-cli
@@ -1084,7 +1078,6 @@ jobs:
         put: nimbus-ips
         inputs: detect
         params: { release: nimbus-ips }
-        tags: [ broadcom ]
 
 - name: create-stembuild-linux-stemcell
   serial: true
@@ -1193,7 +1186,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-bwats-stembuild-linux
       file: ci/tasks/run-bwats/task.yml
@@ -1221,7 +1213,6 @@ jobs:
       inputs: detect
       params:
         release: vsphere-director-lock
-      tags: [ broadcom ]
 
 - name: wuts-stembuild-linux-stemcell
   serial: true
@@ -1242,7 +1233,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1266,7 +1256,6 @@ jobs:
       inputs: detect
       params:
         release: vsphere-director-lock
-      tags: [ broadcom ]
 
 - name: create-stembuild-windows-stemcell
   serial: true
@@ -1364,7 +1353,6 @@ jobs:
       inputs: detect
       params:
         acquire: true
-      tags: [ broadcom ]
     - do:
         - task: run-bwats-stembuild-windows
           file: ci/tasks/run-bwats/task.yml
@@ -1392,7 +1380,6 @@ jobs:
         inputs: detect
         params:
           release: vsphere-director-lock
-        tags: [ broadcom ]
 
 - name: wuts-stembuild-windows-stemcell
   serial: true
@@ -1413,7 +1400,6 @@ jobs:
       inputs: detect
       params:
         acquire: true
-      tags: [ broadcom ]
     - do:
         - task: run-wuts
           file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1437,7 +1423,6 @@ jobs:
         inputs: detect
         params:
           release: vsphere-director-lock
-        tags: [ broadcom ]
 
 - name: create-aws
   serial: true
@@ -1600,7 +1585,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1623,7 +1607,6 @@ jobs:
       inputs: detect
       params:
         release: aws-lock
-      tags: [ broadcom ]
 
 - name: create-aws-govcloud
   serial: true
@@ -1948,7 +1931,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1971,7 +1953,6 @@ jobs:
       inputs: detect
       params:
         release: azure-lock
-      tags: [ broadcom ]
 - name: create-gcp
   serial: true
   serial_groups: [gcp-version]
@@ -2057,7 +2038,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-bwats-gcp-stemcell
       file: ci/tasks/run-bwats/task.yml
@@ -2085,7 +2065,6 @@ jobs:
       inputs: detect
       params:
         release: goose-lock
-      tags: [ broadcom ]
   - put: gcp-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2113,7 +2092,6 @@ jobs:
     inputs: detect
     params:
       acquire: true
-    tags: [ broadcom ]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -2136,7 +2114,6 @@ jobs:
       inputs: detect
       params:
         release: gcp-lock
-      tags: [ broadcom ]
 
 - name: promote
   serial: true
@@ -2573,7 +2550,6 @@ jobs:
       steps:
       - get: ci
       - get: gormt-repo
-        tags: [ broadcom ]
       - get: bosh-ecosystem-docker-image
       - get: version
         resource: main-version
@@ -2612,7 +2588,6 @@ jobs:
       RELEASE_SKUS: "CF4-TKG-VS7-KUBC-1Y-C,CNA-NXT-PKS-C,CNA-PKSC-3P-TLSS-C,CNA-PKSC-8-3P-TLSS-C,CNA-PKSC-8-P-TLSS-C,CNA-PKSC-AK-P-TLSS-C,CNA-PKSC-P-TLSS-A,CNA-PKSC-P-TLSS-C,CNA-PKSC-TLSS-C,CNA-PKSP-50-P-TLSS-C,CNA-PKS-P-TLSS-C,NFR-TNZ-PLAT,NFR-TNZ-PLAT-SM,PKS-ENCFA-50P-P-TLSS-C,PKS-ENCFA-8C-P-TLSS-C,PKS-ENCFC-3P-TLSS-A,PKS-ENCFC-P-TLSS-C,PKS-ENCFS-100C-P-TLSS-C,PKS-ENCFS-100P-P-TLSS-C,PKS-ENS-100C-3P-TLSS-C,PKS-ENS-100C-P-TLSS-A,PKS-ENS-100C-P-TLSS-C,PKS-ENS-100P-P-TLSS-C,PKS-ESC-SUB-500AD-C,PKS-ESC-SUB-8AD-C,PKS-ESP-SUB-500AD-C,PV-CFERS-3P-TLSS-C,PV-CFERS-P-TLSS-C,PV-CFERS-P-TLSS-F,PV-TAS-CR-P-TLSS-C,TNZ-CLD-FOUNDRY-SM,TNZ-KUBERNETES-SM,TNZ-PLAT"
   - task: create-rmt-release
     image: bosh-ecosystem-docker-image
-    tags: [ broadcom ]
     file: gormt-repo/concourse_examples/tasks/create-release.yml
     params: &rmt_params
       RMT_RMT_EMAIL: "maya.rosecrance@broadcom.com"
@@ -2639,7 +2614,6 @@ jobs:
     image: bosh-ecosystem-docker-image
     input_mapping:
       release-update-config: release-config
-    tags: [ broadcom ]
     file: gormt-repo/concourse_examples/tasks/release-file-update.yml
     params:
       <<: *rmt_params
