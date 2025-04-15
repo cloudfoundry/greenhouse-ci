@@ -41,7 +41,7 @@ groups:
   - test-bosh-psmodules
   - test-stemcell-builder
   - github-release-stembuild
-  - upload-to-rmt
+  - upload-dev-internal-to-rmt
   - bump-minor
   - notify-rn-to-docs-team
 - name: aws
@@ -86,7 +86,7 @@ groups:
   - submit-azure-offer
   - publish-azure-offer
   - bump-minor
-  - upload-to-rmt
+  - upload-dev-internal-to-rmt
   - notify-rn-to-docs-team
 
 resource_types:
@@ -2542,7 +2542,8 @@ jobs:
       globs:
         - final-stembuilds/stembuild*
 
-- name: upload-to-rmt
+- name: upload-dev-internal-to-rmt
+  old_name: upload-to-rmt
   serial: true
   plan:
   - in_parallel:
@@ -2581,7 +2582,7 @@ jobs:
       RELEASE_PRODUCT_NAME: Stemcells (Windows)
       RELEASE_DISPLAY_GROUP: Stemcells (Windows)
       RELEASE_TYPE: Release Update / MP
-      RELEASE_STATUS: GA
+      RELEASE_STATUS: Dev/Internal
       RELEASE_END_OF_SUPPORT: "03/31/2027"
       RELEASE_UPGRADE_SPECIFIER: "2019.*"
       RELEASE_PRODUCT_SLUG: stemcells-windows-server
@@ -2622,7 +2623,7 @@ jobs:
   serial: true
   plan:
   - get: main-version
-    passed: [upload-to-rmt]
+    passed: [upload-dev-internal-to-rmt]
     trigger: true
   - put: main-version
     params:
@@ -2632,7 +2633,7 @@ jobs:
   serial: true
   plan:
   - get: main-version
-    passed: [upload-to-rmt]
+    passed: [upload-dev-internal-to-rmt]
     trigger: true
   - put: tas-docs-team-gchat-message
     params:
