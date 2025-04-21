@@ -90,12 +90,6 @@ groups:
   - notify-rn-to-docs-team
 
 resource_types:
-- name: azure-blobstore
-  type: docker-image
-  source:
-    repository: pcfabr/azure-blobstore-resource
-    username: ((docker.username))
-    password: ((docker.password))
 - name: metalink-repository
   type: registry-image
   source:
@@ -105,7 +99,7 @@ resource_types:
 - name: counter-resource
   type: docker-image
   source:
-    repository: lnguyen/counter-resource
+    repository: bosh/counter-resource
     username: ((docker.username))
     password: ((docker.password))
 - name: file-url
