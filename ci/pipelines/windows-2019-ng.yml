@@ -134,34 +134,7 @@ resource_types:
     - broadcom
 
 resources:
-# repos
-- name: bosh-stemcells-ci
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/bosh-stemcells-ci
-- name: bosh-windows-stemcell-builder-ci
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/greenhouse-ci.git
-- name: bosh-ecosystem-docker-image
-  type: registry-image
-  source:
-    repository: bosh/bosh-ecosystem-concourse
-    username: ((docker.username))
-    password: ((docker.password))
-- name: bosh-integration-registry-image
-  type: registry-image
-  source:
-    repository: bosh/integration
-    username: ((docker.username))
-    password: ((docker.password))
-- name: golang-release
-  type: git
-  source:
-    uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
-    branch: main
+# type: git
 - name: stemcell-builder
   type: git
   source:
@@ -169,10 +142,33 @@ resources:
     branch: master
     username: bosh-admin-bot
     password: ((github_public_repo_token))
+- name: bosh-windows-stemcell-builder-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/greenhouse-ci.git
+- name: stembuild
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/stembuild.git
+    branch: master
+    ignore_paths: [version/version]
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
 - name: bosh-psmodules-repo
   type: git
   source:
     uri: https://github.com/cloudfoundry/bosh-psmodules.git
+- name: bosh-stemcells-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/bosh-stemcells-ci
+- name: golang-release
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
+    branch: main
 - name: boshio
   type: git
   source:
@@ -189,14 +185,6 @@ resources:
   source:
     uri: https://github.com/pester/Pester.git
     tag_filter: 4.4.0
-- name: stembuild
-  type: git
-  source:
-    uri: https://github.com/cloudfoundry/stembuild.git
-    branch: master
-    ignore_paths: [version/version]
-    username: bosh-admin-bot
-    password: ((github_public_repo_token))
 - name: bosh-windows-acceptance-tests-src-out
   type: git
   source:
@@ -223,20 +211,33 @@ resources:
   source:
     uri: https://github.com/vmware/govmomi.git
 
+# type: registry-image
+- name: bosh-ecosystem-docker-image
+  type: registry-image
+  source:
+    repository: bosh/bosh-ecosystem-concourse
+    username: ((docker.username))
+    password: ((docker.password))
+- name: bosh-integration-registry-image
+  type: registry-image
+  source:
+    repository: bosh/integration
+    username: ((docker.username))
+    password: ((docker.password))
 - name: ci-image
   type: registry-image
   source:
     repository: pivotalgreenhouse/ci
     username: ((docker.username))
     password: ((docker.password))
-
 - name: govc-image
   type: registry-image
   source:
     repository: pivotalgreenhouse/govc
     username: ((docker.username))
     password: ((docker.password))
-# releases
+
+# type: github-release
 - name: openssh-release
   type: github-release
   source:
@@ -244,7 +245,6 @@ resources:
     repository: Win32-OpenSSH
     access_token: ((github_public_repo_token))
     tag_filter: v([^v].*)
-
 - name: post-stembuild-release
   type: github-release
   source:
@@ -264,7 +264,7 @@ resources:
     url: "https://download.microsoft.com/download/8/5/C/85C25433-A1B0-4FFA-9429-7E023E7DA8D8/LGPO.zip"
     filename: "LGPO.zip"
 
-# versions
+# type: semver
 - name: aws-build-number
   type: semver
   source:
@@ -310,6 +310,17 @@ resources:
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
     initial_version: ((STEMCELL_INITIAL_VERSION))
+- name: main-version
+  type: semver
+  source:
+    bucket: ((ROOT_BUCKET))
+    key: ((BASE_FOLDER_NAME))/versions/main
+    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
+    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
+    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    initial_version: ((STEMCELL_INITIAL_VERSION))
+
+# type: counter-resource
 - name: stembuild-windows-stemcell-build-number
   type: counter-resource
   source:
@@ -326,17 +337,8 @@ resources:
     aws_access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     aws_secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-- name: main-version
-  type: semver
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/main
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-    initial_version: ((STEMCELL_INITIAL_VERSION))
 
-# locks
+# type: pool
 - name: aws-lock
   type: pool
   source:
@@ -372,7 +374,6 @@ resources:
     pool: ((VSPHERE_POOL_NAME))
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
-
 - name: nimbus-ips
   type: pool
   source:
@@ -381,25 +382,22 @@ resources:
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 
-# s3 buckets
+# type: s3
 - name: blobstore-s3-cli
   type: s3
   source:
     bucket: bosh-s3cli-artifacts
     regexp: s3cli-(.*)-windows-amd64.exe
-
 - name: blobstore-dav-cli
   type: s3
   source:
     bucket: bosh-davcli-artifacts
     regexp: davcli-(.*)-windows-amd64.exe
-
 - name: blobstore-gcs-cli
   type: s3
   source:
     bucket: bosh-gcscli-artifacts
     regexp: bosh-gcscli-(.*)-windows-amd64.exe
-
 - name: windows-bsdtar
   type: s3
   source:
@@ -408,7 +406,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-
 - name: windows-winsw
   type: s3
   source:
@@ -417,7 +414,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-
 - name: stembuild-linux-stemcell
   type: s3
   source:
@@ -426,7 +422,6 @@ resources:
     access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-
 - name: stembuild-windows-stemcell
   type: s3
   source:
@@ -447,6 +442,7 @@ resources:
     path_pattern: bosh-stemcell-(?P<version>\d+\.\d+)-vsphere-esxi-windows2019-go_agent.tgz
   tags:
     - broadcom
+
 - name: azure-stemcell-final
   type: s3
   source:
