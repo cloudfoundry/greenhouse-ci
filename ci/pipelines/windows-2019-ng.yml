@@ -145,13 +145,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry/greenhouse-ci.git
-- name: bosh-ecosystem-concourse
-  type: git
-  source:
-    uri: https://github.gwd.broadcom.net/TNZ/bosh-ecosystem-concourse.git
-    private_key: ((github_deploy_key_bosh_ecosystem_concourse.private_key))
-    username: svc.bosh-ecosystem@broadcom.net
-    password: *ghe_svc_account_personal_access_token
 - name: bosh-ecosystem-docker-image
   type: registry-image
   source:
@@ -172,8 +165,8 @@ resources:
 - name: stemcell-builder
   type: git
   source:
-    branch: master
     uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    branch: master
     username: bosh-admin-bot
     password: ((github_public_repo_token))
 - name: bosh-psmodules-repo
@@ -199,8 +192,8 @@ resources:
 - name: stembuild
   type: git
   source:
-    branch: master
     uri: https://github.com/cloudfoundry/stembuild.git
+    branch: master
     ignore_paths: [version/version]
     username: bosh-admin-bot
     password: ((github_public_repo_token))
@@ -745,8 +738,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
-      - get: bosh-ecosystem-concourse
-      - get: bosh-ecosystem-docker-image
+      - get: bosh-windows-stemcell-builder-ci-docker-image
       - get: stemcell-builder
         trigger: true
         passed: [test-stemcell-builder]
@@ -762,8 +754,8 @@ jobs:
         trigger: true
       - get: bosh-agent-release
   - task: configure-windows-firewall-rules
-    file: bosh-ecosystem-concourse/tasks/deploy-concourse/configure-windows-firewall-rules.yml
-    image: bosh-ecosystem-docker-image
+    file: bosh-windows-stemcell-builder-ci/ci/tasks/firewall-rules/configure-windows-firewall-rules.yml
+    image: bosh-windows-stemcell-builder-ci-docker-image
     params:
       COMMERCIAL_AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
@@ -2179,7 +2171,7 @@ jobs:
         passed: [promote]
       - get: aws-govcloud-tested
         passed: [promote]
-      - get: bosh-ecosystem-docker-image
+      - get: bosh-windows-stemcell-builder-ci-docker-image
       - get: bosh-stemcells-ci
       - get: stemcell-builder
         passed: [promote]
@@ -2240,7 +2232,7 @@ jobs:
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stemcell-version/task.yml
   - task: tag-published-aws-ami-light-stemcells
     file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
-    image: bosh-ecosystem-docker-image
+    image: bosh-windows-stemcell-builder-ci-docker-image
     input_mapping:
       candidate-aws-light-stemcell: final-stemcell
     params:
@@ -2250,7 +2242,7 @@ jobs:
       GREP_PATTERN: grep -v 'gov-\|cn-'
   - task: tag-gov-published-aws-ami-light-stemcells
     file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
-    image: bosh-ecosystem-docker-image
+    image: bosh-windows-stemcell-builder-ci-docker-image
     input_mapping:
       candidate-aws-light-stemcell: final-stemcell
     params:
@@ -2546,6 +2538,7 @@ jobs:
       - get: bosh-windows-stemcell-builder-ci
       - get: gormt-repo
       - get: bosh-ecosystem-docker-image
+      - get: bosh-windows-stemcell-builder-ci-docker-image
       - get: version
         resource: main-version
         passed:
@@ -2597,7 +2590,7 @@ jobs:
       task: cleanup-rmt-please-instructions
       config:
         platform: linux
-        image: bosh-ecosystem-docker-image
+        image: bosh-windows-stemcell-builder-ci-docker-image
         run:
           path: bash
           args:
