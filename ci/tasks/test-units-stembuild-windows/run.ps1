@@ -7,7 +7,9 @@ Set-TmpDir
 $env:PATH += ";c:\var\vcap\packages\git\usr\bin"
 
 Write-Host ***Test Stembuild Code***
-Set-Location stembuild
+
+Set-Location stembuild\stembuild
+
 make units
 if ($lastexitcode -ne 0)
 {

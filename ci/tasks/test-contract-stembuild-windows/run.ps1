@@ -9,7 +9,9 @@ Set-TmpDir
 $ROOT_DIR=Get-Location
 
 Write-Host ***Test Stembuild Code***
-Set-Location stembuild
+
+Set-Location stembuild\stembuild
+
 make contract
 if ($lastexitcode -ne 0)
 {

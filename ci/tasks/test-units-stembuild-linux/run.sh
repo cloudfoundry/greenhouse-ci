@@ -5,7 +5,7 @@ set -x
 ROOT_DIR=$(pwd)
 
 VERSION=$(cat version/version)
-STEMBUILD_DIR="${ROOT_DIR}/stembuild"
+STEMBUILD_DIR="${ROOT_DIR}/stembuild/stembuild"
 OUTPUT_DIR="${ROOT_DIR}/output"
 
 echo '***Installing VMWare OVF Tools***'

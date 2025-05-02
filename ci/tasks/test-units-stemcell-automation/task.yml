@@ -12,7 +12,7 @@ run:
             Import-Module ./bosh-windows-stemcell-builder-ci/ci/common-scripts/setup-windows-container.psm1;
             Set-TmpDir;
             Import-Module ./Pester/pester.psm1;
-            pushd stembuild/stemcell-automation;
+            pushd stembuild/stembuild/stemcell-automation;
             $result=Invoke-Pester -PassThru;
             popd;
             Write-Host \"Failed Tests:\"$result.FailedCount;

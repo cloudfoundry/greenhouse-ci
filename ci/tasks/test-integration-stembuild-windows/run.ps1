@@ -27,7 +27,7 @@ $env:SystemTemp=$TMP_DIR
 $env:TARGET_VM_IP = cat $ROOT_DIR/nimbus-ips/name
 $env:STEMBUILD_VERSION = cat $ROOT_DIR/version/version
 
-Set-Location stembuild
+Set-Location stembuild\stembuild
 
 Write-Host ***Runninng integration tests***
 make integration

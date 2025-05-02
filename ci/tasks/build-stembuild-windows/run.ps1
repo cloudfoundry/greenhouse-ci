@@ -10,7 +10,8 @@ $VERSION=Get-Content (Join-Path (Join-Path $ROOT_DIR version) version)
 $env:PATH += ";c:\var\vcap\packages\git\usr\bin"
 
 Write-Host ***Building Stembuild***
-Set-Location stembuild
+
+Set-Location stembuild\stembuild
 
 $INPUT_ZIP_GLOB=Join-Path $ROOT_DIR $env:STEMCELL_AUTOMATION_ZIP
 
