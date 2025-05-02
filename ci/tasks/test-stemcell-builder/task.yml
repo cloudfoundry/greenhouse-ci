@@ -1,10 +1,9 @@
 ---
 platform: linux
-
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotalgreenhouse/ci
+    repository: bosh/windows-stemcell-ci
 
 inputs:
   - name: bosh-windows-stemcell-builder-ci

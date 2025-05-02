@@ -1,11 +1,6 @@
 ---
 platform: linux
 
-image_resource:
-  type: docker-image
-  source:
-    repository: pivotalgreenhouse/ci
-
 inputs:
   - name: bosh-windows-stemcell-builder-ci
   - name: default-ami
@@ -22,4 +17,3 @@ params:
 
   VERSION_DIR: ../version
   AMIS_DIR: ../default-ami
-

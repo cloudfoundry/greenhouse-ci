@@ -1,12 +1,13 @@
-# To configure this pipeline: pipelines/configure.sh windows-2019-stemcell
+# To configure this pipeline: pipelines/configure.sh windows-2019
 
-secrets:
-#! Access token for our service account user in Github Enterprise. Used to pull repos and open PRs.
-- &ghe_svc_account_personal_access_token ((svc-bosh-ecosystem-ghe-personal-access-token))
+anchors:
+- &windows_stemcell_ci_image bosh/windows-stemcell-ci
+- &windows_stemcell_ci_tag windows-2019
 
 groups:
 - name: all
   jobs:
+  - build-windows-stemcell-ci-image
   - clean-up-pre-release-blobstore
   - bump-deps
   - build
@@ -88,6 +89,9 @@ groups:
   - bump-minor
   - upload-dev-internal-to-rmt
   - notify-rn-to-docs-team
+- name: images
+  jobs:
+    - build-windows-stemcell-ci-image
 
 resource_types:
 - name: metalink-repository
@@ -147,6 +151,16 @@ resources:
   source:
     uri: https://github.com/cloudfoundry/greenhouse-ci.git
     branch: windows-2019
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+- name: bosh-windows-stemcell-builder-dockerfiles
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/greenhouse-ci.git
+    branch: windows-2019
+    paths:
+    - ci/azstemcell
+    - ci/docker/Dockerfile
     username: bosh-admin-bot
     password: ((github_public_repo_token))
 - name: stembuild
@@ -209,13 +223,42 @@ resources:
     uri: https://github.gwd.broadcom.net/TNZ/gormt.git
     branch: main
     username: svc.bosh-ecosystem@broadcom.net
-    password: *ghe_svc_account_personal_access_token
+    password: ((svc-bosh-ecosystem-ghe-personal-access-token))
 - name: govmomi
   type: git
   source:
     uri: https://github.com/vmware/govmomi.git
 
+# type: docker-image
+- name: bosh-windows-stemcell-builder-ci-docker-image
+  type: docker-image
+  source:
+    repository: *windows_stemcell_ci_image
+    tag: *windows_stemcell_ci_tag
+    username: ((docker.username))
+    password: ((docker.password))
+
 # type: registry-image
+- name: bosh-windows-stemcell-builder-ci-image
+  type: registry-image
+  source:
+    repository: *windows_stemcell_ci_image
+    tag: *windows_stemcell_ci_tag
+    username: ((docker.username))
+    password: ((docker.password))
+- name: ubuntu-image
+  type: registry-image
+  source:
+    repository: ubuntu
+    tag: latest
+    username: ((docker.username))
+    password: ((docker.password))
+- name: golang-release-image
+  type: registry-image
+  source:
+    repository: bosh/golang-release
+    username: ((docker.username))
+    password: ((docker.password))
 - name: bosh-ecosystem-docker-image
   type: registry-image
   source:
@@ -226,18 +269,6 @@ resources:
   type: registry-image
   source:
     repository: bosh/integration
-    username: ((docker.username))
-    password: ((docker.password))
-- name: ci-image
-  type: registry-image
-  source:
-    repository: pivotalgreenhouse/ci
-    username: ((docker.username))
-    password: ((docker.password))
-- name: govc-image
-  type: registry-image
-  source:
-    repository: pivotalgreenhouse/govc
     username: ((docker.username))
     password: ((docker.password))
 
@@ -633,14 +664,40 @@ resources:
     url: ((gchat-webhook-url-tas-docs-team))
 
 jobs:
+- name: build-windows-stemcell-ci-image
+  serial: true
+  plan:
+    - in_parallel:
+      - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-dockerfiles
+        trigger: true
+      - get: golang-release-image
+        trigger: true
+      - get: ubuntu-image
+    - in_parallel:
+      - task: build-azstemcell
+        file: bosh-windows-stemcell-builder-ci/ci/tasks/build-azstemcell/task.yml
+      - task: build-docker-args
+        file: bosh-windows-stemcell-builder-ci/ci/tasks/build-docker-args/task.yml
+        params:
+          GITHUB_ACCESS_TOKEN: ((github_public_repo_token))
+    - put: bosh-windows-stemcell-builder-ci-docker-image
+      params:
+        build: azstemcell-binary-out/
+        build_args_file: docker-build-args/docker-build-args.json
+        dockerfile: bosh-windows-stemcell-builder-dockerfiles/ci/docker/Dockerfile
+        tag_as_latest: true
+
 - name: clean-up-pre-release-blobstore
   serial: true
   plan:
   - get: bosh-windows-stemcell-builder-ci
+  - get: bosh-windows-stemcell-builder-ci-image
   - get: weekly
     trigger: true
   - task: clean-up-blobstore
     file: bosh-windows-stemcell-builder-ci/ci/tasks/clean-up-pre-release-blobstore/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       AZURE_STORAGE_ACCOUNT: unpublishedstemcells
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
@@ -649,9 +706,9 @@ jobs:
   serial: true
   plan:
   - in_parallel:
+    - get: bosh-windows-stemcell-builder-ci-image
     - get: bosh-windows-acceptance-tests
     - get: bosh-windows-stemcell-builder-ci
-    - get: ci-image
     - get: golang-release
     - get: ovftool
     - get: stembuild
@@ -661,6 +718,8 @@ jobs:
       trigger: true
   - task: bump-stembuild-deps
     file: golang-release/ci/tasks/shared/bump-deps.yml
+    params:
+      SOURCE_PATH: stembuild
     input_mapping:
       input_repo: stembuild
     output_mapping:
@@ -668,7 +727,7 @@ jobs:
   - in_parallel:
     - task: unit-test-on-linux
       file: bosh-windows-stemcell-builder-ci/ci/tasks/test-units-stembuild-linux/task.yml
-      image: ci-image
+      image: bosh-windows-stemcell-builder-ci-image
     - task: unit-test-on-windows
       file: bosh-windows-stemcell-builder-ci/ci/tasks/test-units-stembuild-windows/task.yml
       tags: [windows-nimbus]
@@ -722,7 +781,7 @@ jobs:
       - get: stemcell-builder
         trigger: true
       - get: bosh-windows-stemcell-builder-ci
-      - get: ci-image
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
@@ -738,7 +797,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
-      - get: bosh-windows-stemcell-builder-ci-docker-image
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         trigger: true
         passed: [test-stemcell-builder]
@@ -755,7 +814,7 @@ jobs:
       - get: bosh-agent-release
   - task: configure-windows-firewall-rules
     file: bosh-windows-stemcell-builder-ci/ci/tasks/firewall-rules/configure-windows-firewall-rules.yml
-    image: bosh-windows-stemcell-builder-ci-docker-image
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       COMMERCIAL_AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
@@ -792,6 +851,7 @@ jobs:
       steps:
       - task: collect-amis
         file: bosh-windows-stemcell-builder-ci/ci/tasks/collect-base-amis/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
         output_mapping: { base-amis: windows-amis }
         params:
           AWS_ACCESS_KEY_ID: ((read-vpc-ec2_aws_access_key.username))
@@ -802,6 +862,7 @@ jobs:
           PACKER_REGION: ((AWS_PACKER_REGION))
       - task: collect-govcloud-amis
         file: bosh-windows-stemcell-builder-ci/ci/tasks/collect-base-amis/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
         output_mapping: { base-amis: govcloud-amis }
         params:
           AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
@@ -811,6 +872,7 @@ jobs:
           PACKER_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
       - task: collect-gcp-image
         file: bosh-windows-stemcell-builder-ci/ci/tasks/collect-gcp-image/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
         output_mapping: { base-gcp-image: windows-gcp-image }
         params:
           ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
@@ -836,12 +898,13 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: pester
       - get: open-ssh
         resource: openssh-release
       - get: stemcell-builder
         passed: [build]
-      - get: bosh-windows-stemcell-builder-ci
       - get: version
         resource: stembuild-windows-build-number
         passed: [build]
@@ -859,7 +922,7 @@ jobs:
       - put: nimbus-ips
         inputs: detect
         params: { acquire: true }
-      - get: govc-image
+        tags: [broadcom]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
@@ -877,15 +940,17 @@ jobs:
         tags: [windows-nimbus]
       - task: build-agent
         file: bosh-windows-stemcell-builder-ci/ci/tasks/build-agent-zip/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
       - task: build-psmodules
         file: bosh-windows-stemcell-builder-ci/ci/tasks/build-psmodules-zip/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
       - task: unit-test
         file: bosh-windows-stemcell-builder-ci/ci/tasks/test-units-stembuild-windows/task.yml
         tags: [windows-nimbus]
       - task: setup-integration-test-vm
         tags: [windows-nimbus]
-        image: govc-image
         file: bosh-windows-stemcell-builder-ci/ci/tasks/setup-integration-test-vm/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
           OS_LINE: 2019
@@ -896,8 +961,10 @@ jobs:
           JOB_OS_NAME: "windows"
   - task: generate-deps-file
     file: bosh-windows-stemcell-builder-ci/ci/tasks/generate-deps-file/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: zip-files
     file: bosh-windows-stemcell-builder-ci/ci/tasks/zip-files/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: integration
     tags: [windows-nimbus]
     file: bosh-windows-stemcell-builder-ci/ci/tasks/test-integration-stembuild-windows/task.yml
@@ -928,7 +995,7 @@ jobs:
     - task: delete-integration-test-vm
       tags: [windows-nimbus]
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-integration-test-vm/task.yml
-      image: govc-image
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
         VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
@@ -943,12 +1010,13 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: pester
       - get: open-ssh
         resource: openssh-release
       - get: stemcell-builder
         passed: [build]
-      - get: bosh-windows-stemcell-builder-ci
       - get: version
         resource: stembuild-linux-build-number
         passed: [build]
@@ -966,8 +1034,7 @@ jobs:
       - put: nimbus-ips
         inputs: detect
         params: { acquire: true }
-      - get: ci-image
-      - get: govc-image
+        tags: [broadcom]
       - get: blobstore-dav-cli
       - get: blobstore-s3-cli
       - get: blobstore-gcs-cli
@@ -986,16 +1053,16 @@ jobs:
         tags: [windows-nimbus]
       - task: build-agent
         file: bosh-windows-stemcell-builder-ci/ci/tasks/build-agent-zip/task.yml
-        image: ci-image
+        image: bosh-windows-stemcell-builder-ci-image
       - task: build-psmodules
         file: bosh-windows-stemcell-builder-ci/ci/tasks/build-psmodules-zip/task.yml
-        image: ci-image
+        image: bosh-windows-stemcell-builder-ci-image
       - task: unit-test
         file: bosh-windows-stemcell-builder-ci/ci/tasks/test-units-stembuild-linux/task.yml
-        image: ci-image
+        image: bosh-windows-stemcell-builder-ci-image
       - task: contract-test
         file: bosh-windows-stemcell-builder-ci/ci/tasks/test-contract-stembuild-linux/task.yml
-        image: ci-image
+        image: bosh-windows-stemcell-builder-ci-image
         tags: [windows-nimbus]
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
@@ -1008,9 +1075,9 @@ jobs:
           CONTRACT_TEST_VM_PASSWORD: ((stembuild_vm_user.password))
           CONTRACT_TEST_VM_USERNAME: ((stembuild_vm_user.username))
       - task: setup-integration-test-vm
-        image: govc-image
-        tags: [windows-nimbus]
         file: bosh-windows-stemcell-builder-ci/ci/tasks/setup-integration-test-vm/task.yml
+        image: bosh-windows-stemcell-builder-ci-image
+        tags: [windows-nimbus]
         params:
           VCENTER_ADMIN_CREDENTIAL_URL: ((nimbus_windows_auth_url))
           OS_LINE: 2019
@@ -1021,13 +1088,13 @@ jobs:
           JOB_OS_NAME: "linux"
   - task: generate-deps-file
     file: bosh-windows-stemcell-builder-ci/ci/tasks/generate-deps-file/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
   - task: zip-files
     file: bosh-windows-stemcell-builder-ci/ci/tasks/zip-files/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
   - task: integration
     file: bosh-windows-stemcell-builder-ci/ci/tasks/test-integration-stembuild-linux/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     timeout: 3h
     params:
@@ -1045,7 +1112,7 @@ jobs:
       OS_LINE: 2019
   - task: build
     file: bosh-windows-stemcell-builder-ci/ci/tasks/build-stembuild-linux/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       STEMCELL_AUTOMATION_ZIP: zip-file/StemcellAutomation-*.zip
   - put: stembuild-untested-linux
@@ -1055,7 +1122,7 @@ jobs:
     do:
     - task: delete-integration-test-vm
       tags: [windows-nimbus]
-      image: govc-image
+      image: bosh-windows-stemcell-builder-ci-image
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-integration-test-vm/task.yml
       params:
         CLONE_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
@@ -1071,6 +1138,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bosh-windows-stemcell-builder-ci
+    - get: bosh-windows-stemcell-builder-ci-image
     - get: lgpo-binary
     - get: stembuild-untested-linux
       passed: [stembuild-linux]
@@ -1082,15 +1150,13 @@ jobs:
       resource: stembuild-linux-stemcell-build-number
       params:
         inc: true
-    - get: govc-image
-    - get: ci-image
   - put: stembuild-linux-stemcell-build-number
     inputs: detect
     params:
       file: stemcell-build-number/count
   - task: revert-snapshot
     file: bosh-windows-stemcell-builder-ci/ci/tasks/revert-snapshot/task.yml
-    image: govc-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
@@ -1099,7 +1165,7 @@ jobs:
       SNAPSHOT_NAME: "stembuild-ready-power-on"
   - task: install-windows-updates
     file: bosh-windows-stemcell-builder-ci/ci/tasks/install-windows-updates/task.yml
-    image: govc-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
@@ -1109,7 +1175,7 @@ jobs:
       VM_PASSWORD: ((stembuild_vm_user.password))
   - task: update-snapshot
     file: bosh-windows-stemcell-builder-ci/ci/tasks/update-snapshot/task.yml
-    image: govc-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     params:
       GOVC_URL: ((nimbus_windows_auth_url))
@@ -1118,7 +1184,7 @@ jobs:
       SNAPSHOT_NAME: "stembuild-ready-power-on"
   - task: run-stembuild-construct
     file: bosh-windows-stemcell-builder-ci/ci/tasks/run-construct-stembuild-linux/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
@@ -1131,7 +1197,7 @@ jobs:
       STEMBUILD_BASE_VM_PASSWORD: ((stembuild_vm_user.password))
   - task: run-stembuild-package
     file: bosh-windows-stemcell-builder-ci/ci/tasks/run-package-stembuild-linux/task.yml
-    image: ci-image
+    image: bosh-windows-stemcell-builder-ci-image
     tags: [windows-nimbus]
     params:
       VCENTER_BASE_URL: ((nimbus_windows_base_url))
@@ -1141,9 +1207,9 @@ jobs:
       VCENTER_VM_FOLDER: /dc0/vm/bosh-windows-ci-vms-and-templates
   - &print-updates
     task: print-updates
+    image: bosh-windows-stemcell-builder-ci-image
     config:
       platform: linux
-      image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
       inputs:
         - name: hotfix-log
       run:
@@ -1161,13 +1227,13 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: bosh-windows-acceptance-tests
       - get: stembuild-untested-linux
         passed: [create-stembuild-linux-stemcell]
       - get: stembuild-linux-stemcell
         passed: [create-stembuild-linux-stemcell]
         trigger: true
-      - get: ci-image
   - put: vsphere-director-lock
     inputs: detect
     params:
@@ -1175,7 +1241,7 @@ jobs:
   - do:
     - task: run-bwats-stembuild-linux
       file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
-      image: ci-image
+      image: bosh-windows-stemcell-builder-ci-image
       tags: [windows-nimbus]
       input_mapping: { stemcell: stembuild-linux-stemcell }
       params:
@@ -1249,6 +1315,7 @@ jobs:
   plan:
     - in_parallel:
         - get: bosh-windows-stemcell-builder-ci
+        - get: bosh-windows-stemcell-builder-ci-image
         - get: lgpo-binary
         - get: stembuild-untested-windows
           passed: [stembuild-windows]
@@ -1260,15 +1327,13 @@ jobs:
           resource: stembuild-windows-stemcell-build-number
           params:
             inc: true
-        - get: govc-image
-        - get: ci-image
     - put: stembuild-windows-stemcell-build-number
       inputs: detect
       params:
         file: stemcell-build-number/count
     - task: revert-snapshot
       file: bosh-windows-stemcell-builder-ci/ci/tasks/revert-snapshot/task.yml
-      image: govc-image
+      image: bosh-windows-stemcell-builder-ci-image
       tags: [windows-nimbus]
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
@@ -1277,7 +1342,7 @@ jobs:
         SNAPSHOT_NAME: "stembuild-ready-power-on"
     - task: install-windows-updates
       file: bosh-windows-stemcell-builder-ci/ci/tasks/install-windows-updates/task.yml
-      image: govc-image
+      image: bosh-windows-stemcell-builder-ci-image
       tags: [windows-nimbus]
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
@@ -1287,7 +1352,7 @@ jobs:
         VM_PASSWORD: ((stembuild_vm_user.password))
     - task: update-snapshot
       file: bosh-windows-stemcell-builder-ci/ci/tasks/update-snapshot/task.yml
-      image: govc-image
+      image: bosh-windows-stemcell-builder-ci-image
       tags: [windows-nimbus]
       params:
         GOVC_URL: ((nimbus_windows_auth_url))
@@ -1328,13 +1393,13 @@ jobs:
         fail_fast: true
         steps:
           - get: bosh-windows-stemcell-builder-ci
+          - get: bosh-windows-stemcell-builder-ci-image
           - get: bosh-windows-acceptance-tests
           - get: stembuild-untested-windows
             passed: [create-stembuild-windows-stemcell]
           - get: stembuild-windows-stemcell
             passed: [create-stembuild-windows-stemcell]
             trigger: true
-          - get: ci-image
     - put: vsphere-director-lock
       inputs: detect
       params:
@@ -1342,7 +1407,7 @@ jobs:
     - do:
         - task: run-bwats-stembuild-windows
           file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
-          image: ci-image
+          image: bosh-windows-stemcell-builder-ci-image
           tags: [windows-nimbus]
           input_mapping: { stemcell: stembuild-windows-stemcell }
           params:
@@ -1417,6 +1482,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [build]
       - get: base-amis
@@ -1445,9 +1511,9 @@ jobs:
     params:
       pre: build
   - task: create-packer-ci-key
+    image: bosh-windows-stemcell-builder-ci-image
     config:
       platform: linux
-      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
       outputs:
       - name: packer-ci-private-key
       run:
@@ -1461,6 +1527,7 @@ jobs:
     attempts: 3
     timeout: 2h
     file: bosh-windows-stemcell-builder-ci/ci/tasks/create-aws-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       AWS_REGION: us-east-1
       AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
@@ -1474,6 +1541,7 @@ jobs:
     ensure:
       task: delete-orphan-vms
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         AWS_ACCESS_KEY_ID: ((aws-stemcells_aws_access_key.username))
         AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
@@ -1484,6 +1552,7 @@ jobs:
   - *print-updates
   - task: wait-for-ami-availability
     file: bosh-windows-stemcell-builder-ci/ci/tasks/wait-for-ami-availability/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       AWS_REGION: us-east-1
       AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
@@ -1505,10 +1574,11 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: bosh-windows-stemcell
         resource: aws-untested
         passed: [create-aws]
-      - get: bosh-windows-stemcell-builder-ci
       - get: stemcell-builder
         passed: [create-aws]
       - get: version
@@ -1524,7 +1594,9 @@ jobs:
         passed: [create-aws]
   - task: run-bwats-aws-stemcell
     file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
-    input_mapping: { stemcell: bosh-windows-stemcell }
+    image: bosh-windows-stemcell-builder-ci-image
+    input_mapping:
+      stemcell: bosh-windows-stemcell
     params:
       BOSH_CA_CERT: ((iaas_directors_aws-director_bosh_ca_cert.ca))
       BOSH_CLIENT: ((iaas_directors_aws-director_bosh_client.username))
@@ -1601,6 +1673,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [wuts-aws]
       - get: base-amis
@@ -1626,9 +1699,9 @@ jobs:
       - get: windows-winsw
   - task: create-packer-ci-key
     privileged: true
+    image: bosh-windows-stemcell-builder-ci-image
     config:
       platform: linux
-      image_resource: { type: docker-image, source: {repository: pivotalgreenhouse/ci } }
       outputs:
       - name: packer-ci-private-key
       run:
@@ -1654,6 +1727,7 @@ jobs:
     ensure:
       task: delete-orphan-vms
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
         AWS_SECRET_ACCESS_KEY: ((packer_user_gov_aws_access_key.password))
@@ -1678,10 +1752,11 @@ jobs:
   - in_parallel:
       fail_fast: true
       steps:
+      - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: bosh-windows-stemcell
         resource: aws-govcloud-untested
         passed: [create-aws-govcloud]
-      - get: bosh-windows-stemcell-builder-ci
       - get: stemcell-builder
         passed: [create-aws-govcloud]
       - get: version
@@ -1766,6 +1841,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [build]
       - get: version
@@ -1793,6 +1869,7 @@ jobs:
   - task: create-azure-stemcell
     attempts: 3
     file: bosh-windows-stemcell-builder-ci/ci/tasks/create-azure-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       BASE_IMAGE: ((AZURE_BASE_IMAGE))
       BASE_IMAGE_OFFER: ((AZURE_BASE_IMAGE_OFFER))
@@ -1813,6 +1890,7 @@ jobs:
     ensure:
       task: delete-orphan-vms
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         CLIENT_ID: ((koala_azure_credentials_json.client_id))
         CLIENT_SECRET: ((koala_azure_credentials_json.client_secret))
@@ -1835,6 +1913,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [create-azure]
       - get: azure-build-number
@@ -1855,6 +1934,7 @@ jobs:
         passed: [create-azure]
   - task: download-heavy
     file: bosh-windows-stemcell-builder-ci/ci/tasks/download-heavy-azure-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     timeout: 6h
     params:
       STEMCELL_OS: ((AZURE_OS_VERSION))
@@ -1909,6 +1989,7 @@ jobs:
       - get: bosh-integration-registry-image
   - task: download-heavy
     file: bosh-windows-stemcell-builder-ci/ci/tasks/download-heavy-azure-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     timeout: 6h
     params:
       STEMCELL_OS: ((AZURE_OS_VERSION))
@@ -1947,6 +2028,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [build]
       - get: base-gcp-image
@@ -1977,6 +2059,7 @@ jobs:
   - task: create-gcp-stemcell
     attempts: 3
     file: bosh-windows-stemcell-builder-ci/ci/tasks/create-gcp-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
@@ -1985,6 +2068,7 @@ jobs:
     ensure:
       task: delete-orphan-vms
       file: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
         IAAS: gcp
@@ -1992,6 +2076,7 @@ jobs:
   - *print-updates
   - task: publish-gcp-stemcell
     file: bosh-windows-stemcell-builder-ci/ci/tasks/publish-gcp-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
@@ -2108,6 +2193,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: aws-tested
         passed: [wuts-aws]
       - get: aws-govcloud-tested
@@ -2158,7 +2244,9 @@ jobs:
         passed: [build]
   - task: ensure-versions-match
     file: bosh-windows-stemcell-builder-ci/ci/tasks/match-stemcell-versions/task.yml
-    input_mapping: { stembuild-stemcell-tested: stembuild-linux-stemcell }
+    image: bosh-windows-stemcell-builder-ci-image
+    input_mapping:
+      stembuild-stemcell-tested: stembuild-linux-stemcell
 
 - name: promote-aws
   serial: true
@@ -2167,11 +2255,11 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: aws-tested
         passed: [promote]
       - get: aws-govcloud-tested
         passed: [promote]
-      - get: bosh-windows-stemcell-builder-ci-docker-image
       - get: bosh-stemcells-ci
       - get: stemcell-builder
         passed: [promote]
@@ -2205,6 +2293,7 @@ jobs:
     input_mapping: { version: aws-build-number, default-stemcell: aws-tested, amis: default-ami}
     output_mapping: {copied-regional-stemcells: aws-public-stemcells}
     file: bosh-windows-stemcell-builder-ci/ci/tasks/copy-aws-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
@@ -2217,12 +2306,14 @@ jobs:
     input_mapping: { version: aws-build-number, default-stemcell: aws-govcloud-tested, amis: govcloud-ami}
     output_mapping: {copied-regional-stemcells: aws-govcloud-stemcells}
     file: bosh-windows-stemcell-builder-ci/ci/tasks/copy-aws-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       OS_VERSION: ((STEMCELL_OS_NAME))
       AWS_ACCESS_KEY: ((packer_user_gov_aws_access_key.username))
       AWS_SECRET_KEY: ((packer_user_gov_aws_access_key.password))
       REGIONS: "us-gov-east-1"
   - task: aggregate-stemcells
+    image: bosh-windows-stemcell-builder-ci-image
     file: bosh-windows-stemcell-builder-ci/ci/tasks/aggregate-stemcells/task.yml
     input_mapping: { version: aws-build-number, amis: default-ami }
     params:
@@ -2230,9 +2321,10 @@ jobs:
       OS_VERSION: ((STEMCELL_OS_NAME))
   - task: aws-set-stemcell-filename-version
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stemcell-version/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: tag-published-aws-ami-light-stemcells
     file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
-    image: bosh-windows-stemcell-builder-ci-docker-image
+    image: bosh-windows-stemcell-builder-ci-image
     input_mapping:
       candidate-aws-light-stemcell: final-stemcell
     params:
@@ -2242,7 +2334,7 @@ jobs:
       GREP_PATTERN: grep -v 'gov-\|cn-'
   - task: tag-gov-published-aws-ami-light-stemcells
     file: bosh-stemcells-ci/tasks/light-aws/tag-aws-ami-light.yml
-    image: bosh-windows-stemcell-builder-ci-docker-image
+    image: bosh-windows-stemcell-builder-ci-image
     input_mapping:
       candidate-aws-light-stemcell: final-stemcell
     params:
@@ -2252,6 +2344,7 @@ jobs:
   - in_parallel:
     - task: commit-dev-meta4-file
       file: bosh-windows-stemcell-builder-ci/ci/tasks/commit-meta4-file/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: aws
@@ -2269,6 +2362,7 @@ jobs:
   - try:
       task: cleanup-unpublished-aws-amis
       file: bosh-windows-stemcell-builder-ci/ci/tasks/cleanup-unpublished-aws-amis/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         AWS_REGION: us-east-1
         AWS_ACCESS_KEY: ((aws-stemcells_aws_access_key.username))
@@ -2283,6 +2377,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: gcp-tested
         passed: [promote]
         trigger: true
@@ -2296,8 +2391,10 @@ jobs:
   - task: gcp-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: gcp-tested }
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stemcell-version/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: label-gcp-stemcell-for-production
     file: bosh-windows-stemcell-builder-ci/ci/tasks/label-gcp-stemcell-for-production/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     input_mapping: { bosh-windows-stemcell: gcp-tested }
     params:
       ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
@@ -2320,6 +2417,7 @@ jobs:
         rebase: true
   - task: cleanup-unpublished-gcp-images
     file: bosh-windows-stemcell-builder-ci/ci/tasks/cleanup-unpublished-gcp-images/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       ACCOUNT_JSON: ((cff-bosh-windows-stemcells_bosh-153_gcp_credentials_json))
 
@@ -2331,6 +2429,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stembuild-linux-stemcell
         passed: [ promote ]
         trigger: true
@@ -2340,6 +2439,7 @@ jobs:
   - task: vsphere-set-stemcell-filename-version
     input_mapping: { bosh-windows-stemcell: stembuild-linux-stemcell }
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stemcell-version/task.yml # this is what moves the stemcell into a folder called final-stemcell
+    image: bosh-windows-stemcell-builder-ci-image
   - put: stembuild-linux-stemcell-final-artifactory
     params:
       file_pattern: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2355,6 +2455,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [promote]
       - get: version
@@ -2370,6 +2471,7 @@ jobs:
 # TODO: delete `ci/tasks/azure-image-upload-and-start-publishing/` once this task is replaced by the two below
   - task: upload-image-and-start-publishing
     file: bosh-windows-stemcell-builder-ci/ci/tasks/azure-image-upload-and-start-publishing/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
       AZURE_STORAGE_ACCOUNT: unpublishedstemcells
@@ -2386,6 +2488,7 @@ jobs:
 # TODO: replace `upload-image-and-start-publishing` with the two tasks below
 #  - task: azure-image-upload
 #    file: bosh-windows-stemcell-builder-ci/ci/tasks/azure-image-upload/task.yml
+#    image: bosh-windows-stemcell-builder-ci-image
 #    params:
 #      AZURE_STORAGE_ACCESS_KEY: ((heavy_azure_stemcell_azure_storage_access_key_koala))
 #      AZURE_STORAGE_ACCOUNT: unpublishedstemcells
@@ -2398,6 +2501,7 @@ jobs:
 #      PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
 #  - task: azure-start-publishing
 #    file: bosh-windows-stemcell-builder-ci/ci/tasks/azure-start-publishing/task.yml
+#    image: bosh-windows-stemcell-builder-ci-image
 #    params:
 #      AZURE_PUBLISHED_STORAGE_ACCESS_KEY: ((azure_published_storage_access_key))
 #      AZURE_PUBLISHED_STORAGE_ACCOUNT: publishedstemcells
@@ -2417,6 +2521,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: main-version
         passed: [submit-azure-offer]
       - get: azure-tested
@@ -2424,6 +2529,7 @@ jobs:
         trigger: true
   - task: wait-for-azure-publisher-signoff
     file: bosh-windows-stemcell-builder-ci/ci/tasks/wait-for-azure-publisher-signoff/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     timeout: 168h # 7 days
     params: &azure_publisher_information
       AZURE_PUBLISHER: ((AZURE_PUBLISHER))
@@ -2433,10 +2539,12 @@ jobs:
       PARTNER_PORTAL_CLIENT_SECRET: ((azure_partner_portal.client_secret))
   - task: signoff-azure-live
     file: bosh-windows-stemcell-builder-ci/ci/tasks/signoff-azure-live/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       <<: *azure_publisher_information
   - task: wait-for-azure-marketplace-offer-live
     file: bosh-windows-stemcell-builder-ci/ci/tasks/wait-for-azure-marketplace-offer-live/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     timeout: 120h # 5 days
     params:
       <<: *azure_publisher_information
@@ -2448,6 +2556,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: azure-tested
         passed: [publish-azure-offer]
         trigger: true
@@ -2460,6 +2569,7 @@ jobs:
     input_mapping: { bosh-windows-stemcell: azure-tested }
     output_mapping: { final-stemcell: azure-stemcell-final }
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stemcell-version/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - in_parallel:
     - task: commit-meta4-file
       input_mapping: { stemcell: azure-stemcell-final }
@@ -2485,7 +2595,7 @@ jobs:
         fail_fast: true
         steps:
         - get: bosh-windows-stemcell-builder-ci
-          trigger: false
+        - get: bosh-windows-stemcell-builder-ci-image
         - get: stembuild-untested-linux
           trigger: true
           passed: [ promote ]
@@ -2497,7 +2607,9 @@ jobs:
           passed: [ promote ]
     - task: set-stembuild-version
       file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stembuild-version/task.yml
-      input_mapping: {main-version: version}
+      image: bosh-windows-stemcell-builder-ci-image
+      input_mapping:
+        main-version: version
 
 - name: github-release-stembuild
   old_name: publish-stembuild-and-stemcell-builder
@@ -2507,6 +2619,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: main-version
         passed: [promote-stembuild]
         trigger: true
@@ -2518,8 +2631,10 @@ jobs:
         passed: [promote-stembuild]
   - task: set-stembuild-version
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stembuild-version/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: get-stembuild-commit-sha
     file: bosh-windows-stemcell-builder-ci/ci/tasks/get-stembuild-commit-sha/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - put: post-stembuild-release
     params:
       name: final-stembuilds/tag
@@ -2538,7 +2653,7 @@ jobs:
       - get: bosh-windows-stemcell-builder-ci
       - get: gormt-repo
       - get: bosh-ecosystem-docker-image
-      - get: bosh-windows-stemcell-builder-ci-docker-image
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: version
         resource: main-version
         passed:
@@ -2590,7 +2705,7 @@ jobs:
       task: cleanup-rmt-please-instructions
       config:
         platform: linux
-        image: bosh-windows-stemcell-builder-ci-docker-image
+        image: bosh-windows-stemcell-builder-ci-image
         run:
           path: bash
           args:
