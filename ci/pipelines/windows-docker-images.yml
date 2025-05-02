@@ -1,0 +1,95 @@
+# To configure this pipeline: pipelines/configure.sh windows-docker-images
+resources:
+- name: bosh-windows-stemcell-builder-ci
+  type: git
+  source:
+    uri: git@github.gwd.broadcom.net:TNZ/bosh-windows-stemcell-builder.git
+    branch: greenhouse-ci
+
+- name: bosh-windows-stemcell-builder-dockerfiles
+  type: git
+  source:
+    uri: git@github.gwd.broadcom.net:TNZ/bosh-windows-stemcell-builder.git
+    branch: greenhouse-ci
+    paths:
+      - ci/docker
+
+- name: ci-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: govc-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/govc
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: ci-azcopy-image
+  type: docker-image
+  source:
+    repository: pivotalgreenhouse/ci-azcopy
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: golang-release-image
+  type: docker-image
+  source:
+    repository: bosh/golang-release
+    username: ((docker.username))
+    password: ((docker.password))
+
+jobs:
+- name: build-and-push-ci
+  serial: true
+  plan:
+  - get: bosh-windows-stemcell-builder-dockerfiles
+    trigger: true
+  - get: golang-release-image
+    trigger: true
+  - put: ci-image
+    params:
+      build: bosh-windows-stemcell-builder-dockerfiles/ci/docker
+      dockerfile: bosh-windows-stemcell-builder-dockerfiles/ci/docker/Dockerfile.ci
+      tag_as_latest: true
+
+- name: build-and-push-govc
+  serial: true
+  plan:
+    - get: bosh-windows-stemcell-builder-dockerfiles
+      trigger: true
+    - put: govc-image
+      params:
+        build: bosh-windows-stemcell-builder-dockerfiles/ci/docker
+        dockerfile: bosh-windows-stemcell-builder-dockerfiles/ci/docker/Dockerfile.govc
+        tag_as_latest: true
+
+- name: build-and-push-ci-azcopy
+  serial: true
+  plan:
+    - get: bosh-windows-stemcell-builder-ci
+    - get: bosh-windows-stemcell-builder-dockerfiles
+      trigger: true
+    - get: golang-release-image
+      trigger: true
+    - task: cleanup-rmt-please-instructions
+      config:
+        platform: linux
+        image: bosh-ecosystem-docker-image
+        inputs:
+          - name: bosh-windows-stemcell-builder-ci
+        run:
+          path: bash
+          args:
+            - -exc
+            - |
+              cd bosh-windows-stemcell-builder-ci/ci/azstemcell
+              go build -o ../docker/azstemcell
+    - put: ci-azcopy-image
+      params:
+        build: bosh-windows-stemcell-builder-dockerfiles/ci/docker
+        dockerfile: bosh-windows-stemcell-builder-dockerfiles/ci/docker/Dockerfile.azcopy
+        tag_as_latest: true

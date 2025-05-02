@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource: {type: docker-image, source: {repository: pivotalgreenhouse/ci}}
+
+inputs:
+  - name: bosh-windows-stemcell-builder-ci
+
+run:
+  path: bosh-windows-stemcell-builder-ci/ci/tasks/wait-for-azure-marketplace-offer-live/run
+
+params:
+  AZURE_PUBLISHER:
+  AZURE_OFFER:
+  PARTNER_PORTAL_TENANT_ID:
+  PARTNER_PORTAL_CLIENT_ID:
+  PARTNER_PORTAL_CLIENT_SECRET:

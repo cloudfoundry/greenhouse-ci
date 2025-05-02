@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+function add-pivnet-productfile () {
+  filename="$1"
+
+  echo "Adding $filename to Pivnet metadata"
+  case "$filename" in
+      *"aws"*)
+        upload_as_name="AWS light Stemcell"
+        ;;
+
+      *"google"*)
+        upload_as_name="GCP light Stemcell"
+        ;;
+
+      *"azure"*)
+        upload_as_name="Azure light Stemcell"
+        ;;
+
+      *"vsphere"*)
+        upload_as_name="vSphere Stemcell"
+        ;;
+
+      "stembuild-linux-x86_64"*)
+        upload_as_name="vSphere Stembuild CLI - Linux"
+        ;;
+
+      "stembuild-windows-x86_64"*)
+        upload_as_name="vSphere Stembuild CLI - Windows"
+        ;;
+      *)
+       echo "Invalid filename: $filename, does not match: aws, azure, google, vsphere, stembuild-linux-x86_64 or stembuild-windows-x86_64"
+       exit 1
+  esac
+
+  cat >> metadata <<EOF
+  - file: pivnet-metadata/$filename
+    upload_as: "$upload_as_name"
+EOF
+}
+
+release_version=$( cat version/version | cut -d '.' -f1-2 )
+
+# User group IDs are as follows:
+# 194 = "PKS Internal Early Access"
+# 102 = "PEZ Early Access"
+# 110 = "Pivotal Platform Provider"
+# 152 = "Stemcells for PCF, Windows,"
+#   6 = "VMware Internal Early Access"
+# 164 = "Tanzu Release Reliability"
+cat > pivnet-metadata/metadata <<EOF
+---
+release:
+  version: "${release_version}"
+  release_type: Security Release
+  eula_slug: "vmware_eula"
+  availability: Selected User Groups Only
+  end_of_support_date: "2025-04-01"
+  user_group_ids:
+    - 194
+    - 102
+    - 110
+    - 152
+    - 6
+    - 164
+  eccn: "5D002"
+  license_exception: "ECCN"
+product_files:
+EOF
+
+existing_release_version=$(cat pivnet-release/metadata.json | jq -r .Release.Version)
+
+if [ $existing_release_version == $release_version ]; then
+  echo "Pivnet Release ${release_version} exists, will retain existing release files"
+  if [ "$(ls pivnet-release/*.tgz)" != "" ]; then
+    mv pivnet-release/*.tgz pivnet-metadata/
+  fi
+  if [ "$(ls pivnet-release/stembuild*)" != "" ]; then
+    mv pivnet-release/stembuild* pivnet-metadata/
+  fi
+
+else
+  echo "Creating Pivnet Release ${release_version} for first time"
+fi
+
+mv source-folder/* pivnet-metadata
+
+cd pivnet-metadata
+for s in $(ls *.tgz)
+  do
+    add-pivnet-productfile "$s"
+done
+
+for s in $(ls stembuild*)
+  do
+    add-pivnet-productfile "$s"
+done
+
+cd ..
+
+echo 'Release details:'
+cat pivnet-metadata/metadata
+
+echo 'Current files in release:'
+ls pivnet-metadata/*stem*
