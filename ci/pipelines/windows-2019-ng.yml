@@ -2584,8 +2584,17 @@ jobs:
       - get: bosh-windows-stemcell-builder-ci
       - get: bosh-windows-stemcell-builder-ci-image
       - get: main-version
-        passed: [promote-stembuild]
+        passed:
+        - promote-aws
+        - promote-azure
+        - promote-gcp
         trigger: true
+      - get: aws-stemcell-final
+        passed: [promote-aws]
+      - get: azure-stemcell-final
+        passed: [promote-azure]
+      - get: gcp-stemcell-final
+        passed: [promote-gcp]
       - get: stembuild
         passed: [promote]
       - get: stembuild-untested-windows
@@ -2619,18 +2628,14 @@ jobs:
       - get: bosh-windows-stemcell-builder-ci-image
       - get: version
         resource: main-version
-        passed:
-          - promote-aws
-          - promote-gcp
-          - promote-azure
-          - github-release-stembuild
+        passed: [github-release-stembuild]
         trigger: true
       - get: aws-stemcell-final
-        passed: [promote-aws]
-      - get: gcp-stemcell-final
-        passed: [promote-gcp]
+        passed: [github-release-stembuild]
       - get: azure-stemcell-final
-        passed: [promote-azure]
+        passed: [github-release-stembuild]
+      - get: gcp-stemcell-final
+        passed: [github-release-stembuild]
       - get: stembuild-untested-windows
         passed: [github-release-stembuild]
       - get: stembuild-untested-linux
