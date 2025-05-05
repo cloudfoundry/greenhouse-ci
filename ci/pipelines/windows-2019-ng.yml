@@ -128,8 +128,7 @@ resource_types:
     repository: tas-ecosystem-docker-virtual.usw1.packages.broadcom.com/artifactory-path-version-resource
     username: svc.bosh-ecosystem
     password: ((broadcom_artifactory_api_key))
-  tags:
-    - broadcom
+  tags: [broadcom]
 
 resources:
 # type: git
@@ -358,6 +357,7 @@ resources:
 # type: pool
 - name: aws-lock
   type: pool
+  tags: [broadcom]
   source:
     branch: master
     pool: ((AWS_POOL_NAME))
@@ -365,6 +365,7 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: azure-lock
   type: pool
+  tags: [broadcom]
   source:
     branch: master
     pool: ((AZURE_POOL_NAME))
@@ -372,6 +373,7 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: goose-lock
   type: pool
+  tags: [broadcom]
   source:
     branch: master
     pool: ((GOOSE_POOL_NAME))
@@ -379,6 +381,7 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: gcp-lock
   type: pool
+  tags: [broadcom]
   source:
     branch: master
     pool: ((GCP_POOL_NAME))
@@ -386,6 +389,7 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: vsphere-director-lock
   type: pool
+  tags: [broadcom]
   source:
     branch: master
     pool: ((VSPHERE_POOL_NAME))
@@ -393,9 +397,10 @@ resources:
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 - name: nimbus-ips
   type: pool
+  tags: [broadcom]
   source:
     branch: master
-    pool: "nimbus-ips"
+    pool: nimbus-ips
     private_key: ((github_deploy_key_Bosh-Windows-Locks.private_key))
     uri: git@github.gwd.broadcom.net:TNZ/Bosh-Windows-Locks.git
 
@@ -457,8 +462,7 @@ resources:
     repository: tas-bosh-generic-prod-local
     path: vsphere-windows-stemcells
     path_pattern: bosh-stemcell-(?P<version>\d+\.\d+)-vsphere-esxi-windows2019-go_agent.tgz
-  tags:
-    - broadcom
+  tags: [broadcom]
 
 - name: azure-stemcell-final
   type: s3
@@ -982,6 +986,7 @@ jobs:
         put: nimbus-ips
         inputs: detect
         params: { release: nimbus-ips }
+        tags: [broadcom]
 
 - name: stembuild-linux
   serial: true
@@ -1110,6 +1115,7 @@ jobs:
         put: nimbus-ips
         inputs: detect
         params: { release: nimbus-ips }
+        tags: [broadcom]
 
 - name: create-stembuild-linux-stemcell
   serial: true
@@ -1209,6 +1215,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-bwats-stembuild-linux
       file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
@@ -1236,6 +1243,7 @@ jobs:
       inputs: detect
       params:
         release: vsphere-director-lock
+      tags: [broadcom]
 
 - name: wuts-stembuild-linux-stemcell
   serial: true
@@ -1256,6 +1264,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1279,6 +1288,7 @@ jobs:
       inputs: detect
       params:
         release: vsphere-director-lock
+      tags: [broadcom]
 
 - name: create-stembuild-windows-stemcell
   serial: true
@@ -1367,6 +1377,7 @@ jobs:
       inputs: detect
       params:
         acquire: true
+      tags: [broadcom]
     - do:
         - task: run-bwats-stembuild-windows
           file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
@@ -1394,6 +1405,7 @@ jobs:
         inputs: detect
         params:
           release: vsphere-director-lock
+        tags: [broadcom]
 
 - name: wuts-stembuild-windows-stemcell
   serial: true
@@ -1414,6 +1426,7 @@ jobs:
       inputs: detect
       params:
         acquire: true
+      tags: [broadcom]
     - do:
         - task: run-wuts
           file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1437,6 +1450,7 @@ jobs:
         inputs: detect
         params:
           release: vsphere-director-lock
+        tags: [broadcom]
 
 - name: create-aws
   serial: true
@@ -1606,6 +1620,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1628,6 +1643,7 @@ jobs:
       inputs: detect
       params:
         release: aws-lock
+      tags: [broadcom]
 
 - name: create-aws-govcloud
   serial: true
@@ -1961,6 +1977,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -1983,6 +2000,7 @@ jobs:
       inputs: detect
       params:
         release: azure-lock
+      tags: [broadcom]
 - name: create-gcp
   serial: true
   serial_groups: [gcp-version]
@@ -2072,6 +2090,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-bwats-gcp-stemcell
       file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
@@ -2099,6 +2118,7 @@ jobs:
       inputs: detect
       params:
         release: goose-lock
+      tags: [broadcom]
   - put: gcp-tested
     params:
       file: bosh-windows-stemcell/light-bosh-stemcell-*-google-kvm-((STEMCELL_OS_NAME))-go_agent.tgz
@@ -2126,6 +2146,7 @@ jobs:
     inputs: detect
     params:
       acquire: true
+    tags: [broadcom]
   - do:
     - task: run-wuts
       file: windows-utilities-release/ci/tasks/run-wuts/task.yml
@@ -2407,8 +2428,7 @@ jobs:
     params:
       file_pattern: final-stemcell/bosh-stemcell-*-vsphere-esxi-((STEMCELL_OS_NAME))-go_agent.tgz
       strip_path_prefix: final-stemcell
-    tags:
-      - broadcom
+    tags: [broadcom]
 
 - name: submit-azure-offer
   old_name: print-azure-publishing-instructions
