@@ -297,56 +297,62 @@ resources:
 - name: aws-build-number
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/aws-2019
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: aws-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: azure-build-number
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/azure-2019
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: azure-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: gcp-build-number
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/gcp-2019
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: gcp-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: stembuild-linux-build-number
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-2019
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: stembuild-linux-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: stembuild-windows-build-number
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-2019
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: stembuild-windows-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 - name: main-version
   type: semver
   source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/main
-    access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
+    driver: git
+    uri: https://github.com/cloudfoundry/bosh-windows-stemcell-builder.git
+    username: bosh-admin-bot
+    password: ((github_public_repo_token))
+    branch: semver
+    file: main-2019
     initial_version: ((STEMCELL_INITIAL_VERSION))
 
 # type: pool
@@ -804,24 +810,21 @@ jobs:
   - put: main-version
     params:
       file: version/number
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - put: aws-build-number
-        params:
-          file: version/number
-      - put: gcp-build-number
-        params:
-          file: version/number
-      - put: azure-build-number
-        params:
-          file: version/number
-      - put: stembuild-windows-build-number
-        params:
-          file: version/number
-      - put: stembuild-linux-build-number
-        params:
-          file: version/number
+  - put: aws-build-number
+    params:
+      file: version/number
+  - put: gcp-build-number
+    params:
+      file: version/number
+  - put: azure-build-number
+    params:
+      file: version/number
+  - put: stembuild-windows-build-number
+    params:
+      file: version/number
+  - put: stembuild-linux-build-number
+    params:
+      file: version/number
   - in_parallel:
       fail_fast: true
       steps:
