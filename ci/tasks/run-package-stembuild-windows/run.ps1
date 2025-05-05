@@ -16,7 +16,7 @@ Move-Item stembuild-untested-windows/stembuild.exe .
 ICACLS stembuild.exe /grant:r "users:(RX)" /C
 
 $version="$(cat .\build-number\number)"
-$stemcellBuildNumber="$(cat .\stemcell-build-number\count)"
+$stemcellBuildNumber="$(Get-Date -Format "yyyyMMddHHmm")"
 $patch,$build=$version.split('.')[2,3]
 $patch_version="$patch.$build$stemcellBuildNumber"
 

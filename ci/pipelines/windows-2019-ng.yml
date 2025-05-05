@@ -100,12 +100,6 @@ resource_types:
     repository: dpb587/metalink-repository-resource
     username: ((docker.username))
     password: ((docker.password))
-- name: counter-resource
-  type: docker-image
-  source:
-    repository: bosh/counter-resource
-    username: ((docker.username))
-    password: ((docker.password))
 - name: file-url
   type: docker-image
   source:
@@ -354,24 +348,6 @@ resources:
     secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
     assume_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
     initial_version: ((STEMCELL_INITIAL_VERSION))
-
-# type: counter-resource
-- name: stembuild-windows-stemcell-build-number
-  type: counter-resource
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-windows-stemcell-2019
-    aws_access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    aws_secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
-- name: stembuild-linux-stemcell-build-number
-  type: counter-resource
-  source:
-    bucket: ((ROOT_BUCKET))
-    key: ((BASE_FOLDER_NAME))/versions/stembuild-linux-stemcell-2019
-    aws_access_key_id: ((bosh_windows_ci_assume_aws_access_key.username))
-    aws_secret_access_key: ((bosh_windows_ci_assume_aws_access_key.password))
-    aws_role_arn: ((bosh_windows_ci_assume_aws_access_key.role_arn))
 
 # type: pool
 - name: aws-lock
@@ -1146,14 +1122,6 @@ jobs:
     - get: build-number
       resource: stembuild-linux-build-number
       passed: [stembuild-linux]
-    - get: stemcell-build-number
-      resource: stembuild-linux-stemcell-build-number
-      params:
-        inc: true
-  - put: stembuild-linux-stemcell-build-number
-    inputs: detect
-    params:
-      file: stemcell-build-number/count
   - task: revert-snapshot
     file: bosh-windows-stemcell-builder-ci/ci/tasks/revert-snapshot/task.yml
     image: bosh-windows-stemcell-builder-ci-image
@@ -1323,14 +1291,6 @@ jobs:
         - get: build-number
           resource: stembuild-windows-build-number
           passed: [stembuild-windows]
-        - get: stemcell-build-number
-          resource: stembuild-windows-stemcell-build-number
-          params:
-            inc: true
-    - put: stembuild-windows-stemcell-build-number
-      inputs: detect
-      params:
-        file: stemcell-build-number/count
     - task: revert-snapshot
       file: bosh-windows-stemcell-builder-ci/ci/tasks/revert-snapshot/task.yml
       image: bosh-windows-stemcell-builder-ci-image
