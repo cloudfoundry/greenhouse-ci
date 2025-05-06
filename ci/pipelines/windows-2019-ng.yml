@@ -806,7 +806,8 @@ jobs:
       COMMERCIAL_AWS_DEFAULT_REGION: ((AWS_PACKER_REGION))
       COMMERCIAL_AWS_ROLE_ARN: ((aws-stemcells_aws_access_key.role_arn))
       COMMERCIAL_AWS_SECRET_ACCESS_KEY: ((aws-stemcells_aws_access_key.password))
-      CONCOURSE_GCP_CREDENTIALS_JSON: ((broadcom_gcp_credentials_json))
+      CONCOURSE_GCP_CREDENTIALS_JSON: ((gcp_credentials_json))
+      CONCOURSE_GOOGLE_PROJECT_ID: cf-bosh-concourse
       GOVCLOUD_AWS_ACCESS_KEY_ID: ((packer_user_gov_aws_access_key.username))
       GOVCLOUD_AWS_DEFAULT_REGION: ((AWS_GOVCLOUD_PACKER_REGION))
       GOVCLOUD_AWS_SECRET_ACCESS_KEY: ((packer_user_gov_aws_access_key.password))

@@ -7,14 +7,19 @@ set -x
 # WinRM port (5985).
 
 set +x
-echo "${CONCOURSE_GCP_CREDENTIALS_JSON}" | gcloud auth activate-service-account --key-file - --project cf-bosh-concourse
+echo "${CONCOURSE_GCP_CREDENTIALS_JSON}" | gcloud auth activate-service-account --key-file - --project "${CONCOURSE_GOOGLE_PROJECT_ID}"
 set -x
 concourse_worker_external_ips=$( \
   gcloud compute instances list \
-  --project cf-bosh-concourse \
+  --project "${CONCOURSE_GOOGLE_PROJECT_ID}" \
   --filter="labels.instance_group:worker AND networkInterfaces.network:bosh-ecosystem-concourse" \
   --format="value(networkInterfaces[0].accessConfigs[0].natIP)" \
 )
+
+if [ -z "${concourse_worker_external_ips}" ]; then
+  echo "Unable to find Concourse worker IP addresses"
+  exit 1
+fi
 
 # Set firewall rules in the GCP project
 comma_separated_external_ips=""
