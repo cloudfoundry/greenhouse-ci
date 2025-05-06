@@ -151,7 +151,7 @@ RUN cd /tmp \
 
 RUN govc_path="/usr/local/bin/govc" \
     && curl --show-error -sL "${GOVC_INSTALL_URL}" \
-      | tar -xzf - > "${govc_path}" \
+      | tar -xOzf - govc > "${govc_path}" \
     && chmod +x "${govc_path}"
 
 RUN yq_cli_path="/usr/local/bin/yq" \
