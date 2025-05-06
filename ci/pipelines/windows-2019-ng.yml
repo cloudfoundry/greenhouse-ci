@@ -912,6 +912,7 @@ jobs:
       - get: windows-bsdtar
       - get: windows-winsw
   - put: version
+    inputs: detect
     resource: stembuild-windows-build-number
     params:
       pre: build
@@ -1026,6 +1027,7 @@ jobs:
       - get: windows-winsw
       - get: govmomi
   - put: version
+    inputs: detect
     resource: stembuild-linux-build-number
     params:
       pre: build
@@ -1484,6 +1486,7 @@ jobs:
       - get: windows-bsdtar
       - get: windows-winsw
   - put: version
+    inputs: detect
     resource: aws-build-number
     params:
       pre: build
@@ -1842,6 +1845,7 @@ jobs:
       - get: windows-bsdtar
       - get: windows-winsw
   - put: version
+    inputs: detect
     resource: azure-build-number
     params:
       pre: build
@@ -2034,6 +2038,7 @@ jobs:
       - get: windows-bsdtar
       - get: windows-winsw
   - put: version
+    inputs: detect
     resource: gcp-build-number
     params:
       pre: build
