@@ -5,7 +5,7 @@ inputs:
   - name: bosh-windows-stemcell-builder-ci
 
 run:
-  path: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/run
+  path: bosh-windows-stemcell-builder-ci/ci/tasks/delete-vms/run.sh
 
 params:
   VM_PREFIX:
