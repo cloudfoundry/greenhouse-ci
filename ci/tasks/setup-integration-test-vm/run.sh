@@ -20,18 +20,18 @@ export CLONE_NAME
 echo "${CLONE_NAME}" > integration-vm-name/name
 echo "Creating VM ${CLONE_NAME} with IP: ${VM_IP}"
 
-govc vm.clone -verbose \
+govc vm.clone \
   -vm "${BASE_VM_IPATH}" \
   -ds "${CLONE_DATASTORE}" \
   -pool "${CLONE_RESOURCE_POOL}" \
   -folder "${CLONE_FOLDER}" \
   -on=false "${CLONE_NAME}"
 
-govc vm.customize -verbose \
+govc vm.customize \
   -vm.ipath "${CLONE_FOLDER}"/"${CLONE_NAME}" \
   -ip "${VM_IP}" "${VM_CUSTOMIZATION_NAME}"
 
-govc vm.power -on -verbose \
+govc vm.power -on \
   -vm.ipath "${CLONE_FOLDER}"/"${CLONE_NAME}"
 
 echo Waiting for VM to be configured with expected IP address...
