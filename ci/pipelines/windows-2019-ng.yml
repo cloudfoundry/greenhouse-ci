@@ -1755,6 +1755,7 @@ jobs:
         passed: [create-aws-govcloud]
   - task: run-bwats-aws-govcloud-stemcell
     file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     input_mapping: { stemcell: bosh-windows-stemcell }
     params:
       BOSH_CA_CERT: ((iaas_directors_aws-govcloud-director_bosh_ca_cert.ca))
@@ -1926,6 +1927,7 @@ jobs:
       WORKING_DIR: '.'
   - task: run-bwats-azure-stemcell
     file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     input_mapping: {stemcell: heavy-stemcell}
     params:
       AZ: ((AZURE_HEAVY_AZ))
@@ -2100,6 +2102,7 @@ jobs:
   - do:
     - task: run-bwats-gcp-stemcell
       file: bosh-windows-stemcell-builder-ci/ci/tasks/run-bwats/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       input_mapping: { stemcell: bosh-windows-stemcell }
       params:
         ACCOUNT_JSON: ((cf-bosh-windows-swan_gcp-bwats-1_gcp_credentials_json))
