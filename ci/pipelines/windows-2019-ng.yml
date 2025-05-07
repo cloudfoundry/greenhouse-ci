@@ -2180,6 +2180,7 @@ jobs:
       inputs: detect
       params:
         release: gcp-lock
+      tags: [broadcom]
 
 - name: promote
   serial: true
