@@ -85,6 +85,7 @@ RUN echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
         python3-setuptools \
         rlwrap \
         rsync \
+        ssh \
         unzip \
         vim \
         wget \
