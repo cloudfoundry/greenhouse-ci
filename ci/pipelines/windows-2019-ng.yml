@@ -1698,6 +1698,7 @@ jobs:
     attempts: 3
     timeout: 1h30m
     file: bosh-windows-stemcell-builder-ci/ci/tasks/create-aws-stemcell/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
     params:
       PACKER_AWS_ACCESS_KEY: ((packer_user_gov_aws_access_key.username))
       AWS_REGION: us-gov-west-1
@@ -2397,6 +2398,7 @@ jobs:
   - in_parallel:
     - task: commit-meta4-dev-file
       file: bosh-windows-stemcell-builder-ci/ci/tasks/commit-meta4-file/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       input_mapping: { stemcell: final-stemcell }
       params:
         IAAS: gcp
@@ -2569,6 +2571,7 @@ jobs:
     - task: commit-meta4-file
       input_mapping: { stemcell: azure-stemcell-final }
       file: bosh-windows-stemcell-builder-ci/ci/tasks/commit-meta4-file/task.yml
+      image: bosh-windows-stemcell-builder-ci-image
       params:
         IAAS: azure
         OS_NAME: windows
@@ -2675,6 +2678,7 @@ jobs:
       - get: license-file
   - task: set-stembuild-version
     file: bosh-windows-stemcell-builder-ci/ci/tasks/set-stembuild-version/task.yml
+    image: bosh-windows-stemcell-builder-ci-image
   - task: build-release-config
     file: bosh-windows-stemcell-builder-ci/ci/tasks/rmt/build-release-config.yml
     image: bosh-ecosystem-docker-image
