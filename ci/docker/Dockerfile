@@ -13,9 +13,10 @@ ARG GEM_HOME
 ARG RUBY_VERSION
 
 ENV DEBIAN_FRONTEND="noninteractive"
-ENV LANG="en_US.UTF-8"
-ENV LC_ALL="${LANG}"
-ENV LC_CTYPE="${LANG}"
+ENV LANGUAGE="en_US.UTF-8"
+ENV LC_CTYPE="${LANGUAGE}"
+ENV LC_ALL="${LANGUAGE}"
+ENV LANG="${LANGUAGE}"
 ENV TZ="Etc/UTC"
 
 RUN echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
@@ -26,8 +27,11 @@ RUN echo "Using 'jammy' because Azure doesn't yet support 'noble'" \
         ca-certificates \
         curl \
         gnupg \
+        locales \
         lsb-release \
         software-properties-common \
+    && locale-gen "${LANGUAGE}" \
+    && dpkg-reconfigure locales \
     && LSB_RELEASE="$(lsb_release -cs)" \
     && LSB_ID="$(lsb_release -rs)" \
     && echo "Add packages.cloud.google.com for: google-cloud-cli" \
