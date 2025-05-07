@@ -1957,6 +1957,7 @@ jobs:
       fail_fast: true
       steps:
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: windows-utilities-release
       - get: bosh-windows-stemcell
         resource: azure-tested
@@ -2083,6 +2084,7 @@ jobs:
         resource: gcp-untested
         passed: [create-gcp]
       - get: bosh-windows-stemcell-builder-ci
+      - get: bosh-windows-stemcell-builder-ci-image
       - get: stemcell-builder
         passed: [create-gcp]
       - get: version
