@@ -2206,9 +2206,8 @@ jobs:
       - get: stemcell-builder
         passed:
         - wuts-gcp
-        - wuts-aws
+        - wuts-aws-govcloud # implies => aws-build-number
         - wuts-azure
-        - wuts-aws-govcloud
       - get: stembuild-untested-linux
         passed: [ wuts-stembuild-linux-stemcell ]
       - get: stembuild-linux-stemcell
@@ -2222,21 +2221,20 @@ jobs:
       - get: main-version
         passed:
         - wuts-gcp
-        - wuts-aws
+        - wuts-aws-govcloud # implies => aws-build-number
         - wuts-azure
-        - wuts-aws-govcloud
       - get: packer-output-ami
         passed: [wuts-aws]
       - get: packer-output-govcloud-ami
         passed: [wuts-aws-govcloud]
       - get: aws-build-number
-        passed: [wuts-aws]
+        passed:
+        - wuts-aws-govcloud # implies => aws-build-number
       - get: bosh-agent-release
         passed:
-          - wuts-gcp
-          - wuts-aws
-          - wuts-azure
-          - wuts-aws-govcloud
+        - wuts-gcp
+        - wuts-aws-govcloud # implies => aws-build-number
+        - wuts-azure
       - get: bosh-psmodules-repo
         passed: [build]
   - task: ensure-versions-match
